@@ -1,0 +1,33 @@
+.form-control {
+    border: solid 3px #E5E5E5;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+    border-radius: 3px;
+    padding: 5px;
+}
+
+.form-control:focus {
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    border: solid 3px #337AB7;
+}
+
+.has-header {
+    margin-top: 64px;
+}
+
+.input-group-addon-lg {
+    border: solid 3px #E5E5E5;
+}
+
+.clear-bar {
+    width: 100%;
+    height: 12px;
+}
+
+.jumbotron-sm {
+    background: #FFFFFF;
+    padding: 16px !important;
+    border: 1px solid #F2F2F2;
+    border-radius: 6px;
+}
