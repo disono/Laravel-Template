@@ -81,6 +81,7 @@ class AuthorizationRole extends Model
             }
         }
     }
+    
     /**
      * Get single data
      *
@@ -99,6 +100,7 @@ class AuthorizationRole extends Model
             $column => $id
         ]);
     }
+    
     /**
      * Get all data
      *
@@ -110,6 +112,7 @@ class AuthorizationRole extends Model
             'all' => true
         ]);
     }
+    
     /**
      * Store new data
      *
@@ -132,6 +135,7 @@ class AuthorizationRole extends Model
         $store['created_at'] = sql_date();
         return (bool)self::insertGetId($store);
     }
+    
     /**
      * Delete data
      *
@@ -143,6 +147,7 @@ class AuthorizationRole extends Model
     {
         return (bool)self::destroy($id);
     }
+    
     /**
      * Update data
      *

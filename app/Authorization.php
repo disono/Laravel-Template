@@ -123,6 +123,7 @@ class Authorization extends Model
         $store['created_at'] = sql_date();
         return (bool)self::insertGetId($store);
     }
+    
     /**
      * Delete data
      *
@@ -134,6 +135,7 @@ class Authorization extends Model
     {
         return (bool)self::destroy($id);
     }
+    
     /**
      * Update data
      *
@@ -183,6 +185,7 @@ class Authorization extends Model
 
         return (bool)$query->update($update);
     }
+    
     /**
      * Add formatting on data
      *

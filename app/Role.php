@@ -101,7 +101,7 @@ class Role extends Model
         }
         
         $store['created_at'] = sql_date();
-        return (bool)Role::insertGetId($store);
+        return (bool)self::insertGetId($store);
     }
     /**
      * Delete data

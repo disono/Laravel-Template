@@ -118,7 +118,7 @@ class Image extends Model
             }
         }
         $store['created_at'] = sql_date();
-        return (bool)Image::insertGetId($store);
+        return (bool)self::insertGetId($store);
     }
 
     /**
@@ -130,7 +130,7 @@ class Image extends Model
      */
     public static function remove($id)
     {
-        $image = Image::find($id);
+        $image = self::find($id);
         if ($image) {
             delete_file('private/img/' . $image->filename);
         }
