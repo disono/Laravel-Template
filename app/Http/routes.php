@@ -124,7 +124,7 @@ Route::group(['middleware' => 'api'], function () {
      * API V1
      * -------------------------------------------------------------------------------------------------------------
      */
-    
+
     // login
     Route::get('api/v1/auth/login', 'API\V1\Authenticate\LoginController@login')->name('api-v1-auth-login');
 
@@ -132,3 +132,9 @@ Route::group(['middleware' => 'api'], function () {
     Route::post('api/v1/auth/register', 'API\V1\Authenticate\RegisterController@register')->name('api-v1-auth-register');
 });
 
+Route::get('dev', function () {
+    foreach (Route::getRoutes() as $value) {
+        var_dump($value);
+        return;
+    }
+})->name('dev');

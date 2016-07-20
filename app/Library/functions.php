@@ -40,6 +40,18 @@ if (!function_exists('paginate')) {
     }
 }
 
+if (!function_exists('exclude_slug')) {
+    /**
+     * Exclude slugs name
+     * 
+     * @return string
+     */
+    function exclude_slug()
+    {
+        return App\Library\Helpers\WBDBHelper::excludeSlug();
+    }
+}
+
 /*
  * --------------------------------------------------------------------------
  * WBHttp method

@@ -6,6 +6,7 @@
  */
 namespace App\Library\Helpers;
 
+use App\SlugExclude;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 
@@ -50,5 +51,22 @@ class WBDBHelper
 
         return new LengthAwarePaginator($collections->get(), $total_rows, $pagination_num,
             Paginator::resolveCurrentPage(), array('path' => Paginator::resolveCurrentPath()));
+    }
+
+    /**
+     * Exclude slug
+     * 
+     * @return string
+     */
+    public static function excludeSlug()
+    {
+        $slugs = SlugExclude::all();
+        $excludes = '';
+        
+        foreach ($slugs as $row) {
+            $excludes .= $row->name . ',';
+        }
+
+        return $excludes;
     }
 }
