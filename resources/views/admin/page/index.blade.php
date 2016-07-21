@@ -13,6 +13,31 @@
             <div class="col-xs-12 col-md-12">
                 <h3 class="page-header">Pages</h3>
 
+                {{-- search options --}}
+                <div class="admin-container">
+                    <form action="" method="get" role="form" class="form-inline">
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="search" id="search"
+                                   value="{{$request->get('search')}}" placeholder="Keyword">
+                        </div>
+
+                        <div class="form-group">
+                            <select class="form-control" name="page_category_id">
+                                <option value="">Category</option>
+                                @foreach($page_categories as $row)
+                                    <option value="{{$row->id}}" {{ ($request->get('page_category_id') == $row->id) ? 'selected' : '' }}>
+                                        {{$row->name}}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">Search</button>
+                        </div>
+                    </form>
+                </div>
+
                 <div class="admin-container">
                     @if(count($pages))
                         <table class="table table-hover">

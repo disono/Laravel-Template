@@ -20,7 +20,18 @@ class PageController extends Controller
     public function index(Request $request)
     {
         $content['title'] = app_title('Pages');
-        $content['pages'] = Page::get();
+        
+        $options = [];
+        if ($request->get('page_category_id')) {
+            $options['page_category_id'] = $request->get('page_category_id');
+        }
+
+        if ($request->get('search')) {
+            $options['search'] = $request->get('search');
+        }
+        
+        $content['pages'] = Page::get($options);
+        $content['page_categories'] = PageCategory::all();
         $content['request'] = $request;
 
         return admin_view('page.index', $content);
