@@ -25,7 +25,7 @@ class AuthorizationStore extends Request
     {
         return [
             'name' => 'required|max:100',
-            'identifier' => 'required|max:100|alpha_dash',
+            'identifier' => 'required|max:100|alpha_dash|unique:authorizations,identifier',
             'description' => 'max:500'
         ];
     }

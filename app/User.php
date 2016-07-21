@@ -168,6 +168,7 @@ class User extends Authenticatable
                     // image
                     $upload_image = upload_image($value, [
                         'user_id' => $user->id,
+                        'source_id' => $user->id,
                         'title' => $user->first_name . ' ' . $user->last_name,
                         'type' => 'user',
                         'crop_auto' => true

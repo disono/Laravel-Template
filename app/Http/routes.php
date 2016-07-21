@@ -76,8 +76,33 @@ Route::group(['middleware' => 'app'], function () {
         Route::get('admin/settings', 'Admin\SettingsController@index')->name('admin-settings');
         Route::post('admin/setting/update', 'Admin\SettingsController@update')->name('admin-setting-update');
 
+        // page category
+        Route::get('admin/page-categories', 'Admin\PageCategoryController@index')->name('admin-page-categories');
+        Route::get('admin/page-category/create', 'Admin\PageCategoryController@create')->name('admin-page-category-create');
+        Route::post('admin/page-category/store', 'Admin\PageCategoryController@store')->name('admin-page-category-store');
+        Route::get('admin/page-category/edit/{id}', 'Admin\PageCategoryController@edit')->name('admin-page-category-edit');
+        Route::post('admin/page-category/update', 'Admin\PageCategoryController@update')->name('admin-page-category-update');
+
+        // page
+        Route::get('admin/pages', 'Admin\PageController@index')->name('admin-pages');
+        Route::get('admin/page/create', 'Admin\PageController@create')->name('admin-page-create');
+        Route::post('admin/page/store', 'Admin\PageController@store')->name('admin-page-store');
+        Route::get('admin/page/edit/{id}', 'Admin\PageController@edit')->name('admin-page-edit');
+        Route::post('admin/page/update', 'Admin\PageController@update')->name('admin-page-update');
+
         // images
         Route::get('admin/images', 'Admin\ImageController@index')->name('admin-images');
+
+        // image album
+        Route::get('admin/albums', 'Admin\ImageAlbumController@index')->name('admin-albums');
+        Route::get('admin/album/create', 'Admin\ImageAlbumController@create')->name('admin-album-create');
+        Route::post('admin/album/store', 'Admin\ImageAlbumController@store')->name('admin-album-store');
+        Route::get('admin/album/edit/{id}', 'Admin\ImageAlbumController@edit')->name('admin-album-edit');
+        Route::post('admin/album/update', 'Admin\ImageAlbumController@update')->name('admin-album-update');
+
+        // image album (uploads)
+        Route::get('admin/album/upload/create/{album_id}', 'Admin\ImageAlbumUploadController@create')->name('admin-album-upload-create');
+        Route::post('admin/album/upload/store', 'Admin\ImageAlbumUploadController@store')->name('admin-album-upload-store');
 
         // authorization
         Route::get('admin/authorizations', 'Admin\AuthorizationController@index')->name('admin-authorizations');
@@ -96,14 +121,23 @@ Route::group(['middleware' => 'app'], function () {
         // authorization roles
         Route::get('admin/authorization-roles/{role_id}', 'Admin\AuthorizationRoleController@index')->name('admin-authorization-roles');
         Route::post('admin/authorization-role/store', 'Admin\AuthorizationRoleController@store')->name('admin-authorization-roles-store');
-
+        
         // ajax calls
         Route::group(['middleware' => 'ajax'], function () {
             // users
             Route::post('admin/ajax/user/destroy/{id}', 'Admin\UserController@ajaxDestroy')->name('admin-ajax-user-destroy');
 
+            // page category
+            Route::post('admin/ajax/page-category/destroy/{id}', 'Admin\PageCategoryController@ajaxDestroy')->name('admin-ajax-page-category-destroy');
+
+            // page
+            Route::post('admin/ajax/page/destroy/{id}', 'Admin\PageController@ajaxDestroy')->name('admin-ajax-page-destroy');
+
             // images
             Route::post('admin/ajax/image/destroy/{id}', 'Admin\ImageController@ajaxDestroy')->name('admin-ajax-image-destroy');
+
+            // image albums
+            Route::post('admin/ajax/album/destroy/{id}', 'Admin\ImageAlbumController@ajaxDestroy')->name('admin-ajax-album-destroy');
 
             // roles
             Route::post('admin/ajax/role/destroy/{id}', 'Admin\RoleController@ajaxDestroy')->name('admin-ajax-role-destroy');
@@ -115,6 +149,10 @@ Route::group(['middleware' => 'app'], function () {
             Route::post('admin/ajax/authorization-role/destroy/{id}', 'Admin\AuthorizationRoleController@ajaxDestroy')->name('admin-ajax-authorization-role-destroy');
         });
     });
+    
+    // page
+    Route::get('{slug}', 'Web\Page\PageController@getShow')->name('web-page-show');
+    Route::get('{type}/{slug}', 'Web\Page\PageController@getShow')->name('web-page-show-type');
 });
 
 // API V1
@@ -133,8 +171,5 @@ Route::group(['middleware' => 'api'], function () {
 });
 
 Route::get('dev', function () {
-    foreach (Route::getRoutes() as $value) {
-        var_dump($value);
-        return;
-    }
+    
 })->name('dev');

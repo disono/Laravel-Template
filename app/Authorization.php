@@ -121,7 +121,7 @@ class Authorization extends Model
         }
 
         $store['created_at'] = sql_date();
-        return (bool)self::insertGetId($store);
+        return (int)self::insertGetId($store);
     }
     
     /**

@@ -26,7 +26,7 @@ class RoleUpdate extends Request
         return [
             'id' => 'required|integer|exists:roles,id',
             'name' => 'required|max:100',
-            'slug' => 'required|max:100|alpha_dash',
+            'slug' => 'required|max:100|alpha_dash|unique:roles,slug,' . $this->get('id'),
             'description' => 'max:500'
         ];
     }

@@ -22,6 +22,15 @@ body {
     border: solid 3px #337AB7;
 }
 
+.btn {
+    border-radius: 0 !important;
+    padding: 5px 16px !important;
+}
+
+.dropdown-menu {
+    border-radius: 0 !important;
+}
+
 /* Toggle Styles */
 #wrapper {
     padding-left: 0;

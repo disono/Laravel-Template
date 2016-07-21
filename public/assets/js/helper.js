@@ -366,6 +366,10 @@ var WBDate = (function () {
                 min: false,
                 max: false
             });
+        },
+        
+        timePicker: function () {
+            jQ('.time-picker').pickatime();
         }
     };
 }());

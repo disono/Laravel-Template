@@ -4,7 +4,7 @@ namespace App\Http\Requests\Admin;
 
 use App\Http\Requests\Request;
 
-class AuthorizationUpdate extends Request
+class AlbumUpload extends Request
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,10 +24,11 @@ class AuthorizationUpdate extends Request
     public function rules()
     {
         return [
-            'id' => 'required|integer|exists:authorizations,id',
-            'name' => 'required|max:100',
-            'identifier' => 'required|max:100|alpha_dash|unique:authorizations,identifier,' . $this->get('id'),
-            'description' => 'max:500'
+            'album_id' => 'required|integer|exists:image_albums,id',
+            'title' => 'required|max:100',
+            'description' => 'max:500',
+
+            'image' => 'image|max:' . config_file_size(),
         ];
     }
 }

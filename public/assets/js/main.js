@@ -12,10 +12,13 @@ jQ(document).ready(function () {
         }
     });
 
-    // data picker
+    // date picker
     WBDate.datePicker();
     WBDate.datePickerMin();
     WBDate.none();
+    
+    // time picker
+    WBDate.timePicker();
 
     // delete modal confimation box
     WBHelper.delAjax({

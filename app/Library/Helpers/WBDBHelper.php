@@ -67,6 +67,9 @@ class WBDBHelper
             $excludes .= $row->name . ',';
         }
 
+        $excludes = rtrim($excludes, ',');
+        $excludes = ltrim($excludes, ',');
+
         return $excludes;
     }
 }

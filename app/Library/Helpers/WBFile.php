@@ -64,7 +64,7 @@ class WBFile
                 if (isset($image_options['crop_width']) && isset($image_options['crop_height'])) {
                     $upload_file->crop((int)$image_options['crop_width'], (int)$image_options['crop_height']);
                 } else if (isset($image_options['crop_auto'])) {
-                    $height = $upload_file->height() * 0.75;
+                    $height = $upload_file->height() * 0.85;
                     $width = $height;
                     $upload_file->crop((int)$width, (int)$height);
                 }
@@ -119,9 +119,13 @@ class WBFile
             return \App\Image::insertGetId([
                 'user_id' => ((isset($image_options['user_id'])) ? $image_options['user_id'] : 0),
                 'source_id' => ((isset($image_options['source_id'])) ? $image_options['source_id'] : 0),
+                
                 'title' => ((isset($image_options['title'])) ? $image_options['title'] : null),
+                'description' => ((isset($image_options['description'])) ? $image_options['description'] : null),
+                
                 'filename' => $upload_filename,
                 'type' => ((isset($image_options['type'])) ? $image_options['type'] : null),
+                
                 'created_at' => sql_date()
             ]);
         }

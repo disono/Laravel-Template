@@ -16,7 +16,7 @@ class Image extends Model
      * @var array
      */
     protected $fillable = [
-        'user_id', 'title', 'filename', 'type'
+        'user_id', 'source_id', 'title', 'filename', 'type'
     ];
 
     private static $params;
@@ -42,6 +42,10 @@ class Image extends Model
 
         if (isset($params['type'])) {
             $query->where('type', $params['type']);
+        }
+
+        if (isset($params['source_id'])) {
+            $query->where('source_id', $params['source_id']);
         }
 
         if (isset($params['search'])) {
@@ -110,7 +114,7 @@ class Image extends Model
     {
         $store = [];
         $columns = [
-            'user_id', 'title', 'filename', 'type'
+            'user_id', 'source_id', 'title', 'filename', 'type'
         ];
         foreach ($inputs as $key => $value) {
             if (in_array($key, $columns)) {
@@ -118,7 +122,25 @@ class Image extends Model
             }
         }
         $store['created_at'] = sql_date();
-        return (bool)self::insertGetId($store);
+        return (int)self::insertGetId($store);
+    }
+
+    /**
+     * Make image default cover
+     * 
+     * @param $id
+     * @param $source_id
+     */
+    public static function defaultCover($id, $source_id)
+    {
+        // reset default cover
+        self::where('source_id', $source_id)->update([
+            'is_cover' => 0
+        ]);
+        
+        self::where('id', $id)->update([
+            'is_cover' => 1
+        ]);
     }
 
     /**
@@ -132,12 +154,37 @@ class Image extends Model
     {
         $image = self::find($id);
         if ($image) {
-            delete_file('private/img/' . $image->filename);
+            self::_deleteFile($image->filename);
         }
 
         return (bool)self::destroy($id);
     }
 
+    /**
+     * Delete source
+     *
+     * @param $source_id
+     * @param $type
+     */
+    public static function destroySource($source_id, $type) 
+    {
+        $imagse = self::where('source_id', $source_id)->where('type', $type)->get();
+        
+        foreach ($imagse as $row) {
+            self::remove($row->id);
+        }
+    }
+
+    /**
+     * Delete image
+     * 
+     * @param $file
+     */
+    private static function _deleteFile($file)
+    {
+        delete_file('private/img/' . $file);
+    }
+    
     /**
      * Add formatting on data
      *
@@ -161,7 +208,6 @@ class Image extends Model
             $query->full_name = ($user) ? $user->first_name . ' ' . $user->last_name : 'n/a';
         } else {
             foreach ($query as $row) {
-
                 // image path
                 $row->path = get_image($row->filename, $row->type);
 

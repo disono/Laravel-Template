@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateSlugExcludesTable extends Migration
+class CreateImageAlbumsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,9 +12,11 @@ class CreateSlugExcludesTable extends Migration
      */
     public function up()
     {
-        Schema::create('slug_excludes', function (Blueprint $table) {
+        Schema::create('image_albums', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name', 100)->unique();
+            $table->string('name', 100);
+            $table->string('slug', 100)->unique();
+            $table->text('description');
             $table->timestamps();
         });
     }
@@ -26,6 +28,6 @@ class CreateSlugExcludesTable extends Migration
      */
     public function down()
     {
-        Schema::drop('slug_excludes');
+        Schema::drop('image_albums');
     }
 }

@@ -20,6 +20,15 @@
     border: solid 3px #E5E5E5;
 }
 
+.btn {
+    border-radius: 0 !important;
+    padding: 5px 16px !important;
+}
+
+.dropdown-menu {
+    border-radius: 0 !important;
+}
+
 .clear-bar {
     width: 100%;
     height: 12px;

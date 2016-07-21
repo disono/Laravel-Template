@@ -7,6 +7,7 @@
 
 namespace App\Http\Controllers\Web\Page;
 
+use App\Page;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -22,5 +23,38 @@ class PageController extends Controller
     public function getHome()
     {
         return theme('page.home');
+    }
+
+    /**
+     * Show page
+     * 
+     * @param $function
+     * @param null $slug
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function getShow($function, $slug = null)
+    {
+        $template = 'page.show';
+        $page = null;
+        
+        if (!$slug) {
+            $page = Page::single($function, 'slug');
+        } else {
+            $page = Page::single($slug, 'slug');
+        }
+        
+        if (!$page) {
+            abort(404);
+        }
+        
+        // custom template
+        if ($page->template) {
+            $template = 'page.templates.' . $page->template;
+        }
+        
+        $content['title'] = app_title($page->name);
+        $content['page'] = $page;
+
+        return theme($template, $content);
     }
 }

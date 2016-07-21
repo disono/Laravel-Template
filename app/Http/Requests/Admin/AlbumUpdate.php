@@ -4,7 +4,7 @@ namespace App\Http\Requests\Admin;
 
 use App\Http\Requests\Request;
 
-class AuthorizationUpdate extends Request
+class AlbumUpdate extends Request
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,9 +24,9 @@ class AuthorizationUpdate extends Request
     public function rules()
     {
         return [
-            'id' => 'required|integer|exists:authorizations,id',
+            'id' => 'required|integer|exists:roles,id',
             'name' => 'required|max:100',
-            'identifier' => 'required|max:100|alpha_dash|unique:authorizations,identifier,' . $this->get('id'),
+            'slug' => 'required|max:100|alpha_dash|unique:image_albums,slug,' . $this->get('id'),
             'description' => 'max:500'
         ];
     }

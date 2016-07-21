@@ -339,6 +339,19 @@ if (!function_exists('sql_date')) {
     }
 }
 
+if (!function_exists('sql_time')) {
+    /**
+     * Sql time formatter
+     *
+     * @param null $date
+     * @return bool|string
+     */
+    function sql_time($date = null)
+    {
+        return App\Library\Helpers\WBDate::sqlTime($date);
+    }
+}
+
 if (!function_exists('human_date')) {
     /**
      * Human readable date and time

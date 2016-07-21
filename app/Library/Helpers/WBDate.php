@@ -25,6 +25,21 @@ class WBDate
     }
 
     /**
+     * Sql time formatter
+     *
+     * @param null $date
+     * @return bool|string
+     */
+    public static function sqlTime($date = null)
+    {
+        if ($date == null) {
+            return date('H:i:s', time());
+        } else {
+            return date('H:i:s', strtotime($date));
+        }
+    }
+
+    /**
      * Human readable date and time
      *
      * @param null $date

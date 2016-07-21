@@ -25,7 +25,7 @@ class RoleStore extends Request
     {
         return [
             'name' => 'required|max:100',
-            'slug' => 'required|max:100|alpha_dash',
+            'slug' => 'required|max:100|alpha_dash|unique:roles,slug',
             'description' => 'max:500'
         ];
     }
