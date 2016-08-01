@@ -16,15 +16,11 @@ class CreatePagesTable extends Migration
             $table->increments('id');
             $table->integer('page_category_id');
             $table->integer('user_id');
+
             $table->string('name', 100);
-            $table->string('slug', 100);
             $table->text('content')->nullable();
             $table->string('template', 100)->nullable();
-
-            $table->date('start_date')->nullable();
-            $table->time('start_time')->nullable();
-            $table->date('end_date')->nullable();
-            $table->time('end_time')->nullable();
+            $table->boolean('draft')->default(0);
 
             $table->timestamps();
         });

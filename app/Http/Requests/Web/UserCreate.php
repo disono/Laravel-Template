@@ -27,11 +27,14 @@ class UserCreate extends Request
             'first_name' => 'required|max:100',
             'last_name' => 'required|max:100',
             'phone' => 'required|numeric|digits_between:7,22',
-            'username' => 'required|max:32|alpha_dash|unique:users,username',
+            'username' => 'required|max:32|alpha_dash|unique:slugs,name',
             'email' => 'required|email|max:100|unique:users',
             'password' => 'required|password_complex',
             'role' => 'required|exists:roles,slug',
-            'email_confirmed' => 'integer'
+            'email_confirmed' => 'integer',
+            'birthday' => 'required|date|birthday:' . config_min_age(),
+
+            'image' => 'image|max:' . config_file_size(),
         ];
     }
 }

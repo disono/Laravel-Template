@@ -30,6 +30,9 @@ if (type == 'local') {
             '../bower/angular/angular.min.js'
         ], 'public/assets/js/vendor.js');
 
+        mix.copy('resources/assets/bower/loadcss/src/loadCSS.js', 'public/assets/js');
+        mix.copy('resources/assets/bower/loadcss/src/onloadCSS.js', 'public/assets/js');
+
         mix.less("app.less", 'public/assets/css/vendor.css');
 
         mix.styles([
@@ -74,6 +77,9 @@ if (type == 'local') {
             '../../../public/assets/js/main.js',
             '../../../public/assets/js/app.js'
         ], 'public/assets/js/vendor.js');
+
+        mix.copy('resources/assets/bower/loadcss/src/loadCSS.js', 'public/assets/js');
+        mix.copy('resources/assets/bower/loadcss/src/onloadCSS.js', 'public/assets/js');
 
         mix.less("app.less", 'public/assets/css/vendor.css');
 

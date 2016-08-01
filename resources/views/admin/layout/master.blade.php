@@ -19,45 +19,97 @@
 
     <title>{{ app_header('title') }} @yield('title')</title>
 
-    <link rel="stylesheet" href="{{ asset('assets/css/vendor.css') . url_ext() }}"/>
-    <link rel="stylesheet" href="{{ asset('assets/css/admin.css') . url_ext() }}"/>
+    {{-- CSS loader --}}
+    <script src="{{ asset('assets/js/loadCSS.js') . url_ext() }}"></script>
+    <script src="{{ asset('assets/js/onloadCSS.js') . url_ext() }}"></script>
+
+    {{-- load all CSS --}}
+    <script>
+        {{-- load the vendor CSS --}}
+        onloadCSS(loadCSS('{{ asset('assets/css/vendor.css') . url_ext() }}'), function () {
+            {{-- load the style for admin --}}
+            onloadCSS(loadCSS('{{ asset('assets/css/admin.css') . url_ext() }}'), function () {
+                document.querySelector('#WBMainApp').style.display = null;
+            });
+        });
+    </script>
+
+    {{-- if no javascript load the CSS normally --}}
+    <noscript>
+        <link rel="stylesheet" href="{{ asset('assets/css/vendor.css') . url_ext() }}"/>
+        <link rel="stylesheet" href="{{ asset('assets/css/admin.css') . url_ext() }}"/>
+    </noscript>
 </head>
 
 <body ng-app="WBApp">
-{{-- header menu --}}
-@include('admin.layout.header')
+{{-- main application content --}}
+<main id="WBMainApp" style="display: none;">
+    {{-- header menu --}}
+    @include('admin.layout.header')
 
-<div class="container-fluid">
-    <div id="wrapper">
-        {{-- side-bar --}}
-        @include('admin.sidebar.main')
+    <div class="container-fluid">
+        <div id="wrapper">
+            {{-- side-bar --}}
+            @include('admin.sidebar.main')
 
-        {{-- content --}}
-        <div id="page-content-wrapper">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-lg-12">
-                        @yield('content')
+            {{-- content --}}
+            <div id="page-content-wrapper">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            @yield('content')
+                        </div>
                     </div>
                 </div>
             </div>
+
+            {{-- fotter --}}
+            @include('admin.layout.footer')
         </div>
-
-        {{-- fotter --}}
-        @include('admin.layout.footer')
     </div>
-</div>
+</main>
 
-<script src="{{ asset('assets/js/vendor.js') . url_ext() }}"></script>
-<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places" type="application/javascript"></script>
+@yield('javascript')
 
 @if(env('APP_DEBUG'))
-    <script src="{{ asset('assets/js/helper.js') . url_ext() }}"></script>
-    <script src="{{ asset('assets/js/main.js') . url_ext() }}"></script>
-    <script src="{{ asset('assets/js/app.js') . url_ext() }}"></script>
-@endif
+    <script>
+        [
+            '{{asset("assets/js/vendor.js") . url_ext()}}',
+            '{{asset("assets/js/helper.js") . url_ext()}}',
+            '{{asset("assets/js/main.js") . url_ext()}}',
+            '{{asset("assets/js/app.js") . url_ext()}}',
+            '{{asset("assets/js/admin.js") . url_ext()}}',
 
-<script src="{{ asset('assets/js/admin.js') . url_ext() }}"></script>
-@yield('javascript')
+            'https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places'
+        ].forEach(function (src) {
+            var script = document.createElement('script');
+            script.src = src;
+            script.async = false;
+            document.head.appendChild(script);
+        });
+
+        if (typeof appScriptLoader == 'function') {
+            appScriptLoader();
+        }
+    </script>
+@else
+    <script>
+        [
+            '{{asset("assets/js/vendor.js") . url_ext()}}',
+            '{{asset("assets/js/admin.js") . url_ext()}}',
+
+            'https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places'
+        ].forEach(function (src) {
+            var script = document.createElement('script');
+            script.src = src;
+            script.async = false;
+            document.head.appendChild(script);
+        });
+
+        if (typeof appScriptLoader == 'function') {
+            appScriptLoader();
+        }
+    </script>
+@endif
 </body>
 </html>

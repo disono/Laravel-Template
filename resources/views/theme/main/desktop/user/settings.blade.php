@@ -32,7 +32,7 @@
                             <div class="row">
                                 <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
                                     <div class="form-group{{ $errors->has('image') ? ' has-error' : '' }}">
-                                        <label class="col-md-3 control-label">Upload Image</label>
+                                        <label class="col-md-3 control-label">Upload Image/Avatar</label>
 
                                         <div class="col-md-9">
                                             <input type="file" id="image" name="image" class="form-control">
@@ -111,14 +111,6 @@
                                             @endif
                                         </div>
                                     </div>
-
-                                    <div class="form-group">
-                                        <div class="col-md-9 col-md-offset-3">
-                                            <button type="submit" class="btn btn-primary">
-                                                <i class="fa fa-floppy-o"></i> Save Changes
-                                            </button>
-                                        </div>
-                                    </div>
                                 </div>
 
                                 <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
@@ -186,6 +178,14 @@
                                                     {{ $errors->first('about') }}
                                                 </span>
                                             @endif
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <div class="col-md-9 col-md-offset-3">
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fa fa-floppy-o"></i> Save Changes
+                                            </button>
                                         </div>
                                     </div>
                                 </div>

@@ -7,6 +7,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\AuthHistory;
 use App\Authorization;
 use Illuminate\Http\Request;
 use App\Http\Requests;
@@ -28,6 +29,27 @@ class AuthorizationController extends Controller
         $content['request'] = $request;
         
         return admin_view('authorization.index', $content);
+    }
+
+    /**
+     * Authentication history
+     *
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function getHistory(Request $request)
+    {
+        $options = [];
+
+        if ($request->get('user_id')) {
+            $options['user_id'] = $request->get('user_id');
+        }
+
+        $content['title'] = app_title('Authorization Histories');
+        $content['authorization_histories'] = AuthHistory::get($options);
+        $content['request'] = $request;
+
+        return admin_view('authorization.history', $content);
     }
     
     /**
@@ -94,10 +116,14 @@ class AuthorizationController extends Controller
      * @param $id
      * @return mixed
      */
-    public function ajaxDestroy($id)
+    public function destroy($id)
     {
         Authorization::remove($id);
 
-        return success_json_response('Successfully deleted authorization.');
+        if (request()->ajax()) {
+            return success_json_response('Successfully deleted authorization.');
+        }
+
+        return redirect()->back();
     }
 }

@@ -88,10 +88,14 @@ class RoleController extends Controller
      * @param $id
      * @return mixed
      */
-    public function ajaxDestroy($id)
+    public function destroy($id)
     {
         Role::remove($id);
 
-        return success_json_response('Successfully deleted role.');
+        if (request()->ajax()) {
+            return success_json_response('Successfully deleted role.');
+        }
+
+        return redirect()->back();
     }
 }

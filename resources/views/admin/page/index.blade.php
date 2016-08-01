@@ -67,7 +67,7 @@
                                                 <li>
                                                     <a href="{{url('admin/page/edit/' . $row->id)}}">Edit</a>
                                                 </li>
-                                                <li><a href="{{url('admin/ajax/page/destroy/' . $row->id)}}"
+                                                <li><a href="{{url('admin/page/destroy/' . $row->id)}}"
                                                        class="delete-data">Delete</a></li>
                                             </ul>
                                         </div>

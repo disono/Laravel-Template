@@ -6,6 +6,7 @@
  */
 namespace App\Library\Helpers;
 
+use GrahamCampbell\HTMLMin\Facades\HTMLMin;
 use Jenssegers\Agent\Agent;
 
 class WBView
@@ -20,7 +21,12 @@ class WBView
     public static function theme($file = null, $data = [])
     {
         $current_them = self::current_theme();
-        return view($current_them . trim($file, '/'), $data);
+
+        if (env('APP_ENV') === 'local') {
+            return view($current_them . trim($file, '/'), $data);
+        }
+
+        return HTMLMin::blade(view($current_them . trim($file, '/'), $data));
     }
 
     /**
@@ -45,6 +51,10 @@ class WBView
      */
     public static function admin_view($file, $data)
     {
-        return view('admin.' . $file, $data);
+        if (env('APP_ENV') === 'local') {
+            return view('admin.' . $file, $data);
+        }
+
+        return HTMLMin::blade(view('admin.' . $file, $data));
     }
 }

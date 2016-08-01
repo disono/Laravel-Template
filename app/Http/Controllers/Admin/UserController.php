@@ -80,17 +80,35 @@ class UserController extends Controller
     public function store(Requests\Web\UserCreate $create)
     {
         $data = $create->all();
-        User::create([
+        $user = User::create([
             'first_name' => ucfirst($data['first_name']),
             'last_name' => ucfirst($data['last_name']),
-            'username' => $data['username'],
             'phone' => $data['phone'],
             'email' => $data['email'],
             'role' => $data['role'],
             'password' => bcrypt($data['password']),
+            'birthday' => sql_date($data['birthday'], true),
             'email_confirmed' => (isset($data['email_confirmed'])) ? 1 : 0,
-            'enabled' => 1
+            'enabled' => 1,
         ]);
+
+        // avatar
+        if ($create->file('image') && $user) {
+            // image
+            $upload_image = upload_image($create->file('image'), [
+                'user_id' => $user->id,
+                'source_id' => $user->id,
+                'title' => $user->first_name . ' ' . $user->last_name,
+                'type' => 'user',
+                'crop_auto' => true
+            ], $user->image_id);
+
+            // save new avatar
+            if ($upload_image) {
+                $user->image_id = $upload_image;
+                $user->save();
+            }
+        }
         
         return redirect('admin/users');
     }
@@ -161,9 +179,14 @@ class UserController extends Controller
      * @param $id
      * @return mixed
      */
-    public function ajaxDestroy($id)
+    public function destroy($id)
     {
         User::remove($id);
-        return success_json_response('Successfully deleted user.');
+
+        if (request()->ajax()) {
+            return success_json_response('Successfully deleted user.');
+        }
+
+        return redirect()->back();
     }
 }

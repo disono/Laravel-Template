@@ -14,6 +14,7 @@
 <p>Chart.js: http://www.chartjs.org</p>
 <p>Angular: https://angularjs.org</p>
 <p>Sweetalert: http://t4t5.github.io/sweetalert</p>
+<p>loadcss: https://github.com/filamentgroup/loadCSS</p>
 
 <h1>3rd party Libraries</h1>
 <p>Intervention: http://image.intervention.io</p>

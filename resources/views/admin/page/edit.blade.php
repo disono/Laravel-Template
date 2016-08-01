@@ -19,104 +19,89 @@
                         <input type="hidden" value="{{$page->id}}" name="id">
 
                         <div class="row">
-                            <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }} col-xs-12 col-md-6">
-                                <label for="name">Name*</label>
-                                <input type="text" class="form-control" name="name" id="name" value="{{$page->name}}"
-                                       placeholder="Name">
+                            <div class="col-xs-12 col-md-9">
+                                <div class="form-group{{ $errors->has('content') ? ' has-error' : '' }}">
+                                    <label for="content">Content*</label>
+                                    <textarea name="content" id="content" class="form-control" cols="30" rows="10"
+                                              placeholder="Description">{!! $page->content !!}</textarea>
 
-                                @if ($errors->has('name'))
-                                    <span class="help-block">{{ $errors->first('name') }}</span>
-                                @endif
+                                    @if ($errors->has('content'))
+                                        <span class="help-block">{{ $errors->first('content') }}</span>
+                                    @endif
+                                </div>
                             </div>
 
-                            <div class="form-group{{ $errors->has('page_category_id') ? ' has-error' : '' }} col-xs-12 col-md-6">
-                                <label for="page_category_id">Category*</label>
-                                <select name="page_category_id" id="page_category_id" class="form-control">
-                                    <option value="">Select Page Category</option>
-                                    @foreach($page_categories as $row)
-                                        <option value="{{$row->id}}" {{is_selected($page->page_category_id, $row->id)}}>{{$row->name}}</option>
-                                    @endforeach
-                                </select>
+                            <div class="col-xs-12 col-md-3">
+                                <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
+                                    <label for="name">Name*</label>
+                                    <input type="text" class="form-control" name="name" id="name"
+                                           value="{{$page->name}}"
+                                           placeholder="Name">
 
-                                @if ($errors->has('page_category_id'))
-                                    <span class="help-block">{{ $errors->first('page_category_id') }}</span>
-                                @endif
-                            </div>
+                                    @if ($errors->has('name'))
+                                        <span class="help-block">{{ $errors->first('name') }}</span>
+                                    @endif
+                                </div>
 
-                            <div class="form-group{{ $errors->has('slug') ? ' has-error' : '' }} col-xs-12 col-md-6">
-                                <label for="slug">Slug*</label>
-                                <input type="text" class="form-control" name="slug" id="slug"
-                                       value="{{$page->slug}}" placeholder="Slug">
+                                <div class="form-group{{ $errors->has('page_category_id') ? ' has-error' : '' }}">
+                                    <label for="page_category_id">Category*</label>
+                                    <select name="page_category_id" id="page_category_id" class="form-control">
+                                        <option value="">Select Page Category</option>
+                                        @foreach($page_categories as $row)
+                                            <option value="{{$row->id}}" {{is_selected($page->page_category_id, $row->id)}}>{{$row->name}}</option>
+                                        @endforeach
+                                    </select>
 
-                                @if ($errors->has('slug'))
-                                    <span class="help-block">{{ $errors->first('slug') }}</span>
-                                @endif
-                            </div>
+                                    @if ($errors->has('page_category_id'))
+                                        <span class="help-block">{{ $errors->first('page_category_id') }}</span>
+                                    @endif
+                                </div>
 
-                            <div class="form-group{{ $errors->has('image') ? ' has-error' : '' }} col-xs-12 col-md-6">
-                                <label for="image">Cover(Optional)</label>
-                                <input type="file" class="form-control" name="image" id="image">
+                                <div class="form-group{{ $errors->has('slug') ? ' has-error' : '' }}">
+                                    <label for="slug">Slug*</label>
+                                    <input type="text" class="form-control" name="slug" id="slug"
+                                           value="{{$page->slug}}" placeholder="Slug">
 
-                                @if ($errors->has('image'))
-                                    <span class="help-block">{{ $errors->first('image') }}</span>
-                                @endif
-                            </div>
-                        </div>
+                                    @if ($errors->has('slug'))
+                                        <span class="help-block">{{ $errors->first('slug') }}</span>
+                                    @endif
+                                </div>
 
-                        <div class="form-group{{ $errors->has('content') ? ' has-error' : '' }}">
-                            <label for="content">Content*</label>
-                            <textarea name="content" id="content" class="form-control" cols="30" rows="10"
-                                      placeholder="Description">{!! $page->content !!}</textarea>
+                                <div class="form-group{{ $errors->has('image') ? ' has-error' : '' }}">
+                                    <label for="image">Cover(Optional)</label>
+                                    <input type="file" class="form-control" name="image" id="image">
 
-                            @if ($errors->has('content'))
-                                <span class="help-block">{{ $errors->first('content') }}</span>
-                            @endif
-                        </div>
+                                    @if ($errors->has('image'))
+                                        <span class="help-block">{{ $errors->first('image') }}</span>
+                                    @endif
+                                </div>
 
-                        <h4 class="page-header">Optional</h4>
-                        <div class="row">
-                            <div class="form-group{{ $errors->has('start_date') ? ' has-error' : '' }} col-xs-12 col-md-6">
-                                <label for="start_date">Start Date</label>
-                                <input type="text" class="form-control date-picker-min" name="start_date"
-                                       value="{{$page->formatted_start_date}}">
+                                <div class="form-group{{ $errors->has('template') ? ' has-error' : '' }}">
+                                    <label for="template">Template(Optional)</label>
+                                    <input type="text" class="form-control" name="template" id="template"
+                                           placeholder="Template filename" value="{{$page->template}}">
 
-                                @if ($errors->has('start_date'))
-                                    <span class="help-block">{{ $errors->first('start_date') }}</span>
-                                @endif
-                            </div>
+                                    @if ($errors->has('template'))
+                                        <span class="help-block">{{ $errors->first('template') }}</span>
+                                    @endif
+                                </div>
 
-                            <div class="form-group{{ $errors->has('start_time') ? ' has-error' : '' }} col-xs-12 col-md-6">
-                                <label for="start_time">Start Time</label>
-                                <input type="text" class="form-control time-picker" name="start_time"
-                                       value="{{$page->formatted_start_time}}">
+                                <div class="form-group {{ $errors->has('draft') ? ' has-error' : '' }}">
+                                    <div class="checkbox">
+                                        <input type="checkbox" id="draft" name="draft" value="1" {{($page->draft) ? 'checked' : null}}>
+                                        <label for="draft">
+                                            Save as draft
+                                        </label>
+                                    </div>
 
-                                @if ($errors->has('start_time'))
-                                    <span class="help-block">{{ $errors->first('start_time') }}</span>
-                                @endif
-                            </div>
+                                    @if ($errors->has('draft'))
+                                        <span class="help-block">{{ $errors->first('draft') }}</span>
+                                    @endif
+                                </div>
 
-                            <div class="form-group{{ $errors->has('end_date') ? ' has-error' : '' }} col-xs-12 col-md-6">
-                                <label for="end_date">End Date</label>
-                                <input type="text" class="form-control date-picker-min" name="end_date"
-                                       value="{{$page->formatted_end_date}}">
-
-                                @if ($errors->has('end_date'))
-                                    <span class="help-block">{{ $errors->first('end_date') }}</span>
-                                @endif
-                            </div>
-
-                            <div class="form-group{{ $errors->has('end_time') ? ' has-error' : '' }} col-xs-12 col-md-6">
-                                <label for="end_time">End Time</label>
-                                <input type="text" class="form-control time-picker" name="end_time"
-                                       value="{{$page->formatted_end_time}}">
-
-                                @if ($errors->has('end_time'))
-                                    <span class="help-block">{{ $errors->first('end_time') }}</span>
-                                @endif
+                                <button type="submit" class="btn btn-primary">Update</button>
                             </div>
                         </div>
-
-                        <button type="submit" class="btn btn-primary">Update</button>
                     </form>
                 </div>
             </div>
@@ -125,6 +110,17 @@
 @endsection
 
 @section('javascript')
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/4.3.13/tinymce.min.js"></script>
-    <script src="{{asset('assets/js/admin-page.js') . url_ext()}}"></script>
+    <script>
+        function appScriptLoader() {
+            [
+                'https://cdnjs.cloudflare.com/ajax/libs/tinymce/4.3.13/tinymce.min.js',
+                '{{asset('assets/js/tiny-mce-init.js') . url_ext()}}'
+            ].forEach(function (src) {
+                var script = document.createElement('script');
+                script.src = src;
+                script.async = false;
+                document.head.appendChild(script);
+            });
+        }
+    </script>
 @endsection

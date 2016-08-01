@@ -117,4 +117,32 @@ class WBHttp
 
         return null;
     }
+
+    /**
+     * IP Address
+     *
+     * @return mixed
+     */
+    public static function ip()
+    {
+        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+            $ip = $_SERVER['HTTP_CLIENT_IP'];
+        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        } else {
+            $ip = $_SERVER['REMOTE_ADDR'];
+        }
+
+        return $ip;
+    }
+
+    /**
+     * Get user agent
+     *
+     * @return null
+     */
+    public static function userAgent()
+    {
+        return (isset($_SERVER['HTTP_USER_AGENT'])) ? $_SERVER['HTTP_USER_AGENT'] : null;
+    }
 }

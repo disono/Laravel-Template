@@ -63,6 +63,10 @@ class AuthorizationRoleController extends Controller
     {
         AuthorizationRole::remove($id);
 
-        return success_json_response('Successfully deleted authorization-role.');
+        if (request()->ajax()) {
+            return success_json_response('Successfully deleted authorization-role.');
+        }
+
+        return redirect()->back();
     }
 }

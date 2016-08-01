@@ -12,21 +12,21 @@ class PageCategorySeeder extends Seeder
     public function run()
     {
         $slugs = [
-            'event',
             'blog',
             'page'
         ];
 
         foreach ($slugs as $q) {
-            $check = DB::table('page_categories')->where('slug', $q);
-
-            if (!$check->count()) {
-                DB::table('page_categories')->insert([
-                    'name' => ucfirst($q),
-                    'slug' => $q,
-                    'created_at' => sql_date()
-                ]);
-            }
+            $id = DB::table('page_categories')->insertGetId([
+                'name' => ucfirst($q),
+                'created_at' => sql_date()
+            ]);
+            DB::table('slugs')->insertGetId([
+                'source_id' => $id,
+                'source_type' => 'page_category',
+                'name' => str_random(),
+                'created_at' => sql_date()
+            ]);
         }
     }
 }

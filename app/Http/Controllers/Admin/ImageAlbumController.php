@@ -1,4 +1,9 @@
 <?php
+/**
+ * Author: Archie, Disono (webmonsph@gmail.com)
+ * Website: http://www.webmons.com
+ * License: Apache 2.0
+ */
 
 namespace App\Http\Controllers\Admin;
 
@@ -43,9 +48,9 @@ class ImageAlbumController extends Controller
      */
     public function store(Requests\Admin\AlbumStore $request)
     {
-        ImageAlbum::store($request->all());
+        $id = ImageAlbum::store($request->all());
 
-        return redirect('admin/albums');
+        return redirect('admin/album/upload/create/' . $id);
     }
 
     /**

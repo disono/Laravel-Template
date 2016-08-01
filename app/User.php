@@ -7,6 +7,7 @@
 namespace App;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Support\Facades\DB;
 
 class User extends Authenticatable
 {
@@ -40,6 +41,11 @@ class User extends Authenticatable
     public static function get($params = [])
     {
         $select[] = 'users.*';
+
+        $select[] = DB::raw('CONCAT(first_name, " ", last_name) as full_name');
+
+        $select[] = DB::raw('(' . self::_username() . ') as username');
+
         $query = self::select($select);
 
         if (isset($params['id'])) {
@@ -52,12 +58,11 @@ class User extends Authenticatable
 
         if (isset($params['search'])) {
             self::$params = $params;
-            $query->Where(function ($query) {
-                $query->where('first_name', 'LIKE', '%' . self::$params['search'] . '%')
-                    ->orWhere('last_name', 'LIKE', '%' . self::$params['search'] . '%')
-                    ->orWhere('email', 'LIKE', '%' . self::$params['search'] . '%')
-                    ->orWhere('username', 'LIKE', '%' . self::$params['search'] . '%');
-            });
+            $query->having('first_name', 'LIKE', '%' . self::$params['search'] . '%')
+                ->orHaving('last_name', 'LIKE', '%' . self::$params['search'] . '%')
+                ->orHaving('email', 'LIKE', '%' . self::$params['search'] . '%')
+                ->orHaving('username', 'LIKE', '%' . self::$params['search'] . '%')
+                ->orHaving(DB::raw('CONCAT(first_name, " ", last_name)'), 'LIKE', '%' . self::$params['search'] . '%');
         }
 
         if (isset($params['country_id'])) {
@@ -85,6 +90,16 @@ class User extends Authenticatable
                 return self::_format($query, $params);
             }
         }
+    }
+
+    /**
+     * Username query string
+     *
+     * @return string
+     */
+    private static function _username()
+    {
+        return 'SELECT name FROM slugs WHERE source_id = users.id AND source_type = "user"';
     }
 
     /**
@@ -135,6 +150,7 @@ class User extends Authenticatable
                 if (!in_array($key, $columns)) {
                     return false;
                 }
+
                 if (!$i) {
                     $query = self::where($key, $value);
                 } else {
@@ -181,6 +197,20 @@ class User extends Authenticatable
                     if ($value) {
                         $update[$key] = sql_date($value, true);
                     }
+                } else if ($key === 'username') {
+                    if ($value) {
+                        $slug = Slug::get([
+                            'source_id' => $id,
+                            'source_type' => 'user',
+                            'single' => true
+                        ]);
+
+                        if ($slug) {
+                            Slug::edit($slug->id, [
+                                'name' => $value
+                            ]);
+                        }
+                    }
                 } else {
                     $update[$key] = clean(($key === 'email') ? $value : ucfirst($value));
                 }
@@ -199,6 +229,9 @@ class User extends Authenticatable
      */
     public static function remove($id)
     {
+        // delete all related images to user
+        Image::destroySource($id, 'user');
+
         return (bool)self::destroy($id);
     }
 
@@ -219,9 +252,6 @@ class User extends Authenticatable
             // country
             $query->country = Country::find($query->country_id);
             
-            // full name
-            $query->full_name = $query->first_name . ' ' . $query->last_name;
-            
             // birthday
             $query->birthday = date('M d, Y', strtotime($query->birthday));
             
@@ -231,9 +261,6 @@ class User extends Authenticatable
             foreach ($query as $row) {
                 // country
                 $row->country = Country::find($row->country_id);
-
-                // full name
-                $row->full_name = $row->first_name . ' ' . $row->last_name;
 
                 // birthday
                 $row->birthday = date('M d, Y', strtotime($row->birthday));

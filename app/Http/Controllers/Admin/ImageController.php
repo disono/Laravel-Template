@@ -36,9 +36,14 @@ class ImageController extends Controller
      * @param $id
      * @return mixed
      */
-    public function ajaxDestroy($id)
+    public function destroy($id)
     {
         Image::remove($id);
-        return success_json_response('Successfully deleted image.');
+
+        if (request()->ajax()) {
+            return success_json_response('Successfully deleted image.');
+        }
+
+        return redirect()->back();
     }
 }

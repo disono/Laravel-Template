@@ -22,7 +22,15 @@
 
 .btn {
     border-radius: 0 !important;
-    padding: 5px 16px !important;
+}
+
+.btn-primary {
+    background: #0275D8 !important;
+    border: none !important;
+}
+
+.btn-primary:hover {
+    background: #025AA5 !important;
 }
 
 .dropdown-menu {

@@ -102,6 +102,30 @@ if (!function_exists('download_image')) {
     }
 }
 
+if (!function_exists('get_ip_address')) {
+    /**
+     * Get user IP Address
+     *
+     * @return mixed
+     */
+    function get_ip_address()
+    {
+        return App\Library\Helpers\WBHttp::ip();
+    }
+}
+
+if (!function_exists('get_user_agent')) {
+    /**
+     * Get user user agent
+     *
+     * @return mixed
+     */
+    function get_user_agent()
+    {
+        return App\Library\Helpers\WBHttp::userAgent();
+    }
+}
+
 /*
  * --------------------------------------------------------------------------
  * WBFile method

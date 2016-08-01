@@ -44,7 +44,7 @@
                                                     <a href="{{url('admin/authorization/edit/' . $row->id)}}">Edit</a>
                                                 </li>
                                                 <li>
-                                                    <a href="{{url('admin/ajax/authorization/destroy/' . $row->id)}}"
+                                                    <a href="{{url('admin/authorization/destroy/' . $row->id)}}"
                                                        class="delete-data">Delete</a></li>
                                             </ul>
                                         </div>

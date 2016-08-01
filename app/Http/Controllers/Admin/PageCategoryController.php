@@ -86,10 +86,14 @@ class PageCategoryController extends Controller
      * @param $id
      * @return mixed
      */
-    public function ajaxDestroy($id)
+    public function destroy($id)
     {
         PageCategory::remove($id);
 
-        return success_json_response('Successfully deleted page category.');
+        if (request()->ajax()) {
+            return success_json_response('Successfully deleted page category.');
+        }
+
+        return redirect()->back();
     }
 }

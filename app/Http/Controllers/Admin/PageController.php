@@ -49,6 +49,7 @@ class PageController extends Controller
         
         return admin_view('page.create', $content);
     }
+
     /**
      * Store new data
      *
@@ -83,6 +84,7 @@ class PageController extends Controller
 
         return admin_view('page.edit', $content);
     }
+
     /**
      * Update data
      *
@@ -104,10 +106,14 @@ class PageController extends Controller
      * @param $id
      * @return mixed
      */
-    public function ajaxDestroy($id)
+    public function destroy($id)
     {
         Page::remove($id);
 
-        return success_json_response('Successfully deleted page.');
+        if (request()->ajax()) {
+            return success_json_response('Successfully deleted page.');
+        }
+
+        return redirect()->back();
     }
 }

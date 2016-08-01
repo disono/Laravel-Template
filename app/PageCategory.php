@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class PageCategory extends Model
 {
@@ -12,7 +13,7 @@ class PageCategory extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'slug', 'description'
+        'name', 'description'
     ];
 
     private static $params;
@@ -26,22 +27,29 @@ class PageCategory extends Model
     public static function get($params = [])
     {
         $select[] = 'page_categories.*';
-        $query = self::select($select);
+
+        $select[] = DB::raw('slugs.name as slug');
+
+        $query = self::select($select)
+            ->join('slugs', function ($join) {
+                $join->on('page_categories.id', '=', 'slugs.source_id')
+                    ->where('slugs.source_type', '=', 'page_category');
+            });
 
         if (isset($params['id'])) {
-            $query->where('id', $params['id']);
+            $query->where('page_categories.id', $params['id']);
         }
 
         if (isset($params['slug'])) {
-            $query->where('slug', $params['slug']);
+            $query->where('slugs.name', $params['slug']);
         }
 
         if (isset($params['search'])) {
             self::$params = $params;
             $query->Where(function ($query) {
-                $query->where('name', 'LIKE', '%' . self::$params['search'] . '%')
-                    ->orWhere('slug', 'LIKE', '%' . self::$params['search'] . '%')
-                    ->orWhere('description', 'LIKE', '%' . self::$params['search'] . '%');
+                $query->where('page_categories.name', 'LIKE', '%' . self::$params['search'] . '%')
+                    ->orWhere('slugs.name', 'LIKE', '%' . self::$params['search'] . '%')
+                    ->orWhere('page_categories.description', 'LIKE', '%' . self::$params['search'] . '%');
             });
         }
 
@@ -59,6 +67,7 @@ class PageCategory extends Model
             }
         }
     }
+
     /**
      * Get single data
      *
@@ -77,6 +86,7 @@ class PageCategory extends Model
             $column => $id
         ]);
     }
+
     /**
      * Store new data
      *
@@ -92,13 +102,32 @@ class PageCategory extends Model
 
         foreach ($inputs as $key => $value) {
             if (in_array($key, $columns)) {
-                $store[$key] = $value;
+                if ($key != 'slug') {
+                    $store[$key] = $value;
+                }
             }
         }
 
         $store['created_at'] = sql_date();
-        return (int)self::insertGetId($store);
+        $id = (int)self::insertGetId($store);
+
+        // insert slug
+        if ($id && isset($inputs['slug'])) {
+            $slug = Slug::store([
+                'source_id' => $id,
+                'source_type' => 'page_category',
+                'name' => $inputs['slug']
+            ]);
+
+            // revert
+            if (!$slug) {
+                self::remove($id);
+            }
+        }
+
+        return $id;
     }
+
     /**
      * Delete data
      *
@@ -152,7 +181,26 @@ class PageCategory extends Model
 
         foreach ($inputs as $key => $value) {
             if (in_array($key, $columns)) {
-                $update[$key] = $value;
+                if ($key != 'slug') {
+                    $update[$key] = $value;
+                }
+            }
+        }
+
+        // update slug
+        if ($id && isset($inputs['slug'])) {
+            if ($inputs['slug']) {
+                $slug = Slug::get([
+                    'source_id' => $id,
+                    'source_type' => 'page_category',
+                    'single' => true
+                ]);
+
+                if ($slug) {
+                    Slug::edit($slug->id, [
+                        'name' => $inputs['slug']
+                    ]);
+                }
             }
         }
 

@@ -10,6 +10,7 @@ namespace App\Http\Controllers\Web\Authentication;
 
 use App\EmailVerification;
 use App\Events\EventSignUp;
+use App\Slug;
 use App\User;
 use Illuminate\Support\Facades\Auth;
 use Validator;
@@ -42,7 +43,7 @@ class RegisterController extends Controller
         return Validator::make($data, [
             'first_name' => 'required|max:100',
             'last_name' => 'required|max:100',
-            'username' => 'required|max:100|alpha_dash|unique:users,username',
+            'username' => 'required|max:100|alpha_dash|unique:users,username|unique:slugs,name|not_in:' . exclude_slug(),
             'email' => 'required|email|max:255|unique:users',
             'password' => 'required|min:6|confirmed',
         ]);
@@ -59,13 +60,18 @@ class RegisterController extends Controller
         $create = User::create([
             'first_name' => ucfirst($data['first_name']),
             'last_name' => ucfirst($data['last_name']),
-            'username' => $data['username'],
             'password' => bcrypt($data['password']),
             'role' => 'client',
             'enabled' => 1
         ]);
 
         if ($create) {
+            Slug::store([
+                'source_id' => $create->id,
+                'source_type' => 'user',
+                'name' => $data['username']
+            ]);
+
             // send email for email verification
             event(new EventSignUp([
                 'user' => $create

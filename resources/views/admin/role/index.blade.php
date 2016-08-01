@@ -48,7 +48,7 @@
                                                     <a href="{{url('admin/authorization-roles/' . $row->id)}}">Assign
                                                         Authorizations</a>
                                                 </li>
-                                                <li><a href="{{url('admin/ajax/role/destroy/' . $row->id)}}"
+                                                <li><a href="{{url('admin/role/destroy/' . $row->id)}}"
                                                        class="delete-data">Delete</a></li>
                                             </ul>
                                         </div>

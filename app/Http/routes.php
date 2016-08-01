@@ -71,6 +71,7 @@ Route::group(['middleware' => 'app'], function () {
         Route::get('admin/user/login/{id}', 'Admin\UserController@login')->name('admin-user-login');
         Route::get('admin/user/password/edit/{id}', 'Admin\UserController@passwordEdit')->name('admin-user-password-edit');
         Route::post('admin/user/password/update', 'Admin\UserController@passwordUpdate')->name('admin-user-password-update');
+        Route::post('admin/user/destroy/{id}', 'Admin\UserController@destroy')->name('admin-user-destroy');
 
         // settings
         Route::get('admin/settings', 'Admin\SettingsController@index')->name('admin-settings');
@@ -82,6 +83,7 @@ Route::group(['middleware' => 'app'], function () {
         Route::post('admin/page-category/store', 'Admin\PageCategoryController@store')->name('admin-page-category-store');
         Route::get('admin/page-category/edit/{id}', 'Admin\PageCategoryController@edit')->name('admin-page-category-edit');
         Route::post('admin/page-category/update', 'Admin\PageCategoryController@update')->name('admin-page-category-update');
+        Route::post('admin/page-category/destroy/{id}', 'Admin\PageCategoryController@destroy')->name('admin-page-category-destroy');
 
         // page
         Route::get('admin/pages', 'Admin\PageController@index')->name('admin-pages');
@@ -89,9 +91,19 @@ Route::group(['middleware' => 'app'], function () {
         Route::post('admin/page/store', 'Admin\PageController@store')->name('admin-page-store');
         Route::get('admin/page/edit/{id}', 'Admin\PageController@edit')->name('admin-page-edit');
         Route::post('admin/page/update', 'Admin\PageController@update')->name('admin-page-update');
+        Route::post('admin/page/destroy/{id}', 'Admin\PageController@destroy')->name('admin-page-destroy');
+
+        // event
+        Route::get('admin/events', 'Admin\EventController@index')->name('admin-events');
+        Route::get('admin/event/create', 'Admin\EventController@create')->name('admin-event-create');
+        Route::post('admin/event/store', 'Admin\EventController@store')->name('admin-event-store');
+        Route::get('admin/event/edit/{id}', 'Admin\EventController@edit')->name('admin-event-edit');
+        Route::post('admin/event/update', 'Admin\EventController@update')->name('admin-event-update');
+        Route::post('admin/event/destroy/{id}', 'Admin\EventController@destroy')->name('admin-event-destroy');
 
         // images
         Route::get('admin/images', 'Admin\ImageController@index')->name('admin-images');
+        Route::post('admin/image/destroy/{id}', 'Admin\ImageController@destroy')->name('admin-image-destroy');
 
         // image album
         Route::get('admin/albums', 'Admin\ImageAlbumController@index')->name('admin-albums');
@@ -99,6 +111,7 @@ Route::group(['middleware' => 'app'], function () {
         Route::post('admin/album/store', 'Admin\ImageAlbumController@store')->name('admin-album-store');
         Route::get('admin/album/edit/{id}', 'Admin\ImageAlbumController@edit')->name('admin-album-edit');
         Route::post('admin/album/update', 'Admin\ImageAlbumController@update')->name('admin-album-update');
+        Route::post('admin/album/destroy/{id}', 'Admin\ImageAlbumController@destroy')->name('admin-album-destroy');
 
         // image album (uploads)
         Route::get('admin/album/upload/create/{album_id}', 'Admin\ImageAlbumUploadController@create')->name('admin-album-upload-create');
@@ -106,10 +119,12 @@ Route::group(['middleware' => 'app'], function () {
 
         // authorization
         Route::get('admin/authorizations', 'Admin\AuthorizationController@index')->name('admin-authorizations');
+        Route::get('admin/authorization/histories', 'Admin\AuthorizationController@getHistory')->name('admin-authorization-history');
         Route::get('admin/authorization/create', 'Admin\AuthorizationController@create')->name('admin-authorization-create');
         Route::post('admin/authorization/store', 'Admin\AuthorizationController@store')->name('admin-authorization-store');
         Route::get('admin/authorization/edit/{id}', 'Admin\AuthorizationController@edit')->name('admin-authorization-edit');
         Route::post('admin/authorization/update', 'Admin\AuthorizationController@update')->name('admin-authorization-update');
+        Route::post('admin/authorization/destroy/{id}', 'Admin\AuthorizationController@destroy')->name('admin-authorization-destroy');
 
         // role
         Route::get('admin/roles', 'Admin\RoleController@index')->name('admin-roles');
@@ -117,36 +132,16 @@ Route::group(['middleware' => 'app'], function () {
         Route::post('admin/role/store', 'Admin\RoleController@store')->name('admin-role-store');
         Route::get('admin/role/edit/{id}', 'Admin\RoleController@edit')->name('admin-role-edit');
         Route::post('admin/role/update', 'Admin\RoleController@update')->name('admin-role-update');
+        Route::post('admin/role/destroy/{id}', 'Admin\RoleController@destroy')->name('admin-role-destroy');
 
         // authorization roles
         Route::get('admin/authorization-roles/{role_id}', 'Admin\AuthorizationRoleController@index')->name('admin-authorization-roles');
         Route::post('admin/authorization-role/store', 'Admin\AuthorizationRoleController@store')->name('admin-authorization-roles-store');
+        Route::post('admin/authorization-role/destroy/{id}', 'Admin\AuthorizationRoleController@destroy')->name('admin-authorization-role-destroy');
         
         // ajax calls
         Route::group(['middleware' => 'ajax'], function () {
-            // users
-            Route::post('admin/ajax/user/destroy/{id}', 'Admin\UserController@ajaxDestroy')->name('admin-ajax-user-destroy');
 
-            // page category
-            Route::post('admin/ajax/page-category/destroy/{id}', 'Admin\PageCategoryController@ajaxDestroy')->name('admin-ajax-page-category-destroy');
-
-            // page
-            Route::post('admin/ajax/page/destroy/{id}', 'Admin\PageController@ajaxDestroy')->name('admin-ajax-page-destroy');
-
-            // images
-            Route::post('admin/ajax/image/destroy/{id}', 'Admin\ImageController@ajaxDestroy')->name('admin-ajax-image-destroy');
-
-            // image albums
-            Route::post('admin/ajax/album/destroy/{id}', 'Admin\ImageAlbumController@ajaxDestroy')->name('admin-ajax-album-destroy');
-
-            // roles
-            Route::post('admin/ajax/role/destroy/{id}', 'Admin\RoleController@ajaxDestroy')->name('admin-ajax-role-destroy');
-
-            // authorization
-            Route::post('admin/ajax/authorization/destroy/{id}', 'Admin\AuthorizationController@ajaxDestroy')->name('admin-ajax-authorization-destroy');
-
-            // authorization-role
-            Route::post('admin/ajax/authorization-role/destroy/{id}', 'Admin\AuthorizationRoleController@ajaxDestroy')->name('admin-ajax-authorization-role-destroy');
         });
     });
     

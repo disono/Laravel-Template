@@ -26,7 +26,7 @@ class PageCategoryUpdate extends Request
         return [
             'id' => 'required|integer|exists:page_categories,id',
             'name' => 'required|max:100',
-            'slug' => 'required|max:100|alpha_dash|not_in:' . exclude_slug() . '|unique:page_categories,slug,' . $this->input('id'),
+            'slug' => 'required|max:100|alpha_dash|not_in:' . exclude_slug() . '||unique:slugs,name,' . $this->input('id') . ',source_id',
             'description' => 'max:500'
         ];
     }

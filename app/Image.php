@@ -168,9 +168,9 @@ class Image extends Model
      */
     public static function destroySource($source_id, $type) 
     {
-        $imagse = self::where('source_id', $source_id)->where('type', $type)->get();
+        $image = self::where('source_id', $source_id)->where('type', $type)->get();
         
-        foreach ($imagse as $row) {
+        foreach ($image as $row) {
             self::remove($row->id);
         }
     }

@@ -3,7 +3,7 @@
  * Website: www.webmons.com
  * License: Apache 2.0
 --}}
-<!DOCTYPE html>
+        <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -11,36 +11,89 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="_token" content="{{csrf_token()}}">
 
-    <meta name="description" content="{{ app_header('description') }}">
-    <meta name="keywords" content="{{ app_header('keywords') }}">
-    <meta name="author" content="{{ app_header('author') }}">
+    {{-- SEO variables --}}
+    <meta name="description" content="{{ (isset($page_description)) ? $page_description : app_header('description') }}">
+    <meta name="keywords" content="{{ (isset($page_keywords)) ? $page_keywords : app_header('keywords') }}">
+    <meta name="author" content="{{ (isset($page_author)) ? $page_author : app_header('author') }}">
 
+    {{-- ICON --}}
     <link rel="icon" type="image/png" href="{{url('assets/img/favicon.png')}}"/>
 
     <title>{{ app_header('title') }} @yield('title')</title>
 
-    <link rel="stylesheet" href="{{ asset('assets/css/vendor.css') . url_ext() }}"/>
-    @if(env('APP_DEBUG'))
-        <link rel="stylesheet" href="{{ asset('assets/css/main.css') . url_ext() }}"/>
-    @endif
+    {{-- CSS loader --}}
+    <script src="{{ asset('assets/js/loadCSS.js') . url_ext() }}"></script>
+    <script src="{{ asset('assets/js/onloadCSS.js') . url_ext() }}"></script>
+
+    {{-- load all CSS --}}
+    <script>
+        {{-- load the vendor CSS --}}
+        onloadCSS(loadCSS('{{ asset('assets/css/vendor.css') . url_ext() }}'), function () {
+            {{-- load the style for app --}}
+            onloadCSS(loadCSS('{{ asset('assets/css/main.css') . url_ext() }}'), function () {
+                document.querySelector('#WBMainApp').style.display = null;
+            });
+        });
+    </script>
+
+    {{-- if no javascript load the CSS normally --}}
+    <noscript>
+        <link rel="stylesheet" href="{{ asset('assets/css/vendor.css') . url_ext() }}"/>
+        @if(env('APP_DEBUG'))
+            <link rel="stylesheet" href="{{ asset('assets/css/main.css') . url_ext() }}"/>
+        @endif
+    </noscript>
 </head>
 
 <body ng-app="WBApp">
-@include(current_theme() . 'layout.header')
+{{-- main application content --}}
+<main id="WBMainApp" style="display: none;">
+    @include(current_theme() . 'layout.header')
 
-@yield('content')
+    @yield('content')
 
-@include(current_theme() . 'layout.footer')
-
-<script src="{{ asset('assets/js/vendor.js') . url_ext() }}"></script>
-<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places" type="application/javascript"></script>
-
-@if(env('APP_DEBUG'))
-    <script src="{{ asset('assets/js/helper.js') . url_ext() }}"></script>
-    <script src="{{ asset('assets/js/main.js') . url_ext() }}"></script>
-    <script src="{{ asset('assets/js/app.js') . url_ext() }}"></script>
-@endif
+    @include(current_theme() . 'layout.footer')
+</main>
 
 @yield('javascript')
+
+@if(env('APP_DEBUG'))
+    <script>
+        [
+            '{{asset("assets/js/vendor.js") . url_ext()}}',
+            '{{asset("assets/js/helper.js") . url_ext()}}',
+            '{{asset("assets/js/main.js") . url_ext()}}',
+            '{{asset("assets/js/app.js") . url_ext()}}',
+
+            'https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places'
+        ].forEach(function (src) {
+            var script = document.createElement('script');
+            script.src = src;
+            script.async = false;
+            document.head.appendChild(script);
+        });
+
+        if (typeof appScriptLoader == 'function') {
+            appScriptLoader();
+        }
+    </script>
+@else
+    <script>
+        [
+            '{{asset("assets/js/vendor.js") . url_ext()}}',
+
+            'https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places'
+        ].forEach(function (src) {
+            var script = document.createElement('script');
+            script.src = src;
+            script.async = false;
+            document.head.appendChild(script);
+        });
+
+        if (typeof appScriptLoader == 'function') {
+            appScriptLoader();
+        }
+    </script>
+@endif
 </body>
 </html>

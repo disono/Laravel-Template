@@ -7,6 +7,8 @@
 
 namespace App\Http\Controllers\Web\Authentication;
 
+use Illuminate\Http\Request;
+use App\AuthHistory;
 use App\Http\Controllers\Controller;
 use Validator;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
@@ -42,5 +44,56 @@ class LoginController extends Controller
     public function __construct()
     {
         
+    }
+
+    /**
+     * Log the user out of the application.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getLogout()
+    {
+        try {
+            // logout history
+            AuthHistory::insert([
+                'user_id' => auth()->user()->id,
+                'ip' => get_ip_address(),
+                'platform' => get_user_agent(),
+                'type' => 'logout',
+                'created_at' => sql_date()
+            ]);
+        } catch (\Exception $e) {
+            error_logger('AuthHistory: ' . $e->getMessage());
+        }
+
+        return $this->logout();
+    }
+
+    /**
+     * Handle a login request to the application.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function postLogin(Request $request)
+    {
+        $data = $this->login($request);
+
+        try {
+            // login history
+            if (auth()->check()) {
+                AuthHistory::insert([
+                    'user_id' => auth()->user()->id,
+                    'ip' => get_ip_address(),
+                    'platform' => get_user_agent(),
+                    'type' => 'login',
+                    'created_at' => sql_date()
+                ]);
+            }
+        } catch (\Exception $e) {
+            error_logger('AuthHistory: ' . $e->getMessage());
+        }
+
+        return $data;
     }
 }

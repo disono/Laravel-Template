@@ -47,7 +47,7 @@
                                                 <li>
                                                     <a href="{{url('admin/album/upload/create/' . $row->id)}}">Upload Photos</a>
                                                 </li>
-                                                <li><a href="{{url('admin/ajax/album/destroy/' . $row->id)}}"
+                                                <li><a href="{{url('admin/album/destroy/' . $row->id)}}"
                                                        class="delete-data">Delete</a></li>
                                             </ul>
                                         </div>

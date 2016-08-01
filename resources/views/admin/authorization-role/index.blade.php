@@ -60,7 +60,7 @@
                                                 Action <span class="caret"></span>
                                             </button>
                                             <ul class="dropdown-menu">
-                                                <li><a href="{{url('admin/ajax/authorization-role/destroy/' . $row->id)}}"
+                                                <li><a href="{{url('admin/authorization-role/destroy/' . $row->id)}}"
                                                        class="delete-data">Delete</a></li>
                                             </ul>
                                         </div>

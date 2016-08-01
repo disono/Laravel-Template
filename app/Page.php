@@ -13,7 +13,7 @@ class Page extends Model
      * @var array
      */
     protected $fillable = [
-        'page_category_id', 'user_id', 'name', 'slug', 'content', 'template', 'start_date', 'start_time', 'end_date', 'end_time'
+        'page_category_id', 'user_id', 'name', 'slug', 'content', 'template', 'draft'
     ];
 
     private static $params;
@@ -28,13 +28,19 @@ class Page extends Model
     {
         $select[] = 'pages.*';
 
-        $select[] = DB::raw('page_categories.name as category_name, page_categories.description as category_description, page_categories.slug as category_slug');
+        $select[] = DB::raw('page_categories.name as category_name, page_categories.description as category_description, (' . self::_pageCategorySlug() . ') as category_slug');
+
+        $select[] = DB::raw('(' . self::_pageSlug() . ') as slug');
 
         $query = self::select($select)
             ->join('page_categories', 'pages.page_category_id', '=', 'page_categories.id');
 
         if (isset($params['id'])) {
             $query->where('pages.id', $params['id']);
+        }
+
+        if (isset($params['draft'])) {
+            $query->where('pages.draft', $params['draft']);
         }
 
         if (isset($params['user_id'])) {
@@ -46,7 +52,7 @@ class Page extends Model
         }
 
         if (isset($params['slug'])) {
-            $query->where('pages.slug', $params['slug']);
+            $query->having('slug', '=', $params['slug']);
         }
 
         if (isset($params['category_slug'])) {
@@ -55,11 +61,9 @@ class Page extends Model
 
         if (isset($params['search'])) {
             self::$params = $params;
-            $query->Where(function ($query) {
-                $query->where('pages.name', 'LIKE', '%' . self::$params['search'] . '%')
-                    ->orWhere('pages.slug', 'LIKE', '%' . self::$params['search'] . '%')
-                    ->orWhere('pages.content', 'LIKE', '%' . self::$params['search'] . '%');
-            });
+            $query->having('pages.name', 'LIKE', '%' . self::$params['search'] . '%')
+                ->orHaving('slug', 'LIKE', '%' . self::$params['search'] . '%')
+                ->orHaving('pages.content', 'LIKE', '%' . self::$params['search'] . '%');
         }
 
         if (isset($params['object'])) {
@@ -75,6 +79,26 @@ class Page extends Model
                 return self::_format($query, $params);
             }
         }
+    }
+
+    /**
+     * Page category slug
+     *
+     * @return string
+     */
+    private static function _pageCategorySlug()
+    {
+        return 'SELECT name FROM slugs WHERE slugs.source_id = page_categories.id AND slugs.source_type = "page_category"';
+    }
+
+    /**
+     * Page slug
+     *
+     * @return string
+     */
+    private static function _pageSlug()
+    {
+        return 'SELECT name FROM slugs WHERE slugs.source_id = pages.id AND slugs.source_type = "page"';
     }
 
     /**
@@ -106,37 +130,38 @@ class Page extends Model
     {
         $store = [];
         $columns = [
-            'page_category_id', 'user_id', 'name', 'slug', 'content', 'template', 'start_date', 'start_time', 'end_date', 'end_time'
+            'page_category_id', 'user_id', 'name', 'slug', 'content', 'template', 'draft'
         ];
 
         foreach ($inputs as $key => $value) {
             if (in_array($key, $columns)) {
-                $store = self::_values($store, $value, $key);
+                if ($key != 'slug') {
+                    $store = self::_values($store, $value, $key);
+                }
             }
         }
 
         $store['created_at'] = sql_date();
         $id = (int)self::insertGetId($store);
+
+        // insert slug
+        if ($id && isset($inputs['slug'])) {
+            $slug = Slug::store([
+                'source_id' => $id,
+                'source_type' => 'page',
+                'name' => $inputs['slug']
+            ]);
+
+            // revert
+            if (!$slug) {
+                self::remove($id);
+            }
+        }
         
         // upload cover
         self::_uploadImage($id, $inputs);
         
         return $id;
-    }
-    
-    /**
-     * Delete data
-     *
-     * @param $id
-     * @return bool
-     * @throws \Exception
-     */
-    public static function remove($id)
-    {
-        // delete all related images to page
-        Image::destroySource($id, 'page');
-
-        return (bool)self::destroy($id);
     }
 
     /**
@@ -152,7 +177,7 @@ class Page extends Model
         $update = [];
         $query = null;
         $columns = [
-            'page_category_id', 'name', 'slug', 'content', 'template', 'start_date', 'start_time', 'end_date', 'end_time'
+            'page_category_id', 'name', 'slug', 'content', 'template', 'draft'
         ];
 
         if (!$column_name) {
@@ -180,7 +205,26 @@ class Page extends Model
 
         foreach ($inputs as $key => $value) {
             if (in_array($key, $columns)) {
-                $update = self::_values($update, $value, $key);
+                if ($key != 'slug') {
+                    $update = self::_values($update, $value, $key);
+                }
+            }
+        }
+
+        // update slug
+        if ($id && isset($inputs['slug'])) {
+            if ($inputs['slug']) {
+                $slug = Slug::get([
+                    'source_id' => $id,
+                    'source_type' => 'page',
+                    'single' => true
+                ]);
+
+                if ($slug) {
+                    Slug::edit($slug->id, [
+                        'name' => $inputs['slug']
+                    ]);
+                }
             }
         }
 
@@ -188,6 +232,21 @@ class Page extends Model
         self::_uploadImage($id, $inputs);
 
         return (bool)$query->update($update);
+    }
+    
+    /**
+     * Delete data
+     *
+     * @param $id
+     * @return bool
+     * @throws \Exception
+     */
+    public static function remove($id)
+    {
+        // delete all related images to page
+        Image::destroySource($id, 'page');
+
+        return (bool)self::destroy($id);
     }
 
     /**
@@ -201,17 +260,7 @@ class Page extends Model
     private static function _values($values, $value, $key) {
         if (!is_numeric($value)) {
             if ($value) {
-                if ($key == 'start_date') {
-                    $values[$key] = sql_date($value, true);
-                } else if ($key == 'start_time') {
-                    $values[$key] = sql_time($value);
-                } else if ($key == 'end_date') {
-                    $values[$key] = sql_date($value, true);
-                } else if ($key == 'end_time') {
-                    $values[$key] = sql_time($value);
-                } else {
-                    $values[$key] = $value;
-                }
+                $values[$key] = $value;
             }
         } else {
             $values[$key] = $value;
@@ -282,12 +331,6 @@ class Page extends Model
 
             // default image
             $query->cover = get_image((count($query->images)) ? $query->images[0]->filename : null);
-
-            // format
-            $query->formatted_start_date = ($query->start_date) ? date('F d, Y', strtotime($query->start_date)) : null;
-            $query->formatted_end_date = ($query->end_date) ? date('F d, Y', strtotime($query->end_date)) : null;
-            $query->formatted_start_time = ($query->start_time) ? date('h:i A', strtotime($query->start_time)) : null;
-            $query->formatted_end_time = ($query->end_time) ? date('h:i A', strtotime($query->end_time)) : null;
         } else {
             foreach ($query as $row) {
                 // images
@@ -298,12 +341,6 @@ class Page extends Model
 
                 // default image
                 $row->cover = get_image((count($row->images)) ? $row->images[0]->filename : null);
-                
-                // format
-                $row->formatted_start_date = ($row->start_date) ? date('F d, Y', strtotime($row->start_date)) : null;
-                $row->formatted_end_date = ($row->end_date) ? date('F d, Y', strtotime($row->end_date)) : null;
-                $row->formatted_start_time = ($row->start_time) ? date('h:i A', strtotime($row->start_time)) : null;
-                $row->formatted_end_time = ($row->end_time) ? date('h:i A', strtotime($row->end_time)) : null;
             }
         }
 

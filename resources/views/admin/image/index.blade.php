@@ -44,7 +44,7 @@
                                                 Options <span class="caret"></span>
                                             </button>
                                             <ul class="dropdown-menu">
-                                                <li><a href="{{url('admin/ajax/image/destroy/' . $row->id)}}"
+                                                <li><a href="{{url('admin/image/destroy/' . $row->id)}}"
                                                        class="delete-data">Delete</a></li>
                                             </ul>
                                         </div>

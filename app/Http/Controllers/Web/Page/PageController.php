@@ -55,6 +55,9 @@ class PageController extends Controller
         $content['title'] = app_title($page->name);
         $content['page'] = $page;
 
+        // SEO
+        $content['page_description'] = str_limit(strip_tags($page->description), 155);
+
         return theme($template, $content);
     }
 }

@@ -26,16 +26,13 @@ class PageUpdate extends Request
         return [
             'id' => 'required|integer|exists:pages,id',
             'name' => 'required|max:100',
-            'slug' => 'required|max:100|alpha_dash|not_in:' . exclude_slug() . '|unique:pages,slug,' . $this->get('id'),
+            'slug' => 'required|max:100|alpha_dash|not_in:' . exclude_slug() . '|unique:slugs,name,' . $this->get('id') . ',source_id,source_type,page',
             'content' => 'max:50000',
 
             'page_category_id' => 'required|integer|exists:page_categories,id',
             'template' => 'max:100',
 
-            'start_date' => 'date',
-            'start_time' => 'date_format:h:i A',
-            'end_date' => 'date',
-            'end_time' => 'date_format:h:i A',
+            'draft' => 'integer',
 
             'image' => 'image|max:' . config_file_size(),
         ];
