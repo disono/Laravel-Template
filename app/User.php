@@ -56,6 +56,10 @@ class User extends Authenticatable
             $query->where('username', $params['username']);
         }
 
+        if (isset($params['email'])) {
+            $query->where('email', $params['email']);
+        }
+
         if (isset($params['search'])) {
             self::$params = $params;
             $query->having('first_name', 'LIKE', '%' . self::$params['search'] . '%')
@@ -254,6 +258,9 @@ class User extends Authenticatable
             
             // birthday
             $query->birthday = date('M d, Y', strtotime($query->birthday));
+
+            // age
+            $query->age = count_years($query->birthday);
             
             // avatar image
             $query->avatar = get_image($query->image_id, 'avatar');
@@ -264,6 +271,9 @@ class User extends Authenticatable
 
                 // birthday
                 $row->birthday = date('M d, Y', strtotime($row->birthday));
+
+                // age
+                $row->age = count_years($row->birthday);
                 
                 // avatar image
                 $row->avatar = get_image($row->image_id, 'avatar');
