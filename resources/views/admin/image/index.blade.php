@@ -31,8 +31,9 @@
                                 <tr>
                                     <td>{{$row->id}}</td>
                                     <th>
-                                        <img src="{{$row->path}}" alt="{{$row->title}}"
-                                             style="max-width: 50px !important;">
+                                        <a href="{{$row->path}}" data-toggle="light-box" data-title="{{$row->title}}">
+                                            <img src="{{$row->path}}" alt="{{$row->title}}"
+                                                 style="max-width: 50px !important;"></a>
                                     </th>
                                     <td>{{$row->full_name}}</td>
                                     <td>{{$row->title}}</td>

@@ -3,7 +3,7 @@
  * Website: www.webmons.com
  * License: Apache 2.0
 --}}
-<ul class="nav nav-tabs">
+<ul class="nav nav-pills">
     <li class="{{active_url('user/settings')}}">
         <a role="presentation" href="{{url('user/settings')}}">
             <i class="fa fa-sliders" aria-hidden="true"></i> General</a>

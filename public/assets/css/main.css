@@ -14,7 +14,7 @@
 }
 
 .has-header {
-    margin-top: 64px;
+    margin-top: 68px;
 }
 
 .input-group-addon-lg {
@@ -48,4 +48,8 @@
     padding: 16px !important;
     border: 1px solid #F2F2F2;
     border-radius: 6px;
+}
+
+.modal-content {
+    border-radius: 0 !important;
 }

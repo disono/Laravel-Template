@@ -15,7 +15,8 @@
     <meta name="keywords" content="{{ app_header('keywords') }}">
     <meta name="author" content="{{ app_header('author') }}">
 
-    <link rel="icon" type="image/png" href="{{url('assets/img/favicon.png')}}"/>
+    {{-- ICON --}}
+    <link rel="icon" type="image/png" href="{{url('assets/img/placeholder/favicon.png')}}"/>
 
     <title>{{ app_header('title') }} @yield('title')</title>
 
@@ -23,13 +24,34 @@
     <script src="{{ asset('assets/js/loadCSS.js') . url_ext() }}"></script>
     <script src="{{ asset('assets/js/onloadCSS.js') . url_ext() }}"></script>
 
+    <style id="loaderStyles">
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            display: table
+        }
+
+        #loaderContent {
+            display: table-cell;
+            text-align: center;
+            vertical-align: middle;
+        }
+    </style>
+
     {{-- load all CSS --}}
     <script>
         {{-- load the vendor CSS --}}
         onloadCSS(loadCSS('{{ asset('assets/css/vendor.css') . url_ext() }}'), function () {
-            {{-- load the style for admin --}}
-            onloadCSS(loadCSS('{{ asset('assets/css/admin.css') . url_ext() }}'), function () {
-                document.querySelector('#WBMainApp').style.display = null;
+            {{-- load the style for app --}}
+            onloadCSS(loadCSS('{{ asset('assets/css/main.css') . url_ext() }}'), function () {
+                {{-- load the style for admin --}}
+                onloadCSS(loadCSS('{{ asset('assets/css/admin.css') . url_ext() }}'), function () {
+                    document.querySelector('#WBMainApp').style.display = null;
+                    jQ('#loaderContent').remove();
+                    jQ('#loaderStyles').remove();
+                });
             });
         });
     </script>
@@ -37,11 +59,19 @@
     {{-- if no javascript load the CSS normally --}}
     <noscript>
         <link rel="stylesheet" href="{{ asset('assets/css/vendor.css') . url_ext() }}"/>
+        @if(env('APP_DEBUG'))
+            <link rel="stylesheet" href="{{ asset('assets/css/main.css') . url_ext() }}"/>
+        @endif
         <link rel="stylesheet" href="{{ asset('assets/css/admin.css') . url_ext() }}"/>
     </noscript>
 </head>
 
 <body ng-app="WBApp">
+{{-- loader --}}
+<div id="loaderContent">
+    <img src="{{asset('assets/img/loaders/content-loader.svg')}}" alt="Loading...">
+</div>
+
 {{-- main application content --}}
 <main id="WBMainApp" style="display: none;">
     {{-- header menu --}}

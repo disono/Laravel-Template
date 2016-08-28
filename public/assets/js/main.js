@@ -20,9 +20,15 @@ jQ(document).ready(function () {
     // time picker
     WBDate.timePicker();
 
-    // delete modal confimation box
+    // delete modal confirmation box
     WBHelper.delAjax({
         selector: '.delete-data',
         reload: true
+    });
+
+    // light-box
+    jQ(document).delegate('*[data-toggle="light-box"]', 'click', function(event) {
+        event.preventDefault();
+        jQ(this).ekkoLightbox();
     });
 });

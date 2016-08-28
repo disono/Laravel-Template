@@ -19,7 +19,6 @@ is a starting blank template for Laravel Projects
 * **Ionicons:** [http://ionicons.com](http://ionicons.com)
 * **Jquery Form:** [http://jquery.malsup.com/form](http://jquery.malsup.com/form)
 * **MomentJS:** [http://momentjs.com](http://momentjs.com)
-* **Nanoscroller:** [https://jamesflorentino.github.io/nanoScrollerJS](https://jamesflorentino.github.io/nanoScrollerJS)
 * **Pickadate:** [http://amsul.ca/pickadate.js](http://amsul.ca/pickadate.js)
 * **Seiyria Bootstrap Slider:** [https://github.com/seiyria/bootstrap-slider](https://github.com/seiyria/bootstrap-slider)
 * **Toastr:** [https://github.com/CodeSeven/toastr](https://github.com/CodeSeven/toastr)
@@ -27,7 +26,8 @@ is a starting blank template for Laravel Projects
 * **Chart.js:** [http://www.chartjs.org](http://www.chartjs.org)
 * **Angular:** [https://angularjs.org](https://angularjs.org)
 * **Sweetalert:** [http://t4t5.github.io/sweetalert](http://t4t5.github.io/sweetalert)
-* **loadcss:** [https://github.com/filamentgroup/loadCSS](https://github.com/filamentgroup/loadCSS)
+* **loadCSS:** [https://github.com/filamentgroup/loadCSS](https://github.com/filamentgroup/loadCSS)
+* **Bootstrap 3 Lightbox:** [https://github.com/ashleydw/lightbox](https://github.com/ashleydw/lightbox)
 
 # How to install
 ```sh

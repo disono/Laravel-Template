@@ -1,39 +1,7 @@
 /* Move down content because we have a fixed nav-bar that is 50px tall */
 body {
     background: #F7F7F7;
-    padding-top: 50px;
-}
-
-/* Form Control */
-.form-control {
-    border: solid 3px #E5E5E5;
-    box-shadow: none;
-    -webkit-box-shadow: none;
-    border-radius: 0;
-    padding: 5px;
-}
-
-.form-control:focus {
-    box-shadow: none !important;
-    -webkit-box-shadow: none !important;
-    border: solid 3px #337AB7;
-}
-
-.btn {
-    border-radius: 0 !important;
-}
-
-.btn-primary {
-    background: #0275D8 !important;
-    border: none !important;
-}
-
-.btn-primary:hover {
-    background: #025AA5 !important;
-}
-
-.dropdown-menu {
-    border-radius: 0 !important;
+    padding-top: 52px;
 }
 
 /* Toggle Styles */
@@ -56,7 +24,6 @@ body {
     width: 0;
     height: 100%;
     margin-left: -250px;
-    overflow-y: auto;
     background: #2A3F54;
     -webkit-transition: all 0.5s ease;
     -moz-transition: all 0.5s ease;
@@ -265,7 +232,6 @@ body {
     -webkit-transition: all 1s ease;
     -moz-transition: all 1s ease;
     -o-transition: all 1s ease;
-    -ms-transition: all 1s ease;
     transition: all 1s ease;
 }
 

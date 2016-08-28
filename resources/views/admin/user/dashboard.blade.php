@@ -8,5 +8,9 @@
 @section('title', $title)
 
 @section('content')
-    <h1 class="page-header">Dashboard</h1>
+    <div class="container-fluid">
+        <div class="admin-container">
+            <h2 class="page-header">Dashboard</h2>
+        </div>
+    </div>
 @endsection
