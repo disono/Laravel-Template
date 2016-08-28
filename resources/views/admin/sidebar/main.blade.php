@@ -7,7 +7,8 @@
     <ul class="sidebar-nav">
         <li class="sidebar-brand">
             <a href="{{url('dashboard')}}">
-                <i class="fa fa-home" aria-hidden="true"></i> Dashboard
+                <img src="{{me()->avatar}}" alt="{{me()->last_name}}" style="height: 48px !important;"
+                     class="img-circle"> {{str_limit(me()->last_name, 12)}}
             </a>
         </li>
 

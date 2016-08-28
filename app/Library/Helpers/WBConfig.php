@@ -9,25 +9,6 @@ namespace App\Library\Helpers;
 class WBConfig
 {
     /**
-     * Get application settings
-     *
-     * @param $key
-     * @return mixed
-     */
-    public static function settings($key)
-    {
-        $settings = \App\Setting::where('key', $key);
-
-        if ($settings->count()) {
-            return $settings->first();
-        }
-
-        return (object)[
-            'name' => null, 'key' => null, 'value' => null, 'created_at' => null
-        ];
-    }
-    
-    /**
      * HTML header options
      *
      * @params string $get_header
@@ -48,6 +29,25 @@ class WBConfig
         } else {
             return null;
         }
+    }
+
+    /**
+     * Get application settings
+     *
+     * @param $key
+     * @return mixed
+     */
+    public static function settings($key)
+    {
+        $settings = \App\Models\Setting::where('key', $key);
+
+        if ($settings->count()) {
+            return $settings->first();
+        }
+
+        return (object)[
+            'name' => null, 'key' => null, 'value' => null, 'created_at' => null
+        ];
     }
 
     /**

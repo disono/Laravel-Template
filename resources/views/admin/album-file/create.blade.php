@@ -14,7 +14,8 @@
                 <div class="admin-container">
                     <h3 class="page-header">Upload Photos to {{str_limit($album->name, 12)}}</h3>
 
-                    <form action="{{url('admin/album/upload/store')}}" method="post" role="form" enctype="multipart/form-data">
+                    <form action="{{url('admin/album/upload/store')}}" method="post" role="form"
+                          enctype="multipart/form-data">
                         {{csrf_field()}}
                         <input type="hidden" value="{{$album->id}}" name="album_id">
 

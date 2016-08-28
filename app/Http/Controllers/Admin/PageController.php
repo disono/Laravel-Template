@@ -1,13 +1,17 @@
 <?php
-
+/**
+ * Author: Archie, Disono (webmonsph@gmail.com)
+ * Website: http://www.webmons.com
+ * Copyright 2016 Webmons Development Studio.
+ * License: Apache 2.0
+ */
 namespace App\Http\Controllers\Admin;
 
-use App\Page;
-use App\PageCategory;
-use Illuminate\Http\Request;
-
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use App\Http\Requests;
+use App\Models\Page;
+use App\Models\PageCategory;
+use Illuminate\Http\Request;
 
 class PageController extends Controller
 {
@@ -20,7 +24,7 @@ class PageController extends Controller
     public function index(Request $request)
     {
         $content['title'] = app_title('Pages');
-        
+
         $options = [];
         if ($request->get('page_category_id')) {
             $options['page_category_id'] = $request->get('page_category_id');
@@ -29,7 +33,7 @@ class PageController extends Controller
         if ($request->get('search')) {
             $options['search'] = $request->get('search');
         }
-        
+
         $content['pages'] = Page::get($options);
         $content['page_categories'] = PageCategory::all();
         $content['request'] = $request;
@@ -46,7 +50,7 @@ class PageController extends Controller
     {
         $content['title'] = app_title('Create Page');
         $content['page_categories'] = PageCategory::all();
-        
+
         return admin_view('page.create', $content);
     }
 

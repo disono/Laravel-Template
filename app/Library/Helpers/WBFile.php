@@ -40,6 +40,30 @@ class WBFile
     }
 
     /**
+     * Delete file
+     *
+     * @param $path
+     * @return bool
+     */
+    public static function delete($path)
+    {
+        $file = explode('/', $path);
+
+        if (count($file)) {
+            $file_name = $file[count($file) - 1];
+            if ($file_name == null || $file_name == '') {
+                return false;
+            }
+        }
+
+        if (file_exists($path)) {
+            return (bool)unlink($path);
+        }
+
+        return false;
+    }
+
+    /**
      * Upload image
      *
      * @param $file
@@ -96,7 +120,7 @@ class WBFile
             if ($old_file) {
                 if (is_numeric($old_file) && $old_file > 0) {
                     // get the old image to delete
-                    $query_image = \App\Image::find($old_file);
+                    $query_image = \App\Models\Image::find($old_file);
 
                     if ($query_image) {
                         $is_deleted = delete_file($destinationPath . '/' . $query_image->filename);
@@ -116,57 +140,33 @@ class WBFile
             }
 
             // insert image to database
-            return \App\Image::insertGetId([
+            return \App\Models\Image::insertGetId([
                 'user_id' => ((isset($image_options['user_id'])) ? $image_options['user_id'] : 0),
                 'source_id' => ((isset($image_options['source_id'])) ? $image_options['source_id'] : 0),
-                
+
                 'title' => ((isset($image_options['title'])) ? $image_options['title'] : null),
                 'description' => ((isset($image_options['description'])) ? $image_options['description'] : null),
-                
+
                 'filename' => $upload_filename,
                 'type' => ((isset($image_options['type'])) ? $image_options['type'] : null),
-                
+
                 'created_at' => sql_date()
             ]);
         }
 
         return 0;
     }
-    
-    /**
-     * Delete file
-     *
-     * @param $path
-     * @return bool
-     */
-    public static function delete($path)
-    {
-        $file = explode('/', $path);
-        
-        if (count($file)) {
-            $file_name = $file[count($file) - 1];
-            if ($file_name == null || $file_name == '') {
-                return false;
-            }
-        }
-
-        if (file_exists($path)) {
-            return (bool)unlink($path);
-        }
-
-        return false;
-    }
 
     /**
      * File name creator
-     * 
+     *
      * @return string
      */
     public static function filenameCreator()
     {
         return str_random() . '-' . time();
     }
-    
+
     /**
      * Log errors
      *
@@ -190,7 +190,7 @@ class WBFile
     {
         $image = null;
         if (is_numeric($source)) {
-            $image = \App\Image::find($source);
+            $image = \App\Models\Image::find($source);
         }
 
         $filename = null;

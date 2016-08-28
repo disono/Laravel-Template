@@ -2,16 +2,16 @@
 /**
  * Author: Archie, Disono (webmonsph@gmail.com)
  * Website: http://www.webmons.com
+ * Copyright 2016 Webmons Development Studio.
  * License: Apache 2.0
  */
-
 namespace App\Http\Controllers\Admin;
 
-use App\Authorization;
-use App\AuthorizationRole;
-use Illuminate\Http\Request;
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use App\Http\Requests;
+use App\Models\Authorization;
+use App\Models\AuthorizationRole;
+use Illuminate\Http\Request;
 
 class AuthorizationRoleController extends Controller
 {

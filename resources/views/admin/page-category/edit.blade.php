@@ -20,7 +20,8 @@
 
                         <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
                             <label for="name">Name*</label>
-                            <input type="text" class="form-control" name="name" id="name" value="{{$page_category->name}}"
+                            <input type="text" class="form-control" name="name" id="name"
+                                   value="{{$page_category->name}}"
                                    placeholder="Name">
 
                             @if ($errors->has('name'))

@@ -88,7 +88,8 @@
 
                                 <div class="form-group {{ $errors->has('draft') ? ' has-error' : '' }}">
                                     <div class="checkbox">
-                                        <input type="checkbox" id="draft" name="draft" value="1" {{($page->draft) ? 'checked' : null}}>
+                                        <input type="checkbox" id="draft" name="draft"
+                                               value="1" {{($page->draft) ? 'checked' : null}}>
                                         <label for="draft">
                                             Save as draft
                                         </label>

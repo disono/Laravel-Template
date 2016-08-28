@@ -3,8 +3,6 @@
 namespace App\Listeners;
 
 use App\Events\EventResetPassword;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Mail;
 
 class ListenerResetPassword
@@ -20,7 +18,7 @@ class ListenerResetPassword
     /**
      * Handle the event.
      *
-     * @param  EventResetPassword  $event
+     * @param  EventResetPassword $event
      * @return void
      */
     public function handle(EventResetPassword $event)

@@ -71,7 +71,7 @@
                                 <div class="col-md-8">
                                     <div class="input-group">
                                         <div class="input-group-addon input-group-addon-lg">{{url('user')}}/</div>
-                                        <input type="text" class="form-control" id="username"
+                                        <input type="text" class="form-control" id="username" name="username"
                                                placeholder="your-username">
                                     </div>
 

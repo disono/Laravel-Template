@@ -8,5 +8,5 @@ namespace App\Library\Helpers;
 
 class WBUpload
 {
-    
+
 }

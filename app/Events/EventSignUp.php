@@ -2,11 +2,9 @@
 
 namespace App\Events;
 
-use App\Events\Event;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
-class EventSignUp extends Event
+class EventSignUp
 {
     use SerializesModels;
 
@@ -14,7 +12,7 @@ class EventSignUp extends Event
 
     /**
      * Create a new event instance.
-     * 
+     *
      * @param array $data
      */
     public function __construct($data = [])

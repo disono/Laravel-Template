@@ -1,12 +1,13 @@
 <?php
 /**
- * Author: Archie, Disono (disono.apd@gmail.com)
- * Website: www.webmons.com
+ * Author: Archie, Disono (webmonsph@gmail.com)
+ * Website: http://www.webmons.com
+ * Copyright 2016 Webmons Development Studio.
  * License: Apache 2.0
  */
 namespace App\Extend;
 
-use App\User;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -95,6 +96,7 @@ class Validation extends Validator
         if (strtotime($parameters[0]) > strtotime($parameters[1])) {
             return false;
         }
+
         return true;
     }
 
@@ -112,6 +114,7 @@ class Validation extends Validator
         if (!Hash::check($value, $user->password)) {
             return false;
         }
+
         return true;
     }
 
@@ -134,7 +137,7 @@ class Validation extends Validator
 
         // lowercase
         $r2 = '/[a-z]{1}/';
-        
+
         // whatever you mean by 'special char'
         $r3 = '/[!@#$%^&*()_=+{};:,<.>-]{1}/';
 
@@ -145,7 +148,7 @@ class Validation extends Validator
 
         // alphanumeric special char string min
         if (!preg_match_all($r0, $value, $found)) {
-            $this->_custom_messages['password_complex'] = 'Password must contain at least ' . 
+            $this->_custom_messages['password_complex'] = 'Password must contain at least ' .
                 ((isset($parameters[1])) ? $parameters[1] : 8) .
                 ' alphanumeric characters, including an uppercase letter, and a special character.';
             $this->setCustomMessages($this->_custom_messages);
@@ -197,6 +200,7 @@ class Validation extends Validator
                 return false;
             }
         }
+
         return true;
     }
 
@@ -214,11 +218,11 @@ class Validation extends Validator
         $date = date('Y-m-d', strtotime($value));
         $d = \DateTime::createFromFormat('Y-m-d', $date);
         $is_valid_date = $d && $d->format('Y-m-d') == $date;
-        
+
         if (!$is_valid_date) {
             return false;
         }
-        
+
         // check if min age is not valid
         if (isset($parameters[0])) {
             if (count_years($value) < $parameters[0]) {
@@ -227,6 +231,7 @@ class Validation extends Validator
                 return false;
             }
         }
+
         // check if max age is not valid
         if (isset($parameters[1])) {
             if (count_years($value) > $parameters[0]) {
@@ -235,6 +240,7 @@ class Validation extends Validator
                 return false;
             }
         }
+
         return true;
     }
 
@@ -271,6 +277,7 @@ class Validation extends Validator
         if (!$query->count()) {
             return false;
         }
+
         return true;
     }
 }

@@ -16,7 +16,7 @@ class RoleSeeder extends Seeder
             ['Employee', 'employee'],
             ['Client', 'client']
         ];
-        
+
         foreach ($roles as $key => $value) {
             DB::table('roles')->insert([
                 'name' => ucfirst($value[0]),

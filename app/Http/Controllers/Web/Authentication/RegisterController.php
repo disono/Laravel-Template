@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * Author: Archie, Disono (webmonsph@gmail.com)
+ * Website: http://www.webmons.com
+ * Copyright 2016 Webmons Development Studio.
+ * License: Apache 2.0
+ */
 namespace App\Http\Controllers\Web\Authentication;
 
 /**
@@ -8,19 +13,22 @@ namespace App\Http\Controllers\Web\Authentication;
  * License: Apache 2.0
  */
 
-use App\EmailVerification;
 use App\Events\EventSignUp;
-use App\Slug;
-use App\User;
+use App\Http\Controllers\Controller;
+use App\Models\EmailVerification;
+use App\Models\Slug;
+use App\Models\User;
+use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Validator;
-use App\Http\Controllers\Controller;
-use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
-use Illuminate\Http\Request;
 
 class RegisterController extends Controller
 {
-    use AuthenticatesAndRegistersUsers;
+    use RegistersUsers;
+
+    // default redirect after registration
+    public $redirectTo = '/dashboard';
 
     /**
      * Create a new authentication controller instance.
@@ -31,54 +39,24 @@ class RegisterController extends Controller
             'resendVerification', 'verifyEmail'
         ]]);
     }
-    
+
     /**
-     * Get a validator for an incoming registration request.
+     * Show the application registration form.
      *
-     * @param  array  $data
-     * @return \Illuminate\Contracts\Validation\Validator
+     * @return \Illuminate\Http\Response
      */
-    protected function validator(array $data)
-    {
-        return Validator::make($data, [
-            'first_name' => 'required|max:100',
-            'last_name' => 'required|max:100',
-            'username' => 'required|max:100|alpha_dash|unique:users,username|unique:slugs,name|not_in:' . exclude_slug(),
-            'email' => 'required|email|max:255|unique:users',
-            'password' => 'required|min:6|confirmed',
-        ]);
+    public function getRegister() {
+        return $this->showRegistrationForm();
     }
 
     /**
-     * Create a new user instance after a valid registration.
+     * Handle a registration request for the application.
      *
-     * @param  array  $data
-     * @return User
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
      */
-    protected function create(array $data)
-    {
-        $create = User::create([
-            'first_name' => ucfirst($data['first_name']),
-            'last_name' => ucfirst($data['last_name']),
-            'password' => bcrypt($data['password']),
-            'role' => 'client',
-            'enabled' => 1
-        ]);
-
-        if ($create) {
-            Slug::store([
-                'source_id' => $create->id,
-                'source_type' => 'user',
-                'name' => $data['username']
-            ]);
-
-            // send email for email verification
-            event(new EventSignUp([
-                'user' => $create
-            ]));
-        }
-
-        return $create;
+    public function postRegister(Request $request) {
+        return $this->register($request);
     }
 
     /**
@@ -134,5 +112,55 @@ class RegisterController extends Controller
         ]));
 
         return redirect()->back();
+    }
+
+    /**
+     * Get a validator for an incoming registration request.
+     *
+     * @param  array $data
+     * @return \Illuminate\Contracts\Validation\Validator
+     */
+    protected function validator(array $data)
+    {
+        return Validator::make($data, [
+            'first_name' => 'required|max:100',
+            'last_name' => 'required|max:100',
+            'username' => 'required|max:100|alpha_dash|unique:slugs,name|not_in:' . exclude_slug(),
+            'email' => 'required|email|max:255|unique:users',
+            'password' => 'required|min:6|confirmed',
+        ]);
+    }
+
+    /**
+     * Create a new user instance after a valid registration.
+     *
+     * @param  array $data
+     * @return User
+     */
+    protected function create(array $data)
+    {
+        $create = User::create([
+            'first_name' => ucfirst($data['first_name']),
+            'last_name' => ucfirst($data['last_name']),
+            'password' => bcrypt($data['password']),
+            'email' => $data['email'],
+            'role' => 'client',
+            'enabled' => 1
+        ]);
+
+        if ($create) {
+            Slug::store([
+                'source_id' => $create->id,
+                'source_type' => 'user',
+                'name' => $data['username']
+            ]);
+
+            // send email for email verification
+            event(new EventSignUp([
+                'user' => $create
+            ]));
+        }
+
+        return $create;
     }
 }

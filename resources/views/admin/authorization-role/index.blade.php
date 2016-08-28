@@ -14,7 +14,8 @@
                 <div class="admin-container">
                     <h3 class="page-header">Assign Authorization Roles</h3>
 
-                    <form action="{{url('admin/authorization-role/store')}}" method="post" role="form" class="form-inline">
+                    <form action="{{url('admin/authorization-role/store')}}" method="post" role="form"
+                          class="form-inline">
                         {{csrf_field()}}
                         <input type="hidden" value="{{$role_id}}" name="role_id">
 

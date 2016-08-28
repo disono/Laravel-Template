@@ -2,34 +2,30 @@
 /**
  * Author: Archie, Disono (webmonsph@gmail.com)
  * Website: http://www.webmons.com
+ * Copyright 2016 Webmons Development Studio.
  * License: Apache 2.0
  */
-
 namespace App\Http\Controllers\Web\Authentication;
 
-use Illuminate\Http\Request;
-use App\AuthHistory;
 use App\Http\Controllers\Controller;
+use App\Models\AuthHistory;
+use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\Request;
 use Validator;
-use Illuminate\Foundation\Auth\ThrottlesLogins;
-use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
 
 class LoginController extends Controller
 {
-    use AuthenticatesAndRegistersUsers;
-
     /*
     |--------------------------------------------------------------------------
-    | Registration & Login Controller
+    | Login Controller
     |--------------------------------------------------------------------------
     |
-    | This controller handles the registration of new users, as well as the
-    | authentication of existing users. By default, this controller uses
-    | a simple trait to add these behaviors. Why don't you explore it?
+    | This controller handles authenticating users for the application and
+    | redirecting them to your home screen. The controller uses a trait
+    | to conveniently provide its functionality to your applications.
     |
     */
-
-    use ThrottlesLogins;
+    use AuthenticatesUsers;
 
     /**
      * Where to redirect users after login / registration.
@@ -43,30 +39,40 @@ class LoginController extends Controller
      */
     public function __construct()
     {
-        
+
+    }
+
+    /**
+     * Show the application's login form.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getLogin()
+    {
+        return view('auth.login');
     }
 
     /**
      * Log the user out of the application.
      *
+     * @param Request $request
      * @return \Illuminate\Http\Response
      */
-    public function getLogout()
+    public function getLogout(Request $request)
     {
         try {
             // logout history
-            AuthHistory::insert([
+            AuthHistory::store([
                 'user_id' => auth()->user()->id,
                 'ip' => get_ip_address(),
                 'platform' => get_user_agent(),
-                'type' => 'logout',
-                'created_at' => sql_date()
+                'type' => 'logout'
             ]);
         } catch (\Exception $e) {
             error_logger('AuthHistory: ' . $e->getMessage());
         }
 
-        return $this->logout();
+        return $this->logout($request);
     }
 
     /**
@@ -82,12 +88,11 @@ class LoginController extends Controller
         try {
             // login history
             if (auth()->check()) {
-                AuthHistory::insert([
+                AuthHistory::store([
                     'user_id' => auth()->user()->id,
                     'ip' => get_ip_address(),
                     'platform' => get_user_agent(),
-                    'type' => 'login',
-                    'created_at' => sql_date()
+                    'type' => 'login'
                 ]);
             }
         } catch (\Exception $e) {

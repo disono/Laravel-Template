@@ -12,7 +12,7 @@
         <div class="row">
             <div class="col-md-6 col-md-offset-3">
                 <div class="jumbotron jumbotron-sm">
-                	<div class="container">
+                    <div class="container">
                         <h2>Log in to {{app_header('title')}}</h2>
                         <hr>
 
@@ -76,7 +76,7 @@
                                 No account? <a href="{{url('register')}}">Regsiter now.</a>
                             </div>
                         </div>
-                	</div>
+                    </div>
                 </div>
             </div>
         </div>

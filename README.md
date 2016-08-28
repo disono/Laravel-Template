@@ -1,6 +1,14 @@
 # Laravel Project Template
 is a starting blank template for Laravel Projects
 
+# 3rd party Libraries
+* **Intervention:** [http://image.intervention.io](http://image.intervention.io)
+* **Agent:** [https://github.com/jenssegers/agent](https://github.com/jenssegers/agent)
+* **Purifier:** [https://github.com/mewebstudio/Purifier](https://github.com/mewebstudio/Purifier)
+* **QRCode:** [https://github.com/SimpleSoftwareIO/simple-qrcode](https://github.com/SimpleSoftwareIO/simple-qrcode)
+* **HTMLMin:** [https://github.com/GrahamCampbell/Laravel-HTMLMin](https://github.com/GrahamCampbell/Laravel-HTMLMin)
+* **Socialite:** [https://github.com/laravel/socialite](https://github.com/laravel/socialite)
+
 # JavaScript Libraries
 * **jQuery:** [https://jquery.com](https://jquery.com)
 * **Animate.css:** [http://daneden.github.io/animate.css](http://daneden.github.io/animate.css)
@@ -21,14 +29,6 @@ is a starting blank template for Laravel Projects
 * **Sweetalert:** [http://t4t5.github.io/sweetalert](http://t4t5.github.io/sweetalert)
 * **loadcss:** [https://github.com/filamentgroup/loadCSS](https://github.com/filamentgroup/loadCSS)
 
-# 3rd party Libraries
-* **Intervention:** [http://image.intervention.io](http://image.intervention.io)
-* **Agent:** [https://github.com/jenssegers/agent](https://github.com/jenssegers/agent)
-* **Purifier:** [https://github.com/mewebstudio/Purifier](https://github.com/mewebstudio/Purifier)
-* **QRCode:** [https://github.com/SimpleSoftwareIO/simple-qrcode](https://github.com/SimpleSoftwareIO/simple-qrcode)
-* **HTMLMin:** [https://github.com/GrahamCampbell/Laravel-HTMLMin](https://github.com/GrahamCampbell/Laravel-HTMLMin)
-* **Socialite:** [https://github.com/laravel/socialite](https://github.com/laravel/socialite)
-
 # How to install
 ```sh
 Update your .local.env and .production.env
@@ -43,7 +43,7 @@ bower update
 ```
 
 # Credits
-Laravel: [http://laravel.com](http://laravel.com)
+Laravel: [http://laravel.com](http://laravel.com) current version 5.3
 
 # License
 Laravel Project Template is licensed under the Apache License (ASL) license. For more information, see the LICENSE file in this repository.

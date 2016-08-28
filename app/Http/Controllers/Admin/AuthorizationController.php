@@ -2,16 +2,16 @@
 /**
  * Author: Archie, Disono (webmonsph@gmail.com)
  * Website: http://www.webmons.com
+ * Copyright 2016 Webmons Development Studio.
  * License: Apache 2.0
  */
-
 namespace App\Http\Controllers\Admin;
 
-use App\AuthHistory;
-use App\Authorization;
-use Illuminate\Http\Request;
-use App\Http\Requests;
+use App\Models\AuthHistory;
+use App\Models\Authorization;
 use App\Http\Controllers\Controller;
+use App\Http\Requests;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 class AuthorizationController extends Controller
@@ -27,7 +27,7 @@ class AuthorizationController extends Controller
         $content['title'] = app_title('Authorization');
         $content['authorizations'] = Authorization::get();
         $content['request'] = $request;
-        
+
         return admin_view('authorization.index', $content);
     }
 
@@ -51,7 +51,7 @@ class AuthorizationController extends Controller
 
         return admin_view('authorization.history', $content);
     }
-    
+
     /**
      * Create new data
      *
@@ -64,7 +64,7 @@ class AuthorizationController extends Controller
 
         return admin_view('authorization.create', $content);
     }
-    
+
     /**
      * Store new data
      *
@@ -74,7 +74,7 @@ class AuthorizationController extends Controller
     public function store(Requests\Admin\AuthorizationStore $request)
     {
         Authorization::store($request->all());
-        
+
         return redirect('admin/authorizations');
     }
 
@@ -88,16 +88,16 @@ class AuthorizationController extends Controller
     {
         $content['title'] = app_title('Edit Authorization');
         $content['route_names'] = Route::getRoutes();
-        
+
         $data = Authorization::single($id);
         if (!$data) {
             abort(404);
         }
-        
+
         $content['authorization'] = $data;
         return admin_view('authorization.edit', $content);
     }
-    
+
     /**
      * Update data
      *

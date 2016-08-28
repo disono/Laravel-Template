@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class CreateAuthHistoriesTable extends Migration
 {
@@ -15,7 +15,7 @@ class CreateAuthHistoriesTable extends Migration
         Schema::create('auth_histories', function (Blueprint $table) {
             $table->integer('user_id');
             $table->string('ip', 100);
-            $table->string('platform', 100);
+            $table->string('platform', 160);
             $table->enum('type', ['login', 'logout', 'update']);
             $table->string('content', 100)->nullable();
             $table->timestamps();

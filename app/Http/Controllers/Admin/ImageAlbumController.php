@@ -2,16 +2,15 @@
 /**
  * Author: Archie, Disono (webmonsph@gmail.com)
  * Website: http://www.webmons.com
+ * Copyright 2016 Webmons Development Studio.
  * License: Apache 2.0
  */
-
 namespace App\Http\Controllers\Admin;
 
-use App\ImageAlbum;
-use Illuminate\Http\Request;
-
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use App\Http\Requests;
+use App\Models\ImageAlbum;
+use Illuminate\Http\Request;
 
 class ImageAlbumController extends Controller
 {
@@ -40,6 +39,7 @@ class ImageAlbumController extends Controller
         $content['title'] = app_title('Create Album');
         return admin_view('album.create', $content);
     }
+
     /**
      * Store new data
      *
@@ -67,9 +67,10 @@ class ImageAlbumController extends Controller
             abort(404);
         }
         $content['album'] = $data;
-        
+
         return admin_view('album.edit', $content);
     }
+
     /**
      * Update data
      *

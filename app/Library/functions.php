@@ -1,10 +1,10 @@
 <?php
 /**
- * Author: Archie, Disono (disono.apd@gmail.com)
- * Website: www.webmons.com
+ * Author: Archie, Disono (webmonsph@gmail.com)
+ * Website: http://www.webmons.com
+ * Copyright 2016 Webmons Development Studio.
  * License: Apache 2.0
  */
-
 include_once 'methods.php';
 
 /*
@@ -43,7 +43,7 @@ if (!function_exists('paginate')) {
 if (!function_exists('exclude_slug')) {
     /**
      * Exclude slugs name
-     * 
+     *
      * @return string
      */
     function exclude_slug()
@@ -565,16 +565,16 @@ if (!function_exists('authorize_me')) {
     }
 }
 
-if (!function_exists('api_check_auth')) {
+if (!function_exists('api_auth')) {
     /**
      * Check if user exists
      *
-     * @param string $column_name
+     * @param string $input_name
      * @return bool
      */
-    function api_check_auth($column_name = 'user_id')
+    function api_auth($input_name = 'authenticated_id')
     {
-        return App\Library\Helpers\WBAuth::APICheckAuth($column_name);
+        return App\Library\Helpers\WBAuth::APICheckAuth($input_name);
     }
 }
 

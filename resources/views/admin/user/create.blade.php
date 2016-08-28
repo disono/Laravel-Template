@@ -51,7 +51,8 @@
 
                                 <div class="form-group {{ $errors->has('phone') ? ' has-error' : '' }}">
                                     <label for="phone">Phone*</label>
-                                    <input type="tel" class="form-control" name="phone" id="phone" placeholder="Phone" value="{{old('phone')}}">
+                                    <input type="tel" class="form-control" name="phone" id="phone" placeholder="Phone"
+                                           value="{{old('phone')}}">
 
                                     @if ($errors->has('phone'))
                                         <span class="help-block">{{ $errors->first('phone') }}</span>

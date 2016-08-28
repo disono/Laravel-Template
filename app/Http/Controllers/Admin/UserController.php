@@ -2,19 +2,18 @@
 /**
  * Author: Archie, Disono (webmonsph@gmail.com)
  * Website: http://www.webmons.com
+ * Copyright 2016 Webmons Development Studio.
  * License: Apache 2.0
  */
-
 namespace App\Http\Controllers\Admin;
 
-use App\Country;
+use App\Models\Country;
 use App\Events\EventResetPassword;
-use App\Role;
-use App\User;
-use Illuminate\Http\Request;
-
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use App\Http\Requests;
+use App\Models\Role;
+use App\Models\User;
+use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
@@ -109,7 +108,7 @@ class UserController extends Controller
                 $user->save();
             }
         }
-        
+
         return redirect('admin/users');
     }
 
@@ -158,7 +157,7 @@ class UserController extends Controller
         $update = User::edit($request->get('id'), $request->only([
             'password'
         ]));
-        
+
         if ($update) {
             $user = User::single($request->get('id'));
             $user->new_password = $request->get('password');

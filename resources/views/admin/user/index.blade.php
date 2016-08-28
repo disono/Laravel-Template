@@ -102,7 +102,9 @@
                                                         Password</a></li>
                                                 <li role="separator" class="divider"></li>
                                                 <li><a href="{{url('admin/user/login/' . $row->id)}}">Login</a></li>
-                                                <li><a href="{{url('admin/authorization/histories?user_id=' . $row->id)}}">Authorization History</a></li>
+                                                <li>
+                                                    <a href="{{url('admin/authorization/histories?user_id=' . $row->id)}}">Authorization
+                                                        History</a></li>
                                                 <li role="separator" class="divider"></li>
                                                 <li><a href="{{url('admin/user/destroy/' . $row->id)}}"
                                                        class="delete-data">Delete</a></li>

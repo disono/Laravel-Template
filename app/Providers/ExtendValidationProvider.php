@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
 use App\Extend\Validation;
+use Illuminate\Support\ServiceProvider;
 
 class ExtendValidationProvider extends ServiceProvider
 {
@@ -14,7 +14,7 @@ class ExtendValidationProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->app['validator']->resolver(function($translator, $data, $rules, $messages) {
+        $this->app['validator']->resolver(function ($translator, $data, $rules, $messages) {
             return new Validation($translator, $data, $rules, $messages);
         });
     }

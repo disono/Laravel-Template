@@ -258,7 +258,7 @@ class CountrySeeder extends Seeder
             'ZM' => 'Zambia',
             'ZW' => 'Zimbabwe',
         );
-        
+
         foreach ($countries as $key => $value) {
             DB::table('countries')->insert([
                 'name' => $value,

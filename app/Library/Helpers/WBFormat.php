@@ -6,12 +6,11 @@
  */
 namespace App\Library\Helpers;
 
-
 class WBFormat
 {
     /**
      * Money formatted
-     * 
+     *
      * @param $number
      * @param string $sign
      * @return string

@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class CreateAuthorizationsTable extends Migration
 {
@@ -16,7 +16,7 @@ class CreateAuthorizationsTable extends Migration
             $table->increments('id');
             $table->string('name')->unique();
             $table->string('identifier')->unique();
-            $table->text('description');
+            $table->text('description')->nullable();
             $table->timestamps();
         });
     }

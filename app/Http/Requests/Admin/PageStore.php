@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * Author: Archie, Disono (webmonsph@gmail.com)
+ * Website: http://www.webmons.com
+ * Copyright 2016 Webmons Development Studio.
+ * License: Apache 2.0
+ */
 namespace App\Http\Requests\Admin;
 
 use App\Http\Requests\Request;
@@ -32,7 +37,7 @@ class PageStore extends Request
             'template' => 'max:100',
 
             'draft' => 'integer',
-            
+
             'image' => 'image|max:' . config_file_size(),
         ];
     }

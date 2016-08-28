@@ -99,7 +99,7 @@ if (!function_exists('app_title')) {
 if (!function_exists('rand_token')) {
     /**
      * Create random token
-     * 
+     *
      * @return string
      */
     function rand_token()

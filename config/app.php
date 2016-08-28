@@ -4,6 +4,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Application Name
+    |--------------------------------------------------------------------------
+    |
+    | This value is the name of your application. This value is used when the
+    | framework needs to place the application's name in a notification or
+    | any other location as required by the application or its packages.
+    */
+
+    'name' => 'Laravel Project Template',
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Environment
     |--------------------------------------------------------------------------
     |
@@ -110,6 +122,8 @@ return [
 
     'log' => env('APP_LOG', 'single'),
 
+    'log_level' => env('APP_LOG_LEVEL', 'debug'),
+
     /*
     |--------------------------------------------------------------------------
     | Autoloaded Service Providers
@@ -138,6 +152,7 @@ return [
         Illuminate\Foundation\Providers\FoundationServiceProvider::class,
         Illuminate\Hashing\HashServiceProvider::class,
         Illuminate\Mail\MailServiceProvider::class,
+        Illuminate\Notifications\NotificationServiceProvider::class,
         Illuminate\Pagination\PaginationServiceProvider::class,
         Illuminate\Pipeline\PipelineServiceProvider::class,
         Illuminate\Queue\QueueServiceProvider::class,
@@ -165,6 +180,7 @@ return [
         Mews\Purifier\PurifierServiceProvider::class,
         SimpleSoftwareIO\QrCode\QrCodeServiceProvider::class,
         GrahamCampbell\HTMLMin\HTMLMinServiceProvider::class,
+
     ],
 
     /*
@@ -197,6 +213,7 @@ return [
         'Lang' => Illuminate\Support\Facades\Lang::class,
         'Log' => Illuminate\Support\Facades\Log::class,
         'Mail' => Illuminate\Support\Facades\Mail::class,
+        'Notification' => Illuminate\Support\Facades\Notification::class,
         'Password' => Illuminate\Support\Facades\Password::class,
         'Queue' => Illuminate\Support\Facades\Queue::class,
         'Redirect' => Illuminate\Support\Facades\Redirect::class,
@@ -214,11 +231,12 @@ return [
         /*
          * 3rd party aliases
          */
-        'Image'     => Intervention\Image\Facades\Image::class,
-        'Agent'     => Jenssegers\Agent\Facades\Agent::class,
-        'Purifier'  => Mews\Purifier\Facades\Purifier::class,
-        'QrCode'    => SimpleSoftwareIO\QrCode\Facades\QrCode::class,
-        'HTMLMin'   => GrahamCampbell\HTMLMin\Facades\HTMLMin::class,
+        'Image' => Intervention\Image\Facades\Image::class,
+        'Agent' => Jenssegers\Agent\Facades\Agent::class,
+        'Purifier' => Mews\Purifier\Facades\Purifier::class,
+        'QrCode' => SimpleSoftwareIO\QrCode\Facades\QrCode::class,
+        'HTMLMin' => GrahamCampbell\HTMLMin\Facades\HTMLMin::class,
+
     ],
 
 ];

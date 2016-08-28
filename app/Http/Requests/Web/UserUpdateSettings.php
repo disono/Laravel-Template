@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * Author: Archie, Disono (webmonsph@gmail.com)
+ * Website: http://www.webmons.com
+ * Copyright 2016 Webmons Development Studio.
+ * License: Apache 2.0
+ */
 namespace App\Http\Requests\Web;
 
 use App\Http\Requests\Request;
@@ -33,7 +38,7 @@ class UserUpdateSettings extends Request
             'phone' => 'between:7,22',
             'gender' => 'required|in:Male,Female',
             'birthday' => 'required|date|birthday:' . config_min_age(),
-            
+
             'country_id' => 'required|integer|exists:countries,id'
         ];
     }

@@ -2,26 +2,15 @@
 /**
  * Author: Archie, Disono (webmonsph@gmail.com)
  * Website: http://www.webmons.com
+ * Copyright 2016 Webmons Development Studio.
  * License: Apache 2.0
  */
-
 namespace App\Http\Controllers\Web\User;
 
-use Illuminate\Http\Request;
-
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
-    private $user;
-
-    public function __construct()
-    {
-        $this->user = me();
-    }
-
     /**
      * Admin dashboard
      *
@@ -30,8 +19,9 @@ class DashboardController extends Controller
     public function getIndex()
     {
         $content['title'] = app_title('Dashboard');
+        $user = me();
 
-        if ($this->user->role != 'client') {
+        if ($user->role != 'client') {
             return admin_view('user.dashboard', $content);
         } else {
             return theme('user.dashboard', $content);

@@ -6,7 +6,7 @@
  */
 namespace App\Library\Helpers;
 
-use App\SlugExclude;
+use App\Models\SlugExclude;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 
@@ -55,14 +55,14 @@ class WBDBHelper
 
     /**
      * Exclude slug
-     * 
+     *
      * @return string
      */
     public static function excludeSlug()
     {
         $slugs = SlugExclude::all();
         $excludes = '';
-        
+
         foreach ($slugs as $row) {
             $excludes .= $row->name . ',';
         }

@@ -1,12 +1,15 @@
 <?php
-
+/**
+ * Author: Archie, Disono (webmonsph@gmail.com)
+ * Website: http://www.webmons.com
+ * Copyright 2016 Webmons Development Studio.
+ * License: Apache 2.0
+ */
 namespace App\Http\Controllers\Admin;
 
-use App\ImageAlbum;
-use Illuminate\Http\Request;
-
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use App\Http\Requests;
+use App\Models\ImageAlbum;
 
 class ImageAlbumUploadController extends Controller
 {
@@ -16,7 +19,7 @@ class ImageAlbumUploadController extends Controller
      * @param $album_id
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function create($album_id) 
+    public function create($album_id)
     {
         $content['title'] = app_title('Edit Role');
         $data = ImageAlbum::single($album_id);
@@ -30,7 +33,7 @@ class ImageAlbumUploadController extends Controller
 
     /**
      * Upload photos to album
-     * 
+     *
      * @param Requests\Admin\AlbumUpload $request
      * @return \Illuminate\Http\RedirectResponse
      */

@@ -11,10 +11,10 @@
             <div class="container text-center">
                 <div class="col-md-12">
                     <div class="jumbotron jumbotron-sm">
-                    	<div class="container">
+                        <div class="container">
                             <h2>Please verify your email {{me()->email}}.</h2>
                             <a href="{{url('email/resend/verification')}}">Resend Verification</a>
-                    	</div>
+                        </div>
                     </div>
                 </div>
             </div>

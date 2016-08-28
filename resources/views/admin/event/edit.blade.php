@@ -14,7 +14,8 @@
                 <div class="admin-container">
                     <h3 class="page-header">Edit Event</h3>
 
-                    <form action="{{url('admin/event/update')}}" method="post" role="form" enctype="multipart/form-data">
+                    <form action="{{url('admin/event/update')}}" method="post" role="form"
+                          enctype="multipart/form-data">
                         {{csrf_field()}}
                         <input type="hidden" value="{{$event->id}}" name="id">
 
@@ -74,7 +75,8 @@
 
                                 <div class="form-group {{ $errors->has('draft') ? ' has-error' : '' }}">
                                     <div class="checkbox">
-                                        <input type="checkbox" id="draft" name="draft" value="1" {{($event->draft) ? 'checked' : null}}>
+                                        <input type="checkbox" id="draft" name="draft"
+                                               value="1" {{($event->draft) ? 'checked' : null}}>
                                         <label for="draft">
                                             Save as draft
                                         </label>

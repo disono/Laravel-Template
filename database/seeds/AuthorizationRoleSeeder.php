@@ -12,7 +12,7 @@ class AuthorizationRoleSeeder extends Seeder
     public function run()
     {
         $authorization = DB::table('authorizations');
-        
+
         // admin
         foreach ($authorization->get() as $row) {
             DB::table('authorization_roles')->insert([
@@ -21,7 +21,7 @@ class AuthorizationRoleSeeder extends Seeder
                 'created_at' => sql_date()
             ]);
         }
-        
+
         // employee
         foreach ($authorization->get() as $row) {
             DB::table('authorization_roles')->insert([

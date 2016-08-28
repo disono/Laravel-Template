@@ -7,48 +7,11 @@
  */
 namespace App\Library\Helpers;
 
-use App\User;
+use App\Models\User;
 use Illuminate\Support\Facades\URL;
 
 class WBUrl
 {
-    /**
-     * Create url from string e.g my url to this => my-url-to-this
-     *
-     * @param $str
-     * @param $separator
-     * @param $lowercase
-     * @return string
-     */
-    public static function urlTitle($str, $separator = '-', $lowercase = true)
-    {
-        if ($separator == 'dash') {
-            $separator = '-';
-        } else if ($separator == 'underscore') {
-            $separator = '_';
-        }
-
-        $q_separator = preg_quote($separator);
-
-        $trans = array(
-            '&.+?;' => '',
-            '[^a-z0-9 _-]' => '',
-            '\s+' => $separator,
-            '(' . $q_separator . ')+' => $separator
-        );
-
-        $str = strip_tags($str);
-        foreach ($trans as $key => $val) {
-            $str = preg_replace("#" . $key . "#i", $val, $str);
-        }
-
-        if ($lowercase === true) {
-            $str = strtolower($str);
-        }
-
-        return trim($str, $separator);
-    }
-
     /**
      * get url id e.g. my-url-1 returns 1 {id}
      *
@@ -89,6 +52,43 @@ class WBUrl
         }
 
         return null;
+    }
+
+    /**
+     * Create url from string e.g my url to this => my-url-to-this
+     *
+     * @param $str
+     * @param $separator
+     * @param $lowercase
+     * @return string
+     */
+    public static function urlTitle($str, $separator = '-', $lowercase = true)
+    {
+        if ($separator == 'dash') {
+            $separator = '-';
+        } else if ($separator == 'underscore') {
+            $separator = '_';
+        }
+
+        $q_separator = preg_quote($separator);
+
+        $trans = array(
+            '&.+?;' => '',
+            '[^a-z0-9 _-]' => '',
+            '\s+' => $separator,
+            '(' . $q_separator . ')+' => $separator
+        );
+
+        $str = strip_tags($str);
+        foreach ($trans as $key => $val) {
+            $str = preg_replace("#" . $key . "#i", $val, $str);
+        }
+
+        if ($lowercase === true) {
+            $str = strtolower($str);
+        }
+
+        return trim($str, $separator);
     }
 
     /**

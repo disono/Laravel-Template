@@ -1,4 +1,5 @@
-var elixir = require('laravel-elixir');
+const elixir = require('laravel-elixir');
+require('laravel-elixir-vue');
 var type = 'local';
 
 /*
@@ -56,7 +57,7 @@ if (type == 'local') {
         mix.copy('resources/assets/bower/ionicons/fonts', 'public/assets/fonts');
     });
 } else if (type == 'admin') {
-    
+
 } else {
     elixir(function (mix) {
         mix.scripts([

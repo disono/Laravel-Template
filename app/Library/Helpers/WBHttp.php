@@ -25,7 +25,8 @@ class WBHttp
             return response()->json([
                 'success' => true,
                 'data' => $data,
-                'links' => $links
+                'links' => $links,
+                'extra' => $extra
             ], 200);
         }
 
@@ -74,8 +75,8 @@ class WBHttp
     public static function failedJSONResponse($errors = [], $status = 422)
     {
         return response()->json([
-            'sucess' => false,
-            'errors' => (method_exists($errors, 'errors')) ? $errors->errors() : $errors,
+            'success' => false,
+            'errors' => (method_exists($errors, 'errors')) ? $errors->errors() : [$errors],
         ], $status);
     }
 

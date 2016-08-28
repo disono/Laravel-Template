@@ -2,15 +2,15 @@
 /**
  * Author: Archie, Disono (webmonsph@gmail.com)
  * Website: http://www.webmons.com
+ * Copyright 2016 Webmons Development Studio.
  * License: Apache 2.0
  */
-
 namespace App\Http\Controllers\Admin;
 
-use App\Role;
-use Illuminate\Http\Request;
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use App\Http\Requests;
+use App\Models\Role;
+use Illuminate\Http\Request;
 
 class RoleController extends Controller
 {
@@ -39,6 +39,7 @@ class RoleController extends Controller
         $content['title'] = app_title('Create Role');
         return admin_view('role.create', $content);
     }
+
     /**
      * Store new data
      *
@@ -48,7 +49,7 @@ class RoleController extends Controller
     public function store(Requests\Admin\RoleStore $request)
     {
         Role::store($request->all());
-        
+
         return redirect('admin/roles');
     }
 
@@ -66,9 +67,10 @@ class RoleController extends Controller
             abort(404);
         }
         $content['role'] = $data;
-        
+
         return admin_view('role.edit', $content);
     }
+
     /**
      * Update data
      *
@@ -78,7 +80,7 @@ class RoleController extends Controller
     public function update(Requests\Admin\RoleUpdate $request)
     {
         Role::edit($request->get('id'), $request->all());
-        
+
         return redirect('admin/roles');
     }
 

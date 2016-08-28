@@ -1,7 +1,4 @@
-/*
- * Base structure
- */
-/* Move down content because we have a fixed navbar that is 50px tall */
+/* Move down content because we have a fixed nav-bar that is 50px tall */
 body {
     background: #F7F7F7;
     padding-top: 50px;
@@ -131,6 +128,7 @@ body {
     height: 65px;
     font-size: 18px;
     line-height: 60px;
+    padding: 0 0;
 }
 
 .sidebar-nav > .sidebar-brand a {

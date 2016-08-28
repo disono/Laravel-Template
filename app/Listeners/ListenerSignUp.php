@@ -2,10 +2,8 @@
 
 namespace App\Listeners;
 
-use App\EmailVerification;
 use App\Events\EventSignUp;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Queue\ShouldQueue;
+use App\Models\EmailVerification;
 use Illuminate\Support\Facades\Mail;
 
 class ListenerSignUp
@@ -22,7 +20,7 @@ class ListenerSignUp
     /**
      * Handle the event.
      *
-     * @param  EventSignUp  $event
+     * @param  EventSignUp $event
      * @return void
      */
     public function handle(EventSignUp $event)

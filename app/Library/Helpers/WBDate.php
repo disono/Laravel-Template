@@ -89,11 +89,11 @@ class WBDate
             $formatted_date['date_month_num'] = (int)date('m', strtotime($ed_format[0]));
             $formatted_date['date_day'] = (int)date('d', strtotime($ed_format[0]));
             $formatted_date['date_year'] = (int)date('Y', strtotime($ed_format[0]));
-            
+
             // others
             $formatted_date['year_month'] = date('Y-m', strtotime($ed_format[0]));
             $formatted_date['year_month_day'] = date('Y-m-d', strtotime($ed_format[0]));
-            
+
             // time
             if ($ed_format[1] != '00:00:00') {
                 $formatted_date['time'] = date('h:i A', strtotime($ed_format[1]));
@@ -116,7 +116,7 @@ class WBDate
     {
         return date('Y-m-d H:i:s', strtotime('+' . $minute . ' minute'));
     }
-    
+
     /**
      * Count years
      *

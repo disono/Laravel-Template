@@ -2,16 +2,14 @@
 /**
  * Author: Archie, Disono (webmonsph@gmail.com)
  * Website: http://www.webmons.com
+ * Copyright 2016 Webmons Development Studio.
  * License: Apache 2.0
  */
-
 namespace App\Http\Controllers\Web\Authentication\Social;
 
-use App\SocialAuth;
-use App\User;
-
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use App\Models\SocialAuth;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
 
@@ -44,8 +42,7 @@ class FacebookController extends Controller
      */
     public function facebookCallback()
     {
-        $user = Socialite::driver('facebook')
-            ->user();
+        $user = Socialite::driver('facebook')->user();
 
         $user_query = null;
         if ($user->getId()) {
@@ -80,7 +77,7 @@ class FacebookController extends Controller
 
             return redirect('dashboard');
         }
-        
+
         return abort(404);
     }
 }

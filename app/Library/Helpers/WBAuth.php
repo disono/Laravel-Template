@@ -1,12 +1,18 @@
 <?php
 /**
- * Author: Archie, Disono (disono.apd@gmail.com)
- * Website: www.webmons.com
+ * Author: Archie, Disono (webmonsph@gmail.com)
+ * Website: http://www.webmons.com
+ * Copyright 2016 Webmons Development Studio.
  * License: Apache 2.0
  */
 namespace App\Library\Helpers;
 
-use Illuminate\Support\Facades\Auth;
+use App\Models\Authorization;
+use App\Models\AuthorizationRole;
+use App\Models\Role;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Input;
 
 class WBAuth
 {
@@ -17,8 +23,10 @@ class WBAuth
      */
     public static function authUser()
     {
-        if (Auth::check()) {
-            return \App\User::single(Auth::user()->id);
+        if (auth()->check()) {
+            return User::single(auth()->user()->id);
+        } else if (api_auth()) {
+            return User::single(request()->get('authenticated_id'));
         }
 
         return null;
@@ -34,7 +42,7 @@ class WBAuth
      */
     public static function authorizeMe($roles = [], $user_id, $route_check = true)
     {
-        $user = \App\User::find($user_id);
+        $user = User::find($user_id);
         if (!$user) {
             return false;
         }
@@ -46,13 +54,13 @@ class WBAuth
         $is_role_found = false;
         if ($route_check) {
             foreach ($roles as $role) {
-                $user_role = \App\Role::where('slug', $user->role)->first();
-                $default_role = \App\Role::where('slug', $role)->first();
+                $user_role = Role::where('slug', $user->role)->first();
+                $default_role = Role::where('slug', $role)->first();
 
                 if ($user_role && $default_role) {
                     if ($user_role->identifier === $default_role->identifier) {
-                        $select[] = \Illuminate\Support\Facades\DB::raw('authorizations.identifier, authorizations.name as authorization_name');
-                        $query = \App\AuthorizationRole::select($select)
+                        $select[] = DB::raw('authorizations.identifier, authorizations.name as authorization_name');
+                        $query = AuthorizationRole::select($select)
                             ->join('authorizations', 'authorization_roles.authorization_id', '=', 'authorizations.id')
                             ->where('authorization_roles.role_id', $user_role->id)
                             ->where('authorizations.identifier', request()->route()->getName());
@@ -73,13 +81,13 @@ class WBAuth
     /**
      * Check if user exists
      *
-     * @param string $column_name
+     * @param string $input_name
      * @return bool
      */
-    public static function APICheckAuth($column_name = 'user_id')
+    public static function APICheckAuth($input_name = 'authenticated_id')
     {
-        $user_id = \Illuminate\Support\Facades\Input::get($column_name);
-        $user = \App\User::single($user_id);
+        $user_id = Input::get($input_name);
+        $user = User::single($user_id);
 
         if ($user) {
             // check if account is enabled
@@ -87,7 +95,7 @@ class WBAuth
                 return false;
             }
 
-            return true;
+            return $user;
         }
 
         return false;
@@ -101,11 +109,11 @@ class WBAuth
      */
     public static function resourceAuthorize($user)
     {
-        $role = \App\Role::where('slug', $user->role)->first();
+        $role = Role::where('slug', $user->role)->first();
         if ($role) {
-            $authorization_role = \App\AuthorizationRole::where('role_id', $role->id)->first();
+            $authorization_role = AuthorizationRole::where('role_id', $role->id)->first();
             if ($authorization_role) {
-                $is_authorize = \App\Authorization::where('identifier', request()->route()->getName())->first();
+                $is_authorize = Authorization::where('identifier', request()->route()->getName())->first();
                 if ($is_authorize) {
                     return true;
                 }
