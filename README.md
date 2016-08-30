@@ -42,6 +42,21 @@ bower install
 bower update
 ```
 
+# Laradock
+LaraDock strives to make the development experience easier. It contains pre-packaged Docker Images that provides you a wonderful development environment without requiring you to install PHP, NGINX, MySQL, REDIS, and any other software on your local machine. [https://github.com/LaraDock/laradock](https://github.com/LaraDock/laradock) 
+```sh
+Usage Overview:
+
+Let's see how easy it is to install NGINX, PHP, Composer, MySQL and Redis. Then run Laravel.
+
+    1. Get LaraDock inside your Laravel project: 
+        git clone https://github.com/LaraDock/laradock.git.
+    2. Enter the laradock folder and run only these Containers: 
+        docker-compose up -d nginx mysql redis
+    3. Open your .env file and set DB_HOST to mysql and REDIS_HOST to redis.
+    4. Open your browser and visit the localhost: http://localdock
+```
+
 # Credits
 Laravel: [http://laravel.com](http://laravel.com) current version 5.3
 

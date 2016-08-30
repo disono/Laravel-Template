@@ -90,7 +90,7 @@ class RegisterController extends Controller
 
         // update user email is verified
         User::where('id', $user->id)->update([
-            'is_email_verified' => 1
+            'email_confirmed' => 1
         ]);
 
         // clean all verification token
