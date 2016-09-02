@@ -7,20 +7,8 @@
  */
 namespace App\Http\Requests\API\V1;
 
-use App\Http\Requests\Request;
-
-class PasswordRecovery extends Request
+class PasswordRecovery extends RequestGuestAPI
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
-    public function authorize()
-    {
-        return true;
-    }
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -31,16 +19,5 @@ class PasswordRecovery extends Request
         return [
             'email' => 'required|email|exists:users,email'
         ];
-    }
-
-    /**
-     * Get all errors if validation failed
-     *
-     * @param array $errors
-     * @return response
-     */
-    public function response(array $errors)
-    {
-        return failed_json_response($errors);
     }
 }

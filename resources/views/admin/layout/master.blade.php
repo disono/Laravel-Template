@@ -49,8 +49,8 @@
                 {{-- load the style for admin --}}
                 onloadCSS(loadCSS('{{ asset('assets/css/admin.css') . url_ext() }}'), function () {
                     document.querySelector('#WBMainApp').style.display = null;
-                    jQ('#loaderContent').remove();
-                    jQ('#loaderStyles').remove();
+                    document.getElementById("loaderContent").remove();
+                    document.getElementById("loaderStyles").remove();
                 });
             });
         });

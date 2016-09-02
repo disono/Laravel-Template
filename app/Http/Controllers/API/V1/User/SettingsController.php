@@ -21,7 +21,7 @@ class SettingsController extends Controller
      */
     public function postSettings(Requests\API\V1\UserSettingsUpdate $request)
     {
-        $id = $request->get('authenticated_id');
+        $id = authenticated_id();
 
         // update user
         $inputs = $request->only([
@@ -50,7 +50,7 @@ class SettingsController extends Controller
      */
     public function postSecurity(Requests\API\V1\UserSecurityUpdate $request)
     {
-        $id = $request->get('authenticated_id');
+        $id = authenticated_id();
 
         // update user
         $inputs = $request->only([

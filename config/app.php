@@ -180,6 +180,7 @@ return [
         Mews\Purifier\PurifierServiceProvider::class,
         SimpleSoftwareIO\QrCode\QrCodeServiceProvider::class,
         GrahamCampbell\HTMLMin\HTMLMinServiceProvider::class,
+        Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class,
 
     ],
 
@@ -236,6 +237,8 @@ return [
         'Purifier' => Mews\Purifier\Facades\Purifier::class,
         'QrCode' => SimpleSoftwareIO\QrCode\Facades\QrCode::class,
         'HTMLMin' => GrahamCampbell\HTMLMin\Facades\HTMLMin::class,
+        'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
+        'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
 
     ],
 

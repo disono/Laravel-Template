@@ -7,18 +7,11 @@
  */
 namespace App\Http\Requests\API\V1;
 
-use App\Http\Requests\Request;
-
-class UserSettingsUpdate extends Request
+class UserSettingsUpdate extends RequestAuthAPI
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
-    public function authorize()
+    public function __construct()
     {
-        return api_auth();
+        parent::__construct();
     }
 
     /**
@@ -36,21 +29,11 @@ class UserSettingsUpdate extends Request
             'address' => 'max:500',
             'about' => 'max:500',
             'phone' => 'between:7,22',
-            'gender' => 'required|in:Male,Female',
-            'birthday' => 'required|date|birthday:' . config_min_age(),
 
-            'country_id' => 'required|integer|exists:countries,id'
+            'gender' => 'in:Male,Female',
+            'birthday' => 'date|birthday:' . config_min_age(),
+
+            'country_id' => 'integer|exists:countries,id'
         ];
-    }
-
-    /**
-     * Get all errors if validation failed
-     *
-     * @param array $errors
-     * @return response
-     */
-    public function response(array $errors)
-    {
-        return failed_json_response($errors);
     }
 }

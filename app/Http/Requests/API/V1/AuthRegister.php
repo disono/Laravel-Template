@@ -7,20 +7,8 @@
  */
 namespace App\Http\Requests\API\V1;
 
-use App\Http\Requests\Request;
-
-class AuthRegister extends Request
+class AuthRegister extends RequestGuestAPI
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
-    public function authorize()
-    {
-        return true;
-    }
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -33,22 +21,28 @@ class AuthRegister extends Request
         return [
             'first_name' => 'required|max:100',
             'last_name' => 'required|max:100',
-            'phone' => 'required_if:social_id,0|numeric|digits_between:7,22',
-            'username' => 'required_if:social_id,0|max:32|alpha_dash|unique:users,username',
-            'email' => 'required_if:social_id,0|email' . (($social_id) ? '' : '|unique:users,email'),
-            'password' => 'required_if:social_id,0|min:4|max:32',
+
+            'phone' => 'required_without:social_id|numeric|digits_between:7,22',
+            'username' => 'required_without:social_id|max:32|alpha_dash|unique:slugs,name,null,source_id,source_type,user|not_in:' . exclude_slug(),
+            'email' => 'required_without:social_id|email' . (($social_id) ? '' : '|unique:users,email'),
+            'password' => 'required_without:social_id|min:4|max:32',
+
             'social_id' => 'numeric'
         ];
     }
 
     /**
-     * Get all errors if validation failed
+     * Get custom messages for validator errors.
      *
-     * @param array $errors
-     * @return response
+     * @return array
      */
-    public function response(array $errors)
+    public function messages()
     {
-        return failed_json_response($errors);
+        return [
+            'phone.required_without' => 'The phone number field is required!',
+            'username.required_without' => 'The username field is required!',
+            'email.required_without' => 'The email field is required!',
+            'password.required_without' => 'The password field is required!',
+        ];
     }
 }

@@ -32,7 +32,7 @@ if (!function_exists('paginate')) {
      *
      * @param $collections
      * @param int $pagination_num
-     * @return Paginator
+     * @return \Illuminate\Pagination\Paginator
      */
     function paginate($collections, $pagination_num = 0)
     {
@@ -65,7 +65,7 @@ if (!function_exists('success_json_response')) {
      * @param null $links
      * @param null $pagination
      * @param null $extra
-     * @return array
+     * @return \Illuminate\Http\JsonResponse
      */
     function success_json_response($data = [], $links = null, $pagination = null, $extra = null)
     {
@@ -161,7 +161,6 @@ if (!function_exists('error_logger')) {
      * File name creator
      *
      * @param null $message
-     * @return string
      */
     function error_logger($message = null)
     {
@@ -422,7 +421,7 @@ if (!function_exists('count_years')) {
      *
      * @param $then
      * @param null $current
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return integer
      */
     function count_years($then, $current = null)
     {
@@ -575,6 +574,19 @@ if (!function_exists('api_auth')) {
     function api_auth($input_name = 'authenticated_id')
     {
         return App\Library\Helpers\WBAuth::APICheckAuth($input_name);
+    }
+}
+
+if (!function_exists('api_auth_jwt')) {
+    /**
+     * Check if user has token
+     *
+     * @param bool $response
+     * @return string
+     */
+    function api_auth_jwt($response = false)
+    {
+        return App\Library\Helpers\WBAuth::APIAuthenticateJWT($response);
     }
 }
 

@@ -12,7 +12,8 @@
         "simplesoftwareio/simple-qrcode": "^1.4",
         "graham-campbell/htmlmin": "^4.3",
         "laravel/socialite": "^2.0",
-        "mews/purifier": "^2.0"
+        "mews/purifier": "^2.0",
+        "tymon/jwt-auth": "^0.5.9"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

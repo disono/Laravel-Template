@@ -48,8 +48,8 @@
             {{-- load the style for app --}}
             onloadCSS(loadCSS('{{ asset('assets/css/main.css') . url_ext() }}'), function () {
                 document.querySelector('#WBMainApp').style.display = null;
-                jQ('#loaderContent').remove();
-                jQ('#loaderStyles').remove();
+                document.getElementById("loaderContent").remove();
+                document.getElementById("loaderStyles").remove();
             });
         });
     </script>

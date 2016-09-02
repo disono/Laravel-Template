@@ -13,49 +13,29 @@ use Illuminate\Http\Request;
 
 class RecoveryController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Password Reset Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller is responsible for handling password reset requests
-    | and uses a simple trait to include this behavior. You're free to
-    | explore this trait and override any methods you wish to tweak.
-    |
-    */
-
     use ResetsPasswords;
-
-    /**
-     * Create a new password controller instance.
-     */
-    public function __construct()
-    {
-        $this->middleware('guest');
-    }
+    public $redirectTo = "/dashboard";
 
     /**
      * Display the password reset view for the given token.
      *
      * If no token is present, display the link request form.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @param  string|null $token
+     * @param  \Illuminate\Http\Request  $request
+     * @param  string|null  $token
      * @return \Illuminate\Http\Response
      */
-    public function getEmail(Request $request, $token = null)
-    {
+    public function getReset(Request $request, $token = null) {
         return $this->showResetForm($request, $token);
     }
 
     /**
      * Reset the given user's password.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function postReset(Request $request)
-    {
+    public function postReset(Request $request) {
         return $this->reset($request);
     }
 }

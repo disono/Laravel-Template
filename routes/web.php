@@ -31,8 +31,9 @@ Route::post('register', 'Web\Authentication\RegisterController@postRegister')->n
 Route::get('email/verify', 'Web\Authentication\RegisterController@verifyEmail')->name('web-email-verify');
 
 // password reset
-Route::get('password/reset', 'Web\Authentication\RecoveryController@getEmail')->name('web-auth-password-get-reset');
-Route::get('password/reset/{token}', 'Web\Authentication\RecoveryController@getReset')->name('web-auth-password-get-token');
+Route::get('password/recover', 'Web\Authentication\ResetController@getRecover')->name('web-auth-password-get-recover');
+Route::post('password/recover', 'Web\Authentication\ResetController@postRecover')->name('web-auth-password-post-recover');
+Route::get('password/reset/{token}', 'Web\Authentication\RecoveryController@getReset')->name('web-auth-password-get-reset');
 Route::post('password/reset', 'Web\Authentication\RecoveryController@postReset')->name('web-auth-password-post-reset');
 
 /*

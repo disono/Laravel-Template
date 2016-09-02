@@ -28,6 +28,6 @@ class LoginController extends Controller
             return success_json_response(User::single($request->get('email'), 'email'));
         }
 
-        return failed_json_response('Incoreect email or password.');
+        return failed_json_response('Incorrect email or password.');
     }
 }

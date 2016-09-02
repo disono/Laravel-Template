@@ -13,6 +13,10 @@ use App\Models\Role;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use Tymon\JWTAuth\Exceptions\TokenExpiredException;
+use Tymon\JWTAuth\Exceptions\TokenInvalidException;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class WBAuth
 {
@@ -26,7 +30,7 @@ class WBAuth
         if (auth()->check()) {
             return User::single(auth()->user()->id);
         } else if (api_auth()) {
-            return User::single(request()->get('authenticated_id'));
+            return User::single(authenticated_id());
         }
 
         return null;
@@ -99,6 +103,36 @@ class WBAuth
         }
 
         return false;
+    }
+
+    /**
+     * Authenticate
+     *
+     * @param bool $response
+     * @return bool|\Illuminate\Http\JsonResponse|null
+     */
+    public static function APIAuthenticateJWT($response = false)
+    {
+        $user = null;
+
+        try {
+            $user = JWTAuth::parseToken()->authenticate();
+            if (!$user) {
+                return ($response) ? false : failed_json_response('Token not found.');
+            }
+        } catch (TokenExpiredException $e) {
+            return ($response) ? false : failed_json_response('Token is expired, ' . $e->getMessage());
+        } catch (TokenInvalidException $e) {
+            return ($response) ? false : failed_json_response('Token is invalid, ' . $e->getMessage());
+        } catch (JWTException $e) {
+            return ($response) ? false : failed_json_response('Token is absent, ' . $e->getMessage());
+        }
+
+        if (!$user) {
+            return ($response) ? false : failed_json_response('User is not found.');
+        }
+
+        return $user;
     }
 
     /**

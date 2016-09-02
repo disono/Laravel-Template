@@ -47,7 +47,7 @@ class ListenerSignUp
         try {
             // send email for verification of registration
             Mail::send('auth.emails.register', ['content' => $user], function ($m) use ($user) {
-                $m->from(env('MAIL_NAME'), 'Confirm your registration at ' . app_header('title'));
+                $m->from(env('MAIL_FROM_ADDRESS'), 'Confirm your registration at ' . app_header('title'));
                 $m->to($user->email, $user->first_name . ' ' . $user->last_name)->subject('Verify your Registration!');
             });
         } catch (\Swift_SwiftException $e) {

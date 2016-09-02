@@ -8,6 +8,7 @@ is a starting blank template for Laravel Projects
 * **QRCode:** [https://github.com/SimpleSoftwareIO/simple-qrcode](https://github.com/SimpleSoftwareIO/simple-qrcode)
 * **HTMLMin:** [https://github.com/GrahamCampbell/Laravel-HTMLMin](https://github.com/GrahamCampbell/Laravel-HTMLMin)
 * **Socialite:** [https://github.com/laravel/socialite](https://github.com/laravel/socialite)
+* **jwt-auth:** [https://github.com/tymondesigns/jwt-auth](https://github.com/tymondesigns/jwt-auth)
 
 # JavaScript Libraries
 * **jQuery:** [https://jquery.com](https://jquery.com)

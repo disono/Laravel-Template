@@ -74,9 +74,21 @@ class WBHttp
      */
     public static function failedJSONResponse($errors = [], $status = 422)
     {
+        $is_array = is_array($errors);
+        $error_messages = $errors;
+
+        $clean_errors = [];
+        if ($is_array) {
+            foreach ($error_messages as $name => $message) {
+                $clean_errors[$name] = $message[0];
+            }
+
+            $error_messages = $clean_errors;
+        }
+
         return response()->json([
             'success' => false,
-            'errors' => (method_exists($errors, 'errors')) ? $errors->errors() : [$errors],
+            'errors' => $error_messages
         ], $status);
     }
 

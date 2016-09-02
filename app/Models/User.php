@@ -7,11 +7,14 @@
  */
 namespace App\Models;
 
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\DB;
 
 class User extends Authenticatable
 {
+    use Notifiable;
+
     private static $params;
 
     private static $username;
@@ -137,50 +140,6 @@ class User extends Authenticatable
     }
 
     /**
-     * Add formatting on data
-     *
-     * @param $query
-     * @param array $params
-     * @return null
-     */
-    private static function _format($query, $params = [])
-    {
-        if (isset($params['single'])) {
-            if (!$query) {
-                return $query;
-            }
-
-            // country
-            $query->country = Country::find($query->country_id);
-
-            // birthday
-            $query->birthday = date('M d, Y', strtotime($query->birthday));
-
-            // age
-            $query->age = count_years($query->birthday);
-
-            // avatar image
-            $query->avatar = get_image($query->image_id, 'avatar');
-        } else {
-            foreach ($query as $row) {
-                // country
-                $row->country = Country::find($row->country_id);
-
-                // birthday
-                $row->birthday = date('M d, Y', strtotime($row->birthday));
-
-                // age
-                $row->age = count_years($row->birthday);
-
-                // avatar image
-                $row->avatar = get_image($row->image_id, 'avatar');
-            }
-        }
-
-        return $query;
-    }
-
-    /**
      * Update data
      *
      * @param $id
@@ -257,6 +216,10 @@ class User extends Authenticatable
                     if ($value) {
                         $update[$key] = sql_date($value, true);
                     }
+                } else if ($key === 'country_id') {
+                    if ($value && is_numeric($value) && $value > 0) {
+                        $update[$key] = $value;
+                    }
                 } else if ($key === 'username') {
                     if ($value) {
                         $slug = Slug::get([
@@ -272,7 +235,7 @@ class User extends Authenticatable
                         }
                     }
                 } else {
-                    $update[$key] = clean(($key === 'email') ? $value : ucfirst($value));
+                    $update[$key] = clean($value);
                 }
             }
         }
@@ -293,5 +256,49 @@ class User extends Authenticatable
         Image::destroySource($id, 'user');
 
         return (bool)self::destroy($id);
+    }
+
+    /**
+     * Add formatting on data
+     *
+     * @param $query
+     * @param array $params
+     * @return null
+     */
+    private static function _format($query, $params = [])
+    {
+        if (isset($params['single'])) {
+            if (!$query) {
+                return $query;
+            }
+
+            // country
+            $query->country = Country::find($query->country_id);
+
+            // birthday
+            $query->birthday = date('M d, Y', strtotime($query->birthday));
+
+            // age
+            $query->age = count_years($query->birthday);
+
+            // avatar image
+            $query->avatar = get_image($query->image_id, 'avatar');
+        } else {
+            foreach ($query as $row) {
+                // country
+                $row->country = Country::find($row->country_id);
+
+                // birthday
+                $row->birthday = date('M d, Y', strtotime($row->birthday));
+
+                // age
+                $row->age = count_years($row->birthday);
+
+                // avatar image
+                $row->avatar = get_image($row->image_id, 'avatar');
+            }
+        }
+
+        return $query;
     }
 }

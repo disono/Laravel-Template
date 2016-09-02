@@ -125,7 +125,7 @@ class RegisterController extends Controller
         return Validator::make($data, [
             'first_name' => 'required|max:100',
             'last_name' => 'required|max:100',
-            'username' => 'required|max:100|alpha_dash|unique:slugs,name|not_in:' . exclude_slug(),
+            'username' => 'required|max:100|alpha_dash|unique:slugs,name,null,source_id,source_type,user|not_in:' . exclude_slug(),
             'email' => 'required|email|max:255|unique:users',
             'password' => 'required|min:6|confirmed',
         ]);

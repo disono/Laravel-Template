@@ -18,15 +18,20 @@
  */
 
 // login
-Route::post('api/v1/auth/login', 'API\V1\Authenticate\LoginController@login')->name('api-v1-auth-login');
+Route::post('v1/auth/login', 'API\V1\Authenticate\LoginController@login')->name('api-v1-auth-login');
 
 // register
-Route::post('api/v1/auth/register', 'API\V1\Authenticate\RegisterController@register')->name('api-v1-auth-register');
+Route::post('v1/auth/register', 'API\V1\Authenticate\RegisterController@register')->name('api-v1-auth-register');
 
 // forgot
-Route::post('api/v1/password/reset', 'API\V1\Authenticate\RecoveryController@postReset')->name('api-v1-password-reset');
+Route::post('v1/password/recover', 'API\V1\Authenticate\RecoveryController@postRecovery')->name('api-v1-password-recover');
 
 // user
-Route::get('api/v1/user/{id}', 'API\V1\User\UserController@getShow')->name('api-v1-user');
-Route::post('api/v1/user/update/setting', 'API\V1\User\SettingsController@postSettings')->name('api-v1-user-update-settings');
-Route::post('api/v1/user/update/security', 'API\V1\User\SettingsController@postSecurity')->name('api-v1-user-update-security');
+Route::group(['middleware' => ['api.auth']], function () {
+    Route::get('v1/user/{id}', 'API\V1\User\UserController@getShow')->name('api-v1-user');
+    Route::post('v1/user/token/create', 'API\V1\User\UserController@postTokenCreate')->name('api-v1-user-token-create');
+    Route::post('v1/user/token/check', 'API\V1\User\UserController@postTokenCheck')->name('api-v1-user-token-check');
+    Route::post('v1/user/update/setting', 'API\V1\User\SettingsController@postSettings')->name('api-v1-user-update-settings');
+    Route::post('v1/user/update/security', 'API\V1\User\SettingsController@postSecurity')->name('api-v1-user-update-security');
+});
+Route::get('v1/user/update/setting', 'API\V1\User\SettingsController@postSettings')->name('api-v1-user-update-settings');

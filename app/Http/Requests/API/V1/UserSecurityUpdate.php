@@ -7,27 +7,11 @@
  */
 namespace App\Http\Requests\API\V1;
 
-use App\Http\Requests\Request;
-
-class UserSecurityUpdate extends Request
+class UserSecurityUpdate extends RequestAuthAPI
 {
-    private $auth;
-
     public function __construct()
     {
         parent::__construct();
-
-        $this->auth = api_auth();
-    }
-
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
-    public function authorize()
-    {
-        return $this->auth;
     }
 
     /**
@@ -42,16 +26,5 @@ class UserSecurityUpdate extends Request
             'current_password' => 'current_password',
             'password' => 'required_with:current_password|password_complex|confirmed'
         ];
-    }
-
-    /**
-     * Get all errors if validation failed
-     *
-     * @param array $errors
-     * @return response
-     */
-    public function response(array $errors)
-    {
-        return failed_json_response($errors);
     }
 }

@@ -107,3 +107,15 @@ if (!function_exists('rand_token')) {
         return str_random(64) . time();
     }
 }
+
+if (!function_exists('authenticated_id')) {
+    /**
+     * Get the authenticated ID
+     *
+     * @return array|\Illuminate\Http\Request|string
+     */
+    function authenticated_id()
+    {
+        return (request()->header('authenticated_id')) ? request()->header('authenticated_id') : request('authenticated_id', 0);
+    }
+}

@@ -9,8 +9,7 @@ namespace App\Http\Controllers\API\V1\Authenticate;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\V1\PasswordRecovery;
-use Illuminate\Foundation\Auth\ResetsPasswords;
-use Illuminate\Http\Request;
+use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
 use Illuminate\Support\Facades\Password;
 
 class RecoveryController extends Controller
@@ -26,7 +25,7 @@ class RecoveryController extends Controller
     |
     */
 
-    use ResetsPasswords;
+    use SendsPasswordResetEmails;
 
     /**
      * Reset the given user's password.
@@ -34,41 +33,27 @@ class RecoveryController extends Controller
      * @param PasswordRecovery $request
      * @return \Illuminate\Http\Response
      */
-    public function postReset(PasswordRecovery $request)
+    public function postRecovery(PasswordRecovery $request)
     {
-        return $this->sendResetLinkEmail($request);
-    }
+        config(['mail.from' => [
+            'address' => env('MAIL_FROM_ADDRESS', ''),
+            'name' => 'Password Reset',
+        ]]);
 
-    /**
-     * Send a reset link to the given user.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
-     */
-    public function sendResetLinkEmail(Request $request)
-    {
-        $this->validateSendResetLinkEmail($request);
+        // We will send the password reset link to this user. Once we have attempted
+        // to send the link, we will examine the response then see the message we
+        // need to show to the user. Finally, we'll send out a proper response.
+        $response = $this->broker()->sendResetLink(
+            $request->only('email'), $this->resetNotifier()
+        );
 
-        $broker = $this->getBroker();
-
-        try {
-            $response = Password::broker($broker)->sendResetLink(
-                $this->getSendResetLinkEmailCredentials($request),
-                $this->resetEmailBuilder()
-            );
-
-            switch ($response) {
-                case Password::RESET_LINK_SENT:
-                    return success_json_response($response);
-                case Password::INVALID_USER:
-                    return failed_json_response([
-                        'email' => 'Invalid user email.'
-                    ]);
-                default:
-                    return failed_json_response($response);
-            }
-        } catch (\Exception $e) {
-            return failed_json_response($e->getMessage());
+        if ($response === Password::RESET_LINK_SENT) {
+            return success_json_response(trans($response));
         }
+
+        // If an error was returned by the password broker, we will get this message
+        // translated so we can notify a user of the problem. We'll redirect back
+        // to where the users came from so they can attempt this process again.
+        return failed_json_response(['email' => trans($response)]);
     }
 }
