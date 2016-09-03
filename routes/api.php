@@ -29,9 +29,12 @@ Route::post('v1/password/recover', 'API\V1\Authenticate\RecoveryController@postR
 // user
 Route::group(['middleware' => ['api.auth']], function () {
     Route::get('v1/user/{id}', 'API\V1\User\UserController@getShow')->name('api-v1-user');
-    Route::post('v1/user/token/create', 'API\V1\User\UserController@postTokenCreate')->name('api-v1-user-token-create');
-    Route::post('v1/user/token/check', 'API\V1\User\UserController@postTokenCheck')->name('api-v1-user-token-check');
+
+    // user settings
     Route::post('v1/user/update/setting', 'API\V1\User\SettingsController@postSettings')->name('api-v1-user-update-settings');
     Route::post('v1/user/update/security', 'API\V1\User\SettingsController@postSecurity')->name('api-v1-user-update-security');
+
+    // user tokens
+    Route::post('v1/user/token/create', 'API\V1\User\UserController@postTokenCreate')->name('api-v1-user-token-create');
+    Route::post('v1/user/token/check', 'API\V1\User\UserController@postTokenCheck')->name('api-v1-user-token-check');
 });
-Route::get('v1/user/update/setting', 'API\V1\User\SettingsController@postSettings')->name('api-v1-user-update-settings');
