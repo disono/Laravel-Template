@@ -119,3 +119,20 @@ if (!function_exists('authenticated_id')) {
         return (request()->header('authenticated_id')) ? request()->header('authenticated_id') : request('authenticated_id', 0);
     }
 }
+
+if (!function_exists('request_value')) {
+    /**
+     * Get request value
+     *
+     * @param $request
+     * @param $name
+     * @param string $default
+     * @param bool $encrypt
+     * @return string
+     */
+    function request_value($request, $name, $default = '', $encrypt = false)
+    {
+        $value = ($request->get($name)) ? clean($request->get($name)) : $default;
+        return ($encrypt && $value) ? bcrypt($value) : $value;
+    }
+}

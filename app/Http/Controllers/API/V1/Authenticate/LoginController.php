@@ -9,6 +9,7 @@ namespace App\Http\Controllers\API\V1\Authenticate;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests;
+use App\Models\AuthHistory;
 use App\Models\User;
 
 class LoginController extends Controller
@@ -24,8 +25,19 @@ class LoginController extends Controller
         if (auth()->once(['email' => $request->get('email'), 'password' => $request->get('password'),
             'email_confirmed' => 1, 'enabled' => 1])
         ) {
+            $user = User::single($request->get('email'), 'email');
 
-            return success_json_response(User::single($request->get('email'), 'email'));
+            // authentication history
+            if ($user) {
+                AuthHistory::store([
+                    'user_id' => $user->id,
+                    'ip' => get_ip_address(),
+                    'platform' => get_user_agent(),
+                    'type' => 'login'
+                ]);
+            }
+
+            return success_json_response($user);
         }
 
         return failed_json_response('Incorrect email or password.');

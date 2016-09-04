@@ -8,6 +8,7 @@
 namespace App\Http\Controllers\Web\Authentication\Social;
 
 use App\Http\Controllers\Controller;
+use App\Models\AuthHistory;
 use App\Models\SocialAuth;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -69,15 +70,32 @@ class FacebookController extends Controller
                 // login the user
                 Auth::loginUsingId($create->id);
 
+                $this->_logAuthentication();
                 return redirect('dashboard');
             }
         } else {
             // login the user
             Auth::loginUsingId($user_query->user_id);
 
+            $this->_logAuthentication();
             return redirect('dashboard');
         }
 
         return abort(404);
+    }
+
+    /**
+     * Log the authentication
+     */
+    private function _logAuthentication() {
+        // authentication history
+        if (auth()->check()) {
+            AuthHistory::store([
+                'user_id' => auth()->user()->id,
+                'ip' => get_ip_address(),
+                'platform' => get_user_agent(),
+                'type' => 'login'
+            ]);
+        }
     }
 }
