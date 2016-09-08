@@ -110,7 +110,12 @@ class Validation extends Validator
      */
     protected function validateCurrentPassword($attribute, $value, $parameters)
     {
-        $user = User::find(Auth::user()->id);
+        $user = (auth()->check()) ? User::find(Auth::user()->id) : User::find(authenticated_id());
+
+        if (!$user) {
+            return false;
+        }
+
         if (!Hash::check($value, $user->password)) {
             return false;
         }

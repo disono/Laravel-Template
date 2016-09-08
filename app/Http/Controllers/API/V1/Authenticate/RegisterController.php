@@ -92,9 +92,10 @@ class RegisterController extends Controller
      *
      * @param $request
      * @param $social_id
+     * @return User
      */
     private function _createUser($request, $social_id) {
-        User::create([
+        return User::create([
             'first_name' => ucfirst(request_value($request, 'first_name')),
             'last_name' => ucfirst(request_value($request, 'last_name')),
 

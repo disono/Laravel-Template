@@ -17,6 +17,12 @@
  * ---------------------------------------------------------------------------------------------------------------------
  */
 
+if (env('APP_ENV') === 'local') {
+    header('Access-Control-Allow-Origin: *');
+    header('Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS');
+    header('Access-Control-Allow-Headers: Origin, Content-Type, X-Auth-Token, X-XSRF-TOKEN');
+}
+
 // login
 Route::post('v1/auth/login', 'API\V1\Authenticate\LoginController@login')->name('api-v1-auth-login');
 

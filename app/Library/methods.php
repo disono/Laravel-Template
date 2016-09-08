@@ -132,7 +132,7 @@ if (!function_exists('request_value')) {
      */
     function request_value($request, $name, $default = '', $encrypt = false)
     {
-        $value = ($request->get($name)) ? clean($request->get($name)) : $default;
+        $value = ($request->get($name) != null) ? clean($request->get($name)) : $default;
         return ($encrypt && $value) ? bcrypt($value) : $value;
     }
 }
