@@ -15,20 +15,28 @@
                 <span class="icon-bar"></span>
             </button>
 
-            <a class="navbar-brand" href="{{url('/')}}">
-                <i class="fa fa-bars fa-lg" aria-hidden="true" id="menu-toggle"></i>
+            <span class="navbar-brand">
+                <i class="fa fa-bars fa-lg" style="cursor:pointer" aria-hidden="true" id="menu-toggle"></i>
                 {{app_header('title')}}
-            </a>
+            </span>
         </div>
 
         <div class="collapse navbar-collapse" id="collapseMenuAdmin">
             <ul class="nav navbar-nav pull-right">
-                <li>
-                    <a href="{{url('user/settings')}}"><i class="fa fa-user" aria-hidden="true"></i> Profile</a>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false">Profile <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{url('user/settings')}}"><i class="fa fa-cog" aria-hidden="true"></i> General Settings</a></li>
+                        <li><a href="{{url('user/security')}}"><i class="fa fa-lock" aria-hidden="true"></i> Security Settings</a></li>
+
+                        <li role="separator" class="divider"></li>
+                        <li><a href="{{url('logout')}}"><i class="fa fa-sign-out" aria-hidden="true"></i> Logout</a></li>
+                    </ul>
                 </li>
 
                 <li>
-                    <a href="{{url('logout')}}"><i class="fa fa-sign-out" aria-hidden="true"></i> Logout</a>
+                    <a href="/">Home</a>
                 </li>
             </ul>
         </div>

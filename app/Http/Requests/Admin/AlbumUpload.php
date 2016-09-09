@@ -33,7 +33,7 @@ class AlbumUpload extends Request
             'title' => 'required|max:100',
             'description' => 'max:500',
 
-            'image' => 'image|max:' . config_file_size(),
+            'image.*' => 'image|max:' . config_file_size(),
         ];
     }
 }

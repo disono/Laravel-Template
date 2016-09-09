@@ -21,7 +21,7 @@
 
                         <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
                             <label for="name">Upload Image*</label>
-                            <input type="file" id="image" name="image" class="form-control">
+                            <input type="file" id="image" name="image[]" class="form-control" multiple="multiple">
 
                             @if ($errors->has('image'))
                                 <span class="help-block">{{ $errors->first('image') }}</span>
@@ -86,7 +86,7 @@
                                                 Options <span class="caret"></span>
                                             </button>
                                             <ul class="dropdown-menu">
-                                                <li><a href="{{url('admin/ajax/image/destroy/' . $row->id)}}"
+                                                <li><a href="{{url('admin/image/destroy/' . $row->id)}}"
                                                        class="delete-data">Delete</a></li>
                                             </ul>
                                         </div>

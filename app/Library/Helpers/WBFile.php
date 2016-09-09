@@ -76,48 +76,19 @@ class WBFile
     public static function uploadImage($file, $image_options = [], $old_file = null, $destinationPath = 'private/img', $nameOnly = false)
     {
         if ($file) {
-            $extension = $file->getClientOriginalExtension();
-            $upload_filename = filename_creator() . '.' . $extension;
-            $file->move($destinationPath, $upload_filename);
+            $uploaded = true;
 
-            // manipulate image
-            $upload_file = Image::make($destinationPath . '/' . $upload_filename);
-
-            if ($upload_file) {
-                // crop
-                if (isset($image_options['crop_width']) && isset($image_options['crop_height'])) {
-                    $upload_file->crop((int)$image_options['crop_width'], (int)$image_options['crop_height']);
-                } else if (isset($image_options['crop_auto'])) {
-                    $height = $upload_file->height() * 0.85;
-                    $width = $height;
-                    $upload_file->crop((int)$width, (int)$height);
+            if (is_array($file)) {
+                // multiple files
+                foreach ($file as $value) {
+                    self::_processUploadedImage($value, $image_options, $destinationPath, $nameOnly);
                 }
-
-                // resize
-                if (isset($image_options['width']) && isset($image_options['height'])) {
-                    $upload_file->resize((int)$image_options['width'], (int)$image_options['height']);
-                }
-
-                // resize only the height of the image
-                if (!isset($image_options['width']) && isset($image_options['height'])) {
-                    $upload_file->resize(null, (int)$image_options['height'], function ($constraint) {
-                        $constraint->aspectRatio();
-                    });
-                }
-
-                // resize only the width of the image
-                if (isset($image_options['width']) && !isset($image_options['height'])) {
-                    $upload_file->resize((int)$image_options['width'], null, function ($constraint) {
-                        $constraint->aspectRatio();
-                    });
-                }
-
-                // save
-                $upload_file->save(null, config_img_quality($upload_file->filesize()));
+            } else {
+                $uploaded = self::_processUploadedImage($file, $image_options, $destinationPath, $nameOnly);
             }
 
             // delete old file
-            if ($old_file) {
+            if ($old_file && $uploaded) {
                 if (is_numeric($old_file) && $old_file > 0) {
                     // get the old image to delete
                     $query_image = \App\Models\Image::find($old_file);
@@ -134,24 +105,7 @@ class WBFile
                 }
             }
 
-            // return filename
-            if ($nameOnly) {
-                return $upload_filename;
-            }
-
-            // insert image to database
-            return \App\Models\Image::insertGetId([
-                'user_id' => ((isset($image_options['user_id'])) ? $image_options['user_id'] : 0),
-                'source_id' => ((isset($image_options['source_id'])) ? $image_options['source_id'] : 0),
-
-                'title' => ((isset($image_options['title'])) ? $image_options['title'] : null),
-                'description' => ((isset($image_options['description'])) ? $image_options['description'] : null),
-
-                'filename' => $upload_filename,
-                'type' => ((isset($image_options['type'])) ? $image_options['type'] : null),
-
-                'created_at' => sql_date()
-            ]);
+            return $uploaded;
         }
 
         return 0;
@@ -240,5 +194,75 @@ class WBFile
         }
 
         return null;
+    }
+
+    /**
+     * Process uploaded image
+     *
+     * @param $file
+     * @param array $image_options
+     * @param $destinationPath
+     * @param bool $nameOnly
+     * @return string
+     */
+    private static function _processUploadedImage($file, $image_options = [], $destinationPath = 'private/img', $nameOnly = false) {
+        $extension = $file->getClientOriginalExtension();
+        $upload_filename = filename_creator() . '.' . $extension;
+        $file->move($destinationPath, $upload_filename);
+
+        // manipulate image
+        $upload_file = Image::make($destinationPath . '/' . $upload_filename);
+
+        if ($upload_file) {
+            // crop
+            if (isset($image_options['crop_width']) && isset($image_options['crop_height'])) {
+                $upload_file->crop((int)$image_options['crop_width'], (int)$image_options['crop_height']);
+            } else if (isset($image_options['crop_auto'])) {
+                $height = $upload_file->height() * 0.85;
+                $width = $height;
+                $upload_file->crop((int)$width, (int)$height);
+            }
+
+            // resize
+            if (isset($image_options['width']) && isset($image_options['height'])) {
+                $upload_file->resize((int)$image_options['width'], (int)$image_options['height']);
+            }
+
+            // resize only the height of the image
+            if (!isset($image_options['width']) && isset($image_options['height'])) {
+                $upload_file->resize(null, (int)$image_options['height'], function ($constraint) {
+                    $constraint->aspectRatio();
+                });
+            }
+
+            // resize only the width of the image
+            if (isset($image_options['width']) && !isset($image_options['height'])) {
+                $upload_file->resize((int)$image_options['width'], null, function ($constraint) {
+                    $constraint->aspectRatio();
+                });
+            }
+
+            // save
+            $upload_file->save(null, config_img_quality($upload_file->filesize()));
+        }
+
+        // return filename
+        if ($nameOnly) {
+            return $upload_filename;
+        }
+
+        // insert image to database
+        return \App\Models\Image::insertGetId([
+            'user_id' => ((isset($image_options['user_id'])) ? $image_options['user_id'] : 0),
+            'source_id' => ((isset($image_options['source_id'])) ? $image_options['source_id'] : 0),
+
+            'title' => ((isset($image_options['title'])) ? $image_options['title'] : null),
+            'description' => ((isset($image_options['description'])) ? $image_options['description'] : null),
+
+            'filename' => $upload_filename,
+            'type' => ((isset($image_options['type'])) ? $image_options['type'] : null),
+
+            'created_at' => sql_date()
+        ]);
     }
 }
