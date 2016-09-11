@@ -59,7 +59,7 @@ class AuthorizationRoleController extends Controller
      * @param $id
      * @return mixed
      */
-    public function ajaxDestroy($id)
+    public function destroy($id)
     {
         AuthorizationRole::remove($id);
 

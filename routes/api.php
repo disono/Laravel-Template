@@ -17,6 +17,9 @@
  * ---------------------------------------------------------------------------------------------------------------------
  */
 
+// initialize token key
+init_token_key();
+
 if (env('APP_ENV') === 'local') {
     header('Access-Control-Allow-Origin: *');
     header('Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS');

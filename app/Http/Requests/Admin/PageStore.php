@@ -30,7 +30,7 @@ class PageStore extends Request
     {
         return [
             'name' => 'required|max:100',
-            'slug' => 'required|max:100|alpha_dash|not_in:' . exclude_slug() . '|unique:slugs,name,null,source_id,source_type,page',
+            'slug' => 'required|max:100|alpha_dash|not_in:' . exclude_slug() . '|unique:slugs,name,null,source_id',
             'content' => 'max:50000',
 
             'page_category_id' => 'required|integer|exists:page_categories,id',

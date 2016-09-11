@@ -23,7 +23,7 @@ class AuthRegister extends RequestGuestAPI
             'last_name' => 'required|max:100',
 
             'phone' => 'required_without:social_id|numeric|digits_between:7,22',
-            'username' => 'required_without:social_id|max:32|alpha_dash|unique:slugs,name,null,source_id,source_type,user|not_in:' . exclude_slug(),
+            'username' => 'required_without:social_id|max:32|alpha_dash|unique:slugs,name,null,source_id|not_in:' . exclude_slug(),
             'email' => 'required_without:social_id|email' . (($social_id) ? '' : '|unique:users,email'),
             'password' => 'required_without:social_id|min:4|max:32',
             'address' => 'max:1000',

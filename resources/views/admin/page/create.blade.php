@@ -107,18 +107,7 @@
     </div>
 @endsection
 
-@section('javascript')
-    <script>
-        function appScriptLoader() {
-            [
-                'https://cdnjs.cloudflare.com/ajax/libs/tinymce/4.3.13/tinymce.min.js',
-                '{{asset('assets/js/tiny-mce-init.js') . url_ext()}}'
-            ].forEach(function (src) {
-                var script = document.createElement('script');
-                script.src = src;
-                script.async = false;
-                document.head.appendChild(script);
-            });
-        }
-    </script>
-@endsection
+@include('vendor.loaders', ['scripts' => [
+    'https://cdnjs.cloudflare.com/ajax/libs/tinymce/4.3.13/tinymce.min.js',
+    'assets/js/tiny-mce-init.js'
+]])

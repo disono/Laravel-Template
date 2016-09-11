@@ -13,7 +13,8 @@
         "graham-campbell/htmlmin": "^4.3",
         "laravel/socialite": "^2.0",
         "mews/purifier": "^2.0",
-        "tymon/jwt-auth": "^0.5.9"
+        "tymon/jwt-auth": "^0.5.9",
+        "brozot/laravel-fcm": "^1.2"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

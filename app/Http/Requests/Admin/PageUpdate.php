@@ -31,7 +31,7 @@ class PageUpdate extends Request
         return [
             'id' => 'required|integer|exists:pages,id',
             'name' => 'required|max:100',
-            'slug' => 'required|max:100|alpha_dash|not_in:' . exclude_slug() . '|unique:slugs,name,' . $this->get('id') . ',source_id,source_type,page',
+            'slug' => 'required|max:100|alpha_dash|not_in:' . exclude_slug() . '|unique:slugs,name,' . $this->get('id') . ',source_id',
             'content' => 'max:50000',
 
             'page_category_id' => 'required|integer|exists:page_categories,id',

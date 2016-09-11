@@ -590,6 +590,16 @@ if (!function_exists('api_auth_jwt')) {
     }
 }
 
+if (!function_exists('init_token_key')) {
+    /**
+     * Initialize token key
+     */
+    function init_token_key()
+    {
+        App\Library\Helpers\WBAuth::initializeTokenKey();
+    }
+}
+
 if (!function_exists('resource_authorize')) {
     /**
      * Is resource authorize

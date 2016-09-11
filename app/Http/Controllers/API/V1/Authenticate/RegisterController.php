@@ -10,6 +10,7 @@ namespace App\Http\Controllers\API\V1\Authenticate;
 use App\Events\EventSignUp;
 use App\Http\Controllers\Controller;
 use App\Http\Requests;
+use App\Models\AuthenticationToken;
 use App\Models\AuthHistory;
 use App\Models\Slug;
 use App\Models\SocialAuth;
@@ -82,6 +83,15 @@ class RegisterController extends Controller
                 'platform' => get_user_agent(),
                 'type' => 'login'
             ]);
+        }
+
+        // create authentication token
+        if ($user) {
+            $user = AuthenticationToken::createToken($user);
+
+            if (!$user) {
+                return failed_json_response('Failed to create token.');
+            }
         }
 
         return success_json_response($user);

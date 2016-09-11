@@ -23,8 +23,8 @@ class UserSecurityUpdate extends RequestAuthAPI
     {
         return [
             'email' => 'required|unique:users,email' . (($this->auth) ? ',' . $this->auth->id : null),
-            'current_password' => 'current_password',
-            'password' => 'required_with:current_password|password_complex|confirmed'
+            'current_password' => 'required|current_password',
+            'password' => 'password_complex|confirmed'
         ];
     }
 }

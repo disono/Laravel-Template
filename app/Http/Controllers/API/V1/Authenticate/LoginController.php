@@ -9,6 +9,7 @@ namespace App\Http\Controllers\API\V1\Authenticate;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests;
+use App\Models\AuthenticationToken;
 use App\Models\AuthHistory;
 use App\Models\User;
 
@@ -27,14 +28,21 @@ class LoginController extends Controller
         ) {
             $user = User::single($request->get('email'), 'email');
 
-            // authentication history
             if ($user) {
-                AuthHistory::store([
-                    'user_id' => $user->id,
-                    'ip' => get_ip_address(),
-                    'platform' => get_user_agent(),
-                    'type' => 'login'
-                ]);
+                // create token
+                $user = AuthenticationToken::createToken($user);
+
+                if (!$user) {
+                    return failed_json_response('Failed to create token.');
+                } else {
+                    // authentication history
+                    AuthHistory::store([
+                        'user_id' => $user->id,
+                        'ip' => get_ip_address(),
+                        'platform' => get_user_agent(),
+                        'type' => 'login'
+                    ]);
+                }
             }
 
             return success_json_response($user);

@@ -7,6 +7,7 @@
  */
 namespace App\Library\Helpers;
 
+use App\Models\AuthenticationToken;
 use App\Models\Authorization;
 use App\Models\AuthorizationRole;
 use App\Models\Role;
@@ -116,6 +117,9 @@ class WBAuth
         $user = null;
 
         try {
+            // initialize token key
+            self::initializeTokenKey();
+
             $user = JWTAuth::parseToken()->authenticate();
             if (!$user) {
                 return ($response) ? false : failed_json_response('Token not found.');
@@ -133,6 +137,25 @@ class WBAuth
         }
 
         return $user;
+    }
+
+    /**
+     * Initialize token key
+     */
+    public static function initializeTokenKey() {
+        // token key
+        $auth_token = AuthenticationToken::where('token_key', get_request_value('token_key'))->first();
+        if (!$auth_token) {
+            return;
+        }
+
+        // check if user id is correct
+        if (authenticated_id() != $auth_token->user_id) {
+            return;
+        }
+
+        // secret key
+        config(['jwt.secret' => $auth_token->secret_key]);
     }
 
     /**

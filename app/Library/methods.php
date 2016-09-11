@@ -120,6 +120,20 @@ if (!function_exists('authenticated_id')) {
     }
 }
 
+if (!function_exists('get_request_value')) {
+    /**
+     * Get request value
+     *
+     * @param $key
+     * @param null $default
+     * @return array|\Illuminate\Http\Request|string
+     */
+    function get_request_value($key, $default = null)
+    {
+        return (request()->header($key)) ? request()->header($key) : request($key, $default);
+    }
+}
+
 if (!function_exists('request_value')) {
     /**
      * Get request value

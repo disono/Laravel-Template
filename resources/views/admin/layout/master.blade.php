@@ -37,6 +37,7 @@
             display: table-cell;
             text-align: center;
             vertical-align: middle;
+            background: #000000 url('/assets/img/logo_loader.png') no-repeat center center;
         }
     </style>
 
@@ -69,7 +70,7 @@
 <body ng-app="WBApp">
 {{-- loader --}}
 <div id="loaderContent">
-    <img src="{{asset('assets/img/loaders/content-loader.svg')}}" alt="Loading...">
+    <img src="{{asset('assets/img/loaders/loader.svg')}}" width="260" alt="Loading...">
 </div>
 
 {{-- main application content --}}
@@ -77,16 +78,16 @@
     {{-- header menu --}}
     @include('admin.layout.header')
 
-    <div class="container-fluid">
+    <div class="container-fluid" style="margin-top: 14px !important;">
         <div id="wrapper">
             {{-- side-bar --}}
             @include('admin.sidebar.main')
 
             {{-- content --}}
             <div id="page-content-wrapper">
-                <div class="container-fluid">
+                <div class="container-fluid no-padding">
                     <div class="row">
-                        <div class="col-lg-12">
+                        <div class="col-lg-12 no-padding">
                             @yield('content')
                         </div>
                     </div>
@@ -102,44 +103,20 @@
 @yield('javascript')
 
 @if(env('APP_DEBUG'))
-    <script>
-        [
-            '{{asset("assets/js/vendor.js") . url_ext()}}',
-            '{{asset("assets/js/helper.js") . url_ext()}}',
-            '{{asset("assets/js/main.js") . url_ext()}}',
-            '{{asset("assets/js/app.js") . url_ext()}}',
-            '{{asset("assets/js/admin.js") . url_ext()}}',
-
-            'https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places'
-        ].forEach(function (src) {
-            var script = document.createElement('script');
-            script.src = src;
-            script.async = false;
-            document.head.appendChild(script);
-        });
-
-        if (typeof appScriptLoader == 'function') {
-            appScriptLoader();
-        }
-    </script>
+    @include('vendor.loaders', array('after_load' => true, 'scripts' => [
+        'assets/js/vendor.js',
+        'assets/js/helper.js',
+        'assets/js/main.js',
+        'assets/js/app.js',
+        'assets/js/admin.js',
+        'https://maps.googleapis.com/maps/api/js?key=' . env('GOOGLE_API_KEY') . '&v=3.exp&libraries=places'
+    ]))
 @else
-    <script>
-        [
-            '{{asset("assets/js/vendor.js") . url_ext()}}',
-            '{{asset("assets/js/admin.js") . url_ext()}}',
-
-            'https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places'
-        ].forEach(function (src) {
-            var script = document.createElement('script');
-            script.src = src;
-            script.async = false;
-            document.head.appendChild(script);
-        });
-
-        if (typeof appScriptLoader == 'function') {
-            appScriptLoader();
-        }
-    </script>
+    @include('vendor.loaders', ['after_load' => true, 'scripts' => [
+        'assets/js/vendor.js',
+        'assets/js/admin.js',
+        'https://maps.googleapis.com/maps/api/js?key=' . env('GOOGLE_API_KEY') . '&v=3.exp&libraries=places'
+    ]])
 @endif
 </body>
 </html>

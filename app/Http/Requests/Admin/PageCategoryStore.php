@@ -30,7 +30,7 @@ class PageCategoryStore extends Request
     {
         return [
             'name' => 'required|max:100',
-            'slug' => 'required|max:100|alpha_dash|not_in:' . exclude_slug() . '|unique:page_categories,slug',
+            'slug' => 'required|max:100|alpha_dash|not_in:' . exclude_slug() . '|unique:slugs,name,null,source_id,source_type,page_categories',
             'description' => 'max:500'
         ];
     }
