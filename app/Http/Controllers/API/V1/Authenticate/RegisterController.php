@@ -1,7 +1,7 @@
 <?php
 /**
  * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: http://www.webmons.com
+ * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
  * Copyright 2016 Webmons Development Studio.
  * License: Apache 2.0
  */
@@ -104,7 +104,8 @@ class RegisterController extends Controller
      * @param $social_id
      * @return User
      */
-    private function _createUser($request, $social_id) {
+    private function _createUser($request, $social_id)
+    {
         return User::create([
             'first_name' => ucfirst(request_value($request, 'first_name')),
             'last_name' => ucfirst(request_value($request, 'last_name')),

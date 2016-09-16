@@ -1,7 +1,7 @@
 <?php
 /**
  * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: http://www.webmons.com
+ * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
  * Copyright 2016 Webmons Development Studio.
  * License: Apache 2.0
  */
@@ -564,6 +564,20 @@ if (!function_exists('authorize_me')) {
     }
 }
 
+if (!function_exists('authorize_route')) {
+    /**
+     * Authorize routes
+     *
+     * @param int $user_id
+     * @param bool $abort
+     * @return bool
+     */
+    function authorize_route($user_id = 0, $abort = true)
+    {
+        return App\Library\Helpers\WBAuth::authorizeRoute($user_id, $abort);
+    }
+}
+
 if (!function_exists('api_auth')) {
     /**
      * Check if user exists
@@ -610,5 +624,24 @@ if (!function_exists('resource_authorize')) {
     function resource_authorize($user)
     {
         return App\Library\Helpers\WBAuth::resourceAuthorize($user);
+    }
+}
+
+/*
+ * --------------------------------------------------------------------------
+ * WBMessaging method
+ * --------------------------------------------------------------------------
+ */
+if (!function_exists('sendSMS')) {
+    /**
+     * Send SMS
+     *
+     * @param $number
+     * @param $message
+     * @return bool
+     */
+    function sendSMS($number, $message)
+    {
+        return App\Library\Helpers\WBMessaging::SMS($number, $message);
     }
 }

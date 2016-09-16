@@ -1,7 +1,8 @@
 <?php
 /**
- * Author: Archie, Disono (disono.apd@gmail.com)
- * Website: www.webmons.com
+ * Author: Archie, Disono (webmonsph@gmail.com)
+ * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
+ * Copyright 2016 Webmons Development Studio.
  * License: Apache 2.0
  */
 namespace App\Library\Helpers;

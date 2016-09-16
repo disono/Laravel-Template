@@ -1,7 +1,7 @@
 <?php
 /**
  * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: http://www.webmons.com
+ * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
  * Copyright 2016 Webmons Development Studio.
  * License: Apache 2.0
  */
@@ -25,16 +25,18 @@ class AuthorizationRoleController extends Controller
     public function index(Request $request, $role_id)
     {
         $content['title'] = app_title('Authorization');
-        $content['authorization_roles'] = AuthorizationRole::get([
-            'role_id' => $role_id
+
+        $content['authorization'] = Authorization::get([
+            'all' => true,
+            'search' => $request->get('search')
         ]);
-        $content['authorization_role_all'] = AuthorizationRole::get([
+
+        $authorization_roles = AuthorizationRole::get([
             'role_id' => $role_id,
             'all' => true
         ]);
-        $content['authorizations'] = Authorization::getAll([
-            'exclude' => ['key' => 'id', 'val' => db_filter_id($content['authorization_role_all'], 'authorization_id')]
-        ]);
+        $content['authorization_roles'] = db_filter_id($authorization_roles, 'authorization_id');
+
         $content['request'] = $request;
         $content['role_id'] = $role_id;
 
@@ -49,8 +51,37 @@ class AuthorizationRoleController extends Controller
      */
     public function store(Requests\Admin\AuthorizationRoleStore $request)
     {
-        AuthorizationRole::store($request->all());
-        return redirect('admin/authorization-roles/' . $request->get('role_id'));
+        $role_id = $request->get('role_id');
+        $authorization_checked = [];
+
+        // add
+        foreach ($request->get('authorization_id') as $authorization_id) {
+            $authorization_checked[] = $authorization_id;
+
+            AuthorizationRole::store([
+                'role_id' => $role_id,
+                'authorization_id' => $authorization_id
+            ]);
+        }
+
+        // filter unchecked id
+        $found = [];
+        $authorization_filtered_id = db_filter_id(Authorization::get([
+            'role_id' => $role_id,
+            'all' => true
+        ]), 'id');
+        foreach ($authorization_filtered_id as $authorization) {
+            if (!in_array($authorization, $authorization_checked)) {
+                $found[] = $authorization;
+            }
+        }
+
+        // remove all unchecked id
+        foreach ($found as $authorization) {
+            AuthorizationRole::where('authorization_id', $authorization)->where('role_id', $role_id)->delete();
+        }
+
+        return redirect()->back()->withInput($request->all());
     }
 
     /**

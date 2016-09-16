@@ -1,7 +1,7 @@
 <?php
 /**
  * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: http://www.webmons.com
+ * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
  * Copyright 2016 Webmons Development Studio.
  * License: Apache 2.0
  */
@@ -9,7 +9,7 @@ namespace App\Http\Controllers\Web\Authentication;
 
 /**
  * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: http://www.webmons.com
+ * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
  * License: Apache 2.0
  */
 
@@ -45,17 +45,19 @@ class RegisterController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function getRegister() {
+    public function getRegister()
+    {
         return $this->showRegistrationForm();
     }
 
     /**
      * Handle a registration request for the application.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function postRegister(Request $request) {
+    public function postRegister(Request $request)
+    {
         return $this->register($request);
     }
 
@@ -125,7 +127,7 @@ class RegisterController extends Controller
         return Validator::make($data, [
             'first_name' => 'required|max:100',
             'last_name' => 'required|max:100',
-            'username' => 'required|max:100|alpha_dash|unique:slugs,name,null,source_id,source_type,user|not_in:' . exclude_slug(),
+            'username' => 'required|max:100|alpha_dash|unique:slugs,name|not_in:' . exclude_slug(),
             'email' => 'required|email|max:255|unique:users',
             'password' => 'required|min:6|confirmed',
         ]);

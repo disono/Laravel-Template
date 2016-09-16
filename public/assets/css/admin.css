@@ -1,7 +1,12 @@
 /* Move down content because we have a fixed nav-bar that is 50px tall */
 body {
-    background: #F7F7F7;
+    background-color: #F7F7F7;
+    font-family: 'Lato', sans-serif;
     padding-top: 52px;
+}
+
+.services-container-index {
+    background-color: #F7F7F7;
 }
 
 /* Toggle Styles */
@@ -23,7 +28,7 @@ body {
     left: 250px;
     width: 0;
     height: 100vh !important;
-    overflow: auto !important;
+    overflow-x: scroll !important;
     margin-left: -250px;
     background: #2A3F54;
     -webkit-transition: all 0.5s ease;
@@ -52,7 +57,7 @@ body {
     top: 0;
     width: 250px;
     margin: 0;
-    padding: 0;
+    padding: 0 0 50px 0 !important;
     list-style: none;
 }
 

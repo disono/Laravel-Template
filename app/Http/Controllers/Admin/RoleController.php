@@ -1,7 +1,7 @@
 <?php
 /**
  * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: http://www.webmons.com
+ * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
  * Copyright 2016 Webmons Development Studio.
  * License: Apache 2.0
  */
@@ -92,9 +92,13 @@ class RoleController extends Controller
      */
     public function destroy($id)
     {
-        Role::remove($id);
+        $allowed = Role::remove($id);
 
         if (request()->ajax()) {
+            if (!$allowed) {
+                return failed_json_response('This resource is not allowed to delete.');
+            }
+
             return success_json_response('Successfully deleted role.');
         }
 

@@ -1,6 +1,6 @@
 {{--
  * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: www.webmons.com
+ * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
  * License: Apache 2.0
 --}}
 Click here to reset your password:

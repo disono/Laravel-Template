@@ -1,6 +1,6 @@
 {{--
  * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: www.webmons.com
+ * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
  * License: Apache 2.0
 --}}
 @extends('admin.layout.master')
@@ -86,8 +86,12 @@
                                     <td>{{str_limit($row->full_name, 18)}}</td>
                                     <td>{{$row->email}}</td>
                                     <td>{{$row->country->name}}</td>
-                                    <td>{{($row->enabled) ? 'Yes' : 'No'}}</td>
-                                    <td>{{($row->email_confirmed) ? 'Yes' : 'No'}}</td>
+                                    <td>
+                                        <a href="{{url('admin/user/confirm?type=' . 'account' . '&id=' . $row->id)}}">{{($row->enabled) ? 'Yes' : 'No'}}</a>
+                                    </td>
+                                    <td>
+                                        <a href="{{url('admin/user/confirm?type=' . 'email' . '&id=' . $row->id)}}">{{($row->email_confirmed) ? 'Yes' : 'No'}}</a>
+                                    </td>
                                     <td>{{$row->role}}</td>
                                     <td>
                                         <div class="btn-group">
@@ -98,6 +102,7 @@
                                             </button>
 
                                             <ul class="dropdown-menu">
+                                                <li><a href="{{url('admin/user/edit/' . $row->id)}}">Edit</a></li>
                                                 <li><a href="{{url('admin/user/password/edit/' . $row->id)}}">Reset
                                                         Password</a></li>
                                                 <li role="separator" class="divider"></li>

@@ -12,12 +12,13 @@ class AuthenticationToken extends Model
      * @param $user
      * @return null
      */
-    public static function createToken($user) {
+    public static function createToken($user)
+    {
         $auth = User::find($user->id);
 
         if ($auth) {
             $secret_key = str_random(32);
-            $token_key =  str_random(32) . time() . str_random(16);
+            $token_key = str_random(32) . time() . str_random(16);
 
             $id = self::insertGetId([
                 'user_id' => $auth->id,

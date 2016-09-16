@@ -1,7 +1,8 @@
 <?php
 /**
  * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: http://www.webmons.com
+ * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
+ * Copyright 2016 Webmons Development Studio.
  * License: Apache 2.0
  */
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
@@ -17,6 +18,44 @@ if (!function_exists('is_selected')) {
     function is_selected($item, $data)
     {
         return ($item == $data) ? 'selected' : null;
+    }
+}
+
+if (!function_exists('is_checked')) {
+    /**
+     * Is item checked
+     *
+     * @param $item
+     * @param $data
+     * @return null|string
+     */
+    function is_checked($item, $data)
+    {
+        return ($item == $data) ? 'checked' : null;
+    }
+}
+
+if (!function_exists('filter_id_number')) {
+    /**
+     * Search for values then return the search value
+     *
+     * @param $array
+     * @param $search
+     * @return int
+     */
+    function array_search_value($array, $search)
+    {
+        if (!is_array($array)) {
+            return 0;
+        }
+
+        foreach ($array as $value) {
+            if ($value == $search) {
+                return $value;
+            }
+        }
+
+        return 0;
     }
 }
 
@@ -108,6 +147,19 @@ if (!function_exists('rand_token')) {
     }
 }
 
+if (!function_exists('rand_numbers')) {
+    /**
+     * Create random numbers
+     *
+     * @param $digits
+     * @return int
+     */
+    function rand_numbers($digits = 4)
+    {
+        return rand(pow(10, $digits - 1), pow(10, $digits) - 1);
+    }
+}
+
 if (!function_exists('authenticated_id')) {
     /**
      * Get the authenticated ID
@@ -148,5 +200,128 @@ if (!function_exists('request_value')) {
     {
         $value = ($request->get($name) != null) ? clean($request->get($name)) : $default;
         return ($encrypt && $value) ? bcrypt($value) : $value;
+    }
+}
+
+if (!function_exists('request_options')) {
+    /**
+     * Check for request values
+     *
+     * @param $request
+     * @param array $inputs
+     * @param array $options
+     * @return array
+     */
+    function request_options($request, $inputs = [], $options = [])
+    {
+        $values = [];
+        foreach ($inputs as $key) {
+            if ($request->get($key) !== null && $request->get($key) !== '') {
+                $values[$key] = $request->get($key);
+            }
+        }
+
+        if (count($options)) {
+            $values = array_merge($values, $options);
+        }
+
+        return $values;
+    }
+}
+
+if (!function_exists('number_shorten')) {
+    /**
+     * Shorten number
+     *
+     * @param $number
+     * @param int $precision
+     * @param null $divisors
+     * @return string
+     */
+    function number_shorten($number, $precision = 3, $divisors = null)
+    {
+        // Setup default $divisors if not provided
+        if (!isset($divisors)) {
+            $divisors = array(
+                pow(1000, 0) => '',     // 1000^0 == 1
+                pow(1000, 1) => 'K',    // Thousand
+                pow(1000, 2) => 'M',    // Million
+                pow(1000, 3) => 'B',    // Billion
+                pow(1000, 4) => 'T',    // Trillion
+                pow(1000, 5) => 'Qa',   // Quadrillion
+                pow(1000, 6) => 'Qi',   // Quintillion
+            );
+        }
+
+        // Loop through each $divisor and find the
+        // lowest amount that matches
+        foreach ($divisors as $divisor => $shorthand) {
+            if ($number < ($divisor * 1000)) {
+                // We found a match!
+                break;
+            }
+        }
+
+        // We found our match, or there were no matches.
+        // Either way, use the last defined value for $divisor.
+        return (int)number_format($number / $divisor, $precision) . $shorthand;
+    }
+}
+
+if (!function_exists('html_app_cache')) {
+    /**
+     * Application Cache
+     *
+     * @return string
+     */
+    function html_app_cache()
+    {
+        return (env('APP_ENV') === 'local') ? null : 'manifest="' .
+            clean(preg_replace('/\s+/', '_', app_settings('title')->value)) . '.cache"';
+    }
+}
+
+/*
+ * --------------------------------------------------------------------------
+ * Random DATA for DEMO use ONLY
+ * --------------------------------------------------------------------------
+ */
+
+if (!function_exists('random_first_names')) {
+
+    function random_first_names()
+    {
+        $first_names = [
+            'Abigail', 'Caroline', 'Dorothy', 'Elizabeth', 'Ella', 'Jasmine', 'Jennifer', 'Julia'
+        ];
+
+        $k = array_rand($first_names);
+        return $first_names[$k];
+    }
+}
+
+if (!function_exists('random_last_names')) {
+
+    function random_last_names()
+    {
+        $last_names = [
+            'Abraham', 'Ball', 'Cornish', 'Dowd', 'Hamilton', 'Hardacre', 'Johnston', 'McDonald'
+        ];
+
+        $k = array_rand($last_names);
+        return $last_names[$k];
+    }
+}
+
+if (!function_exists('random_middle_names')) {
+
+    function random_middle_names()
+    {
+        $last_names = [
+            'Abraham', 'Ball', 'Cornish', 'Dowd', 'Hamilton', 'Hardacre', 'Johnston', 'McDonald'
+        ];
+
+        $k = array_rand($last_names);
+        return $last_names[$k];
     }
 }

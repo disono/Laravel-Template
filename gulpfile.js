@@ -28,6 +28,7 @@ if (type == 'local') {
             '../bower/Chart.js/dist/Chart.bundle.min.js',
             '../bower/sweetalert/dist/sweetalert.min.js',
             '../bower/ekko-lightbox/dist/ekko-lightbox.min.js',
+            '../bower/bootstrap-select/dist/js/bootstrap-select.min.js',
             '../bower/angular/angular.min.js'
         ], 'public/assets/js/vendor.js');
 
@@ -49,7 +50,8 @@ if (type == 'local') {
             '../bower/pickadate/lib/compressed/themes/default.date.css',
             '../bower/pickadate/lib/compressed/themes/default.time.css',
             '../bower/sweetalert/dist/sweetalert.css',
-            '../bower/ekko-lightbox/dist/ekko-lightbox.min.css'
+            '../bower/ekko-lightbox/dist/ekko-lightbox.min.css',
+            '../bower/bootstrap-select/dist/css/bootstrap-select.min.css'
         ], 'public/assets/css/vendor.css');
 
         mix.copy('resources/assets/bower/font-awesome/fonts', 'public/assets/fonts');
@@ -72,6 +74,7 @@ if (type == 'local') {
             '../bower/Chart.js/dist/Chart.bundle.min.js',
             '../bower/sweetalert/dist/sweetalert.min.js',
             '../bower/ekko-lightbox/dist/ekko-lightbox.min.js',
+            '../bower/bootstrap-select/dist/js/bootstrap-select.min.js',
             '../bower/angular/angular.min.js',
 
             '../../../public/assets/js/helper.js',
@@ -98,6 +101,7 @@ if (type == 'local') {
             '../bower/pickadate/lib/compressed/themes/default.time.css',
             '../bower/sweetalert/dist/sweetalert.css',
             '../bower/ekko-lightbox/dist/ekko-lightbox.min.css',
+            '../bower/bootstrap-select/dist/css/bootstrap-select.min.css',
 
             '../../../public/assets/css/main.css'
         ], 'public/assets/css/vendor.css');

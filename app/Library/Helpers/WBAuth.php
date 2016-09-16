@@ -84,6 +84,49 @@ class WBAuth
     }
 
     /**
+     * Authorize user to access routes
+     *
+     * @param $user_id
+     * @param bool $abort
+     * @return bool
+     */
+    public static function authorizeRoute($user_id = 0, $abort = true)
+    {
+        if (!$user_id) {
+            if (auth()->check()) {
+                $user_id = me()->id;
+            } else if (authenticated_id()) {
+                $user_id = authenticated_id();
+            }
+        }
+
+        $user = User::find($user_id);
+        $allow = false;
+
+        if ($user) {
+            // check if user role exists
+            $user_role = Role::where('slug', $user->role)->first();
+            if ($user_role) {
+                $select[] = DB::raw('authorizations.identifier, authorizations.name as authorization_name');
+                $query = AuthorizationRole::select($select)
+                    ->join('authorizations', 'authorization_roles.authorization_id', '=', 'authorizations.id')
+                    ->where('authorization_roles.role_id', $user_role->id)
+                    ->where('authorizations.identifier', request()->route()->getName());
+
+                if ($query->count()) {
+                    $allow = true;
+                }
+            }
+        }
+
+        if ($abort && !$allow) {
+            abort(403);
+        }
+
+        return $allow;
+    }
+
+    /**
      * Check if user exists
      *
      * @param string $input_name
@@ -142,7 +185,8 @@ class WBAuth
     /**
      * Initialize token key
      */
-    public static function initializeTokenKey() {
+    public static function initializeTokenKey()
+    {
         // token key
         $auth_token = AuthenticationToken::where('token_key', get_request_value('token_key'))->first();
         if (!$auth_token) {

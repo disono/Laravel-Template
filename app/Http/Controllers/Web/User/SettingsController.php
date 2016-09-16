@@ -1,16 +1,16 @@
 <?php
 /**
  * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: http://www.webmons.com
+ * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
  * Copyright 2016 Webmons Development Studio.
  * License: Apache 2.0
  */
 namespace App\Http\Controllers\Web\User;
 
-use App\Models\Country;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Web\UserUpdateSecurity;
 use App\Http\Requests\Web\UserUpdateSettings;
+use App\Models\Country;
 use App\Models\User;
 
 class SettingsController extends Controller
@@ -23,7 +23,7 @@ class SettingsController extends Controller
     public function getIndex()
     {
         $user = me();
-        
+
         $content['user'] = User::single($user->id);
 
         $content['countries'] = Country::all();
@@ -41,7 +41,7 @@ class SettingsController extends Controller
     public function postUpdate(UserUpdateSettings $request)
     {
         $user = me();
-        
+
         // update user
         $inputs = $request->all();
         $inputs['image'] = $request->file('image');
@@ -58,7 +58,7 @@ class SettingsController extends Controller
     public function security()
     {
         $user = me();
-        
+
         $content['user'] = User::single($user->id);
         $content['title'] = app_title('Security');
 
@@ -74,7 +74,7 @@ class SettingsController extends Controller
     public function updateSecurity(UserUpdateSecurity $request)
     {
         $user = me();
-        
+
         // update user
         $inputs = $request->all();
         User::edit($user->id, $inputs);

@@ -3,7 +3,7 @@
         <script>
             [
                 @foreach($scripts as $script)
-                    '{!! asset($script) . url_ext() !!}',
+                        '{!! asset($script) . url_ext() !!}',
                 @endforeach
             ].forEach(function (src) {
                 var script = document.createElement('script');
@@ -18,12 +18,13 @@
         </script>
     @endif
 @else
-    @section('javascript')
-        <script>
-            function appScriptLoader() {
+@section('javascript')
+    <script>
+        function appScriptLoader() {
+            setTimeout(function () {
                 [
                     @foreach($scripts as $script)
-                        '{!! asset($script) . url_ext() !!}',
+                            '{!! asset($script) . url_ext() !!}',
                     @endforeach
                 ].forEach(function (src) {
                     var script = document.createElement('script');
@@ -31,7 +32,8 @@
                     script.async = false;
                     document.head.appendChild(script);
                 });
-            }
-        </script>
-    @endsection
+            }, 300);
+        }
+    </script>
+@endsection
 @endif

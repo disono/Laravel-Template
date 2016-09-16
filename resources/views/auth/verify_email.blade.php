@@ -1,6 +1,6 @@
 {{--
  * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: www.webmons.com
+ * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
  * License: Apache 2.0
 --}}
 @extends(current_theme() . 'layout.master')
@@ -13,7 +13,9 @@
                     <div class="jumbotron jumbotron-sm">
                         <div class="container">
                             <h2>Please verify your email {{me()->email}}.</h2>
-                            <a href="{{url('email/resend/verification')}}">Resend Verification</a>
+
+                            <a href="{{url('email/resend/verification')}}"
+                               class="btn btn-primary">Resend Verification</a>
                         </div>
                     </div>
                 </div>

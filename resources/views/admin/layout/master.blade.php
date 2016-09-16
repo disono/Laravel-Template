@@ -1,6 +1,6 @@
 {{--
  * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: www.webmons.com
+ * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
  * License: Apache 2.0
 --}}
         <!DOCTYPE html>
@@ -37,7 +37,6 @@
             display: table-cell;
             text-align: center;
             vertical-align: middle;
-            background: #000000 url('/assets/img/logo_loader.png') no-repeat center center;
         }
     </style>
 
@@ -70,7 +69,7 @@
 <body ng-app="WBApp">
 {{-- loader --}}
 <div id="loaderContent">
-    <img src="{{asset('assets/img/loaders/loader.svg')}}" width="260" alt="Loading...">
+    <img src="{{asset('assets/img/loaders/content-loader.svg')}}" alt="Loading...">
 </div>
 
 {{-- main application content --}}
@@ -78,7 +77,7 @@
     {{-- header menu --}}
     @include('admin.layout.header')
 
-    <div class="container-fluid" style="margin-top: 14px !important;">
+    <div class="container-fluid">
         <div id="wrapper">
             {{-- side-bar --}}
             @include('admin.sidebar.main')

@@ -1,6 +1,6 @@
 {{--
  * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: www.webmons.com
+ * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
  * License: Apache 2.0
 --}}
 @extends('admin.layout.master')
@@ -69,6 +69,17 @@
                                         <span class="help-block">{{ $errors->first('birthday') }}</span>
                                     @endif
                                 </div>
+
+                                <div class="form-group{{ $errors->has('address') ? ' has-error' : '' }}">
+                                    <label for="address">Address*</label>
+
+                                    <textarea name="address" id="address" class="form-control"
+                                              cols="30" rows="10">{{ old('address') }}</textarea>
+
+                                    @if ($errors->has('address'))
+                                        <span class="help-block">{{ $errors->first('address') }}</span>
+                                    @endif
+                                </div>
                             </div>
 
                             <div class="col-xs-12 col-md-6">
@@ -128,10 +139,10 @@
                                         <span class="help-block">{{ $errors->first('email_confirmed') }}</span>
                                     @endif
                                 </div>
-
-                                <button type="submit" class="btn btn-primary">Create new user</button>
                             </div>
                         </div>
+
+                        <button type="submit" class="btn btn-primary">Create new user</button>
                     </form>
                 </div>
             </div>

@@ -1,16 +1,16 @@
 <?php
 /**
  * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: http://www.webmons.com
+ * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
  * Copyright 2016 Webmons Development Studio.
  * License: Apache 2.0
  */
 namespace App\Http\Controllers\Admin;
 
-use App\Models\AuthHistory;
-use App\Models\Authorization;
 use App\Http\Controllers\Controller;
 use App\Http\Requests;
+use App\Models\AuthHistory;
+use App\Models\Authorization;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 

@@ -1,17 +1,18 @@
 <?php
 /**
  * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: http://www.webmons.com
+ * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
  * Copyright 2016 Webmons Development Studio.
  * License: Apache 2.0
  */
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Country;
 use App\Events\EventResetPassword;
 use App\Http\Controllers\Controller;
 use App\Http\Requests;
+use App\Models\Country;
 use App\Models\Role;
+use App\Models\Slug;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -73,13 +74,13 @@ class UserController extends Controller
     /**
      * Store new data
      *
-     * @param Requests\Web\UserCreate $create
+     * @param Requests\Admin\UserCreate $create
      * @return mixed
      */
-    public function store(Requests\Web\UserCreate $create)
+    public function store(Requests\Admin\UserCreate $create)
     {
         $data = $create->all();
-        $user = User::create([
+        $user = User::insertGetId([
             'first_name' => ucfirst($data['first_name']),
             'last_name' => ucfirst($data['last_name']),
             'phone' => $data['phone'],
@@ -87,9 +88,16 @@ class UserController extends Controller
             'role' => $data['role'],
             'password' => bcrypt($data['password']),
             'birthday' => sql_date($data['birthday'], true),
+
             'email_confirmed' => (isset($data['email_confirmed'])) ? 1 : 0,
+            'address' => $data['address'],
+
             'enabled' => 1,
         ]);
+
+        if ($user) {
+            $user = User::find($user);
+        }
 
         // avatar
         if ($create->file('image') && $user) {
@@ -109,6 +117,106 @@ class UserController extends Controller
             }
         }
 
+        // slug or username
+        if ($user && isset($data['username'])) {
+            Slug::store([
+                'source_id' => $user->id,
+                'source_type' => 'user',
+                'name' => $data['username']
+            ]);
+        } else {
+            return redirect()->withErrors([
+                'username' => 'Please select different username.'
+            ]);
+        }
+
+        return redirect('admin/users');
+    }
+
+    /**
+     * Edit data
+     *
+     * @param $id
+     * @return mixed
+     */
+    public function edit($id)
+    {
+        $content['title'] = app_title('Edit User');
+        $content['user'] = User::single($id);
+
+        if (!$content['user']) {
+            abort(404);
+        }
+
+        $content['roles'] = Role::all();
+
+        return admin_view('user.edit', $content);
+    }
+
+    /**
+     * Store new data
+     *
+     * @param Requests\Admin\UserUpdate $request
+     * @return mixed
+     */
+    public function update(Requests\Admin\UserUpdate $request)
+    {
+        $data = $request->all();
+
+        // inputs to update
+        $inputs = [
+            'first_name' => ucfirst($data['first_name']),
+            'last_name' => ucfirst($data['last_name']),
+            'phone' => $data['phone'],
+            'email' => $data['email'],
+            'role' => $data['role'],
+            'birthday' => sql_date($data['birthday'], true),
+
+            'email_confirmed' => (isset($data['email_confirmed'])) ? 1 : 0,
+            'address' => $data['address'],
+        ];
+
+        // password
+        if ($request->get('password')) {
+            $inputs['password'] = bcrypt($data['password']);
+        }
+
+        // update user
+        $user = User::find($request->get('id'));
+
+        // avatar
+        if ($request->file('image') && $user) {
+            // image
+            $upload_image = upload_image($request->file('image'), [
+                'user_id' => $user->id,
+                'source_id' => $user->id,
+                'title' => $user->first_name . ' ' . $user->last_name,
+                'type' => 'user',
+                'crop_auto' => true
+            ], $user->image_id);
+
+            // save new avatar
+            if ($upload_image) {
+                $user->image_id = $upload_image;
+                $user->save();
+            }
+        }
+
+        // slug or username
+        if (isset($data['username'])) {
+            Slug::edit(null, [
+                'name' => $data['username']
+            ], [
+                'source_id' => $user->id,
+                'source_type' => 'user'
+            ]);
+        } else {
+            return redirect()->withErrors([
+                'username' => 'Please select different username.'
+            ]);
+        }
+
+        User::where('id', $request->get('id'))->update($inputs);
         return redirect('admin/users');
     }
 
@@ -170,6 +278,35 @@ class UserController extends Controller
         }
 
         return redirect('admin/users');
+    }
+
+    /**
+     * Confirm
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function confirm(Request $request)
+    {
+        if ($request->get('type') === 'email' && is_numeric($request->get('id'))) {
+            $user = User::find($request->get('id'));
+
+            if ($user) {
+                $user->email_confirmed = (($user->phone_confirmed) ? 0 : 1);
+                $user->save();
+            }
+        }
+
+        if ($request->get('type') === 'phone' && is_numeric($request->get('id'))) {
+            $user = User::find($request->get('id'));
+
+            if ($user) {
+                $user->phone_confirmed = (($user->phone_confirmed) ? 0 : 1);
+                $user->save();
+            }
+        }
+
+        return redirect()->back();
     }
 
     /**

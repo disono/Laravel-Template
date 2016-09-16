@@ -1,7 +1,7 @@
 <?php
 /**
- * Author: Archie, Disono (disono.apd@gmail.com)
- * Website: www.webmons.com
+ * Author: Archie, Disono (webmonsph@gmail.com)
+ * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
  * License: Apache 2.0
  */
 namespace App\Library\Helpers;
@@ -205,7 +205,8 @@ class WBFile
      * @param bool $nameOnly
      * @return string
      */
-    private static function _processUploadedImage($file, $image_options = [], $destinationPath = 'private/img', $nameOnly = false) {
+    private static function _processUploadedImage($file, $image_options = [], $destinationPath = 'private/img', $nameOnly = false)
+    {
         $extension = $file->getClientOriginalExtension();
         $upload_filename = filename_creator() . '.' . $extension;
         $file->move($destinationPath, $upload_filename);

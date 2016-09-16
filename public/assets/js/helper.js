@@ -1,6 +1,6 @@
 /**
  * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: www.webmons.com
+ * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
  * License: Apache 2.0
  */
 
@@ -182,6 +182,8 @@ var WBHelper = (function () {
                 type: 'post',       // is get or post
                 removeContainerId: false,   // container of data to be delete
                 removeItem: true,           // remove container
+                showErrors: true,           // show errors
+                errorType: 'toastMessage',  // error type to show
                 beforeSend: function (jqXHR, settings) {
                     // before sending data do other stuff
                 },
@@ -276,7 +278,7 @@ var WBHelper = (function () {
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
                         if (jqXHR.status == 422) {
-                            var response = (typeof xhr.responseText == 'string') ? xhr.responseText : "";
+                            var response = (typeof jqXHR.responseText == 'string') ? jqXHR.responseText : "";
                             WBErrors.run(JSON.parse(response), options);
                         }
 
@@ -367,7 +369,7 @@ var WBDate = (function () {
                 max: false
             });
         },
-        
+
         timePicker: function () {
             jQ('.time-picker').pickatime();
         }

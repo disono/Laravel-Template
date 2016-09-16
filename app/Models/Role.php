@@ -1,7 +1,7 @@
 <?php
 /**
  * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: http://www.webmons.com
+ * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
  * Copyright 2016 Webmons Development Studio.
  * License: Apache 2.0
  */
@@ -139,6 +139,16 @@ class Role extends Model
      */
     public static function remove($id)
     {
+        $role = self::find($id);
+
+        // check if exists or tried to delete the users authorization
+        if ($role->slug === 'client' && !$role) {
+            return false;
+        }
+
+        // delete all authorization role
+        AuthorizationRole::where('role_id', $id)->delete();
+
         return (bool)self::destroy($id);
     }
 

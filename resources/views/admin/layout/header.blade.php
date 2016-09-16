@@ -1,6 +1,6 @@
 {{--
  * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: www.webmons.com
+ * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
  * License: Apache 2.0
 --}}
 <nav class="navbar navbar-default navbar-fixed-top">
@@ -27,11 +27,14 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
                        aria-expanded="false">Profile <span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        <li><a href="{{url('user/settings')}}"><i class="fa fa-cog" aria-hidden="true"></i> General Settings</a></li>
-                        <li><a href="{{url('user/security')}}"><i class="fa fa-lock" aria-hidden="true"></i> Security Settings</a></li>
+                        <li><a href="{{url('user/settings')}}"><i class="fa fa-cog" aria-hidden="true"></i> General
+                                Settings</a></li>
+                        <li><a href="{{url('user/security')}}"><i class="fa fa-lock" aria-hidden="true"></i> Security
+                                Settings</a></li>
 
                         <li role="separator" class="divider"></li>
-                        <li><a href="{{url('logout')}}"><i class="fa fa-sign-out" aria-hidden="true"></i> Logout</a></li>
+                        <li><a href="{{url('logout')}}"><i class="fa fa-sign-out" aria-hidden="true"></i> Logout</a>
+                        </li>
                     </ul>
                 </li>
 

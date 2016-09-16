@@ -1,6 +1,7 @@
 {{--
  * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: www.webmons.com
+ * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
+ * Copyright 2016 Webmons Development Studio.
  * License: Apache 2.0
 --}}
 @extends('admin.layout.master')
@@ -14,56 +15,47 @@
                 <div class="admin-container">
                     <h3 class="page-header">Assign Authorization Roles</h3>
 
-                    <form action="{{url('admin/authorization-role/store')}}" method="post" role="form"
+                    <form action="{{url('admin/authorization-roles/' . $role_id)}}" method="get" role="form"
                           class="form-inline">
-                        {{csrf_field()}}
-                        <input type="hidden" value="{{$role_id}}" name="role_id">
 
                         <div class="form-group">
-                            <select name="authorization_id" id="authorization_id" class="form-control">
-                                <option value="">Select Authorization</option>
-                                @foreach($authorizations as $row)
-                                    <option value="{{$row->id}}">{{$row->name}} ({{$row->identifier}})</option>
-                                @endforeach
-                            </select>
+                            <input type="text" class="form-control" name="search" id="search"
+                                   value="{{$request->get('search')}}" placeholder="Keyword">
                         </div>
 
-                        <button type="submit" class="btn btn-primary">Assign</button>
+                        <button type="submit" class="btn btn-primary">Search</button>
                     </form>
 
                     <hr>
 
-                    @if(count($authorization_roles))
+                    <form action="{{url('admin/authorization-role/store')}}" method="post" role="form">
+                        {{csrf_field()}}
+                        <input type="hidden" value="{{$role_id}}" name="role_id">
+
                         <table class="table table-hover">
                             <thead>
                             <tr>
                                 <th>#</th>
                                 <th>Authorization Name</th>
-                                <th>Identifier</th>
-                                <th>Role Description</th>
+                                <th>Identifier/Access Routes</th>
                                 <th>Authorization Description</th>
                                 <th>Action</th>
                             </tr>
                             </thead>
                             <tbody>
-                            @foreach($authorization_roles as $row)
+                            @foreach($authorization as $row)
                                 <tr>
                                     <td>{{$row->id}}</td>
-                                    <td>{{$row->authorization_name}}</td>
-                                    <td>{{$row->authorization_identifier}}</td>
-                                    <td>{{str_limit($row->role_description, 22)}}</td>
-                                    <td>{{str_limit($row->authorization_description, 22)}}</td>
+                                    <td>{{$row->name}}</td>
+                                    <td>{{$row->identifier}}</td>
+                                    <td>{{str_limit($row->description, 22)}}</td>
                                     <td>
-                                        <div class="btn-group">
-                                            <button type="button" class="btn btn-default btn-xs dropdown-toggle"
-                                                    data-toggle="dropdown"
-                                                    aria-haspopup="true" aria-expanded="false">
-                                                Action <span class="caret"></span>
-                                            </button>
-                                            <ul class="dropdown-menu">
-                                                <li><a href="{{url('admin/authorization-role/destroy/' . $row->id)}}"
-                                                       class="delete-data">Delete</a></li>
-                                            </ul>
+                                        <div class="checkbox">
+                                            <input type="checkbox" id="role_{{$row->id}}" value="{{$row->id}}"
+                                                   name="authorization_id[]"
+                                                    {{is_checked($row->id, array_search_value(old('authorization_id', $authorization_roles), $row->id))}}>
+                                            <label for="role_{{$row->id}}">
+                                            </label>
                                         </div>
                                     </td>
                                 </tr>
@@ -71,14 +63,14 @@
                             </tbody>
                         </table>
 
-                        {{$authorization_roles->appends($request->all())->render()}}
-                    @else
-                        <h1 class="text-center">No Assigned Authorization Role.</h1>
-                    @endif
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                <button class="btn btn-primary pull-right">Save Changes</button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
-
-    @include('modals.delete')
 @endsection
