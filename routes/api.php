@@ -18,7 +18,7 @@
  */
 
 // initialize token key
-init_token_key();
+// init_token_key();
 
 if (env('APP_ENV') === 'local') {
     header('Access-Control-Allow-Origin: *');

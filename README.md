@@ -32,15 +32,20 @@ is a starting blank template for Laravel Projects
 
 # How to install
 ```sh
-Update your .local.env and .production.env
+Update your .local.env, .laradock.env and .production.env
 
 composer install
-composer migrate:refresh --seed
+php artisan migrate:refresh --seed
 
 npm install --no-bin-links
 
 bower install
 bower update
+
+gulp --production
+
+uncomment the JWT initializer on ./routes/api.php
+init_token_key();
 ```
 
 # Laradock
