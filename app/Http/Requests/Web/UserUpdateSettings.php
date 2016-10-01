@@ -7,20 +7,8 @@
  */
 namespace App\Http\Requests\Web;
 
-use App\Http\Requests\Request;
-
-class UserUpdateSettings extends Request
+class UserUpdateSettings extends WebRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
-    public function authorize()
-    {
-        return auth()->check();
-    }
-
     /**
      * Get the validation rules that apply to the request.
      *

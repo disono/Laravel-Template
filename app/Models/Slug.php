@@ -59,6 +59,10 @@ class Slug extends Model
             $query->where('source_type', $params['source_type']);
         }
 
+        if (isset($params['source_id'])) {
+            $query->where('source_id', $params['source_id']);
+        }
+
         if (isset($params['name'])) {
             $query->where('name', $params['name']);
         }

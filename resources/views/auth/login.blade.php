@@ -51,8 +51,9 @@
                             <div class="form-group">
                                 <div class="col-md-9 col-md-offset-3">
                                     <div class="checkbox">
-                                        <label>
-                                            <input type="checkbox" name="remember"> Remember Me
+                                        <input type="checkbox" name="remember" id="remember">
+                                        <label for="remember">
+                                            Remember Me
                                         </label>
                                     </div>
                                 </div>

@@ -8,11 +8,11 @@
             document.getElementById("loaderContent").remove();
             document.getElementById("loaderStyles").remove();
 
-            {{-- load custom CSS --}}
-            @if(isset($styles))
+                {{-- load custom CSS --}}
+                @if(isset($styles))
             [
                 @foreach($styles as $style)
-                    '{!! asset($style) . url_ext() !!}',
+                        '{!! asset($style) . url_ext() !!}',
                 @endforeach
             ].forEach(function (href) {
                 var script = document.createElement('link');

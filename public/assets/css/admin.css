@@ -1,3 +1,10 @@
+/**
+ * Author: Archie, Disono (webmonsph@gmail.com)
+ * Website: www.webmons.com
+ * Copyright 2016 Webmons Development Studio.
+ * License: Apache 2.0
+ */
+
 /* Move down content because we have a fixed nav-bar that is 50px tall */
 body {
     background-color: #F7F7F7;

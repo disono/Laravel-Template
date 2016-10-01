@@ -12,7 +12,6 @@ use App\Http\Requests;
 use App\Models\AuthHistory;
 use App\Models\Authorization;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
 
 class AuthorizationController extends Controller
 {
@@ -60,7 +59,7 @@ class AuthorizationController extends Controller
     public function create()
     {
         $content['title'] = app_title('Create Authorization');
-        $content['route_names'] = Route::getRoutes();
+        $content['route_names'] = access_routes();
 
         return admin_view('authorization.create', $content);
     }
@@ -87,7 +86,7 @@ class AuthorizationController extends Controller
     public function edit($id)
     {
         $content['title'] = app_title('Edit Authorization');
-        $content['route_names'] = Route::getRoutes();
+        $content['route_names'] = access_routes();
 
         $data = Authorization::single($id);
         if (!$data) {

@@ -19,7 +19,8 @@
 
                         <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
                             <label for="name">Name*</label>
-                            <input type="text" class="form-control" name="name" id="name" placeholder="Name">
+                            <input type="text" class="form-control" name="name" id="name" value="{{old('name')}}"
+                                   placeholder="Name">
 
                             @if ($errors->has('name'))
                                 <span class="help-block">{{ $errors->first('name') }}</span>
@@ -27,13 +28,12 @@
                         </div>
 
                         <div class="form-group{{ $errors->has('identifier') ? ' has-error' : '' }}">
-                            <label for="identifier">Identifier*</label>
-                            <select name="identifier" id="identifier" class="form-control">
+                            <label for="identifier">Identifier/Access Route*</label>
+                            <select name="identifier" id="identifier" class="form-control selectpicker"
+                                    data-live-search="true">
                                 <option value="">Select Identifier</option>
-                                @foreach($route_names as $value)
-                                    @if($value->getName())
-                                        <option value="{{$value->getName()}}">{{$value->getName()}}</option>
-                                    @endif
+                                @foreach($route_names as $key => $value)
+                                    <option value="{{$key}}" {{is_selected($key, old('identifier'))}}>{{$value}}</option>
                                 @endforeach
                             </select>
 
@@ -45,7 +45,7 @@
                         <div class="form-group{{ $errors->has('description') ? ' has-error' : '' }}">
                             <label for="description">Description</label>
                             <textarea name="description" id="description" class="form-control" cols="30" rows="10"
-                                      placeholder="Description"></textarea>
+                                      placeholder="Description">{{old('description')}}</textarea>
 
                             @if ($errors->has('description'))
                                 <span class="help-block">{{ $errors->first('description') }}</span>

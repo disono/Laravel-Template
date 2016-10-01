@@ -15,7 +15,7 @@ class AuthorizationSeeder extends Seeder
             $name = $value->getName();
             if ($name) {
                 DB::table('authorizations')->insert([
-                    'name' => str_replace('_', ' ', str_replace('-', ' ', ucfirst($name))),
+                    'name' => ucwords(str_replace('_', ' ', str_replace('-', ' ', $name))),
                     'identifier' => $name,
                     'created_at' => sql_date()
                 ]);

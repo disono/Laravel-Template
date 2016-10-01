@@ -281,6 +281,27 @@ if (!function_exists('html_app_cache')) {
     }
 }
 
+if (!function_exists('access_routes')) {
+    /**
+     * Access routes
+     *
+     * @return array
+     */
+    function access_routes()
+    {
+        $routes = [];
+        $route_names = Illuminate\Support\Facades\Route::getRoutes();
+
+        foreach ($route_names as $value) {
+            if ($value->getName()) {
+                $routes[$value->getName()] = ucwords(str_replace('_', ' ', str_replace('-', ' ', $value->getName())));
+            }
+        }
+
+        return $routes;
+    }
+}
+
 /*
  * --------------------------------------------------------------------------
  * Random DATA for DEMO use ONLY

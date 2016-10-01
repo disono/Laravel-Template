@@ -16,7 +16,7 @@ jQ(document).ready(function () {
     WBDate.datePicker();
     WBDate.datePickerMin();
     WBDate.none();
-    
+
     // time picker
     WBDate.timePicker();
 
@@ -27,7 +27,7 @@ jQ(document).ready(function () {
     });
 
     // light-box
-    jQ(document).delegate('*[data-toggle="light-box"]', 'click', function(event) {
+    jQ(document).delegate('*[data-toggle="light-box"]', 'click', function (event) {
         event.preventDefault();
         jQ(this).ekkoLightbox();
     });
