@@ -130,7 +130,8 @@ class WBFile
     {
         Log::error('(Date/Time: ' . date('M d Y h:i:s A', time()) .
             ' - Error Message: ' . clean($message) . ') - Request Path: ' .
-            "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]\n");
+            "http://" . ((isset($_SERVER['HTTP_HOST']) && isset($_SERVER['REQUEST_URI'])) ?
+                $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] : request()->getRequestUri()) . "\n");
     }
 
     /**
@@ -138,11 +139,13 @@ class WBFile
      *
      * @param $source
      * @param null $type
+     * @param bool $path_only
      * @return string
      */
-    public static function getImg($source, $type = null)
+    public static function getImg($source, $type = null, $path_only = false)
     {
         $image = null;
+        $path = null;
         if (is_numeric($source)) {
             $image = \App\Models\Image::find($source);
         }
@@ -169,14 +172,16 @@ class WBFile
         }
 
         if (file_exists($complete_path) && $filename != null) {
-            return url($complete_path);
+            $path = $complete_path;
         } else {
             if ($type === 'avatar') {
-                return url(self::$place_holder . 'no-avatar.png');
+                $path = self::$place_holder . 'no-avatar.png';
+            } else {
+                $path = self::$place_holder . 'no-image.png';
             }
-
-            return url(self::$place_holder . 'no-image.png');
         }
+
+        return ($path_only) ? $path : url($path);
     }
 
     /**

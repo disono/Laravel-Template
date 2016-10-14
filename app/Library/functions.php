@@ -174,11 +174,12 @@ if (!function_exists('get_image')) {
      *
      * @param $source
      * @param null $type
+     * @param bool $path_only
      * @return string
      */
-    function get_image($source, $type = null)
+    function get_image($source, $type = null, $path_only = false)
     {
-        return App\Library\Helpers\WBFile::getImg($source, $type);
+        return App\Library\Helpers\WBFile::getImg($source, $type, $path_only);
     }
 }
 

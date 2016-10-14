@@ -62,7 +62,7 @@ class User extends Authenticatable
         }
 
         if (isset($params['username'])) {
-            $query->where('username', $params['username']);
+            $query->where(DB::raw(self::$username), '=', $params['username']);
         }
 
         if (isset($params['email'])) {
