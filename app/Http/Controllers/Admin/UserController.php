@@ -292,7 +292,7 @@ class UserController extends Controller
             $user = User::find($request->get('id'));
 
             if ($user) {
-                $user->email_confirmed = (($user->phone_confirmed) ? 0 : 1);
+                $user->email_confirmed = (($user->email_confirmed) ? 0 : 1);
                 $user->save();
             }
         }
@@ -301,7 +301,7 @@ class UserController extends Controller
             $user = User::find($request->get('id'));
 
             if ($user) {
-                $user->phone_confirmed = (($user->phone_confirmed) ? 0 : 1);
+                $user->enabled = (($user->enabled) ? 0 : 1);
                 $user->save();
             }
         }
