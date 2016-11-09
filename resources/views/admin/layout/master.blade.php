@@ -3,8 +3,8 @@
  * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
  * License: Apache 2.0
 --}}
-        <!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="en" {{html_app_cache()}}>
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -107,13 +107,13 @@
         'assets/js/helper.js',
         'assets/js/main.js',
         'assets/js/app.js',
-        'assets/js/admin.js',
+        'assets/js/admin/main.js',
         'https://maps.googleapis.com/maps/api/js?key=' . env('GOOGLE_API_KEY') . '&v=3.exp&libraries=places'
     ]))
 @else
     @include('vendor.loaders', ['after_load' => true, 'scripts' => [
         'assets/js/vendor.js',
-        'assets/js/admin.js',
+        'assets/js/admin/main.js',
         'https://maps.googleapis.com/maps/api/js?key=' . env('GOOGLE_API_KEY') . '&v=3.exp&libraries=places'
     ]])
 @endif

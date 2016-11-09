@@ -5,6 +5,8 @@
  * Copyright 2016 Webmons Development Studio.
  * License: Apache 2.0
  */
+
+include_once 'database.php';
 include_once 'methods.php';
 
 /*
@@ -197,6 +199,21 @@ if (!function_exists('encode_base64_image')) {
     }
 }
 
+if (!function_exists('upload_any_file')) {
+    /**
+     * Upload any file
+     *
+     * @param $file
+     * @param $destinationPath
+     * @param null $old_file
+     * @return string
+     */
+    function upload_any_file($file, $destinationPath = 'private/any', $old_file = null)
+    {
+        return App\Library\Helpers\WBFile::uploadFile($file, $destinationPath, $old_file);
+    }
+}
+
 if (!function_exists('upload_image')) {
     /**
      * Upload image
@@ -211,6 +228,19 @@ if (!function_exists('upload_image')) {
     function upload_image($file, $image_options = [], $old_file = null, $destinationPath = 'private/img', $nameOnly = false)
     {
         return App\Library\Helpers\WBFile::uploadImage($file, $image_options, $old_file, $destinationPath, $nameOnly);
+    }
+}
+
+if (!function_exists('create_folder')) {
+    /**
+     * Create folder
+     *
+     * @param $path
+     * @return bool
+     */
+    function create_folder($path)
+    {
+        return App\Library\Helpers\WBFile::createFolder($path);
     }
 }
 

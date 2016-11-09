@@ -21,7 +21,7 @@ class WBHttp
      */
     public static function successJSONResponse($data = [], $links = null, $pagination = null, $extra = null)
     {
-        if (is_array($data) || is_string($data)) {
+        if (is_array($data) || is_string($data) || is_numeric($data)) {
             return response()->json([
                 'success' => true,
                 'data' => $data,
@@ -30,7 +30,7 @@ class WBHttp
             ], 200);
         }
 
-        $data = ($data) ? $data->toArray() : $data;
+        $data = ($data) ? ((method_exists($data, 'toArray')) ? $data->toArray() : (array)$data) : $data;
         if (!$data) {
             return self::failedJSONResponse('Data not found.', 404);
         }

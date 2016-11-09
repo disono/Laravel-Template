@@ -109,6 +109,17 @@ class WBUrl
      */
     public static function randomURLExtension()
     {
-        return (env('APP_ENV') == 'local') ? '?' . rand(10, 100) . time() : '';
+        $css_version = '';
+        if (request()->session()->has('css_version') && env('APP_ENV') != 'local') {
+            if (request()->session()->get('css_version') != app_settings('css')->value) {
+                $version = rand(10, 100) . time();
+                $css_version = '?' . $version;
+
+                // store the current css version
+                request()->session()->put('css_version', $version);
+            }
+        }
+
+        return (env('APP_ENV') == 'local') ? '?' . rand(10, 100) . time() : $css_version;
     }
 }

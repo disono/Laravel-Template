@@ -3,6 +3,8 @@
  * Website: www.webmons.com
  * Copyright 2016 Webmons Development Studio.
  * License: Apache 2.0
+ *
+ * Angular configurations
  */
 
 // angular

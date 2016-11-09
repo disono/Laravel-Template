@@ -58,7 +58,7 @@
                                 </div>
 
                                 <div class="form-group{{ $errors->has('slug') ? ' has-error' : '' }}">
-                                    <label for="slug">Slug*</label>
+                                    <label for="slug">Slug* (Slugs make the URL more user-friendly)</label>
                                     <input type="text" class="form-control" name="slug" id="slug"
                                            value="{{$page->slug}}" placeholder="Slug">
 

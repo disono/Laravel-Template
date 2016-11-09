@@ -1,5 +1,5 @@
 {
-  "directory": "resources/assets/bower",
+  "directory": "bower_modules",
   "resolvers": [
     "bower-npm-resolver"
   ]

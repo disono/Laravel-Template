@@ -166,9 +166,8 @@ class WBFile
                 mkdir('private');
             }
 
-            if (!file_exists('private/img')) {
-                mkdir('private/img');
-            }
+            // create the folder
+            self::createFolder('private/img');
         }
 
         if (file_exists($complete_path) && $filename != null) {
@@ -199,6 +198,22 @@ class WBFile
         }
 
         return null;
+    }
+
+    /**
+     * Create folder
+     *
+     * @param $path
+     * @return bool
+     */
+    public static function createFolder($path)
+    {
+        // check if folder exists
+        if (!file_exists($path)) {
+            mkdir($path);
+        }
+
+        return true;
     }
 
     /**

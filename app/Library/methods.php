@@ -5,6 +5,7 @@
  * Copyright 2016 Webmons Development Studio.
  * License: Apache 2.0
  */
+
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 if (!function_exists('is_selected')) {
@@ -127,11 +128,12 @@ if (!function_exists('app_title')) {
      * Formatting header title
      *
      * @param $title
+     * @param string $delimiter
      * @return string
      */
-    function app_title($title)
+    function app_title($title, $delimiter = ' - ')
     {
-        return ' - ' . ucfirst($title);
+        return $delimiter . ucfirst($title);
     }
 }
 
@@ -157,6 +159,35 @@ if (!function_exists('rand_numbers')) {
     function rand_numbers($digits = 4)
     {
         return rand(pow(10, $digits - 1), pow(10, $digits) - 1);
+    }
+}
+
+if (!function_exists('str_random_db')) {
+    /**
+     * check if random string does not exists on database
+     *
+     * @param $table
+     * @param $column_name
+     * @param int $length
+     * @return null|string
+     */
+    function str_random_db($table, $column_name, $length = 32)
+    {
+        $checker = true;
+        $rnd = null;
+
+        while ($checker) {
+            $rnd = str_random($length);
+
+            $query = Illuminate\Support\Facades\DB::table($table)
+                ->where($column_name, $rnd);
+
+            if (!$query->count()) {
+                $checker = false;
+            }
+        }
+
+        return $rnd;
     }
 }
 
@@ -276,8 +307,9 @@ if (!function_exists('html_app_cache')) {
      */
     function html_app_cache()
     {
-        return (env('APP_ENV') === 'local') ? null : 'manifest="' .
-            clean(preg_replace('/\s+/', '_', app_settings('title')->value)) . '.cache"';
+        $path_cache = clean(preg_replace('/\s+/', '_', app_settings('title')->value)) . '.cache"';
+
+        return (env('APP_ENV') === 'local') ? null : 'manifest="' . $path_cache;
     }
 }
 
@@ -299,50 +331,5 @@ if (!function_exists('access_routes')) {
         }
 
         return $routes;
-    }
-}
-
-/*
- * --------------------------------------------------------------------------
- * Random DATA for DEMO use ONLY
- * --------------------------------------------------------------------------
- */
-
-if (!function_exists('random_first_names')) {
-
-    function random_first_names()
-    {
-        $first_names = [
-            'Abigail', 'Caroline', 'Dorothy', 'Elizabeth', 'Ella', 'Jasmine', 'Jennifer', 'Julia'
-        ];
-
-        $k = array_rand($first_names);
-        return $first_names[$k];
-    }
-}
-
-if (!function_exists('random_last_names')) {
-
-    function random_last_names()
-    {
-        $last_names = [
-            'Abraham', 'Ball', 'Cornish', 'Dowd', 'Hamilton', 'Hardacre', 'Johnston', 'McDonald'
-        ];
-
-        $k = array_rand($last_names);
-        return $last_names[$k];
-    }
-}
-
-if (!function_exists('random_middle_names')) {
-
-    function random_middle_names()
-    {
-        $last_names = [
-            'Abraham', 'Ball', 'Cornish', 'Dowd', 'Hamilton', 'Hardacre', 'Johnston', 'McDonald'
-        ];
-
-        $k = array_rand($last_names);
-        return $last_names[$k];
     }
 }
