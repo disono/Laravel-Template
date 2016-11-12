@@ -81,6 +81,14 @@ class WBDate
 
         $ed_format = explode(' ', $date);
 
+        // if date only
+        if (count($ed_format) == 1) {
+            $ed_format = [];
+
+            $ed_format[0] = $date;
+            $ed_format[1] = '00:00:00';
+        }
+
         if (count($ed_format) == 2) {
             // date
             $formatted_date['date'] = date('F d Y', strtotime($ed_format[0]));

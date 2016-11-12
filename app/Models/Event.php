@@ -59,7 +59,7 @@ class Event extends Model
     private static function _values($values, $value, $key)
     {
         if (!is_numeric($value)) {
-            if ($value) {
+            if ($value || is_numeric($value)) {
                 if ($key == 'start_date') {
                     $values[$key] = sql_date($value, true);
                 } else if ($key == 'start_time') {

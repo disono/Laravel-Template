@@ -24,7 +24,7 @@ class PageCategorySeeder extends Seeder
             DB::table('slugs')->insertGetId([
                 'source_id' => $id,
                 'source_type' => 'page_category',
-                'name' => str_random(),
+                'name' => $q,
                 'created_at' => sql_date()
             ]);
         }
