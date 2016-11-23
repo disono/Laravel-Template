@@ -28,7 +28,7 @@
     "loadcss": "^1.2.0",
     "ekko-lightbox": "^4.0.2",
     "angular": "^1.5.8",
-    "chart.js": "npm:chart.js#^2.2.0",
-    "bootstrap-select": "^1.11.2"
+    "bootstrap-select": "^1.11.2",
+    "chart.js": "^2.4.0"
   }
 }

@@ -50,6 +50,7 @@ class FacebookController extends Controller
             $user_query = SocialAuth::where('identifier', $user->getId())->first();
         }
 
+        // check for api authentication
         if (!$user_query) {
             $create = User::create([
                 'first_name' => ucfirst($user->user['first_name']),
@@ -61,6 +62,7 @@ class FacebookController extends Controller
                 'email_confirmed' => 1
             ]);
 
+            // create user
             if ($create) {
                 SocialAuth::insert([
                     'user_id' => $create->id,

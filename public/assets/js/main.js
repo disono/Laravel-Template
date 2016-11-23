@@ -31,4 +31,12 @@ jQ(document).ready(function () {
         event.preventDefault();
         jQ(this).ekkoLightbox();
     });
+
+    // container of multiple upload images
+    var image_container = jQ('#image_container').html();
+    jQ('#addImage').off().on('click', function (e) {
+        e.preventDefault();
+
+        jQ('#images').append(image_container);
+    });
 });
