@@ -9,6 +9,7 @@ is a starting blank template for Laravel Projects
 * **HTMLMin:** [https://github.com/GrahamCampbell/Laravel-HTMLMin](https://github.com/GrahamCampbell/Laravel-HTMLMin)
 * **Socialite:** [https://github.com/laravel/socialite](https://github.com/laravel/socialite)
 * **jwt-auth:** [https://github.com/tymondesigns/jwt-auth](https://github.com/tymondesigns/jwt-auth)
+* **Elephant.io:** [https://github.com/Wisembly/elephant.io](https://github.com/Wisembly/elephant.io)
 
 # JavaScript Libraries
 * **jQuery:** [https://jquery.com](https://jquery.com)

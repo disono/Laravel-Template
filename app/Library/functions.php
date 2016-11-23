@@ -128,6 +128,33 @@ if (!function_exists('get_user_agent')) {
     }
 }
 
+if (!function_exists('node_connector')) {
+    /**
+     * NodeJS Connector
+     *
+     * @param $path
+     * @return mixed
+     */
+    function node_connector($path)
+    {
+        return App\Library\Helpers\WBHttp::NodeJSConnector($path);
+    }
+}
+
+if (!function_exists('socket_emit')) {
+    /**
+     * SocketIO emit
+     *
+     * @param $name
+     * @param array $data
+     * @param null $uri
+     */
+    function socket_emit($name, $data = [], $uri = null)
+    {
+        App\Library\Helpers\WBHttp::SocketIOEmit($name, $data, $uri);
+    }
+}
+
 /*
  * --------------------------------------------------------------------------
  * WBFile method

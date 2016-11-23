@@ -6,6 +6,7 @@
  */
 namespace App\Library\Helpers;
 
+use ElephantIO\Client as Elephant;
 use Intervention\Image\Facades\Image;
 
 class WBHttp
@@ -157,5 +158,48 @@ class WBHttp
     public static function userAgent()
     {
         return (isset($_SERVER['HTTP_USER_AGENT'])) ? $_SERVER['HTTP_USER_AGENT'] : null;
+    }
+
+    /**
+     * NodeJS Connector
+     *
+     * @param null $path
+     * @return mixed
+     */
+    public static function NodeJSConnector($path = null)
+    {
+        $json = null;
+        try {
+            echo env('NODEJS_URI');
+            $json = file_get_contents(env('NODEJS_URI') . $path);
+            return json_decode($json);
+        } catch (\Exception $e) {
+            error_logger($e->getMessage());
+        }
+
+        return null;
+    }
+
+    /**
+     * SocketIO Emit
+     *
+     * @param $name
+     * @param array $data
+     * @param null $uri
+     */
+    public static function SocketIOEmit($name, $data = [], $uri = null)
+    {
+        if (!$uri) {
+            $uri = env('NODEJS_IO');
+        }
+
+        try {
+            $elephant = new Elephant(new \ElephantIO\Engine\SocketIO\Version1X($uri));
+            $elephant->initialize();
+            $elephant->emit($name, $data);
+            $elephant->close();
+        } catch (\Exception $e) {
+            error_logger($e->getMessage());
+        }
     }
 }
