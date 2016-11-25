@@ -51,7 +51,7 @@
     @include('vendor.css')
 </head>
 
-<body ng-app="WBApp">
+<body>
 {{-- loader --}}
 <div id="loaderContent">
     <img src="{{asset('assets/img/loaders/content-loader.svg')}}" alt="Loading...">
