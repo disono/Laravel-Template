@@ -103,7 +103,7 @@ class Message extends Model
             $query->where('messages.to_id', $params['to_id']);
         }
 
-        if (isset($params['from_id'])) {
+        if (isset($params['from_id']) && !isset($params['group_id'])) {
             $query->where('messages.from_id', $params['from_id']);
         }
 
@@ -127,7 +127,6 @@ class Message extends Model
             $query->where(DB::raw(self::$query_params['to_username']), $params['to_username']);
         }
 
-        // search
         if (isset($params['search'])) {
             self::$params = $params;
             $query->Where(function ($query) {
@@ -193,7 +192,6 @@ class Message extends Model
             $query->orderBy('messages.created_at', 'DESC');
         }
 
-        // exclude to messages
         if (isset($params['exclude'])) {
             if (is_array($params['exclude'])) {
                 foreach ($params['exclude'] as $column => $row) {
@@ -392,10 +390,12 @@ class Message extends Model
             $query = self::where($column_name, $id);
         } else {
             $i = 0;
+
             foreach ($column_name as $key => $value) {
                 if (!in_array($key, $columns)) {
                     return false;
                 }
+
                 if (!$i) {
                     $query = self::where($key, $value);
                 } else {
@@ -403,6 +403,7 @@ class Message extends Model
                         $query->where($key, $value);
                     }
                 }
+
                 $i++;
             }
         }

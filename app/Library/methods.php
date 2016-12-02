@@ -6,8 +6,6 @@
  * License: Apache 2.0
  */
 
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
-
 if (!function_exists('is_selected')) {
     /**
      * Is item selected
@@ -95,7 +93,7 @@ if (!function_exists('generate_qr')) {
      */
     function generate_qr($data = null)
     {
-        return 'data:image/png;base64,' . base64_encode(QrCode::format('png')->size(100)->generate($data));
+        return 'data:image/png;base64,' . base64_encode(SimpleSoftwareIO\QrCode\Facades\QrCode::format('png')->size(100)->generate($data));
     }
 }
 

@@ -8,6 +8,10 @@ namespace App\Library\Helpers;
 
 use ElephantIO\Client as Elephant;
 use Intervention\Image\Facades\Image;
+use LaravelFCM\Facades\FCM;
+use LaravelFCM\Message\OptionsBuilder;
+use LaravelFCM\Message\PayloadNotificationBuilder;
+use LaravelFCM\Message\Topics;
 
 class WBHttp
 {
@@ -18,6 +22,7 @@ class WBHttp
      * @param null $links
      * @param null $pagination
      * @param null $extra
+     *
      * @return \Illuminate\Http\JsonResponse
      */
     public static function successJSONResponse($data = [], $links = null, $pagination = null, $extra = null)
@@ -71,6 +76,7 @@ class WBHttp
      *
      * @param array $errors
      * @param int $status
+     *
      * @return \Illuminate\Http\JsonResponse
      */
     public static function failedJSONResponse($errors = [], $status = 422)
@@ -99,6 +105,7 @@ class WBHttp
      * @param $file_name
      * @param $url
      * @param int $quality
+     *
      * @return bool
      */
     public static function downloadImage($file_name, $url = null, $quality = 75)
@@ -164,6 +171,7 @@ class WBHttp
      * NodeJS Connector
      *
      * @param null $path
+     *
      * @return mixed
      */
     public static function NodeJSConnector($path = null)
@@ -201,5 +209,61 @@ class WBHttp
         } catch (\Exception $e) {
             error_logger($e->getMessage());
         }
+    }
+
+    /**
+     * FCM Send
+     *
+     * @param $token
+     * @param $title
+     * @param $body
+     * @param string $sound
+     *
+     * @return bool
+     */
+    public static function FCMSend($token, $title, $body, $sound = 'default')
+    {
+        $optionBuilder = new OptionsBuilder();
+        $optionBuilder->setTimeToLive(60 * 20);
+
+        $notificationBuilder = new PayloadNotificationBuilder($title);
+        $notificationBuilder->setBody($body)
+            ->setSound($sound);
+
+        $option = $optionBuilder->build();
+        $notification = $notificationBuilder->build();
+
+        $downstreamResponse = FCM::sendTo($token, $option, $notification);
+
+        if ($downstreamResponse->numberFailure()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Send topic
+     *
+     * @param $topic_name
+     * @param $title
+     * @param $body
+     * @param string $sound
+     * @return mixed
+     */
+    public static function FCMTopic($topic_name, $title, $body, $sound = 'default')
+    {
+        $notificationBuilder = new PayloadNotificationBuilder($title);
+        $notificationBuilder->setBody($body)
+            ->setSound($sound);
+
+        $notification = $notificationBuilder->build();
+
+        $topic = new Topics();
+        $topic->topic($topic_name);
+
+        $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
+
+        return $topicResponse->isSuccess();
     }
 }

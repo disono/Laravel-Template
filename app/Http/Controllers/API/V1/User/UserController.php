@@ -8,6 +8,7 @@
 namespace App\Http\Controllers\API\V1\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\FcmToken;
 use App\Models\User;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -71,5 +72,19 @@ class UserController extends Controller
         } catch (JWTException $e) {
             return failed_json_response($e->getMessage());
         }
+    }
+
+    /**
+     * FCM token
+     *
+     * @param $id
+     * @param $token
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function FCMToken($id, $token)
+    {
+        FcmToken::add($id, $token);
+
+        return success_json_response(User::single($id));
     }
 }

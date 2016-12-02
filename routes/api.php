@@ -38,6 +38,7 @@ Route::post('v1/password/recover', 'API\V1\Authenticate\RecoveryController@postR
 // user
 Route::group(['middleware' => ['api.auth']], function () {
     Route::get('v1/user/{id}', 'API\V1\User\UserController@getShow')->name('api-v1-user');
+    Route::get('v1/user/fcm-token/{id}/{token}', 'API\V1\User\UserController@FCMToken')->name('api-v1-user-fcm-token');
 
     // user settings
     Route::post('v1/user/update/setting', 'API\V1\User\SettingsController@postSettings')->name('api-v1-user-update-settings');

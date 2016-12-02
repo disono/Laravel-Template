@@ -10,6 +10,7 @@ is a starting blank template for Laravel Projects
 * **Socialite:** [https://github.com/laravel/socialite](https://github.com/laravel/socialite)
 * **jwt-auth:** [https://github.com/tymondesigns/jwt-auth](https://github.com/tymondesigns/jwt-auth)
 * **Elephant.io:** [https://github.com/Wisembly/elephant.io](https://github.com/Wisembly/elephant.io)
+* **Laravel-FCM:** [https://github.com/brozot/Laravel-FCM](https://github.com/brozot/Laravel-FCM)
 
 # JavaScript Libraries
 * **jQuery:** [https://jquery.com](https://jquery.com)

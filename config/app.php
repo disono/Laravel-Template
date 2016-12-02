@@ -181,6 +181,7 @@ return [
         SimpleSoftwareIO\QrCode\QrCodeServiceProvider::class,
         GrahamCampbell\HTMLMin\HTMLMinServiceProvider::class,
         Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class,
+        LaravelFCM\FCMServiceProvider::class
 
     ],
 
@@ -239,6 +240,8 @@ return [
         'HTMLMin' => GrahamCampbell\HTMLMin\Facades\HTMLMin::class,
         'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
         'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
+        'FCM' => LaravelFCM\Facades\FCM::class,
+        'FCMGroup' => LaravelFCM\Facades\FCMGroup::class,
 
     ],
 

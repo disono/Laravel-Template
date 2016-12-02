@@ -133,6 +133,7 @@ if (!function_exists('node_connector')) {
      * NodeJS Connector
      *
      * @param $path
+     *
      * @return mixed
      */
     function node_connector($path)
@@ -155,6 +156,39 @@ if (!function_exists('socket_emit')) {
     }
 }
 
+if (!function_exists('fcm_send')) {
+    /**
+     * FCM send
+     *
+     * @param $token
+     * @param $title
+     * @param $body
+     * @param string $sound
+     *
+     * @return bool
+     */
+    function fcm_send($token, $title, $body, $sound = 'default')
+    {
+        return App\Library\Helpers\WBHttp::FCMSend($token, $title, $body, $sound);
+    }
+}
+
+if (!function_exists('fcm_topic')) {
+    /**
+     * FCM topic
+     *
+     * @param $topic_name
+     * @param $title
+     * @param $body
+     * @param string $sound
+     * @return mixed
+     */
+    function fcm_topic($topic_name, $title, $body, $sound = 'default')
+    {
+        return App\Library\Helpers\WBHttp::FCMTopic($topic_name, $title, $body, $sound);
+    }
+}
+
 /*
  * --------------------------------------------------------------------------
  * WBFile method
@@ -165,6 +199,7 @@ if (!function_exists('delete_file')) {
      * Delete file
      *
      * @param $path
+     *
      * @return bool
      */
     function delete_file($path)
@@ -218,6 +253,7 @@ if (!function_exists('encode_base64_image')) {
      *
      * @param $filename
      * @param $filetype
+     *
      * @return null|string
      */
     function encode_base64_image($filename, $filetype = 'png')
@@ -233,6 +269,7 @@ if (!function_exists('upload_any_file')) {
      * @param $file
      * @param $destinationPath
      * @param null $old_file
+     *
      * @return string
      */
     function upload_any_file($file, $destinationPath = 'private/any', $old_file = null)
@@ -250,6 +287,7 @@ if (!function_exists('upload_image')) {
      * @param null $old_file
      * @param string $destinationPath
      * @param bool $nameOnly
+     *
      * @return string
      */
     function upload_image($file, $image_options = [], $old_file = null, $destinationPath = 'private/img', $nameOnly = false)
@@ -263,6 +301,7 @@ if (!function_exists('create_folder')) {
      * Create folder
      *
      * @param $path
+     *
      * @return bool
      */
     function create_folder($path)
