@@ -165,17 +165,22 @@ class WBAuth
 
             $user = JWTAuth::parseToken()->authenticate();
             if (!$user) {
+                error_logger('Token not found.');
                 return ($response) ? false : failed_json_response('Token not found.');
             }
         } catch (TokenExpiredException $e) {
+            error_logger('Token is expired, ' . $e->getMessage());
             return ($response) ? false : failed_json_response('Token is expired, ' . $e->getMessage());
         } catch (TokenInvalidException $e) {
+            error_logger('Token is invalid, ' . $e->getMessage());
             return ($response) ? false : failed_json_response('Token is invalid, ' . $e->getMessage());
         } catch (JWTException $e) {
+            error_logger('Token is absent, ' . $e->getMessage());
             return ($response) ? false : failed_json_response('Token is absent, ' . $e->getMessage());
         }
 
         if (!$user) {
+            error_logger('User is not found.');
             return ($response) ? false : failed_json_response('User is not found.');
         }
 

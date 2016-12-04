@@ -144,6 +144,10 @@ Route::group(['middleware' => 'auth'], function () {
     });
 });
 
+Route::get('dev', function () {
+
+})->name('web-dev');
+
 // page
 Route::get('{slug}', 'Web\Page\PageController@getShow')->name('web-page-show');
 Route::get('{type}/{slug}', 'Web\Page\PageController@getShow')->name('web-page-show-type');
