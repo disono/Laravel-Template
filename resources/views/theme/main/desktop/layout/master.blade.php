@@ -3,7 +3,7 @@
  * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
  * License: Apache 2.0
 --}}
-        <!DOCTYPE html {{html_app_cache()}}>
+<!DOCTYPE html {{html_app_cache()}}>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -70,18 +70,18 @@
 
 @yield('javascript')
 
+<script src="https://maps.googleapis.com/maps/api/js?key={{env('GOOGLE_API_KEY')}}&libraries=places"></script>
+
 @if(env('APP_DEBUG'))
     @include('vendor.loaders', ['scripts' => [
         'assets/js/vendor.js',
         'assets/js/helper.js',
         'assets/js/main.js',
-        'assets/js/app.js',
-        'https://maps.googleapis.com/maps/api/js?key=' . env('GOOGLE_API_KEY') . '&v=3.exp&libraries=places'
+        'assets/js/app.js'
     ], 'after_load' => true])
 @else
     @include('vendor.loaders', ['scripts' => [
         'assets/js/vendor.js',
-        'https://maps.googleapis.com/maps/api/js?key=' . env('GOOGLE_API_KEY') . '&v=3.exp&libraries=places'
     ], 'after_load' => true])
 @endif
 </body>

@@ -60,3 +60,8 @@
 .modal-content {
     border-radius: 0 !important;
 }
+
+.map {
+    width: 100% !important;
+    height: 500px !important;
+}

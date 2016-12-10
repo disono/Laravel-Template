@@ -101,20 +101,20 @@
 
 @yield('javascript')
 
+<script src="https://maps.googleapis.com/maps/api/js?key={{env('GOOGLE_API_KEY')}}&libraries=places"></script>
+
 @if(env('APP_DEBUG'))
     @include('vendor.loaders', array('after_load' => true, 'scripts' => [
         'assets/js/vendor.js',
         'assets/js/helper.js',
         'assets/js/main.js',
         'assets/js/app.js',
-        'assets/js/admin/main.js',
-        'https://maps.googleapis.com/maps/api/js?key=' . env('GOOGLE_API_KEY') . '&v=3.exp&libraries=places'
+        'assets/js/admin/main.js'
     ]))
 @else
     @include('vendor.loaders', ['after_load' => true, 'scripts' => [
         'assets/js/vendor.js',
-        'assets/js/admin/main.js',
-        'https://maps.googleapis.com/maps/api/js?key=' . env('GOOGLE_API_KEY') . '&v=3.exp&libraries=places'
+        'assets/js/admin/main.js'
     ]])
 @endif
 </body>
