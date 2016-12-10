@@ -90,7 +90,7 @@ class ImageAlbumController extends Controller
      * @param $id
      * @return mixed
      */
-    public function ajaxDestroy($id)
+    public function destroy($id)
     {
         ImageAlbum::remove($id);
 
