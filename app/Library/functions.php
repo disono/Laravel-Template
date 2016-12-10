@@ -486,6 +486,19 @@ if (!function_exists('human_date')) {
     }
 }
 
+if (!function_exists('human_time')) {
+    /**
+     * Human readable time
+     *
+     * @param null $time
+     * @return false|string
+     */
+    function human_time($time = null)
+    {
+        return App\Library\Helpers\WBDate::humanTime($time);
+    }
+}
+
 if (!function_exists('date_formatting')) {
     /**
      * Format date and time
@@ -499,7 +512,7 @@ if (!function_exists('date_formatting')) {
     }
 }
 
-if (!function_exists('count_years')) {
+if (!function_exists('expired_at')) {
     /**
      * Expired at
      *
@@ -523,6 +536,20 @@ if (!function_exists('count_years')) {
     function count_years($then, $current = null)
     {
         return App\Library\Helpers\WBDate::countYears($then, $current);
+    }
+}
+
+if (!function_exists('count_hours')) {
+    /**
+     * Count hours
+     *
+     * @param $start
+     * @param $end
+     * @return integer
+     */
+    function count_hours($start, $end)
+    {
+        return App\Library\Helpers\WBDate::countHours($start, $end);
     }
 }
 

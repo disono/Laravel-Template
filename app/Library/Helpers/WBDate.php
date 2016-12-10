@@ -56,6 +56,21 @@ class WBDate
     }
 
     /**
+     * Human readable time
+     *
+     * @param null $time
+     * @return false|string
+     */
+    public static function humanTime($time = null)
+    {
+        if ($time == null) {
+            return date('h:i A', time());
+        } else {
+            return date('h:i A', strtotime($time));
+        }
+    }
+
+    /**
      * Format date and time
      *
      * @param $date
@@ -142,5 +157,20 @@ class WBDate
         if (strtotime('+' . $year . ' years', $then_ts) > $current) $year--;
 
         return $year;
+    }
+
+    /**
+     * Count hours
+     *
+     * @param $start
+     * @param $end
+     * @return float|int
+     */
+    public static function countHours($start, $end)
+    {
+        $start_time = StrToTime(sql_date($start));
+        $end_time = StrToTime(sql_date($end));
+        $diff = $end_time - $start_time;
+        return $diff / (60 * 60);
     }
 }
