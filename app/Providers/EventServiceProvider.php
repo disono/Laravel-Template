@@ -12,9 +12,6 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        'App\Events\EventSignUp' => [
-            'App\Listeners\ListenerSignUp',
-        ],
         'App\Events\EventResetPassword' => [
             'App\Listeners\ListenerResetPassword',
         ],

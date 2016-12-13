@@ -86,83 +86,32 @@ $style = [
                                 <td style="{{ $fontFamily }} {{ $style['email-body_cell'] }}">
                                     <!-- Greeting -->
                                     <h1 style="{{ $style['header-1'] }}">
-                                        @if ($level == 'error')
-                                            Whoops!
-                                        @else
-                                            Hello!
-                                        @endif
+                                        Your new password!
                                     </h1>
 
-                                    <!-- Intro -->
-                                    @foreach ($introLines as $line)
-                                        <p style="{{ $style['paragraph'] }}">
-                                            {{ $line }}
-                                        </p>
-                                    @endforeach
+                                    <!-- Action Body -->
+                                    <table style="{{ $style['body_action'] }}" align="center" width="100%"
+                                           cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td align="left">
+                                                <strong>Email:</strong> {{$user->email}}
+                                            </td>
+                                        </tr>
 
-                                <!-- Action Button -->
-                                    @if (isset($actionText))
-                                        <table style="{{ $style['body_action'] }}" align="center" width="100%"
-                                               cellpadding="0" cellspacing="0">
-                                            <tr>
-                                                <td align="center">
-                                                    <?php
-                                                    switch ($level) {
-                                                        case 'success':
-                                                            $actionColor = 'button--green';
-                                                            break;
-                                                        case 'error':
-                                                            $actionColor = 'button--red';
-                                                            break;
-                                                        default:
-                                                            $actionColor = 'button--blue';
-                                                    }
-                                                    ?>
+                                        <tr>
+                                            <td align="left">
+                                                <strong>Password:</strong> {{$user->new_password}}
+                                            </td>
+                                        </tr>
+                                    </table>
 
-                                                    <a href="{{ $actionUrl }}"
-                                                       style="{{ $fontFamily }} {{ $style['button'] }} {{ $style[$actionColor] }}"
-                                                       class="button"
-                                                       target="_blank">
-                                                        {{ $actionText }}
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    @endif
+                                    <!-- Outro -->
+                                    <p>NOTE: This email was automatically generated from {{app_header('title')}}</p>
 
-                                <!-- Outro -->
-                                    @foreach ($outroLines as $line)
-                                        <p style="{{ $style['paragraph'] }}">
-                                            {{ $line }}
-                                        </p>
-                                    @endforeach
-
-                                <!-- Salutation -->
+                                    <!-- Salutation -->
                                     <p style="{{ $style['paragraph'] }}">
                                         Regards,<br>{{ app_header('title') }}
                                     </p>
-
-                                    <!-- Sub Copy -->
-                                    @if (isset($actionText))
-                                        <table style="{{ $style['body_sub'] }}">
-                                            <tr>
-                                                <td style="{{ $fontFamily }}">
-                                                    <p style="{{ $style['paragraph-sub'] }}">
-                                                        If you’re having trouble clicking the "{{ $actionText }}"
-                                                        button,
-                                                        copy and paste the URL below into your web browser:
-                                                    </p>
-
-                                                    <p style="{{ $style['paragraph-sub'] }}">
-                                                        <a style="{{ $style['anchor'] }}" href="{{ $actionUrl }}"
-                                                           target="_blank">
-                                                            {{ $actionUrl }}
-                                                        </a>
-                                                    </p>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    @endif
                                 </td>
                             </tr>
                         </table>

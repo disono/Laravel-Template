@@ -27,7 +27,7 @@ class ListenerResetPassword
 
         try {
             // send email for password reset
-            Mail::send('auth.emails.password_reset', ['user' => $user], function ($m) use ($user) {
+            Mail::send('auth.emails.password_update', ['user' => $user], function ($m) use ($user) {
                 $m->from(env('MAIL_FROM_ADDRESS'), 'Password reset from ' . app_header('title'));
                 $m->to($user->sent_to, $user->first_name . ' ' . $user->last_name)->subject('Password reset confirmation!');
             });

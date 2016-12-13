@@ -13,14 +13,15 @@ namespace App\Http\Controllers\Web\Authentication;
  * License: Apache 2.0
  */
 
-use App\Events\EventSignUp;
 use App\Http\Controllers\Controller;
 use App\Models\EmailVerification;
 use App\Models\Slug;
 use App\Models\User;
+use App\Notifications\RegisterNotification;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Notification;
 use Validator;
 
 class RegisterController extends Controller
@@ -109,9 +110,8 @@ class RegisterController extends Controller
      */
     public function resendVerification()
     {
-        event(new EventSignUp([
-            'user' => Auth::user()
-        ]));
+        $auth = Auth::user();
+        Notification::send($auth, new RegisterNotification($auth));
 
         return redirect()->back();
     }
@@ -158,9 +158,7 @@ class RegisterController extends Controller
             ]);
 
             // send email for email verification
-            event(new EventSignUp([
-                'user' => $create
-            ]));
+            Notification::send($create, new RegisterNotification($create));
         }
 
         return $create;

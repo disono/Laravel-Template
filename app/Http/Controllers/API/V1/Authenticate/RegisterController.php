@@ -7,7 +7,6 @@
  */
 namespace App\Http\Controllers\API\V1\Authenticate;
 
-use App\Events\EventSignUp;
 use App\Http\Controllers\Controller;
 use App\Http\Requests;
 use App\Models\AuthenticationToken;
@@ -15,6 +14,8 @@ use App\Models\AuthHistory;
 use App\Models\Slug;
 use App\Models\SocialAuth;
 use App\Models\User;
+use App\Notifications\RegisterNotification;
+use Illuminate\Support\Facades\Notification;
 
 class RegisterController extends Controller
 {
@@ -51,9 +52,7 @@ class RegisterController extends Controller
 
                 // send email for email verification if not authenticated by social
                 if (!$social_id) {
-                    event(new EventSignUp([
-                        'user' => $create
-                    ]));
+                    Notification::send($create, new RegisterNotification($create));
                 }
             } else {
                 return failed_json_response('Can not create user.');
