@@ -227,6 +227,10 @@ class WBFile
      */
     private static function _processUploadedImage($file, $image_options = [], $destinationPath = 'private/img', $nameOnly = false)
     {
+        if (!$file) {
+            return null;
+        }
+
         $extension = $file->getClientOriginalExtension();
         $upload_filename = filename_creator() . '.' . $extension;
         $file->move($destinationPath, $upload_filename);

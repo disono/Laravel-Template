@@ -3,8 +3,8 @@
  * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
  * License: Apache 2.0
 --}}
-<!DOCTYPE html {{html_app_cache()}}>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="en" {{html_app_cache()}}>
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
