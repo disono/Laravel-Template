@@ -7,6 +7,7 @@
 namespace App\Library\Helpers;
 
 use ElephantIO\Client as Elephant;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Intervention\Image\Facades\Image;
 use LaravelFCM\Facades\FCM;
 use LaravelFCM\Message\OptionsBuilder;
@@ -27,7 +28,7 @@ class WBHttp
      */
     public static function successJSONResponse($data = [], $links = null, $pagination = null, $extra = null)
     {
-        if (is_array($data) || is_string($data) || is_numeric($data)) {
+        if (is_array($data) || is_string($data) || is_numeric($data) || !$data instanceof LengthAwarePaginator) {
             return response()->json([
                 'success' => true,
                 'data' => $data,
