@@ -28,7 +28,8 @@ if (type == 'local') {
             '../../../bower_modules/Chart.js/dist/Chart.bundle.min.js',
             '../../../bower_modules/sweetalert/dist/sweetalert.min.js',
             '../../../bower_modules/ekko-lightbox/dist/ekko-lightbox.min.js',
-            '../../../bower_modules/bootstrap-select/dist/js/bootstrap-select.min.js'
+            '../../../bower_modules/bootstrap-select/dist/js/bootstrap-select.min.js',
+            '../../../bower_modules/awesome-rating/dist/awesomeRating.js'
         ], 'public/assets/js/vendor.js');
 
         mix.copy('bower_modules/loadcss/src/loadCSS.js', 'public/assets/js');
@@ -50,7 +51,8 @@ if (type == 'local') {
             '../../../bower_modules/pickadate/lib/compressed/themes/default.time.css',
             '../../../bower_modules/sweetalert/dist/sweetalert.css',
             '../../../bower_modules/ekko-lightbox/dist/ekko-lightbox.min.css',
-            '../../../bower_modules/bootstrap-select/dist/css/bootstrap-select.min.css'
+            '../../../bower_modules/bootstrap-select/dist/css/bootstrap-select.min.css',
+            '../../../bower_modules/awesome-rating/dist/awesomeRating.css'
         ], 'public/assets/css/vendor.css');
 
         mix.copy('bower_modules/font-awesome/fonts', 'public/assets/fonts');
@@ -74,6 +76,7 @@ if (type == 'local') {
             '../../../bower_modules/sweetalert/dist/sweetalert.min.js',
             '../../../bower_modules/ekko-lightbox/dist/ekko-lightbox.min.js',
             '../../../bower_modules/bootstrap-select/dist/js/bootstrap-select.min.js',
+            '../../../bower_modules/awesome-rating/dist/awesomeRating.js',
 
             '../../../public/assets/js/helper.js',
             '../../../public/assets/js/main.js',
@@ -100,6 +103,7 @@ if (type == 'local') {
             '../../../bower_modules/sweetalert/dist/sweetalert.css',
             '../../../bower_modules/ekko-lightbox/dist/ekko-lightbox.min.css',
             '../../../bower_modules/bootstrap-select/dist/css/bootstrap-select.min.css',
+            '../../../bower_modules/awesome-rating/dist/awesomeRating.css',
 
             '../../../public/assets/css/main.css'
         ], 'public/assets/css/vendor.css');

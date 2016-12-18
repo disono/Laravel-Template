@@ -880,7 +880,7 @@ var WBMap = (function () {
             this.map = new google.maps.Map(document.getElementById(id), {
                 center: {lat: this.lat, lng: this.lng},
                 zoom: 14,
-                styles: this.mapStyle
+                styles: this.style
             });
 
             // direction display map
@@ -909,7 +909,7 @@ var WBMap = (function () {
             autocomplete.bindTo('bounds', thisApp.map);
 
             // add the listener
-            autocomplete.addListener('place_changed', function() {
+            autocomplete.addListener('place_changed', function () {
                 var place = autocomplete.getPlace();
 
                 if (!place.geometry) {

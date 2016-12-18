@@ -69,6 +69,14 @@ class User extends Authenticatable
             $query->where('email', $params['email']);
         }
 
+        if (isset($params['role'])) {
+            $query->where('role', $params['role']);
+        }
+
+        if (isset($params['gender'])) {
+            $query->where('gender', $params['gender']);
+        }
+
         if (isset($params['search'])) {
             self::$params = $params;
 

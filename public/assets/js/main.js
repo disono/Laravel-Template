@@ -39,4 +39,26 @@ jQ(document).ready(function () {
 
         jQ('#images').append(image_container);
     });
+
+    // rating read only
+    jQ('.rating-read-only').each(function (i, obj) {
+        var init_val = jQ(this).attr('data-value');
+
+        jQ(this).awesomeRating({
+            valueInitial: parseInt(init_val),
+            readonly: true
+        });
+    });
+
+    // rating
+    jQ('.rating').each(function (i, obj) {
+        var data_input = jQ(this).attr('data-input');
+
+        jQ(this).awesomeRating({
+            valueInitial: 5,
+            values: [1, 2, 3, 4, 5],
+            targetSelector: data_input,
+            readonly: false
+        });
+    });
 });
