@@ -861,6 +861,7 @@ var WBMap = (function () {
 
     return {
         map: null,
+        infoWindow: new google.maps.InfoWindow(),
 
         /**
          * Initialize map
@@ -992,7 +993,7 @@ var WBMap = (function () {
             // click
             if (clickCallback) {
                 google.maps.event.addListener(marker, 'click', function () {
-                    clickCallback(lat, lng, data);
+                    clickCallback(lat, lng, data, marker);
                 });
             }
 
