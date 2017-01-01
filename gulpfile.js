@@ -29,7 +29,10 @@ if (type == 'local') {
             '../../../bower_modules/sweetalert/dist/sweetalert.min.js',
             '../../../bower_modules/ekko-lightbox/dist/ekko-lightbox.min.js',
             '../../../bower_modules/bootstrap-select/dist/js/bootstrap-select.min.js',
-            '../../../bower_modules/awesome-rating/dist/awesomeRating.js'
+            '../../../bower_modules/awesome-rating/dist/awesomeRating.js',
+            '../../../bower_modules/leaflet/dist/leaflet.js',
+            '../../../bower_modules/leaflet-search/dist/leaflet-search.min.js',
+            '../../../bower_modules/leaflet-routing-machine/dist/leaflet-routing-machine.min.js'
         ], 'public/assets/js/vendor.js');
 
         mix.copy('bower_modules/loadcss/src/loadCSS.js', 'public/assets/js');
@@ -52,12 +55,16 @@ if (type == 'local') {
             '../../../bower_modules/sweetalert/dist/sweetalert.css',
             '../../../bower_modules/ekko-lightbox/dist/ekko-lightbox.min.css',
             '../../../bower_modules/bootstrap-select/dist/css/bootstrap-select.min.css',
-            '../../../bower_modules/awesome-rating/dist/awesomeRating.css'
+            '../../../bower_modules/awesome-rating/dist/awesomeRating.css',
+            '../../../bower_modules/leaflet/dist/leaflet.css',
+            '../../../bower_modules/leaflet-search/dist/leaflet-search.min.css',
+            '../../../bower_modules/leaflet-routing-machine/dist/leaflet-routing-machine.css'
         ], 'public/assets/css/vendor.css');
 
         mix.copy('bower_modules/font-awesome/fonts', 'public/assets/fonts');
         mix.copy('bower_modules/bootstrap/fonts', 'public/assets/fonts');
         mix.copy('bower_modules/ionicons/fonts', 'public/assets/fonts');
+        mix.copy('bower_modules/leaflet/dist/images', 'public/assets/css/images');
     });
 } else if (type == 'admin') {
 
@@ -77,6 +84,9 @@ if (type == 'local') {
             '../../../bower_modules/ekko-lightbox/dist/ekko-lightbox.min.js',
             '../../../bower_modules/bootstrap-select/dist/js/bootstrap-select.min.js',
             '../../../bower_modules/awesome-rating/dist/awesomeRating.js',
+            '../../../bower_modules/leaflet/dist/leaflet.js',
+            '../../../bower_modules/leaflet-search/dist/leaflet-search.min.js',
+            '../../../bower_modules/leaflet-routing-machine/dist/leaflet-routing-machine.min.js',
 
             '../../../public/assets/js/helper.js',
             '../../../public/assets/js/main.js',
@@ -104,6 +114,9 @@ if (type == 'local') {
             '../../../bower_modules/ekko-lightbox/dist/ekko-lightbox.min.css',
             '../../../bower_modules/bootstrap-select/dist/css/bootstrap-select.min.css',
             '../../../bower_modules/awesome-rating/dist/awesomeRating.css',
+            '../../../bower_modules/leaflet/dist/leaflet.css',
+            '../../../bower_modules/leaflet-search/dist/leaflet-search.min.css',
+            '../../../bower_modules/leaflet-routing-machine/dist/leaflet-routing-machine.css',
 
             '../../../public/assets/css/main.css'
         ], 'public/assets/css/vendor.css');
@@ -111,5 +124,6 @@ if (type == 'local') {
         mix.copy('bower_modules/font-awesome/fonts', 'public/assets/fonts');
         mix.copy('bower_modules/bootstrap/fonts', 'public/assets/fonts');
         mix.copy('bower_modules/ionicons/fonts', 'public/assets/fonts');
+        mix.copy('bower_modules/leaflet/dist/images', 'public/assets/css/images');
     });
 }

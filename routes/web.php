@@ -145,7 +145,7 @@ Route::group(['middleware' => 'auth'], function () {
 });
 
 Route::get('dev', function () {
-
+    return view('vendor.demo.map');
 })->name('web-dev');
 
 // page
