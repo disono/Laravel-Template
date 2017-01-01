@@ -1301,6 +1301,46 @@ var WBLeafMap = (function () {
 
             var bounds = new L.LatLngBounds(listLatLng);
             this.map.fitBounds(bounds);
+        },
+
+        /**
+         * Distance between two points
+         *
+         * @param lat_from
+         * @param lng_from
+         * @param lat_des
+         * @param lng_des
+         * @returns {*}
+         */
+        calDistance: function (lat_from, lng_from, lat_des, lng_des) {
+            // km
+            var R = 6371;
+            var dLat = WBLeafMap.toRad(lat_des - lat_from);
+            var dLon = WBLeafMap.toRad(lng_des - lng_from);
+
+            lat_from = WBLeafMap.toRad(lat_from);
+            lat_des = WBLeafMap.toRad(lat_des);
+
+            var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat_from) * Math.cos(lat_des);
+            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            var d = R * c;
+
+            if (d) {
+                return d.toFixed(1);
+            }
+
+            return d;
+        },
+
+        /**
+         * Converts numeric degrees to radians
+         *
+         * @param Value
+         * @returns {number}
+         */
+        toRad: function (Value) {
+            return Value * Math.PI / 180;
         }
     }
 }());
