@@ -288,6 +288,7 @@ class UserController extends Controller
      */
     public function confirm(Request $request)
     {
+        // email
         if ($request->get('type') === 'email' && is_numeric($request->get('id'))) {
             $user = User::find($request->get('id'));
 
@@ -297,7 +298,18 @@ class UserController extends Controller
             }
         }
 
+        // phone
         if ($request->get('type') === 'phone' && is_numeric($request->get('id'))) {
+            $user = User::find($request->get('id'));
+
+            if ($user) {
+                $user->enabled = (($user->phone_confirmed) ? 0 : 1);
+                $user->save();
+            }
+        }
+
+        // acount enabled
+        if ($request->get('type') === 'account' && is_numeric($request->get('id'))) {
             $user = User::find($request->get('id'));
 
             if ($user) {
