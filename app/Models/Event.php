@@ -13,14 +13,16 @@ use Illuminate\Database\Eloquent\Model;
 class Event extends Model
 {
     private static $params;
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $fillable = [
+
+    protected static $writable_columns = [
         'user_id', 'name', 'slug', 'content', 'template', 'start_date', 'start_time', 'end_date', 'end_time', 'draft'
     ];
+
+    public function __construct(array $attributes = [])
+    {
+        $this->fillable(self::$writable_columns);
+        parent::__construct($attributes);
+    }
 
     /**
      * Store new data
@@ -263,9 +265,6 @@ class Event extends Model
     {
         $update = [];
         $query = null;
-        $columns = [
-            'name', 'slug', 'content', 'template', 'start_date', 'start_time', 'end_date', 'end_time', 'draft'
-        ];
 
         if (!$column_name) {
             $column_name = 'id';
@@ -276,7 +275,7 @@ class Event extends Model
         } else {
             $i = 0;
             foreach ($column_name as $key => $value) {
-                if (!in_array($key, $columns)) {
+                if (!in_array($key, self::$writable_columns)) {
                     return false;
                 }
                 if (!$i) {
@@ -291,7 +290,7 @@ class Event extends Model
         }
 
         foreach ($inputs as $key => $value) {
-            if (in_array($key, $columns)) {
+            if (in_array($key, self::$writable_columns)) {
                 $update = self::_values($update, $value, $key);
             }
         }

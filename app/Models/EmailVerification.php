@@ -11,12 +11,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class EmailVerification extends Model
 {
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $fillable = [
+    protected static $writable_columns = [
         'token', 'email', 'expired_at'
     ];
+
+    public function __construct(array $attributes = [])
+    {
+        $this->fillable(self::$writable_columns);
+        parent::__construct($attributes);
+    }
 }

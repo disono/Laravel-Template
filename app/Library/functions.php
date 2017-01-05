@@ -764,7 +764,7 @@ if (!function_exists('sendSMS')) {
      * @param $message
      * @return bool
      */
-    function sendSMS($number, $message)
+    function send_sms($number, $message)
     {
         return App\Library\Helpers\WBMessaging::SMS($number, $message);
     }

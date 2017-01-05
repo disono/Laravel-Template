@@ -12,14 +12,16 @@ use Illuminate\Database\Eloquent\Model;
 class Slug extends Model
 {
     private static $params;
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $fillable = [
+
+    protected static $writable_columns = [
         'source_id', 'source_type', 'name'
     ];
+
+    public function __construct(array $attributes = [])
+    {
+        $this->fillable(self::$writable_columns);
+        parent::__construct($attributes);
+    }
 
     /**
      * Get single data
@@ -122,12 +124,9 @@ class Slug extends Model
     public static function store($inputs = [])
     {
         $store = [];
-        $columns = [
-            'source_id', 'source_type', 'name'
-        ];
 
         foreach ($inputs as $key => $value) {
-            if (in_array($key, $columns)) {
+            if (in_array($key, self::$writable_columns)) {
                 $store[$key] = $value;
             }
         }
@@ -160,9 +159,6 @@ class Slug extends Model
     {
         $update = [];
         $query = null;
-        $columns = [
-            'source_id', 'source_type', 'name'
-        ];
 
         if (!$column_name) {
             $column_name = 'id';
@@ -173,7 +169,7 @@ class Slug extends Model
         } else {
             $i = 0;
             foreach ($column_name as $key => $value) {
-                if (!in_array($key, $columns)) {
+                if (!in_array($key, self::$writable_columns)) {
                     return false;
                 }
 
@@ -190,7 +186,7 @@ class Slug extends Model
         }
 
         foreach ($inputs as $key => $value) {
-            if (in_array($key, $columns)) {
+            if (in_array($key, self::$writable_columns)) {
                 $update[$key] = $value;
             }
         }

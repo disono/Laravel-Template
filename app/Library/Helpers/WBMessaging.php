@@ -10,6 +10,8 @@ class WBMessaging
 {
     /**
      * Send SMS message
+     * @url https://www.itexmo.com/Developers/apidocs.php
+     * @url https://telerivet.com (alternatives)
      *
      * @param $number
      * @param $message
@@ -17,6 +19,17 @@ class WBMessaging
      */
     public static function SMS($number, $message)
     {
-        return false;
+        $url = 'https://www.itexmo.com/php_api/api.php';
+        $CONFIG = array('1' => $number, '2' => $message, '3' => env('TEXT_CODE'));
+        $param = array(
+            'http' => array(
+                'header' => "Content-type: application/x-www-form-urlencoded\r\n",
+                'method' => 'POST',
+                'content' => http_build_query($CONFIG),
+            ),
+        );
+        $context = stream_context_create($param);
+
+        return file_get_contents($url, false, $context);
     }
 }

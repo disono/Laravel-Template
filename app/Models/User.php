@@ -20,15 +20,16 @@ class User extends Authenticatable
     private static $username;
     private static $full_name;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $fillable = [
+    protected static $writable_columns = [
         'first_name', 'middle_name', 'last_name', 'image_id', 'gender', 'address', 'country_id', 'phone', 'birthday', 'username',
         'email', 'password', 'enabled', 'email_confirmed', 'role'
     ];
+
+    public function __construct(array $attributes = [])
+    {
+        $this->fillable(self::$writable_columns);
+        parent::__construct($attributes);
+    }
 
     /**
      * The attributes excluded from the model's JSON form.
@@ -159,10 +160,6 @@ class User extends Authenticatable
     {
         $update = [];
         $query = null;
-        $columns = [
-            'first_name', 'middle_name', 'last_name', 'image', 'gender', 'address', 'country_id', 'about',
-            'phone', 'birthday', 'username', 'email', 'password', 'enabled', 'email_confirmed', 'role'
-        ];
 
         if (!$column_name) {
             $column_name = 'id';
@@ -174,7 +171,7 @@ class User extends Authenticatable
             $i = 0;
 
             foreach ($column_name as $key => $value) {
-                if (!in_array($key, $columns)) {
+                if (!in_array($key, self::$writable_columns)) {
                     return false;
                 }
 
@@ -200,7 +197,7 @@ class User extends Authenticatable
         }
 
         foreach ($inputs as $key => $value) {
-            if (in_array($key, $columns)) {
+            if (in_array($key, self::$writable_columns)) {
                 if ($key === 'password') {
                     if ($value) {
                         $update[$key] = bcrypt($value);

@@ -13,14 +13,16 @@ use Illuminate\Support\Facades\DB;
 class AuthorizationRole extends Model
 {
     private static $params;
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $fillable = [
+
+    protected static $writable_columns = [
         'role_id', 'authorization_id'
     ];
+
+    public function __construct(array $attributes = [])
+    {
+        $this->fillable(self::$writable_columns);
+        parent::__construct($attributes);
+    }
 
     /**
      * Get single data
@@ -146,12 +148,9 @@ class AuthorizationRole extends Model
     public static function store($inputs = [])
     {
         $store = [];
-        $columns = [
-            'role_id', 'authorization_id'
-        ];
 
         foreach ($inputs as $key => $value) {
-            if (in_array($key, $columns)) {
+            if (in_array($key, self::$writable_columns)) {
                 $store[$key] = $value;
             }
         }
@@ -184,9 +183,6 @@ class AuthorizationRole extends Model
     {
         $update = [];
         $query = null;
-        $columns = [
-            'role_id', 'authorization_id'
-        ];
 
         if (!$column_name) {
             $column_name = 'id';
@@ -198,7 +194,7 @@ class AuthorizationRole extends Model
             $i = 0;
 
             foreach ($column_name as $key => $value) {
-                if (!in_array($key, $columns)) {
+                if (!in_array($key, self::$writable_columns)) {
                     return false;
                 }
 
@@ -215,10 +211,11 @@ class AuthorizationRole extends Model
         }
 
         foreach ($inputs as $key => $value) {
-            if (in_array($key, $columns)) {
+            if (in_array($key, self::$writable_columns)) {
                 $update[$key] = $value;
             }
         }
+
         return (bool)$query->update($update);
     }
 }

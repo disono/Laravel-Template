@@ -12,14 +12,16 @@ use Illuminate\Database\Eloquent\Model;
 class Image extends Model
 {
     private static $params;
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $fillable = [
+
+    protected static $writable_columns = [
         'user_id', 'source_id', 'title', 'filename', 'type'
     ];
+
+    public function __construct(array $attributes = [])
+    {
+        $this->fillable(self::$writable_columns);
+        parent::__construct($attributes);
+    }
 
     /**
      * Get single data
@@ -151,15 +153,14 @@ class Image extends Model
     public static function store($inputs = [])
     {
         $store = [];
-        $columns = [
-            'user_id', 'source_id', 'title', 'filename', 'type'
-        ];
+
         foreach ($inputs as $key => $value) {
-            if (in_array($key, $columns)) {
+            if (in_array($key, self::$writable_columns)) {
                 $store[$key] = $value;
             }
         }
         $store['created_at'] = sql_date();
+
         return (int)self::insertGetId($store);
     }
 

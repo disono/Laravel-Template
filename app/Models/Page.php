@@ -15,14 +15,15 @@ class Page extends Model
     private static $params;
     private static $slug;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $fillable = [
+    protected static $writable_columns = [
         'page_category_id', 'user_id', 'name', 'slug', 'content', 'template', 'draft'
     ];
+
+    public function __construct(array $attributes = [])
+    {
+        $this->fillable(self::$writable_columns);
+        parent::__construct($attributes);
+    }
 
     /**
      * Get data
@@ -141,12 +142,9 @@ class Page extends Model
     public static function store($inputs = [])
     {
         $store = [];
-        $columns = [
-            'page_category_id', 'user_id', 'name', 'slug', 'content', 'template', 'draft'
-        ];
 
         foreach ($inputs as $key => $value) {
-            if (in_array($key, $columns)) {
+            if (in_array($key, self::$writable_columns)) {
                 if ($key != 'slug') {
                     $store = self::_values($store, $value, $key);
                 }
@@ -303,9 +301,6 @@ class Page extends Model
     {
         $update = [];
         $query = null;
-        $columns = [
-            'page_category_id', 'name', 'slug', 'content', 'template', 'draft'
-        ];
 
         if (!$column_name) {
             $column_name = 'id';
@@ -316,7 +311,7 @@ class Page extends Model
         } else {
             $i = 0;
             foreach ($column_name as $key => $value) {
-                if (!in_array($key, $columns)) {
+                if (!in_array($key, self::$writable_columns)) {
                     return false;
                 }
                 if (!$i) {
@@ -331,7 +326,7 @@ class Page extends Model
         }
 
         foreach ($inputs as $key => $value) {
-            if (in_array($key, $columns)) {
+            if (in_array($key, self::$writable_columns)) {
                 if ($key != 'slug') {
                     $update = self::_values($update, $value, $key);
                 }

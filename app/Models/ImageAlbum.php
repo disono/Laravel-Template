@@ -12,14 +12,16 @@ use Illuminate\Database\Eloquent\Model;
 class ImageAlbum extends Model
 {
     private static $params;
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $fillable = [
+
+    protected static $writable_columns = [
         'name', 'slug', 'description'
     ];
+
+    public function __construct(array $attributes = [])
+    {
+        $this->fillable(self::$writable_columns);
+        parent::__construct($attributes);
+    }
 
     /**
      * Get single data
@@ -138,12 +140,9 @@ class ImageAlbum extends Model
     public static function store($inputs = [])
     {
         $store = [];
-        $columns = [
-            'name', 'slug', 'description'
-        ];
 
         foreach ($inputs as $key => $value) {
-            if (in_array($key, $columns)) {
+            if (in_array($key, self::$writable_columns)) {
                 $store[$key] = $value;
             }
         }
@@ -176,9 +175,6 @@ class ImageAlbum extends Model
     {
         $update = [];
         $query = null;
-        $columns = [
-            'name', 'slug', 'description'
-        ];
 
         if (!$column_name) {
             $column_name = 'id';
@@ -189,7 +185,7 @@ class ImageAlbum extends Model
         } else {
             $i = 0;
             foreach ($column_name as $key => $value) {
-                if (!in_array($key, $columns)) {
+                if (!in_array($key, self::$writable_columns)) {
                     return false;
                 }
                 if (!$i) {
@@ -204,7 +200,7 @@ class ImageAlbum extends Model
         }
 
         foreach ($inputs as $key => $value) {
-            if (in_array($key, $columns)) {
+            if (in_array($key, self::$writable_columns)) {
                 $update[$key] = $value;
             }
         }

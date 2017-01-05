@@ -12,14 +12,16 @@ use Illuminate\Database\Eloquent\Model;
 class Authorization extends Model
 {
     private static $params;
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $fillable = [
+
+    protected static $writable_columns = [
         'name', 'identifier', 'description'
     ];
+
+    public function __construct(array $attributes = [])
+    {
+        $this->fillable(self::$writable_columns);
+        parent::__construct($attributes);
+    }
 
     /**
      * Get single data
@@ -134,12 +136,9 @@ class Authorization extends Model
     public static function store($inputs = [])
     {
         $store = [];
-        $columns = [
-            'name', 'identifier', 'description'
-        ];
 
         foreach ($inputs as $key => $value) {
-            if (in_array($key, $columns)) {
+            if (in_array($key, self::$writable_columns)) {
                 $store[$key] = $value;
             }
         }
@@ -172,9 +171,6 @@ class Authorization extends Model
     {
         $update = [];
         $query = null;
-        $columns = [
-            'name', 'identifier', 'description'
-        ];
 
         if (!$column_name) {
             $column_name = 'id';
@@ -185,7 +181,7 @@ class Authorization extends Model
         } else {
             $i = 0;
             foreach ($column_name as $key => $value) {
-                if (!in_array($key, $columns)) {
+                if (!in_array($key, self::$writable_columns)) {
                     return false;
                 }
 
@@ -202,7 +198,7 @@ class Authorization extends Model
         }
 
         foreach ($inputs as $key => $value) {
-            if (in_array($key, $columns)) {
+            if (in_array($key, self::$writable_columns)) {
                 $update[$key] = $value;
             }
         }
