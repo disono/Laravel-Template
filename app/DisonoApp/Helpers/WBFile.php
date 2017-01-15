@@ -4,7 +4,7 @@
  * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
  * License: Apache 2.0
  */
-namespace App\Library\Helpers;
+namespace App\DisonoApp\Helpers;
 
 use Illuminate\Support\Facades\Log;
 use Intervention\Image\Facades\Image;

@@ -2,6 +2,8 @@
  * Author: Archie, Disono (webmonsph@gmail.com)
  * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
  * License: Apache 2.0
+ *
+ * Web styles and master view
 --}}
 <!DOCTYPE html>
 <html lang="en" {{html_app_cache()}}>
@@ -54,7 +56,16 @@
 <body>
 {{-- loader --}}
 <div id="loaderContent">
-    <img src="{{asset('assets/img/loaders/content-loader.svg')}}" alt="Loading...">
+    <div id="cssload-pgloading">
+        <div class="cssload-loadingwrap">
+            <ul class="cssload-bokeh">
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+            </ul>
+        </div>
+    </div>
 </div>
 
 {{-- main application content --}}

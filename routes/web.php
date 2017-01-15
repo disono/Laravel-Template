@@ -15,17 +15,17 @@
 Route::get('/', 'Web\Page\PageController@getHome')->name('web-page-home');
 
 // login
-Route::get('login', 'Web\Authentication\LoginController@getLogin')->name('web-auth-get-login');
-Route::post('login', 'Web\Authentication\LoginController@postLogin')->name('web-auth-post-login');
-Route::get('logout', 'Web\Authentication\LoginController@getLogout')->name('web-auth-get-logout');
+Route::get('login', 'Web\Authentication\LoginController@loginView')->name('web-auth-login');
+Route::post('login', 'Web\Authentication\LoginController@process')->name('web-auth-login-process');
+Route::get('logout', 'Web\Authentication\LoginController@logout')->name('web-auth-logout');
 
-// social login
+// social login facebook
 Route::get('auth/social/facebook', 'Web\Authentication\Social@facebook')->name('web-auth-facebook');
 Route::get('auth/social/facebook/callback', 'Web\Authentication\Social@facebookCallback')->name('web-auth-facebook-callback');
 
 // register
-Route::get('register', 'Web\Authentication\RegisterController@getRegister')->name('web-auth-get-register');
-Route::post('register', 'Web\Authentication\RegisterController@postRegister')->name('web-auth-post-register');
+Route::get('register', 'Web\Authentication\RegisterController@registerView')->name('web-auth-register');
+Route::post('register', 'Web\Authentication\RegisterController@process')->name('web-auth-register-process');
 
 // email verify
 Route::get('email/verify', 'Web\Authentication\RegisterController@verifyEmail')->name('web-email-verify');
@@ -145,8 +145,11 @@ Route::group(['middleware' => 'auth'], function () {
 });
 
 Route::get('dev', function () {
-    return view('vendor.demo.map');
+    return success_json_response(\App\Models\User::getAll());
 })->name('web-dev');
+
+// profile
+Route::get('user/{username}', 'Web\User\ProfileController@show')->name('web-user-profile-show');
 
 // page
 Route::get('{slug}', 'Web\Page\PageController@getShow')->name('web-page-show');

@@ -29,6 +29,7 @@
 <noscript>
     <link rel="stylesheet" href="{{ asset('assets/css/vendor.css') . url_ext() }}"/>
     @if(env('APP_DEBUG'))
+        <link rel="stylesheet" href="{{ asset('assets/css/animated-loading.css') . url_ext() }}"/>
         <link rel="stylesheet" href="{{ asset('assets/css/main.css') . url_ext() }}"/>
     @endif
 </noscript>

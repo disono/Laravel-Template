@@ -61,6 +61,11 @@
     border-radius: 0 !important;
 }
 
+.well {
+    box-shadow: none !important;
+    border-radius: 0 !important;
+}
+
 .map {
     width: 100% !important;
     height: 500px !important;
@@ -70,3 +75,4 @@
     height: 100%;
     width: 100%;
 }
+

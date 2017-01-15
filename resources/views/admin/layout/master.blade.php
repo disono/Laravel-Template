@@ -2,6 +2,8 @@
  * Author: Archie, Disono (webmonsph@gmail.com)
  * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
  * License: Apache 2.0
+ *
+ * Admin styles and master view
 --}}
 <!DOCTYPE html>
 <html lang="en" {{html_app_cache()}}>
@@ -42,15 +44,18 @@
 
     {{-- load all CSS --}}
     <script>
-        {{-- load the vendor CSS --}}
-        onloadCSS(loadCSS('{{ asset('assets/css/vendor.css') . url_ext() }}'), function () {
-            {{-- load the style for app --}}
-            onloadCSS(loadCSS('{{ asset('assets/css/main.css') . url_ext() }}'), function () {
-                {{-- load the style for admin --}}
-                onloadCSS(loadCSS('{{ asset('assets/css/admin.css') . url_ext() }}'), function () {
-                    document.querySelector('#WBMainApp').style.display = null;
-                    document.getElementById("loaderContent").remove();
-                    document.getElementById("loaderStyles").remove();
+        {{-- load the animated loader --}}
+        onloadCSS(loadCSS('{{ asset('assets/css/animated-loading.css') . url_ext() }}'), function () {
+            {{-- load the vendor CSS --}}
+            onloadCSS(loadCSS('{{ asset('assets/css/vendor.css') . url_ext() }}'), function () {
+                {{-- load the style for app --}}
+                onloadCSS(loadCSS('{{ asset('assets/css/main.css') . url_ext() }}'), function () {
+                    {{-- load the style for admin --}}
+                        onloadCSS(loadCSS('{{ asset('assets/css/admin.css') . url_ext() }}'), function () {
+                        document.querySelector('#WBMainApp').style.display = null;
+                        document.getElementById("loaderContent").remove();
+                        document.getElementById("loaderStyles").remove();
+                    });
                 });
             });
         });
@@ -69,7 +74,16 @@
 <body>
 {{-- loader --}}
 <div id="loaderContent">
-    <img src="{{asset('assets/img/loaders/content-loader.svg')}}" alt="Loading...">
+    <div id="cssload-pgloading">
+        <div class="cssload-loadingwrap">
+            <ul class="cssload-bokeh">
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+            </ul>
+        </div>
+    </div>
 </div>
 
 {{-- main application content --}}

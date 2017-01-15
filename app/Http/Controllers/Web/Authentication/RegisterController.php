@@ -46,7 +46,7 @@ class RegisterController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function getRegister()
+    public function registerView()
     {
         return $this->showRegistrationForm();
     }
@@ -57,9 +57,57 @@ class RegisterController extends Controller
      * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function postRegister(Request $request)
+    public function process(Request $request)
     {
         return $this->register($request);
+    }
+
+    /**
+     * Get a validator for an incoming registration request.
+     *
+     * @param  array $data
+     * @return \Illuminate\Contracts\Validation\Validator
+     */
+    protected function validator(array $data)
+    {
+        return Validator::make($data, [
+            'first_name' => 'required|max:100',
+            'last_name' => 'required|max:100',
+            'username' => 'required|max:100|alpha_dash|unique:slugs,name|not_in:' . exclude_slug(),
+            'email' => 'required|email|max:255|unique:users',
+            'password' => 'required|min:6|confirmed',
+        ]);
+    }
+
+    /**
+     * Create a new user instance after a valid registration.
+     *
+     * @param  array $data
+     * @return User
+     */
+    protected function create(array $data)
+    {
+        $create = User::create([
+            'first_name' => ucfirst($data['first_name']),
+            'last_name' => ucfirst($data['last_name']),
+            'password' => bcrypt($data['password']),
+            'email' => $data['email'],
+            'role' => 'client',
+            'enabled' => 1
+        ]);
+
+        if ($create) {
+            Slug::store([
+                'source_id' => $create->id,
+                'source_type' => 'user',
+                'name' => $data['username']
+            ]);
+
+            // send email for email verification
+            Notification::send($create, new RegisterNotification($create));
+        }
+
+        return $create;
     }
 
     /**
@@ -114,53 +162,5 @@ class RegisterController extends Controller
         Notification::send($auth, new RegisterNotification($auth));
 
         return redirect()->back();
-    }
-
-    /**
-     * Get a validator for an incoming registration request.
-     *
-     * @param  array $data
-     * @return \Illuminate\Contracts\Validation\Validator
-     */
-    protected function validator(array $data)
-    {
-        return Validator::make($data, [
-            'first_name' => 'required|max:100',
-            'last_name' => 'required|max:100',
-            'username' => 'required|max:100|alpha_dash|unique:slugs,name|not_in:' . exclude_slug(),
-            'email' => 'required|email|max:255|unique:users',
-            'password' => 'required|min:6|confirmed',
-        ]);
-    }
-
-    /**
-     * Create a new user instance after a valid registration.
-     *
-     * @param  array $data
-     * @return User
-     */
-    protected function create(array $data)
-    {
-        $create = User::create([
-            'first_name' => ucfirst($data['first_name']),
-            'last_name' => ucfirst($data['last_name']),
-            'password' => bcrypt($data['password']),
-            'email' => $data['email'],
-            'role' => 'client',
-            'enabled' => 1
-        ]);
-
-        if ($create) {
-            Slug::store([
-                'source_id' => $create->id,
-                'source_type' => 'user',
-                'name' => $data['username']
-            ]);
-
-            // send email for email verification
-            Notification::send($create, new RegisterNotification($create));
-        }
-
-        return $create;
     }
 }

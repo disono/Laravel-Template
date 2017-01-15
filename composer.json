@@ -32,7 +32,7 @@
             "App\\": "app/"
         },
         "files": [
-            "app/Library/functions.php"
+            "app/DisonoApp/functions.php"
         ]
     },
     "autoload-dev": {

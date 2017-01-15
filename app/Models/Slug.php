@@ -94,6 +94,18 @@ class Slug extends Model
     }
 
     /**
+     * Get all data no pagination
+     *
+     * @param array $params
+     * @return null
+     */
+    public static function getAll($params = [])
+    {
+        $params['all'] = true;
+        return self::get($params);
+    }
+
+    /**
      * Add formatting on data
      *
      * @param $query

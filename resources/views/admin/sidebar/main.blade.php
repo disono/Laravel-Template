@@ -29,7 +29,6 @@
             <li>
                 <a href="{{url('admin/page-category/create')}}">Create Category</a>
             <li><a href="{{url('admin/page-categories')}}">View all</a></li>
-            </li>
         </ul>
 
         <li data-toggle="collapse" data-target="#sidebar-pages" class="collapsed">
@@ -39,7 +38,6 @@
             <li>
                 <a href="{{url('admin/page/create')}}">Create Page</a>
             <li><a href="{{url('admin/pages')}}">View all</a></li>
-            </li>
         </ul>
 
         <li data-toggle="collapse" data-target="#sidebar-events" class="collapsed">
@@ -49,7 +47,24 @@
             <li>
                 <a href="{{url('admin/event/create')}}">Create Event</a>
             <li><a href="{{url('admin/events')}}">View all</a></li>
-            </li>
+        </ul>
+
+        <li data-toggle="collapse" data-target="#sidebar-product" class="collapsed">
+            <a href="#"><i class="fa fa-product-hunt" aria-hidden="true"></i> Products</a>
+        </li>
+        <ul class="sub-menu collapse" id="sidebar-product">
+            <li>
+                <a href="{{url('admin/product/category')}}">Product Categories</a>
+                <a href="{{url('admin/product/create')}}">Create Product</a>
+            <li><a href="{{url('admin/product')}}">View all</a></li>
+        </ul>
+
+        <li data-toggle="collapse" data-target="#sidebar-order" class="collapsed">
+            <a href="#"><i class="fa fa-shopping-cart" aria-hidden="true"></i> Orders</a>
+        </li>
+        <ul class="sub-menu collapse" id="sidebar-order">
+            <li>
+            <li><a href="{{url('admin/order')}}">View all</a></li>
         </ul>
 
         <li data-toggle="collapse" data-target="#sidebar-images" class="collapsed">

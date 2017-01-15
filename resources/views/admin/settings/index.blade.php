@@ -18,15 +18,29 @@
                         {{csrf_field()}}
 
                         @foreach($settings as $row)
-                            <div class="form-group {{ $errors->has($row->key) ? ' has-error' : '' }}">
-                                <label for="{{$row->key}}">{{$row->name}}</label>
-                                <input type="text" class="form-control" name="{{$row->key}}" id="{{$row->key}}"
-                                       value="{{$row->value}}" placeholder="{{$row->name}}">
+                            @if($row->key == 'ecommerce_support')
+                                <div class="form-group {{ $errors->has($row->key) ? ' has-error' : '' }}">
+                                    <label for="{{$row->key}}">{{$row->name}}</label>
+                                    <select name="" id="" class="form-control">
+                                        <option value="enabled" {{is_selected($row->value, 'enabled')}}>enabled</option>
+                                        <option value="disabled" {{is_selected($row->value, 'disabled')}}>disabled</option>
+                                    </select>
 
-                                @if ($errors->has($row->key))
-                                    <span class="help-block"><strong>{{ $errors->first($row->key) }}</strong></span>
-                                @endif
-                            </div>
+                                    @if ($errors->has($row->key))
+                                        <span class="help-block"><strong>{{ $errors->first($row->key) }}</strong></span>
+                                    @endif
+                                </div>
+                            @else
+                                <div class="form-group {{ $errors->has($row->key) ? ' has-error' : '' }}">
+                                    <label for="{{$row->key}}">{{$row->name}}</label>
+                                    <input type="text" class="form-control" name="{{$row->key}}" id="{{$row->key}}"
+                                           value="{{$row->value}}" placeholder="{{$row->name}}">
+
+                                    @if ($errors->has($row->key))
+                                        <span class="help-block"><strong>{{ $errors->first($row->key) }}</strong></span>
+                                    @endif
+                                </div>
+                            @endif
                         @endforeach
 
                         <button type="submit" class="btn btn-primary">Save Changes</button>

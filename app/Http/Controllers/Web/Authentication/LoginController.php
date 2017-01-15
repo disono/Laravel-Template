@@ -47,32 +47,9 @@ class LoginController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function getLogin()
+    public function loginView()
     {
         return view('auth.login');
-    }
-
-    /**
-     * Log the user out of the application.
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\Response
-     */
-    public function getLogout(Request $request)
-    {
-        try {
-            // logout history
-            AuthHistory::store([
-                'user_id' => auth()->user()->id,
-                'ip' => get_ip_address(),
-                'platform' => get_user_agent(),
-                'type' => 'logout'
-            ]);
-        } catch (\Exception $e) {
-            error_logger('AuthHistory: ' . $e->getMessage());
-        }
-
-        return $this->logout($request);
     }
 
     /**
@@ -81,7 +58,7 @@ class LoginController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function postLogin(Request $request)
+    public function process(Request $request)
     {
         $data = $this->login($request);
 
@@ -100,5 +77,28 @@ class LoginController extends Controller
         }
 
         return $data;
+    }
+
+    /**
+     * Log the user out of the application.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function logout(Request $request)
+    {
+        try {
+            // logout history
+            AuthHistory::store([
+                'user_id' => auth()->user()->id,
+                'ip' => get_ip_address(),
+                'platform' => get_user_agent(),
+                'type' => 'logout'
+            ]);
+        } catch (\Exception $e) {
+            error_logger('AuthHistory: ' . $e->getMessage());
+        }
+
+        return $this->logout($request);
     }
 }

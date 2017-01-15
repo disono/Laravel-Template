@@ -42,6 +42,7 @@ if (type == 'local') {
 
         mix.styles([
             '../../../public/assets/css/vendor.css',
+            '../../../public/assets/css/animated-loading.css',
 
             '../../../bower_modules/tether/dist/css/tether.min.css',
             '../../../bower_modules/tether/dist/css/tether-theme-basic.min.css',
@@ -100,6 +101,7 @@ if (type == 'local') {
 
         mix.styles([
             '../../../public/assets/css/vendor.css',
+            '../../../public/assets/css/animated-loading.css',
 
             '../../../bower_modules/tether/dist/css/tether.min.css',
             '../../../bower_modules/tether/dist/css/tether-theme-basic.min.css',

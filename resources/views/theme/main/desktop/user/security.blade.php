@@ -8,7 +8,7 @@
 @section('title', $title)
 
 @section('content')
-    <div class="container-fluid has-header">
+    <div class="container has-header">
         <div class="row">
             <div class="col-xs-12 col-md-12">
                 @include(current_theme() . 'menu.settings')

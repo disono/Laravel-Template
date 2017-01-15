@@ -96,6 +96,18 @@ class Image extends Model
     }
 
     /**
+     * Get all data no pagination
+     *
+     * @param array $params
+     * @return null
+     */
+    public static function getAll($params = [])
+    {
+        $params['all'] = true;
+        return self::get($params);
+    }
+
+    /**
      * Add formatting on data
      *
      * @param $query
@@ -129,19 +141,6 @@ class Image extends Model
         }
 
         return $query;
-    }
-
-    /**
-     *
-     * Get all data
-     *
-     * @param array $options
-     * @return null
-     */
-    public static function getAll($options = [])
-    {
-        $options['all'] = true;
-        return self::get($options);
     }
 
     /**

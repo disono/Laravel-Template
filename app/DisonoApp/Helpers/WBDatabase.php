@@ -4,13 +4,13 @@
  * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
  * License: Apache 2.0
  */
-namespace App\Library\Helpers;
+namespace App\DisonoApp\Helpers;
 
 use App\Models\SlugExclude;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 
-class WBDBHelper
+class WBDatabase
 {
     /**
      * Filter all ids
@@ -34,7 +34,7 @@ class WBDBHelper
      *
      * @param $collections
      * @param int $pagination_num
-     * @return Paginator
+     * @return LengthAwarePaginator
      */
     public static function paginate($collections, $pagination_num = 0)
     {

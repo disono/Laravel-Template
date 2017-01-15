@@ -4,7 +4,7 @@
  * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
  * License: Apache 2.0
  */
-namespace App\Library\Helpers;
+namespace App\DisonoApp\Helpers;
 
 use GrahamCampbell\HTMLMin\Facades\HTMLMin;
 use Jenssegers\Agent\Agent;
@@ -39,7 +39,7 @@ class WBView
         $agent = new Agent();
 
         return 'theme.main.' .
-        ((($agent->isMobile() === 1 || $agent->isTablet() === 1) && env('VIEW_MOBILE') === true) ? 'mobile.' : 'desktop.');
+            ((($agent->isMobile() === 1 || $agent->isTablet() === 1) && env('VIEW_MOBILE') === true) ? 'mobile.' : 'desktop.');
     }
 
     /**

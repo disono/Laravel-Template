@@ -5,7 +5,7 @@
  * Copyright 2016 Webmons Development Studio.
  * License: Apache 2.0
  */
-namespace App\Library\Helpers;
+namespace App\DisonoApp\Helpers;
 
 class WBConfig
 {

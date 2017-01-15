@@ -223,6 +223,18 @@ class Message extends Model
     }
 
     /**
+     * Get all data no pagination
+     *
+     * @param array $params
+     * @return null
+     */
+    public static function getAll($params = [])
+    {
+        $params['all'] = true;
+        return self::get($params);
+    }
+
+    /**
      * Username query string
      *
      * @param $column_name
@@ -242,20 +254,6 @@ class Message extends Model
     private static function _role($column_name)
     {
         return 'SELECT name FROM roles WHERE slug = ' . $column_name . '.role';
-    }
-
-    /**
-     * Get all data
-     *
-     * @param array $params
-     * @return null
-     */
-    public static function getAll($params = [])
-    {
-        $options['all'] = true;
-        $options = array_merge($options, $params);
-
-        return self::get($options);
     }
 
     /**

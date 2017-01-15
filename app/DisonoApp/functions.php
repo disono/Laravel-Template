@@ -6,8 +6,9 @@
  * License: Apache 2.0
  */
 
-include_once 'database.php';
 include_once 'methods.php';
+include_once 'database.php';
+include_once 'ecommerce.php';
 
 /*
  * --------------------------------------------------------------------------
@@ -24,7 +25,7 @@ if (!function_exists('db_filter_id')) {
      */
     function db_filter_id($data = [], $column_name = null)
     {
-        return App\Library\Helpers\WBDBHelper::filterID($data, $column_name);
+        return App\DisonoApp\Helpers\WBDatabase::filterID($data, $column_name);
     }
 }
 
@@ -34,11 +35,11 @@ if (!function_exists('paginate')) {
      *
      * @param $collections
      * @param int $pagination_num
-     * @return \Illuminate\Pagination\Paginator
+     * @return \Illuminate\Pagination\LengthAwarePaginator
      */
     function paginate($collections, $pagination_num = 0)
     {
-        return App\Library\Helpers\WBDBHelper::paginate($collections, $pagination_num);
+        return App\DisonoApp\Helpers\WBDatabase::paginate($collections, $pagination_num);
     }
 }
 
@@ -50,7 +51,7 @@ if (!function_exists('exclude_slug')) {
      */
     function exclude_slug()
     {
-        return App\Library\Helpers\WBDBHelper::excludeSlug();
+        return App\DisonoApp\Helpers\WBDatabase::excludeSlug();
     }
 }
 
@@ -71,7 +72,7 @@ if (!function_exists('success_json_response')) {
      */
     function success_json_response($data = [], $links = null, $pagination = null, $extra = null)
     {
-        return App\Library\Helpers\WBHttp::successJSONResponse($data, $links, $pagination, $extra);
+        return App\DisonoApp\Helpers\WBHttp::successJSONResponse($data, $links, $pagination, $extra);
     }
 }
 
@@ -85,7 +86,7 @@ if (!function_exists('failed_json_response')) {
      */
     function failed_json_response($errors = [], $status = 422)
     {
-        return App\Library\Helpers\WBHttp::failedJSONResponse($errors, $status);
+        return App\DisonoApp\Helpers\WBHttp::failedJSONResponse($errors, $status);
     }
 }
 
@@ -100,7 +101,7 @@ if (!function_exists('download_image')) {
      */
     function download_image($file_name, $url = null, $quality = 75)
     {
-        return App\Library\Helpers\WBHttp::downloadImage($file_name, $url, $quality);
+        return App\DisonoApp\Helpers\WBHttp::downloadImage($file_name, $url, $quality);
     }
 }
 
@@ -112,7 +113,7 @@ if (!function_exists('get_ip_address')) {
      */
     function get_ip_address()
     {
-        return App\Library\Helpers\WBHttp::ip();
+        return App\DisonoApp\Helpers\WBHttp::ip();
     }
 }
 
@@ -124,7 +125,7 @@ if (!function_exists('get_user_agent')) {
      */
     function get_user_agent()
     {
-        return App\Library\Helpers\WBHttp::userAgent();
+        return App\DisonoApp\Helpers\WBHttp::userAgent();
     }
 }
 
@@ -138,7 +139,7 @@ if (!function_exists('node_connector')) {
      */
     function node_connector($path)
     {
-        return App\Library\Helpers\WBHttp::NodeJSConnector($path);
+        return App\DisonoApp\Helpers\WBHttp::NodeJSConnector($path);
     }
 }
 
@@ -152,7 +153,7 @@ if (!function_exists('socket_emit')) {
      */
     function socket_emit($name, $data = [], $uri = null)
     {
-        App\Library\Helpers\WBHttp::SocketIOEmit($name, $data, $uri);
+        App\DisonoApp\Helpers\WBHttp::SocketIOEmit($name, $data, $uri);
     }
 }
 
@@ -169,7 +170,7 @@ if (!function_exists('fcm_send')) {
      */
     function fcm_send($token, $title, $body, $sound = 'default')
     {
-        return App\Library\Helpers\WBHttp::FCMSend($token, $title, $body, $sound);
+        return App\DisonoApp\Helpers\WBHttp::FCMSend($token, $title, $body, $sound);
     }
 }
 
@@ -185,7 +186,7 @@ if (!function_exists('fcm_topic')) {
      */
     function fcm_topic($topic_name, $title, $body, $sound = 'default')
     {
-        return App\Library\Helpers\WBHttp::FCMTopic($topic_name, $title, $body, $sound);
+        return App\DisonoApp\Helpers\WBHttp::FCMTopic($topic_name, $title, $body, $sound);
     }
 }
 
@@ -204,7 +205,7 @@ if (!function_exists('delete_file')) {
      */
     function delete_file($path)
     {
-        return App\Library\Helpers\WBFile::delete($path);
+        return App\DisonoApp\Helpers\WBFile::delete($path);
     }
 }
 
@@ -216,7 +217,7 @@ if (!function_exists('filename_creator')) {
      */
     function filename_creator()
     {
-        return App\Library\Helpers\WBFile::filenameCreator();
+        return App\DisonoApp\Helpers\WBFile::filenameCreator();
     }
 }
 
@@ -228,7 +229,7 @@ if (!function_exists('error_logger')) {
      */
     function error_logger($message = null)
     {
-        App\Library\Helpers\WBFile::errorLogger($message);
+        App\DisonoApp\Helpers\WBFile::errorLogger($message);
     }
 }
 
@@ -243,7 +244,7 @@ if (!function_exists('get_image')) {
      */
     function get_image($source, $type = null, $path_only = false)
     {
-        return App\Library\Helpers\WBFile::getImg($source, $type, $path_only);
+        return App\DisonoApp\Helpers\WBFile::getImg($source, $type, $path_only);
     }
 }
 
@@ -258,7 +259,7 @@ if (!function_exists('encode_base64_image')) {
      */
     function encode_base64_image($filename, $filetype = 'png')
     {
-        return App\Library\Helpers\WBFile::encodeBASE64Image($filename, $filetype);
+        return App\DisonoApp\Helpers\WBFile::encodeBASE64Image($filename, $filetype);
     }
 }
 
@@ -274,7 +275,7 @@ if (!function_exists('upload_any_file')) {
      */
     function upload_any_file($file, $destinationPath = 'private/any', $old_file = null)
     {
-        return App\Library\Helpers\WBFile::uploadFile($file, $destinationPath, $old_file);
+        return App\DisonoApp\Helpers\WBFile::uploadFile($file, $destinationPath, $old_file);
     }
 }
 
@@ -292,7 +293,7 @@ if (!function_exists('upload_image')) {
      */
     function upload_image($file, $image_options = [], $old_file = null, $destinationPath = 'private/img', $nameOnly = false)
     {
-        return App\Library\Helpers\WBFile::uploadImage($file, $image_options, $old_file, $destinationPath, $nameOnly);
+        return App\DisonoApp\Helpers\WBFile::uploadImage($file, $image_options, $old_file, $destinationPath, $nameOnly);
     }
 }
 
@@ -306,7 +307,7 @@ if (!function_exists('create_folder')) {
      */
     function create_folder($path)
     {
-        return App\Library\Helpers\WBFile::createFolder($path);
+        return App\DisonoApp\Helpers\WBFile::createFolder($path);
     }
 }
 
@@ -340,7 +341,7 @@ if (!function_exists('money')) {
      */
     function money($number, $sign = '&#8369;')
     {
-        return App\Library\Helpers\WBFormat::money($number, $sign);
+        return App\DisonoApp\Helpers\WBFormat::money($number, $sign);
     }
 }
 
@@ -358,7 +359,7 @@ if (!function_exists('app_settings')) {
      */
     function app_settings($key)
     {
-        return App\Library\Helpers\WBConfig::settings($key);
+        return App\DisonoApp\Helpers\WBConfig::settings($key);
     }
 }
 
@@ -372,7 +373,7 @@ if (!function_exists('app_header')) {
      */
     function app_header($get_header)
     {
-        return App\Library\Helpers\WBConfig::header($get_header);
+        return App\DisonoApp\Helpers\WBConfig::header($get_header);
     }
 }
 
@@ -384,7 +385,7 @@ if (!function_exists('config_per_page')) {
      */
     function config_per_page()
     {
-        return App\Library\Helpers\WBConfig::perPage();
+        return App\DisonoApp\Helpers\WBConfig::perPage();
     }
 }
 
@@ -397,7 +398,7 @@ if (!function_exists('config_file_size')) {
      */
     function config_file_size($type = 'image')
     {
-        return App\Library\Helpers\WBConfig::fileSize($type);
+        return App\DisonoApp\Helpers\WBConfig::fileSize($type);
     }
 }
 
@@ -411,7 +412,7 @@ if (!function_exists('config_img_quality')) {
      */
     function config_img_quality($file_size, $quality = 85)
     {
-        return App\Library\Helpers\WBConfig::imageQuality($file_size, $quality);
+        return App\DisonoApp\Helpers\WBConfig::imageQuality($file_size, $quality);
     }
 }
 
@@ -423,7 +424,7 @@ if (!function_exists('config_min_age')) {
      */
     function config_min_age()
     {
-        return App\Library\Helpers\WBConfig::minAge();
+        return App\DisonoApp\Helpers\WBConfig::minAge();
     }
 }
 
@@ -435,7 +436,7 @@ if (!function_exists('config_max_age')) {
      */
     function config_max_age()
     {
-        return App\Library\Helpers\WBConfig::maxAge();
+        return App\DisonoApp\Helpers\WBConfig::maxAge();
     }
 }
 
@@ -455,7 +456,7 @@ if (!function_exists('sql_date')) {
      */
     function sql_date($date = null, $date_only = false)
     {
-        return App\Library\Helpers\WBDate::sqlDate($date, $date_only);
+        return App\DisonoApp\Helpers\WBDate::sqlDate($date, $date_only);
     }
 }
 
@@ -468,7 +469,7 @@ if (!function_exists('sql_time')) {
      */
     function sql_time($date = null)
     {
-        return App\Library\Helpers\WBDate::sqlTime($date);
+        return App\DisonoApp\Helpers\WBDate::sqlTime($date);
     }
 }
 
@@ -482,7 +483,7 @@ if (!function_exists('human_date')) {
      */
     function human_date($date = null, $date_only = false)
     {
-        return App\Library\Helpers\WBDate::humanDate($date, $date_only);
+        return App\DisonoApp\Helpers\WBDate::humanDate($date, $date_only);
     }
 }
 
@@ -495,7 +496,7 @@ if (!function_exists('human_time')) {
      */
     function human_time($time = null)
     {
-        return App\Library\Helpers\WBDate::humanTime($time);
+        return App\DisonoApp\Helpers\WBDate::humanTime($time);
     }
 }
 
@@ -508,7 +509,7 @@ if (!function_exists('date_formatting')) {
      */
     function date_formatting($date)
     {
-        return App\Library\Helpers\WBDate::formatDate($date);
+        return App\DisonoApp\Helpers\WBDate::formatDate($date);
     }
 }
 
@@ -521,7 +522,7 @@ if (!function_exists('expired_at')) {
      */
     function expired_at($minute = 120)
     {
-        return App\Library\Helpers\WBDate::expiredAt($minute);
+        return App\DisonoApp\Helpers\WBDate::expiredAt($minute);
     }
 }
 
@@ -535,7 +536,7 @@ if (!function_exists('count_years')) {
      */
     function count_years($then, $current = null)
     {
-        return App\Library\Helpers\WBDate::countYears($then, $current);
+        return App\DisonoApp\Helpers\WBDate::countYears($then, $current);
     }
 }
 
@@ -549,7 +550,7 @@ if (!function_exists('count_hours')) {
      */
     function count_hours($start, $end)
     {
-        return App\Library\Helpers\WBDate::countHours($start, $end);
+        return App\DisonoApp\Helpers\WBDate::countHours($start, $end);
     }
 }
 
@@ -568,7 +569,7 @@ if (!function_exists('theme')) {
      */
     function theme($file = null, $data = [])
     {
-        return App\Library\Helpers\WBView::theme($file, $data);
+        return App\DisonoApp\Helpers\WBView::theme($file, $data);
     }
 }
 
@@ -580,7 +581,7 @@ if (!function_exists('current_theme')) {
      */
     function current_theme()
     {
-        return App\Library\Helpers\WBView::current_theme();
+        return App\DisonoApp\Helpers\WBView::current_theme();
     }
 }
 
@@ -594,7 +595,7 @@ if (!function_exists('admin_view')) {
      */
     function admin_view($file = null, $data = [])
     {
-        return App\Library\Helpers\WBView::admin_view($file, $data);
+        return App\DisonoApp\Helpers\WBView::admin_view($file, $data);
     }
 }
 
@@ -611,7 +612,7 @@ if (!function_exists('url_ext')) {
      */
     function url_ext()
     {
-        return App\Library\Helpers\WBUrl::randomURLExtension();
+        return App\DisonoApp\Helpers\WBUrl::randomURLExtension();
     }
 }
 
@@ -626,7 +627,7 @@ if (!function_exists('url_title')) {
      */
     function url_title($str, $separator = '-', $lowercase = true)
     {
-        return App\Library\Helpers\WBUrl::urlTitle($str, $separator, $lowercase);
+        return App\DisonoApp\Helpers\WBUrl::urlTitle($str, $separator, $lowercase);
     }
 }
 
@@ -639,7 +640,7 @@ if (!function_exists('profile_url')) {
      */
     function profile_url($id)
     {
-        return App\Library\Helpers\WBUrl::profileUrl($id);
+        return App\DisonoApp\Helpers\WBUrl::profileUrl($id);
     }
 }
 
@@ -652,7 +653,7 @@ if (!function_exists('active_url')) {
      */
     function active_url($url)
     {
-        return App\Library\Helpers\WBUrl::activeUrl($url);
+        return App\DisonoApp\Helpers\WBUrl::activeUrl($url);
     }
 }
 
@@ -669,7 +670,7 @@ if (!function_exists('me')) {
      */
     function me()
     {
-        return App\Library\Helpers\WBAuth::authUser();
+        return App\DisonoApp\Helpers\WBAuth::authUser();
     }
 }
 
@@ -684,7 +685,7 @@ if (!function_exists('authorize_me')) {
      */
     function authorize_me($roles = [], $user_id, $route_check = true)
     {
-        return App\Library\Helpers\WBAuth::authorizeMe($roles, $user_id, $route_check);
+        return App\DisonoApp\Helpers\WBAuth::authorizeMe($roles, $user_id, $route_check);
     }
 }
 
@@ -698,7 +699,7 @@ if (!function_exists('authorize_route')) {
      */
     function authorize_route($user_id = 0, $abort = true)
     {
-        return App\Library\Helpers\WBAuth::authorizeRoute($user_id, $abort);
+        return App\DisonoApp\Helpers\WBAuth::authorizeRoute($user_id, $abort);
     }
 }
 
@@ -711,7 +712,7 @@ if (!function_exists('api_auth')) {
      */
     function api_auth($input_name = 'authenticated_id')
     {
-        return App\Library\Helpers\WBAuth::APICheckAuth($input_name);
+        return App\DisonoApp\Helpers\WBAuth::APICheckAuth($input_name);
     }
 }
 
@@ -724,7 +725,7 @@ if (!function_exists('api_auth_jwt')) {
      */
     function api_auth_jwt($response = false)
     {
-        return App\Library\Helpers\WBAuth::APIAuthenticateJWT($response);
+        return App\DisonoApp\Helpers\WBAuth::APIAuthenticateJWT($response);
     }
 }
 
@@ -734,7 +735,7 @@ if (!function_exists('init_token_key')) {
      */
     function init_token_key()
     {
-        App\Library\Helpers\WBAuth::initializeTokenKey();
+        App\DisonoApp\Helpers\WBAuth::initializeTokenKey();
     }
 }
 
@@ -747,7 +748,7 @@ if (!function_exists('resource_authorize')) {
      */
     function resource_authorize($user)
     {
-        return App\Library\Helpers\WBAuth::resourceAuthorize($user);
+        return App\DisonoApp\Helpers\WBAuth::resourceAuthorize($user);
     }
 }
 
@@ -766,6 +767,6 @@ if (!function_exists('sendSMS')) {
      */
     function send_sms($number, $message)
     {
-        return App\Library\Helpers\WBMessaging::SMS($number, $message);
+        return App\DisonoApp\Helpers\WBMessaging::SMS($number, $message);
     }
 }

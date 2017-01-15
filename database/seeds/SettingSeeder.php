@@ -16,7 +16,8 @@ class SettingSeeder extends Seeder
             ['Description', 'description', 'Project Template'],
             ['Author', 'author', 'Archie Disono'],
             ['Keywords', 'keywords', 'webmons, project template, boiler plate'],
-            ['CSS Version', 'css_version', '1.0']
+            ['CSS Version', 'css_version', '1.0'],
+            ['E-commerce Support', 'ecommerce_support', 'disabled']
         ];
 
         foreach ($settings as $key => $value) {

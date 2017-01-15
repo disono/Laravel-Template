@@ -10,64 +10,56 @@
 @section('content')
     <div class="container-fluid has-header">
         <div class="row">
-            <div class="col-md-6 col-md-offset-3">
+            <div class="col-md-4 col-md-offset-4">
                 <div class="jumbotron jumbotron-sm">
                     <div class="container">
                         <h2>Log in to {{app_header('title')}}</h2>
                         <hr>
 
-                        <form class="form-horizontal" role="form" method="POST" action="{{ url('login') }}">
+                        <form role="form" method="POST" action="{{ url('login') }}">
                             {{ csrf_field() }}
 
                             <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
-                                <label for="email" class="col-md-3 control-label">E-Mail Address</label>
+                                <label for="email" class="control-label">E-Mail/Username</label>
 
-                                <div class="col-md-9">
-                                    <input id="email" type="email" class="form-control" name="email"
-                                           value="{{ old('email') }}">
+                                <input id="email" type="email" class="form-control" name="email"
+                                       value="{{ old('email') }}">
 
-                                    @if ($errors->has('email'))
-                                        <span class="help-block">
+                                @if ($errors->has('email'))
+                                    <span class="help-block">
                                             {{ $errors->first('email') }}
                                         </span>
-                                    @endif
-                                </div>
+                                @endif
                             </div>
 
                             <div class="form-group{{ $errors->has('password') ? ' has-error' : '' }}">
-                                <label for="password" class="col-md-3 control-label">Password</label>
+                                <label for="password" class="control-label">Password</label>
 
-                                <div class="col-md-9">
-                                    <input id="password" type="password" class="form-control" name="password">
+                                <input id="password" type="password" class="form-control" name="password">
 
-                                    @if ($errors->has('password'))
-                                        <span class="help-block">
+                                @if ($errors->has('password'))
+                                    <span class="help-block">
                                         {{ $errors->first('password') }}
                                     </span>
-                                    @endif
+                                @endif
+                            </div>
+
+                            <div class="form-group">
+                                <div class="checkbox">
+                                    <input type="checkbox" name="remember" id="remember">
+                                    <label for="remember">
+                                        Remember Me
+                                    </label>
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                <div class="col-md-9 col-md-offset-3">
-                                    <div class="checkbox">
-                                        <input type="checkbox" name="remember" id="remember">
-                                        <label for="remember">
-                                            Remember Me
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
+                                <button type="submit" class="btn btn-primary">
+                                    Login
+                                </button>
 
-                            <div class="form-group">
-                                <div class="col-md-9 col-md-offset-3">
-                                    <button type="submit" class="btn btn-primary">
-                                        Login
-                                    </button>
-
-                                    <a class="btn btn-link" href="{{ url('password/recover') }}">Forgot Your
-                                        Password?</a>
-                                </div>
+                                <a class="btn btn-link" href="{{ url('password/recover') }}">Forgot Your
+                                    Password?</a>
                             </div>
                         </form>
 
