@@ -11,7 +11,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-xs-12 col-md-6 col-xs-offset-0 col-md-offset-3">
-                <div class="admin-container">
+                <div class="app-container">
                     <h3 class="page-header">Edit Page Category</h3>
 
                     <form action="{{url('admin/page-category/update')}}" method="post" role="form">
@@ -41,7 +41,7 @@
 
                         <div class="form-group{{ $errors->has('description') ? ' has-error' : '' }}">
                             <label for="description">Description</label>
-                            <textarea name="description" id="description" class="form-control" cols="30" rows="10"
+                            <textarea name="description" id="description" class="form-control" cols="10" rows="10"
                                       placeholder="Description">{{$page_category->description}}</textarea>
 
                             @if ($errors->has('description'))
@@ -49,7 +49,7 @@
                             @endif
                         </div>
 
-                        <button type="submit" class="btn btn-primary">Update</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
                     </form>
                 </div>
             </div>

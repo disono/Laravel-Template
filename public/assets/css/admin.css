@@ -7,7 +7,7 @@
 
 /* Move down content because we have a fixed nav-bar that is 50px tall */
 body {
-    background-color: #F7F7F7;
+    background-color: #FAFAFA;
     font-family: 'Lato', sans-serif;
     padding-top: 52px;
 }
@@ -116,14 +116,6 @@ body {
 .sidebar-nav > .sidebar-brand a:hover {
     color: #fff;
     background: none;
-}
-
-.admin-container {
-    padding: 12px;
-    border: solid 2px #E8E8E8;
-    border-radius: 3px;
-    background: #FFFFFF;
-    margin: 16px 0;
 }
 
 @media (min-width: 768px) {

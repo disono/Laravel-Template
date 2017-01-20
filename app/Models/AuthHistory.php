@@ -69,7 +69,7 @@ class AuthHistory extends Model
 
         if (isset($params['search'])) {
             self::$params = $params;
-            $query->Where(function ($query) {
+            $query->where(function ($query) {
                 $query->where('auth_histories.type', 'LIKE', '%' . self::$params['search'] . '%')
                     ->orWhere('auth_histories.content', 'LIKE', '%' . self::$params['search'] . '%')
                     ->orWhere('auth_histories.platform', 'LIKE', '%' . self::$params['search'] . '%');

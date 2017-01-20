@@ -11,6 +11,8 @@ is a starting blank template for Laravel Projects
 * **jwt-auth:** [https://github.com/tymondesigns/jwt-auth](https://github.com/tymondesigns/jwt-auth)
 * **Elephant.io:** [https://github.com/Wisembly/elephant.io](https://github.com/Wisembly/elephant.io)
 * **Laravel-FCM:** [https://github.com/brozot/Laravel-FCM](https://github.com/brozot/Laravel-FCM)
+* **setasign/fpdi-tcpdf:** [https://packagist.org/packages/setasign/fpdi-tcpdf](https://packagist.org/packages/setasign/fpdi-tcpdf)
+* **Laravel Excel:** [https://github.com/Maatwebsite/Laravel-Excel](https://github.com/Maatwebsite/Laravel-Excel)
 
 # JavaScript Libraries
 * **jQuery:** [https://jquery.com](https://jquery.com)
@@ -63,6 +65,14 @@ Let's see how easy it is to install NGINX, PHP, Composer, MySQL and Redis. Then 
         docker-compose up -d nginx mysql redis
     3. Open your .env file and set DB_HOST to mysql and REDIS_HOST to redis.
     4. Open your browser and visit the localhost: http://localdock
+```
+
+# Added Features
+```sh
+1. CMS (Content Management System)
+2. Events
+3. E-commerce
+4. Mobile API
 ```
 
 # Credits

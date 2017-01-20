@@ -13,7 +13,7 @@
             <div class="col-xs-12 col-md-12">
                 <h3 class="page-header">Roles</h3>
 
-                <div class="admin-container">
+                <div class="app-container">
                     @if(count($roles))
                         <table class="table table-hover">
                             <thead>
@@ -66,6 +66,4 @@
             </div>
         </div>
     </div>
-
-    @include('modals.delete')
 @endsection

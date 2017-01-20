@@ -13,7 +13,7 @@
             <div class="col-xs-12 col-md-12">
                 <h3 class="page-header">Authorization Histories</h3>
 
-                <div class="admin-container">
+                <div class="app-container">
                     @if(count($authorization_histories))
                         <table class="table table-hover">
                             <thead>

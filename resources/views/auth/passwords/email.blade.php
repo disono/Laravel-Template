@@ -8,8 +8,8 @@
 @section('content')
     <div class="container-fluid has-header">
         <div class="row">
-            <div class="col-md-8 col-md-offset-2">
-                <div class="jumbotron jumbotron-sm">
+            <div class="col-md-6 col-md-offset-3">
+                <div class="jumbotron jumbotron-sm material-shadow-3">
                     <div class="container">
                         <h2>Reset Password</h2>
                         <hr>

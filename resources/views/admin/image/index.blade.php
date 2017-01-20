@@ -13,7 +13,7 @@
             <div class="col-xs-12 col-md-12">
                 <h3 class="page-header">Images</h3>
 
-                <div class="admin-container">
+                <div class="app-container">
                     @if(count($images))
                         <table class="table table-hover">
                             <thead>
@@ -63,6 +63,4 @@
             </div>
         </div>
     </div>
-
-    @include('modals.delete')
 @endsection

@@ -18,20 +18,21 @@ class CreateOrdersTable extends Migration
 
             $table->integer('customer_id')->default(0);
 
-            $table->string('ip_address', 100);
+            $table->string('ip_address', 100)->nullable();
             $table->string('email', 100)->nullable();
             $table->string('phone', 22)->nullable();
 
+            $table->string('full_name', 100);
             $table->text('billing_address');
             $table->text('shipping_address');
 
+            $table->integer('qty')->default(0);
             $table->double('discount', 9, 2)->default(0);
             $table->double('shipping', 9, 2)->default(0);
             $table->double('tax', 9, 2)->default(0);
             $table->double('total', 9, 2)->default(0);
 
-            $table->integer('payment_type');
-            $table->enum('status', order_status());
+            $table->integer('payment_type_id');
             $table->timestamps();
         });
     }

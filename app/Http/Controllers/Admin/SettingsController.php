@@ -26,7 +26,7 @@ class SettingsController extends Controller
         $content['settings'] = Setting::getAll();
         $content['request'] = $request;
 
-        return admin_view('settings.index', $content);
+        return admin_view('settings.show', $content);
     }
 
     /**

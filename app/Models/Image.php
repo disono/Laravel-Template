@@ -14,7 +14,10 @@ class Image extends Model
     private static $params;
 
     protected static $writable_columns = [
-        'user_id', 'source_id', 'title', 'filename', 'type'
+        'user_id', 'source_id',
+        'title', 'description',
+        'filename', 'type',
+        'is_cover'
     ];
 
     public function __construct(array $attributes = [])
@@ -68,12 +71,17 @@ class Image extends Model
             $query->where('source_id', $params['source_id']);
         }
 
+        if (isset($params['is_cover'])) {
+            $query->where('is_cover', $params['is_cover']);
+        }
+
         if (isset($params['search'])) {
             self::$params = $params;
             $query->where(function ($query) {
                 $query->where('id', 'LIKE', '%' . self::$params['search'] . '%')
                     ->orWhere('user_id', 'LIKE', '%' . self::$params['search'] . '%')
                     ->orWhere('title', 'LIKE', '%' . self::$params['search'] . '%')
+                    ->orWhere('description', 'LIKE', '%' . self::$params['type'] . '%')
                     ->orWhere('type', 'LIKE', '%' . self::$params['type'] . '%');
             });
         }
@@ -211,6 +219,30 @@ class Image extends Model
         }
 
         return (bool)self::destroy($id);
+    }
+
+    /**
+     * Multiple delete
+     *
+     * @param $source_id
+     * @param $type
+     * @return bool
+     */
+    public static function batchRemove($source_id, $type)
+    {
+        $success = true;
+        $images = self::getAll([
+            'source_id' => $source_id,
+            'type' => $type
+        ]);
+
+        foreach ($images as $row) {
+            if (!self::remove($row->id)) {
+                $success = false;
+            }
+        }
+
+        return $success;
     }
 
     /**

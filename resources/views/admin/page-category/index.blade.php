@@ -11,9 +11,11 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-xs-12 col-md-12">
-                <h3 class="page-header">Page Categories</h3>
+                <h3 class="page-header">Page Categories
+                    <a href="{{url('admin/page-category/create')}}" class="btn btn-primary pull-right">Create New Page Category</a>
+                </h3>
 
-                <div class="admin-container">
+                <div class="app-container">
                     @if(count($page_categories))
                         <table class="table table-hover">
                             <thead>
@@ -62,6 +64,4 @@
             </div>
         </div>
     </div>
-
-    @include('modals.delete')
 @endsection

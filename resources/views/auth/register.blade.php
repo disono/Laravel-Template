@@ -11,7 +11,7 @@
     <div class="container-fluid has-header">
         <div class="row">
             <div class="col-md-6 col-md-offset-3">
-                <div class="jumbotron jumbotron-sm">
+                <div class="jumbotron jumbotron-sm material-shadow-3">
                     <div class="container">
                         <h2>Join Today.</h2>
                         <p class="text-muted">Fill in the form below to get instant access.</p>

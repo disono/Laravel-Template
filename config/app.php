@@ -170,7 +170,7 @@ return [
         App\Providers\AuthServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-        App\Providers\ExtendValidationProvider::class,
+        App\Providers\ExtendDisonoApplicationProvider::class,
 
         /*
          * 3rd party service providers
@@ -181,7 +181,8 @@ return [
         SimpleSoftwareIO\QrCode\QrCodeServiceProvider::class,
         GrahamCampbell\HTMLMin\HTMLMinServiceProvider::class,
         Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class,
-        LaravelFCM\FCMServiceProvider::class
+        LaravelFCM\FCMServiceProvider::class,
+        Maatwebsite\Excel\ExcelServiceProvider::class,
 
     ],
 
@@ -242,6 +243,7 @@ return [
         'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
         'FCM' => LaravelFCM\Facades\FCM::class,
         'FCMGroup' => LaravelFCM\Facades\FCMGroup::class,
+        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
 
     ],
 

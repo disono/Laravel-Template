@@ -5,7 +5,7 @@
  *
  * Admin styles and master view
 --}}
-<!DOCTYPE html>
+        <!DOCTYPE html>
 <html lang="en" {{html_app_cache()}}>
 <head>
     <meta charset="UTF-8">
@@ -111,6 +111,8 @@
             @include('admin.layout.footer')
         </div>
     </div>
+
+    @include('modals.include')
 </main>
 
 @yield('javascript')
@@ -120,8 +122,9 @@
 @if(env('APP_DEBUG'))
     @include('vendor.loaders', array('after_load' => true, 'scripts' => [
         'assets/js/vendor.js',
-        'assets/js/helper.js',
+        'assets/js/lib/helper.js',
         'assets/js/main.js',
+        'assets/js/lib/upload.js',
         'assets/js/app.js',
         'assets/js/admin/main.js'
     ]))

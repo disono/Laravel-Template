@@ -16,11 +16,18 @@ class CreateOrderedItemsTable extends Migration
         Schema::create('ordered_items', function (Blueprint $table) {
             $table->increments('id');
 
+            $table->integer('order_id');
             $table->integer('product_id');
+
             $table->integer('qty')->default(1);
             $table->double('srp', 9, 2)->default(0);
+
+            $table->double('discount', 9, 2)->default(0);
+            $table->double('tax', 9, 2)->default(0);
+            $table->double('shipping', 9, 2)->default(0);
             $table->double('total', 9, 2)->default(0);
 
+            $table->enum('status', order_status())->default('Pending');
             $table->timestamps();
         });
     }

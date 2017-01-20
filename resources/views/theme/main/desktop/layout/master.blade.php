@@ -5,7 +5,7 @@
  *
  * Web styles and master view
 --}}
-<!DOCTYPE html>
+        <!DOCTYPE html>
 <html lang="en" {{html_app_cache()}}>
 <head>
     <meta charset="UTF-8">
@@ -77,6 +77,8 @@
     </div>
 
     @include(current_theme() . 'layout.footer')
+
+    @include('modals.include')
 </main>
 
 @yield('javascript')
@@ -86,8 +88,9 @@
 @if(env('APP_DEBUG'))
     @include('vendor.loaders', ['scripts' => [
         'assets/js/vendor.js',
-        'assets/js/helper.js',
+        'assets/js/lib/helper.js',
         'assets/js/main.js',
+        'assets/js/lib/upload.js',
         'assets/js/app.js'
     ], 'after_load' => true])
 @else

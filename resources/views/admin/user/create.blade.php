@@ -11,7 +11,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-xs-12 col-md-12">
-                <div class="admin-container">
+                <div class="app-container">
                     <h3 class="page-header">Create New User</h3>
 
                     <form action="{{url('admin/user/store')}}" method="post" role="form" enctype="multipart/form-data">
@@ -74,7 +74,7 @@
                                     <label for="address">Address*</label>
 
                                     <textarea name="address" id="address" class="form-control"
-                                              cols="30" rows="10">{{ old('address') }}</textarea>
+                                              cols="10" rows="4">{{ old('address') }}</textarea>
 
                                     @if ($errors->has('address'))
                                         <span class="help-block">{{ $errors->first('address') }}</span>

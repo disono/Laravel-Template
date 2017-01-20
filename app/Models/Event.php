@@ -15,7 +15,9 @@ class Event extends Model
     private static $params;
 
     protected static $writable_columns = [
-        'user_id', 'name', 'slug', 'content', 'template', 'start_date', 'start_time', 'end_date', 'end_time', 'draft'
+        'user_id', 'name', 'slug', 'content', 'template',
+        'start_date', 'start_time', 'end_date', 'end_time',
+        'draft'
     ];
 
     public function __construct(array $attributes = [])
@@ -33,11 +35,9 @@ class Event extends Model
     public static function store($inputs = [])
     {
         $store = [];
-        $columns = [
-            'user_id', 'name', 'slug', 'content', 'template', 'start_date', 'start_time', 'end_date', 'end_time', 'draft'
-        ];
+
         foreach ($inputs as $key => $value) {
-            if (in_array($key, $columns)) {
+            if (in_array($key, self::$writable_columns)) {
                 $store = self::_values($store, $value, $key);
             }
         }
@@ -166,7 +166,7 @@ class Event extends Model
 
         if (isset($params['search'])) {
             self::$params = $params;
-            $query->Where(function ($query) {
+            $query->where(function ($query) {
                 $query->where('events.name', 'LIKE', '%' . self::$params['search'] . '%')
                     ->orWhere('events.slug', 'LIKE', '%' . self::$params['search'] . '%')
                     ->orWhere('events.content', 'LIKE', '%' . self::$params['search'] . '%');

@@ -15,7 +15,9 @@
         "mews/purifier": "^2.0",
         "tymon/jwt-auth": "^0.5.9",
         "brozot/laravel-fcm": "^1.2",
-        "wisembly/elephant.io": "^3.2"
+        "wisembly/elephant.io": "^3.2",
+        "maatwebsite/excel": "^2.1",
+        "setasign/fpdi-tcpdf": "^1.6"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
@@ -32,7 +34,7 @@
             "App\\": "app/"
         },
         "files": [
-            "app/DisonoApp/functions.php"
+            "app/Disono/functions.php"
         ]
     },
     "autoload-dev": {

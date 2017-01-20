@@ -85,7 +85,7 @@ class LoginController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\Response
      */
-    public function logout(Request $request)
+    public function logoutProcess(Request $request)
     {
         try {
             // logout history

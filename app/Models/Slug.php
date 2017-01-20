@@ -71,7 +71,7 @@ class Slug extends Model
 
         if (isset($params['search'])) {
             self::$params = $params;
-            $query->Where(function ($query) {
+            $query->where(function ($query) {
                 $query->where('name', 'LIKE', '%' . self::$params['search'] . '%');
             });
         }

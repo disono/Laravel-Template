@@ -89,9 +89,11 @@ if (type == 'local') {
             '../../../bower_modules/leaflet-search/dist/leaflet-search.min.js',
             '../../../bower_modules/leaflet-routing-machine/dist/leaflet-routing-machine.min.js',
 
-            '../../../public/assets/js/helper.js',
+            '../../../public/assets/js/lib/helper.js',
+            '../../../public/assets/js/lib/upload.js',
             '../../../public/assets/js/main.js',
-            '../../../public/assets/js/app.js'
+            '../../../public/assets/js/app.js',
+            '../../../public/assets/js/admin/main.js'
         ], 'public/assets/js/vendor.js');
 
         mix.copy('bower_modules/loadcss/src/loadCSS.js', 'public/assets/js');

@@ -10,7 +10,7 @@
 @section('content')
     <div class="container has-header">
         <div class="row">
-            <div class="col-xs-12 col-md-12">
+            <div class="col-xs-12 col-md-8 col-md-offset-2 material-shadow-3 jumbotron-sm">
                 @include(current_theme() . 'menu.settings')
 
                 <div class="row">

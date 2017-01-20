@@ -11,7 +11,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-xs-12 col-md-6 col-xs-offset-0 col-md-offset-3">
-                <div class="admin-container">
+                <div class="app-container">
                     <h3 class="page-header">Edit Authorization</h3>
 
                     <form action="{{url('admin/authorization/update')}}" method="post" role="form">
@@ -30,8 +30,7 @@
 
                         <div class="form-group{{ $errors->has('identifier') ? ' has-error' : '' }}">
                             <label for="identifier">Identifier/Access Route*</label>
-                            <select name="identifier" id="identifier" class="form-control selectpicker"
-                                    data-live-search="true">
+                            <select name="identifier" id="identifier" class="form-control">
                                 <option value="">Select Identifier</option>
                                 @foreach($route_names as $key => $value)
                                     <option value="{{$key}}" {{is_selected($key, old('identifier', $authorization->identifier))}}>{{$value}}</option>
@@ -45,7 +44,7 @@
 
                         <div class="form-group{{ $errors->has('description') ? ' has-error' : '' }}">
                             <label for="description">Description</label>
-                            <textarea name="description" id="description" class="form-control" cols="30" rows="10"
+                            <textarea name="description" id="description" class="form-control" cols="10" rows="10"
                                       placeholder="Description">{{old('description', $authorization->description)}}</textarea>
 
                             @if ($errors->has('description'))
@@ -53,7 +52,7 @@
                             @endif
                         </div>
 
-                        <button type="submit" class="btn btn-primary">Update</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
                     </form>
                 </div>
             </div>

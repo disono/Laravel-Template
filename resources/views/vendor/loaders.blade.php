@@ -3,7 +3,7 @@
         <script>
             [
                 @foreach($scripts as $script)
-                        '{!! asset($script) . url_ext() !!}',
+                    '{!! asset($script) . url_ext() !!}',
                 @endforeach
             ].forEach(function (src) {
                 var script = document.createElement('script');
@@ -24,7 +24,7 @@
             setTimeout(function () {
                 [
                     @foreach($scripts as $script)
-                            '{!! asset($script) . url_ext() !!}',
+                        '{!! asset($script) . url_ext() !!}',
                     @endforeach
                 ].forEach(function (src) {
                     var script = document.createElement('script');

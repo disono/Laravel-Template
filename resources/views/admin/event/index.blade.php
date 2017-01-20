@@ -14,7 +14,7 @@
                 <h3 class="page-header">Events</h3>
 
                 {{-- search options --}}
-                <div class="admin-container">
+                <div class="app-container">
                     <form action="" method="get" role="form" class="form-inline">
                         <div class="form-group">
                             <input type="text" class="form-control" name="search" id="search"
@@ -27,7 +27,7 @@
                     </form>
                 </div>
 
-                <div class="admin-container">
+                <div class="app-container">
                     @if(count($events))
                         <table class="table table-hover">
                             <thead>
@@ -74,6 +74,4 @@
             </div>
         </div>
     </div>
-
-    @include('modals.delete')
 @endsection

@@ -11,7 +11,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-xs-12 col-md-12">
-                <div class="admin-container">
+                <div class="app-container">
                     <h3 class="page-header">Create Page</h3>
 
                     <form action="{{url('admin/page/store')}}" method="post" role="form" enctype="multipart/form-data">
@@ -21,7 +21,7 @@
                             <div class="col-xs-12 col-md-9">
                                 <div class="form-group{{ $errors->has('content') ? ' has-error' : '' }}">
                                     <label for="content">Content*</label>
-                                    <textarea name="content" id="content" class="form-control" cols="30" rows="22"
+                                    <textarea name="content" id="content" class="form-control" cols="10" rows="22"
                                               placeholder="Content">{!! old('content') !!}</textarea>
 
                                     @if ($errors->has('content'))
@@ -108,6 +108,6 @@
 @endsection
 
 @include('vendor.loaders', ['scripts' => [
-    'https://cdnjs.cloudflare.com/ajax/libs/tinymce/4.3.13/tinymce.min.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/tinymce/4.5.2/tinymce.min.js',
     'assets/js/tiny-mce-init.js'
 ]])

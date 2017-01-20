@@ -293,7 +293,7 @@ class User extends Authenticatable
             $query->country = Country::find($query->country_id);
 
             // birthday
-            $query->birthday = date('M d, Y', strtotime($query->birthday));
+            $query->birthday = date('F j, Y', strtotime($query->birthday));
 
             // age
             $query->age = count_years($query->birthday);
@@ -306,7 +306,7 @@ class User extends Authenticatable
                 $row->country = Country::find($row->country_id);
 
                 // birthday
-                $row->birthday = date('M d, Y', strtotime($row->birthday));
+                $row->birthday = date('F j, Y', strtotime($row->birthday));
 
                 // age
                 $row->age = count_years($row->birthday);

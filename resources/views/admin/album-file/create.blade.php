@@ -11,7 +11,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-xs-12 col-md-6">
-                <div class="admin-container">
+                <div class="app-container">
                     <h3 class="page-header">Upload Photos to {{str_limit($album->name, 12)}}</h3>
 
                     <form action="{{url('admin/album/upload/store')}}" method="post" role="form"
@@ -39,7 +39,7 @@
 
                         <div class="form-group{{ $errors->has('description') ? ' has-error' : '' }}">
                             <label for="description">Description</label>
-                            <textarea name="description" id="description" class="form-control" cols="30" rows="10"
+                            <textarea name="description" id="description" class="form-control" cols="10" rows="10"
                                       placeholder="Description"></textarea>
 
                             @if ($errors->has('description'))
@@ -53,7 +53,7 @@
             </div>
 
             <div class="col-xs-12 col-md-6">
-                <div class="admin-container">
+                <div class="app-container">
                     <h3 class="page-header">Images</h3>
 
                     @if($album->count_images)
@@ -102,6 +102,4 @@
             </div>
         </div>
     </div>
-
-    @include('modals.delete')
 @endsection

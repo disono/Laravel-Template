@@ -130,7 +130,7 @@ class Message extends Model
 
         if (isset($params['search'])) {
             self::$params = $params;
-            $query->Where(function ($query) {
+            $query->where(function ($query) {
                 $query->where(DB::raw(self::$query_params['from_full_name']), 'LIKE', '%' . self::$params['search'] . '%')
                     ->orWhere(DB::raw(self::$query_params['from_username']), 'LIKE', '%' . self::$params['search'] . '%')
                     ->orWhere(DB::raw(self::$query_params['from_role_name']), 'LIKE', '%' . self::$params['search'] . '%')

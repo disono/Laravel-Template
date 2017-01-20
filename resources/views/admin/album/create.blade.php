@@ -11,7 +11,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-xs-12 col-md-6 col-xs-offset-0 col-md-offset-3">
-                <div class="admin-container">
+                <div class="app-container">
                     <h3 class="page-header">Create Album</h3>
 
                     <form action="{{url('admin/album/store')}}" method="post" role="form">
@@ -27,7 +27,7 @@
                         </div>
 
                         <div class="form-group{{ $errors->has('slug') ? ' has-error' : '' }}">
-                            <label for="slug">Slug*</label>
+                            <label for="slug">Slug* (Slugs make the URL more user-friendly)</label>
                             <input type="text" class="form-control" name="slug" id="slug"
                                    placeholder="Slug">
 
@@ -38,7 +38,7 @@
 
                         <div class="form-group{{ $errors->has('description') ? ' has-error' : '' }}">
                             <label for="description">Description</label>
-                            <textarea name="description" id="description" class="form-control" cols="30" rows="10"
+                            <textarea name="description" id="description" class="form-control" cols="10" rows="10"
                                       placeholder="Description"></textarea>
 
                             @if ($errors->has('description'))

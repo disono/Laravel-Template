@@ -11,9 +11,11 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-xs-12 col-md-12">
-                <h3 class="page-header">Albums</h3>
+                <h3 class="page-header">Albums
+                    <a href="{{url('admin/album/create')}}" class="btn btn-primary pull-right">Create Album</a>
+                </h3>
 
-                <div class="admin-container">
+                <div class="app-container">
                     @if(count($albums))
                         <table class="table table-hover">
                             <thead>
@@ -66,6 +68,4 @@
             </div>
         </div>
     </div>
-
-    @include('modals.delete')
 @endsection

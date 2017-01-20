@@ -17,7 +17,7 @@ Route::get('/', 'Web\Page\PageController@getHome')->name('web-page-home');
 // login
 Route::get('login', 'Web\Authentication\LoginController@loginView')->name('web-auth-login');
 Route::post('login', 'Web\Authentication\LoginController@process')->name('web-auth-login-process');
-Route::get('logout', 'Web\Authentication\LoginController@logout')->name('web-auth-logout');
+Route::get('logout', 'Web\Authentication\LoginController@logoutProcess')->name('web-auth-logout');
 
 // social login facebook
 Route::get('auth/social/facebook', 'Web\Authentication\Social@facebook')->name('web-auth-facebook');
@@ -104,6 +104,35 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('admin/event/update', 'Admin\EventController@update')->name('admin-event-update');
         Route::post('admin/event/destroy/{id}', 'Admin\EventController@destroy')->name('admin-event-destroy');
 
+        // product category
+        Route::get('admin/product/category', 'Admin\ECommerce\ProductCategoryController@index')->name('admin-product-category');
+        Route::get('admin/product/category/create', 'Admin\ECommerce\ProductCategoryController@create')->name('admin-product-category-create');
+        Route::post('admin/product/category/store', 'Admin\ECommerce\ProductCategoryController@store')->name('admin-product-category-store');
+        Route::get('admin/product/category/edit/{id}', 'Admin\ECommerce\ProductCategoryController@edit')->name('admin-product-category-edit');
+        Route::post('admin/product/category/update', 'Admin\ECommerce\ProductCategoryController@update')->name('admin-product-category-update');
+        Route::post('admin/product/category/destroy/{id}', 'Admin\ECommerce\ProductCategoryController@destroy')->name('admin-product-category-destroy');
+
+        // payment type
+        Route::get('admin/ecommerce/payment-type', 'Admin\ECommerce\PaymentTypeController@index')->name('admin-product-payment-type');
+        Route::get('admin/ecommerce/payment-type/create', 'Admin\ECommerce\PaymentTypeController@create')->name('admin-payment-type-create');
+        Route::post('admin/ecommerce/payment-type/store', 'Admin\ECommerce\PaymentTypeController@store')->name('admin-payment-type-store');
+        Route::get('admin/ecommerce/payment-type/edit/{id}', 'Admin\ECommerce\PaymentTypeController@edit')->name('admin-payment-type-edit');
+        Route::post('admin/ecommerce/payment-type/update', 'Admin\ECommerce\PaymentTypeController@update')->name('admin-payment-type-update');
+        Route::post('admin/ecommerce/payment-type/destroy/{id}', 'Admin\ECommerce\PaymentTypeController@destroy')->name('admin-payment-type-destroy');
+
+        // product
+        Route::get('admin/product', 'Admin\ECommerce\ProductController@index')->name('admin-product-product');
+        Route::get('admin/product/create', 'Admin\ECommerce\ProductController@create')->name('admin-product-create');
+        Route::post('admin/product/store', 'Admin\ECommerce\ProductController@store')->name('admin-product-store');
+        Route::get('admin/product/edit/{id}', 'Admin\ECommerce\ProductController@edit')->name('admin-product-edit');
+        Route::post('admin/product/update', 'Admin\ECommerce\ProductController@update')->name('admin-product-update');
+        Route::post('admin/product/destroy/{id}', 'Admin\ECommerce\ProductController@destroy')->name('admin-product-destroy');
+
+        // order
+        Route::get('admin/order', 'Admin\ECommerce\OrderController@index')->name('admin-product-order');
+        Route::get('admin/order/show/{id}', 'Admin\ECommerce\OrderController@show')->name('admin-order-show');
+        Route::get('admin/order/item/{id}/{status}', 'Admin\ECommerce\OrderController@status')->name('admin-order-status');
+
         // images
         Route::get('admin/images', 'Admin\ImageController@index')->name('admin-images');
         Route::post('admin/image/destroy/{id}', 'Admin\ImageController@destroy')->name('admin-image-destroy');
@@ -145,7 +174,7 @@ Route::group(['middleware' => 'auth'], function () {
 });
 
 Route::get('dev', function () {
-    return success_json_response(\App\Models\User::getAll());
+    dpf_modify();
 })->name('web-dev');
 
 // profile

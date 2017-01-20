@@ -12,7 +12,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-xs-12 col-md-12">
-                <div class="admin-container">
+                <div class="app-container">
                     <h3 class="page-header">Assign Authorization Roles</h3>
 
                     <form action="{{url('admin/authorization-roles/' . $role_id)}}" method="get" role="form"

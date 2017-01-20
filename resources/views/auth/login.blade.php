@@ -11,7 +11,7 @@
     <div class="container-fluid has-header">
         <div class="row">
             <div class="col-md-4 col-md-offset-4">
-                <div class="jumbotron jumbotron-sm">
+                <div class="jumbotron jumbotron-sm material-shadow-3">
                     <div class="container">
                         <h2>Log in to {{app_header('title')}}</h2>
                         <hr>

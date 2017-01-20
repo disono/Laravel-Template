@@ -11,7 +11,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-xs-12 col-md-6 col-xs-offset-0 col-md-offset-3">
-                <div class="admin-container">
+                <div class="app-container">
                     <h3 class="page-header">Reset Password for
                         <small>{{$user->full_name}}</small>
                     </h3>

@@ -11,7 +11,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-xs-12 col-md-12">
-                <div class="admin-container">
+                <div class="app-container">
                     <h3 class="page-header">Edit User</h3>
 
                     <form action="{{url('admin/user/update')}}" method="post" role="form" enctype="multipart/form-data">
@@ -82,7 +82,7 @@
                                     <label for="address">Address*</label>
 
                                     <textarea name="address" id="address" class="form-control"
-                                              cols="30" rows="10">{{ old('address', $user->address) }}</textarea>
+                                              cols="4" rows="10">{{ old('address', $user->address) }}</textarea>
 
                                     @if ($errors->has('address'))
                                         <span class="help-block">{{ $errors->first('address') }}</span>

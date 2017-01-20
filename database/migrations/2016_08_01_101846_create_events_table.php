@@ -20,6 +20,7 @@ class CreateEventsTable extends Migration
             $table->string('slug', 100);
             $table->text('content');
             $table->string('template', 100)->nullable();
+            $table->boolean('draft')->default(0);
 
             $table->text('address')->nullable();
             $table->string('lat', 100)->nullable();

@@ -12,14 +12,6 @@ jQ(document).ready(function () {
         }
     });
 
-    // date picker
-    WBDate.datePicker();
-    WBDate.datePickerMin();
-    WBDate.none();
-
-    // time picker
-    WBDate.timePicker();
-
     // delete modal confirmation box
     WBHelper.delAjax({
         selector: '.delete-data',
@@ -62,41 +54,16 @@ jQ(document).ready(function () {
         });
     });
 
-    WBLeafMap.init('leafMap');
-    WBLeafMap.addMarker(14.5995, 120.9842, {
-        popup: {
-            content: 'This is a content.'
-        },
-        icon: 'http://icons.iconarchive.com/icons/icons-land/vista-map-markers/64/Map-Marker-Marker-Inside-Chartreuse-icon.png'
-    }, function (e) {
-        console.log(this.getLatLng());
+    // select picker initialize
+    jQ('select').selectpicker({
+        liveSearch: true
     });
 
-    // on click map
-    WBLeafMap.onClick(function (e) {
-        WBLeafMap.addMarker(e.latlng.lat, e.latlng.lng, {
-            popup: {
-                content: 'This is a content.'
-            },
-            icon: 'http://icons.iconarchive.com/icons/icons-land/vista-map-markers/64/Map-Marker-Marker-Inside-Chartreuse-icon.png'
-        }, function (e) {
-            console.log(this.getLatLng());
-        });
-    });
+    // date picker
+    WBDate.datePicker();
+    WBDate.datePickerMin();
+    WBDate.none();
 
-    // delete markers
-    jQ('#deleteMarkers').off().on('click', function (e) {
-        WBLeafMap.deleteMarker();
-    });
-
-    // search
-    WBLeafMap.search('searchBox');
-
-    // routing
-    WBLeafMap.route([
-        L.latLng(14.5547, 121.0244),
-        L.latLng(14.6760, 121.0437)
-    ], function (e) {
-
-    });
+    // time picker
+    WBDate.timePicker();
 });

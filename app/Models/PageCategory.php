@@ -71,7 +71,7 @@ class PageCategory extends Model
 
         if (isset($params['search'])) {
             self::$params = $params;
-            $query->Where(function ($query) {
+            $query->where(function ($query) {
                 $query->where('page_categories.name', 'LIKE', '%' . self::$params['search'] . '%')
                     ->orWhere('slugs.name', 'LIKE', '%' . self::$params['search'] . '%')
                     ->orWhere('page_categories.description', 'LIKE', '%' . self::$params['search'] . '%');

@@ -5,6 +5,18 @@
  * License: Apache 2.0
  */
 
+body {
+    background: #FAFAFA;
+}
+
+.app-container {
+    padding: 12px;
+    border: solid 2px #E8E8E8;
+    border-radius: 3px;
+    background: #FFFFFF;
+    margin: 16px 0;
+}
+
 /* Form Control */
 .form-control {
     border: solid 3px #E5E5E5;
@@ -12,6 +24,22 @@
     -webkit-box-shadow: none;
     border-radius: 0;
     padding: 5px;
+}
+
+.picker__wrap {
+    border-radius: 0 !important;
+}
+
+.picker__box {
+    border-radius: 0 !important;
+}
+
+.picker__frame {
+    border-radius: 0 !important;
+}
+
+.picker__holder {
+    border-radius: 0 !important;
 }
 
 .form-control:focus {
@@ -54,7 +82,7 @@
     background: #FFFFFF;
     padding: 16px !important;
     border: 1px solid #F2F2F2;
-    border-radius: 6px;
+    border-radius: 2px !important;
 }
 
 .modal-content {
@@ -75,4 +103,36 @@
     height: 100%;
     width: 100%;
 }
+
+.footer {
+    margin-top: 80px;
+    margin-bottom: 120px;
+    text-align: center;
+}
+
+.material-shadow-1 {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    transition: all 0.3s cubic-bezier(.25, .8, .25, 1);
+}
+
+.material-shadow-1:hover {
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+}
+
+.material-shadow-2 {
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+
+.material-shadow-3 {
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+}
+
+.material-shadow-4 {
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+}
+
+.material-shadow-5 {
+    box-shadow: 0 19px 38px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
+}
+
 

@@ -10,7 +10,7 @@
 @section('content')
     <div class="container has-header">
         <div class="row">
-            <div class="col-xs-12 col-md-12">
+            <div class="col-xs-12 col-md-8 col-md-offset-2 material-shadow-3 jumbotron-sm">
                 @include(current_theme() . 'menu.settings')
 
                 <div class="row">
@@ -49,7 +49,8 @@
 
                                         <div class="col-md-9">
                                             <input type="text" class="form-control" name="first_name"
-                                                   value="{{ (old('first_name')) ? old('first_name') : $user->first_name }}" id="first_name">
+                                                   value="{{ (old('first_name')) ? old('first_name') : $user->first_name }}"
+                                                   id="first_name">
 
                                             @if ($errors->has('first_name'))
                                                 <span class="help-block">
@@ -64,7 +65,8 @@
 
                                         <div class="col-md-9">
                                             <input type="text" class="form-control" name="last_name"
-                                                   value="{{ (old('last_name')) ? old('last_name') : $user->last_name }}" id="last_name">
+                                                   value="{{ (old('last_name')) ? old('last_name') : $user->last_name }}"
+                                                   id="last_name">
 
                                             @if ($errors->has('last_name'))
                                                 <span class="help-block">
@@ -79,7 +81,8 @@
 
                                         <div class="col-md-9">
                                             <input type="text" class="form-control" name="phone"
-                                                   value="{{ (old('phone')) ? old('phone') : $user->phone }}" id="phone">
+                                                   value="{{ (old('phone')) ? old('phone') : $user->phone }}"
+                                                   id="phone">
 
                                             @if ($errors->has('phone'))
                                                 <span class="help-block">
@@ -126,7 +129,8 @@
 
                                         <div class="col-md-9">
                                             <input type="text" class="form-control date-picker" name="birthday"
-                                                   value="{{ (old('birthday')) ? old('birthday') : $user->birthday }}" id="birthday">
+                                                   value="{{ (old('birthday')) ? old('birthday') : $user->birthday }}"
+                                                   id="birthday">
 
                                             @if ($errors->has('birthday'))
                                                 <span class="help-block">
@@ -140,7 +144,8 @@
                                         <label class="col-md-3 control-label" for="country_id">Country</label>
 
                                         <div class="col-md-9">
-                                            <select class="form-control col-md-12 col-xs-12" name="country_id" id="country_id">
+                                            <select class="form-control col-md-12 col-xs-12" name="country_id"
+                                                    id="country_id">
                                                 <option value="">Select Country</option>
                                                 @foreach($countries as $row)
                                                     <option value="{{$row->id}}"
@@ -163,7 +168,8 @@
 
                                         <div class="col-md-9">
                                                 <textarea class="form-control" name="address"
-                                                          rows="2" id="address">{{ (old('address')) ? old('address') : $user->address }}</textarea>
+                                                          rows="2"
+                                                          id="address">{{ (old('address')) ? old('address') : $user->address }}</textarea>
 
                                             @if ($errors->has('address'))
                                                 <span class="help-block">
@@ -178,7 +184,8 @@
 
                                         <div class="col-md-9">
                                                 <textarea class="form-control" name="about"
-                                                          rows="2" id="about">{{ (old('about')) ? old('about') : $user->about }}</textarea>
+                                                          rows="2"
+                                                          id="about">{{ (old('about')) ? old('about') : $user->about }}</textarea>
 
                                             @if ($errors->has('about'))
                                                 <span class="help-block">
