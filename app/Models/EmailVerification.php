@@ -7,9 +7,7 @@
  */
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
-class EmailVerification extends Model
+class EmailVerification extends AppModel
 {
     protected static $writable_columns = [
         'token', 'email', 'expired_at'

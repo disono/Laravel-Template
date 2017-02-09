@@ -90,56 +90,17 @@ class Message extends Model
             $query = DB::table(DB::raw('(SELECT * FROM messages ORDER BY created_at DESC) as messages'));
         }
 
+        // select
         $query->select($select);
+
+        // joins
         if (!isset($params['group_id'])) {
             $query = $query->join('users as user_to', 'messages.to_id', '=', 'user_to.id');
         }
         $query = $query->join('users as user_from', 'messages.from_id', '=', 'user_from.id');
 
-        if (isset($params['id'])) {
-            $query->where('messages.id', $params['id']);
-        }
-
-        if (isset($params['to_id']) && !isset($params['group_id'])) {
-            $query->where('messages.to_id', $params['to_id']);
-        }
-
-        if (isset($params['from_id']) && !isset($params['group_id'])) {
-            $query->where('messages.from_id', $params['from_id']);
-        }
-
-        if (isset($params['group_id'])) {
-            $query->where('messages.group_id', $params['group_id']);
-        }
-
-        if (isset($params['type'])) {
-            $query->where('messages.type', $params['type']);
-        }
-
-        if (isset($params['is_viewed'])) {
-            $query->where('messages.is_viewed', $params['is_viewed']);
-        }
-
-        if (isset($params['from_username'])) {
-            $query->where(DB::raw(self::$query_params['from_username']), $params['from_username']);
-        }
-
-        if (isset($params['to_username'])) {
-            $query->where(DB::raw(self::$query_params['to_username']), $params['to_username']);
-        }
-
-        if (isset($params['search'])) {
-            self::$params = $params;
-            $query->where(function ($query) {
-                $query->where(DB::raw(self::$query_params['from_full_name']), 'LIKE', '%' . self::$params['search'] . '%')
-                    ->orWhere(DB::raw(self::$query_params['from_username']), 'LIKE', '%' . self::$params['search'] . '%')
-                    ->orWhere(DB::raw(self::$query_params['from_role_name']), 'LIKE', '%' . self::$params['search'] . '%')
-                    ->orWhere(DB::raw(self::$query_params['to_full_name']), 'LIKE', '%' . self::$params['search'] . '%')
-                    ->orWhere(DB::raw(self::$query_params['to_username']), 'LIKE', '%' . self::$params['search'] . '%')
-                    ->orWhere(DB::raw(self::$query_params['to_role_name']), 'LIKE', '%' . self::$params['search'] . '%')
-                    ->orWhere('messages.message', 'LIKE', '%' . self::$params['search'] . '%');
-            });
-        }
+        // query where filters
+        $query = self::_query_filters($query, $params);
 
         // list reading messages
         if (isset($params['reading'])) {
@@ -193,15 +154,14 @@ class Message extends Model
             $query->orderBy('messages.created_at', 'DESC');
         }
 
+        // ['column_name' => [value, value, value]]
         if (isset($params['exclude'])) {
-            if (is_array($params['exclude'])) {
-                foreach ($params['exclude'] as $column => $row) {
-                    if (is_array($row)) {
-                        $query->where(function ($query) use ($column, $row) {
-                            foreach ($row as $value) {
-                                $query->where('messages.' . $column, '<>', $value);
-                            }
-                        });
+            $exclude = $params['exclude'];
+
+            foreach ($exclude as $key => $value) {
+                if (in_array($key, self::$writable_columns)) {
+                    if (is_array($value)) {
+                        $query->whereNotIn('messages.' . $key, $value);
                     }
                 }
             }
@@ -223,15 +183,60 @@ class Message extends Model
     }
 
     /**
-     * Get all data no pagination
+     * Where Filters Query
      *
-     * @param array $params
-     * @return null
+     * @param $query
+     * @param $params
+     * @return mixed
      */
-    public static function getAll($params = [])
+    private static function _query_filters($query, $params)
     {
-        $params['all'] = true;
-        return self::get($params);
+        if (isset($params['id'])) {
+            $query->where('messages.id', $params['id']);
+        }
+
+        if (isset($params['to_id']) && !isset($params['group_id'])) {
+            $query->where('messages.to_id', $params['to_id']);
+        }
+
+        if (isset($params['from_id']) && !isset($params['group_id'])) {
+            $query->where('messages.from_id', $params['from_id']);
+        }
+
+        if (isset($params['group_id'])) {
+            $query->where('messages.group_id', $params['group_id']);
+        }
+
+        if (isset($params['type'])) {
+            $query->where('messages.type', $params['type']);
+        }
+
+        if (isset($params['is_viewed'])) {
+            $query->where('messages.is_viewed', $params['is_viewed']);
+        }
+
+        if (isset($params['from_username'])) {
+            $query->where(DB::raw(self::$query_params['from_username']), $params['from_username']);
+        }
+
+        if (isset($params['to_username'])) {
+            $query->where(DB::raw(self::$query_params['to_username']), $params['to_username']);
+        }
+
+        if (isset($params['search'])) {
+            self::$params = $params;
+            $query->where(function ($query) {
+                $query->where(DB::raw(self::$query_params['from_full_name']), 'LIKE', '%' . self::$params['search'] . '%')
+                    ->orWhere(DB::raw(self::$query_params['from_username']), 'LIKE', '%' . self::$params['search'] . '%')
+                    ->orWhere(DB::raw(self::$query_params['from_role_name']), 'LIKE', '%' . self::$params['search'] . '%')
+                    ->orWhere(DB::raw(self::$query_params['to_full_name']), 'LIKE', '%' . self::$params['search'] . '%')
+                    ->orWhere(DB::raw(self::$query_params['to_username']), 'LIKE', '%' . self::$params['search'] . '%')
+                    ->orWhere(DB::raw(self::$query_params['to_role_name']), 'LIKE', '%' . self::$params['search'] . '%')
+                    ->orWhere('messages.message', 'LIKE', '%' . self::$params['search'] . '%');
+            });
+        }
+
+        return $query;
     }
 
     /**
@@ -257,47 +262,15 @@ class Message extends Model
     }
 
     /**
-     * Add formatting on data
+     * Get all data no pagination
      *
-     * @param $query
      * @param array $params
      * @return null
      */
-    private static function _format($query, $params = [])
+    public static function getAll($params = [])
     {
-        if (isset($params['single'])) {
-            if (!$query) {
-                return null;
-            }
-
-            // avatar image
-            $query->from_avatar = get_image($query->from_image_id, 'avatar');
-            if (!isset($params['group_id'])) {
-                $query->to_avatar = get_image($query->to_image_id, 'avatar');
-            }
-
-            // file url
-            $query->file = null;
-            if (in_array($query->type, ['image', 'video', 'file'])) {
-                $query->file = url('private/any/' . $query->message);
-            }
-        } else {
-            foreach ($query as $row) {
-                // avatar image
-                $row->from_avatar = get_image($row->from_image_id, 'avatar');
-                if (!isset($params['group_id'])) {
-                    $row->to_avatar = get_image($row->to_image_id, 'avatar');
-                }
-
-                // file url
-                $row->file = null;
-                if (in_array($row->type, ['image', 'video', 'file'])) {
-                    $row->file = url('private/any/' . $row->message);
-                }
-            }
-        }
-
-        return $query;
+        $params['all'] = true;
+        return self::get($params);
     }
 
     /**
@@ -319,7 +292,7 @@ class Message extends Model
         $store['type'] = 'text';
         if (isset($inputs['file'])) {
             $ext = $inputs['file']->getClientOriginalExtension();
-            if (!in_array($ext, ['jpg', 'jpeg', 'png', 'mp4', '3gp', 'docx', 'doc'])) {
+            if (!in_array($ext, ['jpg', 'jpeg', 'png', 'mp4', '3gp', 'docx', 'doc', 'pdf', 'rar', 'zip'])) {
                 return 0;
             }
 
@@ -331,7 +304,11 @@ class Message extends Model
                 $store['type'] = 'video';
             }
 
-            if (in_array($ext, ['docx', 'doc'])) {
+            if (in_array($ext, ['docx', 'doc', 'pdf'])) {
+                $store['type'] = 'doc';
+            }
+
+            if (in_array($ext, ['rar', 'zip'])) {
                 $store['type'] = 'file';
             }
 
@@ -348,18 +325,6 @@ class Message extends Model
 
         $store['created_at'] = sql_date();
         return (int)self::insertGetId($store);
-    }
-
-    /**
-     * Delete data
-     *
-     * @param $id
-     * @return bool
-     * @throws \Exception
-     */
-    public static function remove($id)
-    {
-        return (bool)self::destroy($id);
     }
 
     /**
@@ -408,5 +373,61 @@ class Message extends Model
         }
 
         return (bool)$query->update($update);
+    }
+
+    /**
+     * Delete data
+     *
+     * @param $id
+     * @return bool
+     * @throws \Exception
+     */
+    public static function remove($id)
+    {
+        return (bool)self::destroy($id);
+    }
+
+    /**
+     * Add formatting on data
+     *
+     * @param $query
+     * @param array $params
+     * @return null
+     */
+    private static function _format($query, $params = [])
+    {
+        if (isset($params['single'])) {
+            if (!$query) {
+                return null;
+            }
+
+            // avatar image
+            $query->from_avatar = get_image($query->from_image_id, 'avatar');
+            if (!isset($params['group_id'])) {
+                $query->to_avatar = get_image($query->to_image_id, 'avatar');
+            }
+
+            // file url
+            $query->file = null;
+            if (in_array($query->type, ['image', 'video', 'file'])) {
+                $query->file = url('private/any/' . $query->message);
+            }
+        } else {
+            foreach ($query as $row) {
+                // avatar image
+                $row->from_avatar = get_image($row->from_image_id, 'avatar');
+                if (!isset($params['group_id'])) {
+                    $row->to_avatar = get_image($row->to_image_id, 'avatar');
+                }
+
+                // file url
+                $row->file = null;
+                if (in_array($row->type, ['image', 'video', 'file'])) {
+                    $row->file = url('private/any/' . $row->message);
+                }
+            }
+        }
+
+        return $query;
     }
 }

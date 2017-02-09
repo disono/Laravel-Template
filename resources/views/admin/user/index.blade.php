@@ -57,6 +57,17 @@
                         </div>
 
                         <div class="form-group">
+                            <select class="form-control" name="role">
+                                <option value="">Role</option>
+                                @foreach($role as $row)
+                                    <option value="{{$row->slug}}" {{ ($request->get('role') == $row->slug) ? 'selected' : '' }}>
+                                        {{$row->name}}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="form-group">
                             <button type="submit" class="btn btn-primary">Search</button>
                         </div>
                     </form>

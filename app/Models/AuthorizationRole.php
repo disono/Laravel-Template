@@ -7,13 +7,10 @@
  */
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
-class AuthorizationRole extends Model
+class AuthorizationRole extends AppModel
 {
-    private static $params;
-
     protected static $writable_columns = [
         'role_id', 'authorization_id'
     ];
@@ -51,45 +48,34 @@ class AuthorizationRole extends Model
      */
     public static function get($params = [])
     {
-        $select[] = 'authorization_roles.*';
+        $table_name = (new self)->getTable();
+        $select[] = $table_name . '.*';
         $select[] = DB::raw('authorizations.name as authorization_name, authorizations.identifier as authorization_identifier, ' .
             'authorizations.description as authorization_description');
 
         $select[] = DB::raw('roles.name as role_name, roles.slug as role_slug, roles.description as role_description');
 
         $query = self::select($select)
-            ->join('authorizations', 'authorization_roles.authorization_id', '=', 'authorizations.id')
-            ->join('roles', 'authorization_roles.role_id', '=', 'roles.id');
-
-        if (isset($params['id'])) {
-            $query->where('authorization_roles.id', $params['id']);
-        }
+            ->join('authorizations', $table_name . '.authorization_id', '=', 'authorizations.id')
+            ->join('roles', $table_name . '.role_id', '=', 'roles.id');
 
         if (isset($params['identifier'])) {
             $query->where('authorizations.identifier', $params['identifier']);
         }
 
-        if (isset($params['role_id'])) {
-            $query->where('authorization_roles.role_id', $params['role_id']);
-        }
+        // where equal
+        $query = self::_whereEqual($query, $params, self::$writable_columns, $table_name);
 
-        if (isset($params['authorization_id'])) {
-            $query->where('authorization_roles.authorization_id', $params['authorization_id']);
-        }
+        // exclude and include
+        $query = self::_excInc($query, $params, self::$writable_columns, $table_name);
 
-        if (isset($params['search'])) {
-            self::$params = $params;
-            $query->where(function ($query) {
-                $query->where('authorizations.name', 'LIKE', '%' . self::$params['search'] . '%')
-                    ->orWhere('authorizations.identifier', 'LIKE', '%' . self::$params['search'] . '%')
-                    ->orWhere('authorizations.description', 'LIKE', '%' . self::$params['search'] . '%')
-                    ->orWhere('roles.name', 'LIKE', '%' . self::$params['search'] . '%')
-                    ->orWhere('roles.slug', 'LIKE', '%' . self::$params['search'] . '%')
-                    ->orWhere('roles.description', 'LIKE', '%' . self::$params['search'] . '%');
-            });
-        }
+        // search
+        $query = self::_search($query, $params, self::$writable_columns, $table_name, [
+            'authorizations.name', 'authorizations.identifier', 'authorizations.description', 'roles.name', 'roles.slug',
+            'roles.description'
+        ]);
 
-        $query->orderBy('authorization_roles.created_at', 'DESC');
+        $query->orderBy($table_name . '.created_at', 'DESC');
 
         if (isset($params['object'])) {
             return $query;
@@ -116,27 +102,6 @@ class AuthorizationRole extends Model
     {
         $params['all'] = true;
         return self::get($params);
-    }
-
-    /**
-     * Add formatting on data
-     *
-     * @param $query
-     * @param array $params
-     * @return null
-     */
-    private static function _format($query, $params = [])
-    {
-        if (isset($params['single'])) {
-            if (!$query) {
-                return null;
-            }
-        } else {
-            foreach ($query as $row) {
-
-            }
-        }
-        return $query;
     }
 
     /**
@@ -215,6 +180,9 @@ class AuthorizationRole extends Model
                 $update[$key] = $value;
             }
         }
+
+        // store to activity logs
+        ActivityLog::store($id, self::$writable_columns, $query->first(), $inputs, (new self)->getTable());
 
         return (bool)$query->update($update);
     }

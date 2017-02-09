@@ -7,13 +7,10 @@
  */
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
-class PageCategory extends Model
+class PageCategory extends AppModel
 {
-    private static $params;
-
     protected static $writable_columns = [
         'name', 'description'
     ];
@@ -51,34 +48,33 @@ class PageCategory extends Model
      */
     public static function get($params = [])
     {
-        $select[] = 'page_categories.*';
+        $table_name = (new self)->getTable();
+        $select[] = $table_name . '.*';
 
         $select[] = DB::raw('slugs.name as slug');
 
         $query = self::select($select)
-            ->join('slugs', function ($join) {
-                $join->on('page_categories.id', '=', 'slugs.source_id')
+            ->join('slugs', function ($join) use ($table_name) {
+                $join->on($table_name . '.id', '=', 'slugs.source_id')
                     ->where('slugs.source_type', '=', 'page_category');
             });
-
-        if (isset($params['id'])) {
-            $query->where('page_categories.id', $params['id']);
-        }
 
         if (isset($params['slug'])) {
             $query->where('slugs.name', $params['slug']);
         }
 
-        if (isset($params['search'])) {
-            self::$params = $params;
-            $query->where(function ($query) {
-                $query->where('page_categories.name', 'LIKE', '%' . self::$params['search'] . '%')
-                    ->orWhere('slugs.name', 'LIKE', '%' . self::$params['search'] . '%')
-                    ->orWhere('page_categories.description', 'LIKE', '%' . self::$params['search'] . '%');
-            });
-        }
+        // where equal
+        $query = self::_whereEqual($query, $params, self::$writable_columns, $table_name);
 
-        $query->orderBy('page_categories.name', 'DESC');
+        // exclude and include
+        $query = self::_excInc($query, $params, self::$writable_columns, $table_name);
+
+        // search
+        $query = self::_search($query, $params, self::$writable_columns, $table_name, [
+            'slugs.name'
+        ]);
+
+        $query->orderBy($table_name . '.name', 'DESC');
 
         if (isset($params['object'])) {
             return $query;
@@ -105,28 +101,6 @@ class PageCategory extends Model
     {
         $params['all'] = true;
         return self::get($params);
-    }
-
-    /**
-     * Add formatting on data
-     *
-     * @param $query
-     * @param array $params
-     * @return null
-     */
-    private static function _format($query, $params = [])
-    {
-        if (isset($params['single'])) {
-            if (!$query) {
-                return null;
-            }
-        } else {
-            foreach ($query as $row) {
-
-            }
-        }
-
-        return $query;
     }
 
     /**
@@ -239,6 +213,9 @@ class PageCategory extends Model
                 }
             }
         }
+
+        // store to activity logs
+        ActivityLog::store($id, self::$writable_columns, $query->first(), $inputs, (new self)->getTable());
 
         return (bool)$query->update($update);
     }

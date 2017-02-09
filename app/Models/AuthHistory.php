@@ -7,13 +7,10 @@
  */
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
-class AuthHistory extends Model
+class AuthHistory extends AppModel
 {
-    private static $params;
-
     protected static $writable_columns = [
         'user_id', 'ip', 'platform', 'type', 'content'
     ];
@@ -51,32 +48,25 @@ class AuthHistory extends Model
      */
     public static function get($params = [])
     {
-        $select[] = 'auth_histories.*';
+        $table_name = (new self)->getTable();
+        $select[] = $table_name . '.*';
 
         $select[] = DB::raw('users.first_name, users.last_name, CONCAT(users.first_name, " ", users.last_name) as full_name, ' .
             '(SELECT name FROM slugs WHERE source_id = users.id AND source_type = "user") as username');
 
         $query = self::select($select)
-            ->join('users', 'auth_histories.user_id', '=', 'users.id');
+            ->join('users', $table_name . '.user_id', '=', 'users.id');
 
-        if (isset($params['user_id'])) {
-            $query->where('auth_histories.user_id', $params['user_id']);
-        }
+        // where equal
+        $query = self::_whereEqual($query, $params, self::$writable_columns, $table_name);
 
-        if (isset($params['type'])) {
-            $query->where('auth_histories.type', $params['type']);
-        }
+        // exclude and include
+        $query = self::_excInc($query, $params, self::$writable_columns, $table_name);
 
-        if (isset($params['search'])) {
-            self::$params = $params;
-            $query->where(function ($query) {
-                $query->where('auth_histories.type', 'LIKE', '%' . self::$params['search'] . '%')
-                    ->orWhere('auth_histories.content', 'LIKE', '%' . self::$params['search'] . '%')
-                    ->orWhere('auth_histories.platform', 'LIKE', '%' . self::$params['search'] . '%');
-            });
-        }
+        // search
+        $query = self::_search($query, $params, self::$writable_columns, $table_name);
 
-        $query->orderBy('auth_histories.created_at', 'DESC');
+        $query->orderBy($table_name . '.created_at', 'DESC');
 
         if (isset($params['object'])) {
             return $query;
@@ -103,28 +93,6 @@ class AuthHistory extends Model
     {
         $params['all'] = true;
         return self::get($params);
-    }
-
-    /**
-     * Add formatting on data
-     *
-     * @param $query
-     * @param array $params
-     * @return null
-     */
-    private static function _format($query, $params = [])
-    {
-        if (isset($params['single'])) {
-            if (!$query) {
-                return null;
-            }
-        } else {
-            foreach ($query as $row) {
-
-            }
-        }
-
-        return $query;
     }
 
     /**
@@ -200,6 +168,9 @@ class AuthHistory extends Model
                 $update[$key] = $value;
             }
         }
+
+        // store to activity logs
+        ActivityLog::store($id, self::$writable_columns, $query->first(), $inputs, (new self)->getTable());
 
         return (bool)$query->update($update);
     }

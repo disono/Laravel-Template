@@ -31,10 +31,14 @@ class VerifyCsrfToken extends BaseVerifier
         if (
             $this->isReading($request) ||
             $this->runningUnitTests() ||
-            $this->shouldPassThrough($request) ||
+            $this->inExceptArray($request) ||
             $this->tokensMatch($request)
         ) {
             return $this->addCookieToResponse($request, $next($request));
+        }
+
+        if ($request->ajax()) {
+            return failed_json_response('Invalid form token please refresh your browser.', 400);
         }
 
         return new Response(view('errors.token_error'));

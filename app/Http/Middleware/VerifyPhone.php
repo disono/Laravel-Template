@@ -30,6 +30,10 @@ class VerifyPhone
 
                 Request::getPathInfo() != '/logout'
             ) {
+                if ($request->ajax()) {
+                    return failed_json_response('Your phone number is not verified, please check your phone for validation code to verify your phone number.', 400);
+                }
+
                 return new Response(view('auth.verify_phone'));
             }
         }

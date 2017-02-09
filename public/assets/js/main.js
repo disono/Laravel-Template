@@ -60,10 +60,24 @@ jQ(document).ready(function () {
     });
 
     // date picker
+    // class="date-picker"
     WBDate.datePicker();
+    // class="date-picker-min"
     WBDate.datePickerMin();
+    // class="date-picker-none"
     WBDate.none();
 
     // time picker
+    // class="time-picker"
     WBDate.timePicker();
+
+    // form ajax call
+    // class="ajax-form"
+    WBHelper.form();
+
+    // confirm modal
+    WBHelper.confirm();
+
+    // confirm modal for form
+    WBHelper.confirmForm();
 });

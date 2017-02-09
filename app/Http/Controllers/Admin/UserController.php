@@ -18,57 +18,50 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
+    public function __construct()
+    {
+        $this->view = 'user.';
+        $this->view_type = 'admin';
+        parent::__construct();
+    }
+
     /**
      * List data
      *
-     * @param Request $request
      * @return mixed
      */
-    public function index(Request $request)
+    public function index()
     {
-        $content['title'] = app_title('Users');
-        $content['request'] = $request;
-        $content['countries'] = Country::all();
+        $data = User::get(request_options([
+            'id', 'search', 'country_id', 'enabled', 'email_confirmed', 'date_from', 'date_to', 'role'
+        ]));
 
-        $options = [];
-        if ($request->get('search')) {
-            $options['search'] = $request->get('search');
-        }
-        if (is_numeric($request->get('country_id'))) {
-            $options['country_id'] = $request->get('country_id');
-        }
-        if (is_numeric($request->get('enabled'))) {
-            $options['enabled'] = $request->get('enabled');
-        }
-        if (is_numeric($request->get('email_confirmed'))) {
-            $options['email_confirmed'] = $request->get('email_confirmed');
-        }
-        if ($request->get('branch_id')) {
-            $options['branch_id'] = $request->get('branch_id');
-        }
-        if ($request->get('date_from') && $request->get('date_to')) {
-            $options['date_from'] = $request->get('date_from');
-            $options['date_to'] = $request->get('date_to');
+        if ($this->request->ajax()) {
+            $this->content = $data;
+        } else {
+            $this->content['title'] = app_title('Users');
+
+            $this->content['countries'] = Country::all();
+            $this->content['role'] = Role::all();
+            $this->content['users'] = $data;
         }
 
-        $content['users'] = User::get($options);
-
-        return admin_view('user.index', $content);
+        return $this->response('index');
     }
 
     /**
      * Create new data
      *
-     * @param Request $request
      * @return mixed
      */
-    public function create(Request $request)
+    public function create()
     {
-        $content['title'] = app_title('Create User');
-        $content['request'] = $request;
-        $content['roles'] = Role::all();
+        $this->title = 'Create User';
+        $this->view .= 'create';
 
-        return admin_view('user.create', $content);
+        $this->content['roles'] = Role::all();
+
+        return $this->response();
     }
 
     /**
@@ -141,16 +134,17 @@ class UserController extends Controller
      */
     public function edit($id)
     {
-        $content['title'] = app_title('Edit User');
-        $content['user'] = User::single($id);
+        $this->title = 'Edit User';
 
-        if (!$content['user']) {
+        $data = User::single($id);
+        if (!$data) {
             abort(404);
         }
 
-        $content['roles'] = Role::all();
+        $this->content['user'] = $data;
+        $this->content['roles'] = Role::all();
 
-        return admin_view('user.edit', $content);
+        return $this->response('edit');
     }
 
     /**
@@ -237,21 +231,19 @@ class UserController extends Controller
     /**
      * Edit password
      *
-     * @param Request $request
      * @param $id
      * @return mixed
      */
-    public function passwordEdit(Request $request, $id)
+    public function passwordEdit($id)
     {
-        $content['title'] = app_title('Reset Password');
-        $content['request'] = $request;
-        $content['user'] = User::single($id);
+        $this->title = 'Reset Password';
+        $this->content['user'] = User::single($id);
 
-        if (!$content['user']) {
+        if (!$this->content['user']) {
             abort(404);
         }
 
-        return admin_view('user.password_edit', $content);
+        return $this->response('password_edit');
     }
 
     /**

@@ -2,7 +2,7 @@
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
             <div class="modal-body">
-                <h4>Are you sure to delete this item?</h4>
+                <h4>Are you sure to delete this item? <small class="text-danger">This cannot be undone.</small></h4>
 
                 <div class="text-right">
                     <div class="btn-group" role="group" aria-label="...">

@@ -11,8 +11,7 @@
             <div class="col-md-6 col-md-offset-3">
                 <div class="jumbotron jumbotron-sm material-shadow-3">
                     <div class="container">
-                        <h2>Reset Password</h2>
-                        <hr>
+                        <h2 class="page-header">Reset Password</h2>
 
                         @if (session('status'))
                             <div class="alert alert-success">
@@ -31,9 +30,7 @@
                                            value="{{ old('email') }}">
 
                                     @if ($errors->has('email'))
-                                        <span class="help-block">
-                                            {{ $errors->first('email') }}
-                                        </span>
+                                        <span class="help-block">{{ $errors->first('email') }}</span>
                                     @endif
                                 </div>
                             </div>

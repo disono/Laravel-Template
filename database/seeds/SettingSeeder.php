@@ -12,12 +12,11 @@ class SettingSeeder extends Seeder
     public function run()
     {
         $settings = [
-            ['Application Name', 'title', 'WebMons Project Template'],
-            ['Description', 'description', 'Project Template'],
-            ['Author', 'author', 'Archie Disono'],
-            ['Keywords', 'keywords', 'webmons, project template, boiler plate'],
-            ['CSS Version', 'css_version', '1.0'],
-            ['E-commerce Support', 'ecommerce_support', 'disabled']
+            ['Application Name', 'title', 'WebMons Project Template', 'default'],
+            ['Description', 'description', 'Project Template', 'default'],
+            ['Author', 'author', 'Archie Disono', 'default'],
+            ['Keywords', 'keywords', 'webmons, project template, boiler plate', 'default'],
+            ['CSS Version', 'css_version', '1.0', 'default'],
         ];
 
         foreach ($settings as $key => $value) {
@@ -25,6 +24,8 @@ class SettingSeeder extends Seeder
                 'name' => ucfirst($value[0]),
                 'key' => $value[1],
                 'value' => $value[2],
+
+                'type' => $value[3],
                 'created_at' => sql_date()
             ]);
         }

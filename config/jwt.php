@@ -21,7 +21,7 @@ return [
     |
     */
 
-    'secret' => env('JWT_SECRET', ''),
+    'secret' => env('JWT_SECRET', 'changeme'),
 
     /*
     |--------------------------------------------------------------------------
@@ -96,7 +96,6 @@ return [
     | A TokenInvalidException will be thrown if any of these claims are not
     | present in the payload.
     |
-    | Defaults 'iss', 'iat', 'exp', 'nbf', 'sub', 'jti'
     */
 
     'required_claims' => ['iat', 'exp', 'nbf', 'sub', 'jti'],
@@ -106,7 +105,7 @@ return [
     | Blacklist Enabled
     |--------------------------------------------------------------------------
     |
-    | In order to invalidate tokens, you must have the the blacklist enabled.
+    | In order to invalidate tokens, you must have the blacklist enabled.
     | If you do not want or need this functionality, then set this to false.
     |
     */

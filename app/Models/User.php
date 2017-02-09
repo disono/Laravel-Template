@@ -15,13 +15,11 @@ class User extends Authenticatable
 {
     use Notifiable;
 
-    private static $params;
-
-    private static $username;
-    private static $full_name;
-
     protected static $writable_columns = [
-        'first_name', 'middle_name', 'last_name', 'image_id', 'gender', 'address', 'country_id', 'phone', 'birthday', 'username',
+        'first_name', 'middle_name', 'last_name',
+        'image_id',
+
+        'gender', 'address', 'country_id', 'phone', 'birthday', 'about',
         'email', 'password', 'enabled', 'email_confirmed', 'role'
     ];
 
@@ -48,60 +46,31 @@ class User extends Authenticatable
      */
     public static function get($params = [])
     {
-        $select[] = 'users.*';
+        $table_name = (new self)->getTable();
+        $select[] = $table_name . '.*';
 
-        self::$full_name = 'CONCAT(first_name, " ", last_name)';
-        $select[] = DB::raw(self::$full_name . ' as full_name');
+        $full_name = 'CONCAT(first_name, " ", last_name)';
+        $select[] = DB::raw($full_name . ' as full_name');
 
-        self::$username = '(' . self::_username() . ')';
-        $select[] = DB::raw(self::$username . ' as username');
+        $username = '(' . self::_username() . ')';
+        $select[] = DB::raw($username . ' as username');
 
         $query = self::select($select);
 
-        if (isset($params['id'])) {
-            $query->where('id', $params['id']);
-        }
-
         if (isset($params['username'])) {
-            $query->where(DB::raw(self::$username), '=', $params['username']);
+            $query->where(DB::raw($username), '=', $params['username']);
         }
 
-        if (isset($params['email'])) {
-            $query->where('email', $params['email']);
-        }
+        // where equal
+        $query = AppModel::_whereEqual($query, $params, self::$writable_columns, $table_name);
 
-        if (isset($params['role'])) {
-            $query->where('role', $params['role']);
-        }
+        // exclude and include
+        $query = AppModel::_excInc($query, $params, self::$writable_columns, $table_name);
 
-        if (isset($params['gender'])) {
-            $query->where('gender', $params['gender']);
-        }
-
-        if (isset($params['search'])) {
-            self::$params = $params;
-
-            $query->where(function ($query) {
-                $query->where('first_name', 'LIKE', '%' . self::$params['search'] . '%')
-                    ->orWhere('middle_name', 'LIKE', '%' . self::$params['search'] . '%')
-                    ->orWhere('last_name', 'LIKE', '%' . self::$params['search'] . '%')
-                    ->orWhere('email', 'LIKE', '%' . self::$params['search'] . '%')
-                    ->orWhere(DB::raw(self::$username), 'LIKE', '%' . self::$params['search'] . '%')
-                    ->orWhere(DB::raw(self::$full_name), 'LIKE', '%' . self::$params['search'] . '%');
-            });
-        }
-
-        if (isset($params['country_id'])) {
-            $query->where('country_id', (int)$params['country_id']);
-        }
-
-        if (isset($params['enabled'])) {
-            $query->where('enabled', (int)$params['enabled']);
-        }
-
-        if (isset($params['email_confirmed'])) {
-            $query->where('email_confirmed', (int)$params['email_confirmed']);
-        }
+        // search
+        $query = AppModel::_search($query, $params, self::$writable_columns, $table_name, [
+            DB::raw($username), DB::raw($full_name)
+        ]);
 
         $query->orderBy('created_at', 'DESC');
 
@@ -214,21 +183,6 @@ class User extends Authenticatable
                     if ($value) {
                         $update[$key] = bcrypt($value);
                     }
-                } else if ($key === 'image') {
-                    $user = $query->first();
-
-                    // image
-                    $upload_image = upload_image($value, [
-                        'user_id' => $user->id,
-                        'source_id' => $user->id,
-                        'title' => $user->first_name . ' ' . $user->last_name,
-                        'type' => 'user',
-                        'crop_auto' => true
-                    ], $user->image_id);
-
-                    if ($upload_image) {
-                        $update['image_id'] = $upload_image;
-                    }
                 } else if ($key === 'birthday') {
                     if ($value) {
                         $update[$key] = sql_date($value, true);
@@ -237,25 +191,54 @@ class User extends Authenticatable
                     if ($value && is_numeric($value) && $value > 0) {
                         $update[$key] = $value;
                     }
-                } else if ($key === 'username') {
-                    if ($value) {
-                        $slug = Slug::get([
-                            'source_id' => $id,
-                            'source_type' => 'user',
-                            'single' => true
-                        ]);
-
-                        if ($slug) {
-                            Slug::edit($slug->id, [
-                                'name' => $value
-                            ]);
-                        }
-                    }
                 } else {
                     $update[$key] = clean($value);
                 }
             }
         }
+
+        // avatar
+        if (isset($inputs['image'])) {
+            $user = $query->first();
+            $value = $inputs['image'];
+
+            if ($user) {
+                // image
+                $upload_image = upload_image($value, [
+                    'user_id' => $user->id,
+                    'source_id' => $user->id,
+                    'title' => $user->first_name . ' ' . $user->last_name,
+                    'type' => 'user',
+                    'crop_auto' => true
+                ], $user->image_id);
+
+                if ($upload_image) {
+                    $update['image_id'] = $upload_image;
+                }
+            }
+        }
+
+        // username
+        if (isset($inputs['username'])) {
+            $value = $inputs['username'];
+
+            if ($value) {
+                $slug = Slug::get([
+                    'source_id' => $id,
+                    'source_type' => 'user',
+                    'single' => true
+                ]);
+
+                if ($slug) {
+                    Slug::edit($slug->id, [
+                        'name' => $value
+                    ]);
+                }
+            }
+        }
+
+        // store to activity logs
+        ActivityLog::store($id, self::$writable_columns, $query->first(), $inputs, (new self)->getTable());
 
         return (bool)$query->update($update);
     }

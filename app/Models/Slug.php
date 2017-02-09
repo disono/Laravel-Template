@@ -7,9 +7,7 @@
  */
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
-class Slug extends Model
+class Slug extends AppModel
 {
     private static $params;
 
@@ -50,31 +48,18 @@ class Slug extends Model
      */
     public static function get($params = [])
     {
-        $select[] = 'slugs.*';
+        $table_name = (new self)->getTable();
+        $select[] = $table_name . '.*';
         $query = self::select($select);
 
-        if (isset($params['id'])) {
-            $query->where('id', $params['id']);
-        }
+        // where equal
+        $query = self::_whereEqual($query, $params, self::$writable_columns, $table_name);
 
-        if (isset($params['source_type'])) {
-            $query->where('source_type', $params['source_type']);
-        }
+        // exclude and include
+        $query = self::_excInc($query, $params, self::$writable_columns, $table_name);
 
-        if (isset($params['source_id'])) {
-            $query->where('source_id', $params['source_id']);
-        }
-
-        if (isset($params['name'])) {
-            $query->where('name', $params['name']);
-        }
-
-        if (isset($params['search'])) {
-            self::$params = $params;
-            $query->where(function ($query) {
-                $query->where('name', 'LIKE', '%' . self::$params['search'] . '%');
-            });
-        }
+        // search
+        $query = self::_search($query, $params, self::$writable_columns, $table_name);
 
         $query->orderBy('created_at', 'DESC');
 
@@ -103,28 +88,6 @@ class Slug extends Model
     {
         $params['all'] = true;
         return self::get($params);
-    }
-
-    /**
-     * Add formatting on data
-     *
-     * @param $query
-     * @param array $params
-     * @return null
-     */
-    private static function _format($query, $params = [])
-    {
-        if (isset($params['single'])) {
-            if (!$query) {
-                return null;
-            }
-        } else {
-            foreach ($query as $row) {
-
-            }
-        }
-
-        return $query;
     }
 
     /**
@@ -202,6 +165,9 @@ class Slug extends Model
                 $update[$key] = $value;
             }
         }
+
+        // store to activity logs
+        ActivityLog::store($id, self::$writable_columns, $query->first(), $inputs, (new self)->getTable());
 
         return (bool)$query->update($update);
     }

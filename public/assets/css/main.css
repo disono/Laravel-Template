@@ -10,11 +10,15 @@ body {
 }
 
 .app-container {
-    padding: 12px;
+    padding: 12px !important;
     border: solid 2px #E8E8E8;
     border-radius: 3px;
     background: #FFFFFF;
     margin: 16px 0;
+}
+
+.form-group-no-margin {
+    margin: 0 !important;
 }
 
 /* Form Control */
@@ -99,6 +103,11 @@ body {
     height: 500px !important;
 }
 
+.map-sm {
+    width: 100% !important;
+    height: 280px !important;
+}
+
 #leafMap {
     height: 100%;
     width: 100%;
@@ -135,4 +144,25 @@ body {
     box-shadow: 0 19px 38px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
 }
 
+th {
+    border-bottom: solid 1px #DDDDDD !important;
+}
 
+.picker__list {
+    padding: 0 !important;
+}
+
+.image_chooser {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+table {
+    table-layout: fixed;
+    white-space: normal !important;
+}
+
+td {
+    vertical-align: middle !important;
+    word-wrap: break-word !important;
+}

@@ -13,22 +13,19 @@
             <div class="col-md-4 col-md-offset-4">
                 <div class="jumbotron jumbotron-sm material-shadow-3">
                     <div class="container">
-                        <h2>Log in to {{app_header('title')}}</h2>
-                        <hr>
+                        <h2 class="page-header">Log in to {{app_header('title')}}</h2>
 
-                        <form role="form" method="POST" action="{{ url('login') }}">
+                        <form role="form" method="POST" action="{{ url('login') }}" class="ajax-form" enctype="multipart/form-data">
                             {{ csrf_field() }}
 
                             <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
                                 <label for="email" class="control-label">E-Mail/Username</label>
 
-                                <input id="email" type="email" class="form-control" name="email"
+                                <input id="email" type="text" class="form-control" name="email"
                                        value="{{ old('email') }}">
 
                                 @if ($errors->has('email'))
-                                    <span class="help-block">
-                                            {{ $errors->first('email') }}
-                                        </span>
+                                    <span class="help-block">{{ $errors->first('email') }}</span>
                                 @endif
                             </div>
 
@@ -38,9 +35,7 @@
                                 <input id="password" type="password" class="form-control" name="password">
 
                                 @if ($errors->has('password'))
-                                    <span class="help-block">
-                                        {{ $errors->first('password') }}
-                                    </span>
+                                    <span class="help-block">{{ $errors->first('password') }}</span>
                                 @endif
                             </div>
 
@@ -54,9 +49,7 @@
                             </div>
 
                             <div class="form-group">
-                                <button type="submit" class="btn btn-primary">
-                                    Login
-                                </button>
+                                <button type="submit" class="btn btn-primary">Login</button>
 
                                 <a class="btn btn-link" href="{{ url('password/recover') }}">Forgot Your
                                     Password?</a>

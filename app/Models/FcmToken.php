@@ -2,9 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
-class FcmToken extends Model
+class FcmToken extends AppModel
 {
     /**
      * Get users tokens

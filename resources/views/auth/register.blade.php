@@ -13,14 +13,13 @@
             <div class="col-md-6 col-md-offset-3">
                 <div class="jumbotron jumbotron-sm material-shadow-3">
                     <div class="container">
-                        <h2>Join Today.</h2>
+                        <h2 class="page-header">Join Today.</h2>
                         <p class="text-muted">Fill in the form below to get instant access.</p>
-                        <hr>
 
-                        <form class="form-horizontal" role="form" method="POST" action="{{ url('register') }}">
-                            {{ csrf_field() }}
+                        <form class="form-horizontal ajax-form" role="form" method="POST" action="{{url('register')}}">
+                            {{csrf_field()}}
 
-                            <div class="form-group{{ $errors->has('first_name') ? ' has-error' : '' }}">
+                            <div class="form-group{{$errors->has('first_name') ? ' has-error' : '' }}">
                                 <label for="first_name" class="col-md-4 control-label">First Name</label>
 
                                 <div class="col-md-8">
@@ -28,9 +27,7 @@
                                            value="{{ old('first_name') }}">
 
                                     @if ($errors->has('first_name'))
-                                        <span class="help-block">
-                                            {{ $errors->first('first_name') }}
-                                        </span>
+                                        <span class="help-block">{{ $errors->first('first_name') }}</span>
                                     @endif
                                 </div>
                             </div>
@@ -40,12 +37,10 @@
 
                                 <div class="col-md-8">
                                     <input id="last_name" type="text" class="form-control" name="last_name"
-                                           value="{{ old('last_name') }}">
+                                           value="{{old('last_name')}}">
 
                                     @if ($errors->has('last_name'))
-                                        <span class="help-block">
-                                            {{ $errors->first('last_name') }}
-                                        </span>
+                                        <span class="help-block">{{ $errors->first('last_name') }}</span>
                                     @endif
                                 </div>
                             </div>
@@ -55,12 +50,10 @@
 
                                 <div class="col-md-8">
                                     <input id="email" type="email" class="form-control" name="email"
-                                           value="{{ old('email') }}">
+                                           value="{{old('email')}}">
 
                                     @if ($errors->has('email'))
-                                        <span class="help-block">
-                                            {{ $errors->first('email') }}
-                                        </span>
+                                        <span class="help-block">{{ $errors->first('email') }}</span>
                                     @endif
                                 </div>
                             </div>
@@ -69,16 +62,11 @@
                                 <label for="username" class="col-md-4 control-label">Username</label>
 
                                 <div class="col-md-8">
-                                    <div class="input-group">
-                                        <div class="input-group-addon input-group-addon-lg">{{url('user')}}/</div>
-                                        <input type="text" class="form-control" id="username" name="username"
-                                               placeholder="your-username">
-                                    </div>
+                                    <input type="text" class="form-control" id="username" name="username"
+                                           placeholder="" value="{{old('username')}}">
 
                                     @if ($errors->has('username'))
-                                        <span class="help-block">
-                                            {{ $errors->first('username') }}
-                                        </span>
+                                        <span class="help-block">{{ $errors->first('username') }}</span>
                                     @endif
                                 </div>
                             </div>
@@ -90,9 +78,7 @@
                                     <input id="password" type="password" class="form-control" name="password">
 
                                     @if ($errors->has('password'))
-                                        <span class="help-block">
-                                            {{ $errors->first('password') }}
-                                        </span>
+                                        <span class="help-block">{{ $errors->first('password') }}</span>
                                     @endif
                                 </div>
                             </div>
@@ -105,9 +91,7 @@
                                            name="password_confirmation">
 
                                     @if ($errors->has('password_confirmation'))
-                                        <span class="help-block">
-                                        {{ $errors->first('password_confirmation') }}
-                                    </span>
+                                        <span class="help-block">{{ $errors->first('password_confirmation') }}</span>
                                     @endif
                                 </div>
                             </div>

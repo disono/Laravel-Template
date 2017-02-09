@@ -11,7 +11,7 @@ var jQ = jQuery.noConflict();
 /**
  * Application helpers
  *
- * @type {{initDefaults, enableFormInputs, disableFormInputs, ajax, delAjax, clearForm, preLoadImg, goTo}}
+ * @type {{initDefaults, enableFormInputs, disableFormInputs, ajax, delAjax, upload, form, modal, confirm, confirmForm, imageChooser, clearForm, preLoadImg, goTo}}
  */
 var WBHelper = (function () {
     var _private = {
@@ -31,10 +31,6 @@ var WBHelper = (function () {
                 },
                 success: function (data, textStatus, jqXHR) {
                     // do stuff if ajax is success
-                },
-                serverError: function (data, textStatus, jqXHR) {
-                    // server custom error
-                    console.log('AJAX Server Error');
                 },
                 error: function (xhr, status, error) {
                     console.log('AJAX HTTP Error'); // do stuff if critical error occurred
@@ -130,12 +126,24 @@ var WBHelper = (function () {
                     options.beforeSend(jqXHR, settings);
                 },
                 success: function (data, textStatus, jqXHR) {
+                    // clear messages
+                    if (options.clearMessage) {
+                        WBErrors.clearMessages(false);
+                        jQ('[data-error-block]').remove();
+                    }
+
                     options.enableForm = options.enableFormSuccess;
 
                     // success
                     options.success(data, textStatus, jqXHR);
                 },
                 error: function (xhr, status, error) {
+                    // clear messages
+                    if (options.clearMessage) {
+                        WBErrors.clearMessages(false);
+                        jQ('[data-error-block]').remove();
+                    }
+
                     if (xhr.status == 422) {
                         var response = (typeof xhr.responseText == 'string') ? xhr.responseText : "";
                         WBErrors.run(JSON.parse(response), options);
@@ -143,8 +151,14 @@ var WBHelper = (function () {
 
                     options.error(xhr, status, error);
 
-                    // show critical error in console
+                    // log the errors
+                    // shows error message
                     WBErrors.log(xhr.status + ' ' + error);
+                    if (typeof xhr === 'object') {
+                        console.error(JSON.stringify(xhr));
+                    } else {
+                        console.error(xhr);
+                    }
                 },
                 complete: function (jqXHR, textStatus) {
                     // enable form
@@ -278,15 +292,23 @@ var WBHelper = (function () {
                         }
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
+                        // validation errors
                         if (jqXHR.status == 422) {
                             var response = (typeof jqXHR.responseText == 'string') ? jqXHR.responseText : "";
                             WBErrors.run(JSON.parse(response), options);
                         }
 
+                        // callback error
                         options.error(jqXHR, textStatus, errorThrown);
 
+                        // log the errors
                         // shows error message
                         WBErrors.log(jqXHR.status + ' ' + textStatus);
+                        if (typeof jqXHR === 'object') {
+                            console.error(JSON.stringify(jqXHR));
+                        } else {
+                            console.error(jqXHR);
+                        }
                     },
                     complete: function (jqXHR, textStatus) {
                         // remove disable button
@@ -300,6 +322,509 @@ var WBHelper = (function () {
                     }
                 });
             }
+        },
+
+        /**
+         * Upload
+         *
+         * Single file: {name: value}
+         * Multiple file: {name_1: [value_1, value_2], name_2: [value_1, value_2]}
+         *
+         * @param url
+         * @param options
+         * @param beforeSend
+         * @param successCallback
+         * @param errorCallback
+         */
+        upload: function (url, options, beforeSend, successCallback, errorCallback) {
+            // options default values
+            var _defaults = {
+                formId: null,       // form id
+                inputs: {},         // form inputs
+                files: {},          // files
+                reload: false,      // reload page
+                redirectTo: null,   // redirect to url
+                showErrors: true,           // show errors
+                errorType: 'toastMessage',  // error type to show
+
+                statusContainer: '#responseMessage',// status message type
+                removeMessage: true,                // remove status messages (responseMessage)
+                disableForm: true,                  // disable form
+                clearMessage: true,                 // clear messages
+                enableForm: true,                   // enable form after ajax complete
+                enableFormSuccess: true,            // enable form on success
+                submitLoadingText: 'Loading...',    // submit button text
+                clearForm: true                     // clear form use for uploads
+            };
+
+            // initialize defaults
+            options = WBHelper.initDefaults(_defaults, options);
+
+            // HTTP Request
+            var xhr = new XMLHttpRequest();
+
+            // form inputs
+            var formData = new FormData();
+
+            // open the connection.
+            xhr.open('POST', url, true);
+
+            // files to upload
+            if (options.files) {
+                jQ.each(options.files, function (i, val) {
+                    if (Array.isArray(val)) {
+                        // multiple files upload
+                        for (var num = 0; num < val.length; num++) {
+                            formData.append(i + '[]', val[num]);
+                        }
+                    } else {
+                        // single upload
+                        formData.append(i, val);
+                    }
+                });
+            }
+
+            // inputs
+            if (options.inputs) {
+                jQ.each(options.inputs, function (i, val) {
+                    formData.append(i, val);
+                });
+            }
+
+            // before sending data
+            beforeSend();
+
+            // load to server
+            // set up a handler for when the request finishes.
+            xhr.onload = function () {
+                var response = this.response;
+
+                if (response) {
+                    var data = (response) ? response : '{"success": false, "errors": []}';
+                    try {
+                        var res = JSON.parse(data);
+                    } catch (e) {
+                        WBErrors.run('Error: ' + e, options.errorType);
+                        console.error(e);
+
+                        errorCallback(e);
+                        return;
+                    }
+
+                    if (res.success) {
+                        successCallback(res);
+                    } else {
+                        errorCallback(res);
+                        if (res) {
+                            console.error(res);
+                        }
+
+                        if (options.showErrors) {
+                            // error_type: bottomMessage, toastMessage, clearMessages
+                            WBErrors.run(res, options);
+                        }
+                    }
+                } else {
+                    errorCallback(null);
+                    console.error('Unknown error response.');
+                }
+            };
+
+            // CSRF token
+            xhr.setRequestHeader("X-CSRF-Token", jQ('meta[name="_token"]').attr('content'));
+            xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+
+            // send the data.
+            xhr.send(formData);
+        },
+
+        /**
+         * Form AJAX call
+         */
+        form: function () {
+            // ajax form submission
+            jQ('.ajax-form').off().on('submit', function (e) {
+                e.preventDefault();
+                var me = jQ(this);
+
+                var id = me.attr('id');
+                var action = me.attr('action');
+                var method = me.attr('method');
+                var enctype = me.attr('enctype');
+                var data = me.serialize();
+                var dataArray = me.serializeArray();
+
+                // view
+                var frmSubmitButton = null;
+                var btnSubmitLoading = null;
+
+                // if id is not present make random id
+                if (!id) {
+                    var formId = Math.random().toString(36).substring(7);
+                    me.attr('id', formId);
+                    id = me.attr('id');
+                }
+
+                if (enctype) {
+                    var inputs = {};
+                    var files = {};
+
+                    // clean inputs
+                    jQ.each(dataArray, function (i, val) {
+                        inputs[val.name] = val.value;
+                    });
+
+                    // clean files
+                    var found_array_files = [];
+                    jQ('#' + id + ' [type="file"]').each(function (i, obj) {
+                        // this file is array
+                        var array_cache_found = false;
+                        for (var search_index = 0; search_index < found_array_files.length; search_index++) {
+                            if (found_array_files[search_index] == jQ(obj).attr('name')) {
+                                array_cache_found = true;
+                                break;
+                            }
+                        }
+
+                        if (jQ('#' + id + ' [name="' + jQ(obj).attr('name') + '"]').length > 1 && !array_cache_found) {
+                            // add to found array files
+                            found_array_files.push(jQ(obj).attr('name'));
+
+                            files[jQ(obj).attr('name')] = [];
+                            jQ('#' + id + ' [name="' + jQ(obj).attr('name') + '"]').each(function (iFileArray, objFileArray) {
+                                var filesObj = jQ(objFileArray).prop('files');
+
+                                if (filesObj && filesObj[0]) {
+                                    files[jQ(obj).attr('name')].push(filesObj[0]);
+                                }
+                            });
+
+                            if (!files[jQ(obj).attr('name')].length) {
+                                delete files[jQ(obj).attr('name')];
+                            }
+                        } else if (jQ('#' + id + ' [name="' + jQ(obj).attr('name') + '"]').length <= 1) {
+                            var filesObj = jQ(obj).prop('files');
+
+                            if (filesObj && filesObj[0]) {
+                                files[jQ(obj).attr('name')] = filesObj[0];
+                            }
+                        }
+                    });
+
+                    // upload file
+                    WBHelper.upload(action, {
+                        formId: '#' + id,
+                        inputs: inputs,
+                        files: files,
+                        errorType: 'bottomMessage'
+                    }, function (beforeSend) {
+                        // disable forms
+                        if (jQ('#' + id).length) {
+                            WBHelper.disableFormInputs('#' + id);
+                        }
+
+                        // clear messages
+                        WBErrors.clearMessages(false);
+
+                        // change button submit with (Loading...)
+                        if (jQ('#' + id).length) {
+                            frmSubmitButton = jQ('#' + id).find('button[type="submit"]');
+                            btnSubmitLoading = frmSubmitButton.text();
+
+                            frmSubmitButton.text('Loading...');
+                        }
+                    }, function (response) {
+                        _completeResponse();
+
+                        if (response.success) {
+                            _responseFormatter(response);
+                        }
+                    }, function (errorCallback) {
+                        _completeResponse();
+                    });
+                } else {
+                    // ordinary post call (no upload)
+                    WBHelper.ajax({
+                        formId: '#' + id,
+                        url: action,
+                        type: method,
+                        data: data,
+                        success: function (response, textStatus, jqXHR) {
+                            if (response.success) {
+                                _responseFormatter(response);
+                            }
+                        }
+                    });
+                }
+
+                function _completeResponse() {
+                    // enable form
+                    if (jQ('#' + id).length) {
+                        WBHelper.enableFormInputs('#' + id);
+                    }
+
+                    // change button submit
+                    if (jQ('#' + id).length) {
+                        frmSubmitButton.text(btnSubmitLoading);
+                    }
+                }
+
+                // format the response
+                function _responseFormatter(response) {
+                    var data = WBHelper.initDefaults({
+                        success: false,
+                        data: {},
+                        extra: {
+                            redirect: null,
+                            message: {
+                                title: null,
+                                message: null
+                            }
+                        }
+                    }, response);
+                    var extra = data.extra;
+
+                    // pop a message
+                    if (extra.message) {
+                        swal({
+                            title: extra.message.title,
+                            text: extra.message.message,
+                            timer: 3000,
+                            showConfirmButton: true
+                        });
+                    }
+
+                    // redirect to
+                    if (extra.redirect) {
+                        window.location.href = extra.redirect;
+                    }
+                }
+            });
+        },
+
+        /**
+         * Modal dynamically create
+         *
+         * @param header
+         * @param content
+         * @param successCallback
+         * @param btnSuccess
+         * @param cancelCallback
+         * @param btnCancel
+         */
+        modal: function (header, content, successCallback, btnSuccess, cancelCallback, btnCancel) {
+            var id = 'modal_' + Math.floor((Math.random() * 1000) + 1);
+            var moda_id = "#" + id;
+
+            var html = '<div id="' + id + '" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="confirm-modal" aria-hidden="true">';
+            html += '<div class="modal-dialog">';
+            html += '<div class="modal-content">';
+            html += '<div class="modal-header">';
+            html += '<a class="close" data-dismiss="modal">×</a>';
+            html += '<h4>' + header + '</h4>'
+            html += '</div>';
+            html += '<div class="modal-body">';
+            html += content;
+            html += '</div>';
+            html += '<div class="modal-footer">';
+
+            if (btnSuccess) {
+                html += '<span class="btn btn-primary"';
+                html += ' id="success_' + id + '">' + btnSuccess;
+                html += '</span>';
+            }
+
+            if (btnCancel) {
+                html += '<span class="btn"';
+                html += ' id="cancel_' + id + '">' + btnCancel;
+                html += '</span>'; // close button
+            } else {
+                html += '<span class="btn"';
+                html += ' id="cancel_' + id + '"> Cancel';
+                html += '</span>'; // close button
+            }
+
+            html += '</div>';  // footer
+            html += '</div>';  // content
+            html += '</div>';  // dialog
+            html += '</div>';  // modalWindow
+            jQ("#dynamic_container").html(html);
+
+            jQ(moda_id).modal();
+            jQ(moda_id).modal('show');
+
+            // on click success
+            jQ(document).on("click", '#success_' + id, function () {
+                successCallback();
+
+                jQ(moda_id).modal('hide');
+            });
+
+            // on click cancel
+            jQ(document).on("click", '#cancel_' + id, function () {
+                if (cancelCallback) {
+                    cancelCallback();
+                }
+
+                jQ(moda_id).modal('hide');
+            });
+
+            // remove the modal
+            jQ(moda_id).on('hidden.bs.modal', function (e) {
+                jQ(this).remove();
+            });
+        },
+
+        /**
+         * Confirm
+         */
+        confirm: function () {
+            // confirm
+            jQ('.confirm-ajax').off().on('click', function (e) {
+                e.preventDefault();
+
+                var me = jQ(this);
+                var title = me.attr('data-modal-title');
+                title = (title) ? title : 'Confirm';
+
+                var content = me.attr('data-modal-content');
+                content = (content) ? content : 'Are you sure to continue?';
+
+                var callback = me.attr('data-modal-callback');
+                callback = (callback) ? new Function(callback) : function () {
+                        console.log('Callback Confirm.');
+                    };
+
+                WBHelper.modal(title, '<h4 class="text-danger">' + content + '</h4>', callback, 'Continue');
+            });
+        },
+
+        /**
+         * Confirm form
+         */
+        confirmForm: function () {
+            // confirm
+            jQ('.confirm-form').off().on('submit', function (e) {
+                e.preventDefault();
+
+                var me = jQ(this);
+                var title = me.attr('data-modal-title');
+                title = (title) ? title : 'Confirm';
+
+                var content = me.attr('data-modal-content');
+                content = (content) ? content : 'Are you sure to continue?';
+
+                var callback = me.attr('data-modal-callback');
+                callback = (callback) ? new Function(callback) : function () {
+                        console.log('Callback Confirm.');
+                        me.off('submit').submit();
+                    };
+
+                WBHelper.modal(title, '<h4 class="text-danger">' + content + '</h4>', callback, 'Continue');
+
+                return false;
+            });
+        },
+
+        /**
+         * Image modal chooser
+         */
+        imageChooser: function (callback) {
+            // reset the input
+            jQ('#chooserImageFile').val('');
+
+            jQ('.modal-image-chooser').modal({
+                show: true
+            });
+
+            // this is the data of the selected image
+            var selected_image = null;
+
+            // view initializer for list images
+            function view_images_list(response) {
+                var view = '<div class="row">';
+
+                for (var i = 0; i < response.length; i++) {
+                    view += '<div class="col-xs-6 col-md-3">' +
+                        '<a href="#" class="thumbnail image_chooser_data" data-index="' + i + '">' +
+                        '<img src="' + response[i].path + '" alt="' + response[i].title + '" class="image_chooser">' +
+                        '</a>' +
+                        '</div>';
+                }
+
+                view += '</div>';
+                jQ('#imageChooserList').html(view);
+
+                jQ('.image_chooser_data').off().on('click', function (e) {
+                    e.preventDefault();
+                    console.log(response[parseInt(jQ(this).attr('data-index'))]);
+
+                    selected_image = response[parseInt(jQ(this).attr('data-index'))];
+                });
+            }
+
+            // response
+            function fetch_images() {
+                WBHelper.ajax({
+                    url: '/images',
+                    type: 'GET',
+                    success: function (data, textStatus, jqXHR) {
+                        console.log('Response' + JSON.stringify(data));
+
+                        if (data.success) {
+                            var response = data.data;
+                            view_images_list(response);
+                        }
+                    }
+                });
+            }
+
+            // fetch the images
+            fetch_images();
+
+            // images have been selected
+            jQ('#selectImageYes').off().on('click', function (e) {
+                e.preventDefault();
+                console.log('Selected Image');
+
+                // callback returns the image selected url
+                callback(selected_image);
+                jQ('.modal-image-chooser').modal('hide');
+            });
+
+            // upload image
+            jQ('#frmImageChooser').off().on('submit', function (e) {
+                e.preventDefault();
+                console.log('Submitting Form');
+
+                var file = jQ('#chooserImageFile').prop('files');
+                if (!file || !file[0]) {
+                    console.debug('No file selected.');
+                    return;
+                }
+
+                console.log(file[0]);
+
+                WBHelper.upload('/image/upload', {
+                    files: {image: file[0]}
+                }, function () {
+                    // before sending
+                    WBHelper.disableFormInputs('#frmImageChooser');
+                }, function (res) {
+                    // success
+                    WBHelper.enableFormInputs('#frmImageChooser');
+
+                    // refresh image list
+                    var response = res.data;
+                    view_images_list(response);
+
+                    // reset the input
+                    jQ('#chooserImageFile').val('');
+                }, function (res) {
+                    // error
+                    WBHelper.enableFormInputs('#frmImageChooser');
+                });
+            });
         },
 
         /**
@@ -343,6 +868,9 @@ var WBHelper = (function () {
  */
 var WBDate = (function () {
     return {
+        /**
+         * No future dates good for birthdays
+         */
         datePicker: function () {
             jQ('.date-picker').pickadate({
                 format: 'mmmm d, yyyy',
@@ -352,6 +880,9 @@ var WBDate = (function () {
             });
         },
 
+        /**
+         * No past dates good for events
+         */
         datePickerMin: function () {
             jQ('.date-picker-min').pickadate({
                 format: 'mmmm d, yyyy',
@@ -361,6 +892,9 @@ var WBDate = (function () {
             });
         },
 
+        /**
+         * Limit to 80 years selection no limit on past and future dates
+         */
         none: function () {
             jQ('.date-picker-none').pickadate({
                 format: 'mmmm d, yyyy',
@@ -411,27 +945,47 @@ var WBErrors = (function () {
 
                         // type of error messages
                         if (errorType == 'bottomMessage') {
-                            WBErrors.bottomMessage({
-                                errors: data.errors,
-                                formId: options.formId,
-                                container: options.statusContainer
-                            });
+                            WBErrors.errorType(data.errors, options.formId, options.statusContainer, null, 'bottomMessage');
                         } else if (errorType == 'responseMessage') {
-                            WBErrors.responseMessage({
-                                errors: data.errors,
-                                formId: options.formId,
-                                container: options.statusContainer,
-                                removeMessage: options.removeMessage
-                            });
+                            WBErrors.errorType(data.errors, options.formId, options.statusContainer, options.removeMessage, 'responseMessage');
                         } else if (errorType == 'toastMessage') {
-                            WBErrors.toastMessage({
-                                title: 'Oops error occurred',
-                                message: data.errors,
-                                type: 'error'
-                            });
+                            WBErrors.errorType(data.errors, null, null, null, 'toastMessage');
                         }
                     }
                 }
+            }
+        },
+
+        /**
+         * Error type
+         *
+         * @param errors
+         * @param formId
+         * @param container
+         * @param removeMessage
+         * @param errorType
+         */
+        errorType: function (errors, formId, container, removeMessage, errorType) {
+            // type of error messages
+            if (errorType == 'bottomMessage') {
+                WBErrors.bottomMessage({
+                    errors: errors,
+                    formId: formId,
+                    container: container
+                });
+            } else if (errorType == 'responseMessage') {
+                WBErrors.responseMessage({
+                    errors: errors,
+                    formId: formId,
+                    container: container,
+                    removeMessage: removeMessage
+                });
+            } else if (errorType == 'toastMessage') {
+                WBErrors.toastMessage({
+                    title: 'Oops error occurred',
+                    message: errors,
+                    type: 'error'
+                });
             }
         },
 
@@ -531,17 +1085,19 @@ var WBErrors = (function () {
 
             if (typeof options.errors === 'object') {
                 jQ.each(options.errors, function (inputName, error) {
-                    var inputField = jQ(options.formId + ' [data-error="' + inputName + '"]');
+                    var inputField = jQ(options.formId + ' [name="' + inputName + '"]');
 
                     // add highlight on input form
                     WBErrors.inputHighlight(options.formId, inputName);
 
                     if (inputField.length) {
+                        // clear old help block messages
+                        jQ('[data-error-block="' + inputName + '"]').remove();
+
                         // add error markings on input fields in form
-                        inputField.addClass('has-error');
-                        inputField.find('[name="' + inputName + '"]').after('<span class="help-block error-block" data-error-block="' +
-                            inputName + '"><strong>' +
-                            error + '</strong></span>');
+                        inputField.parent().addClass('has-error');
+                        inputField.after('<span class="help-block" data-error-block="' + inputName + '">' +
+                            '<strong>' + error + '</strong></span>');
                     } else {
                         // show toast instead
                         if (jQ(options.formId + ' [name="' + inputName + '"]').length) {
@@ -674,6 +1230,8 @@ var WBHeaders = (function () {
 
                     break;
                 case 498:
+                    WBErrors.toastMessage({message: 'Invalid token form.', type: 'error'});
+
                     setTimeout(function () {
                         // invalid token reload page
                         location.reload();
@@ -683,6 +1241,9 @@ var WBHeaders = (function () {
                 case 401:
                     // authentication required show login modal
                     WBErrors.clearMessages(false);
+
+                    // bad request
+                    WBErrors.toastMessage({message: 'Access is denied due to invalid credentials.', type: 'error'});
 
                     // hide or close all current modals
                     jQ('.modal').modal('hide');
@@ -696,23 +1257,23 @@ var WBHeaders = (function () {
                 case 400:
                     WBErrors.clearMessages(false);
 
-                    // show bad request for token
+                    // bad request
                     WBErrors.toastMessage({message: '400 Bad Request', type: 'error'});
 
                     setTimeout(function () {
                         location.reload();
-                    }, 500);
+                    }, 800);
 
                     break;
                 case 405:
                     WBErrors.clearMessages(false);
 
-                    // show bad request for token
+                    // method is not allowed
                     WBErrors.toastMessage({message: '405 (Method Not Allowed)', type: 'error'});
 
                     break;
                 case 500:
-                    // show bad request for token
+                    // server reponded with errors
                     WBErrors.toastMessage({message: '500 Server Error, Please try again later.', type: 'error'});
 
                     break;
@@ -871,7 +1432,7 @@ var WBMap = (function () {
          */
         init: function (id) {
             if (!document.getElementById(id)) {
-                return;
+                return null;
             }
 
             _markers = [];

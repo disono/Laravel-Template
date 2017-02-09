@@ -23,7 +23,7 @@ class RecoveryController extends Controller
      *
      * @param  \Illuminate\Http\Request $request
      * @param  string|null $token
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function getReset(Request $request, $token = null)
     {
@@ -34,7 +34,7 @@ class RecoveryController extends Controller
      * Reset the given user's password.
      *
      * @param  \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function postReset(Request $request)
     {

@@ -25,7 +25,7 @@
             <ul class="nav navbar-nav pull-right">
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                       aria-expanded="false">Profile <span class="caret"></span></a>
+                       aria-expanded="false">{{me()->full_name}} <span class="caret"></span></a>
                     <ul class="dropdown-menu">
                         <li><a href="{{url('user/settings')}}"><i class="fa fa-cog" aria-hidden="true"></i> General
                                 Settings</a></li>

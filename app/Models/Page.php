@@ -7,16 +7,14 @@
  */
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
-class Page extends Model
+class Page extends AppModel
 {
-    private static $params;
-    private static $slug;
-
     protected static $writable_columns = [
-        'page_category_id', 'user_id', 'name', 'slug', 'content', 'template', 'draft'
+        'page_category_id',
+        'user_id', 'name',
+        'content', 'template', 'draft'
     ];
 
     public function __construct(array $attributes = [])
@@ -33,51 +31,37 @@ class Page extends Model
      */
     public static function get($params = [])
     {
-        $select[] = 'pages.*';
+        $table_name = (new self)->getTable();
+        $select[] = $table_name . '.*';
 
         $select[] = DB::raw('page_categories.name as category_name, page_categories.description as category_description, (' . self::_pageCategorySlug() . ') as category_slug');
 
-        self::$slug = DB::raw('(' . self::_pageSlug() . ')');
-        $select[] = DB::raw(self::$slug . ' as slug');
+        $slug = DB::raw('(' . self::_pageSlug() . ')');
+        $select[] = DB::raw($slug . ' as slug');
 
         $query = self::select($select)
-            ->join('page_categories', 'pages.page_category_id', '=', 'page_categories.id');
-
-        if (isset($params['id'])) {
-            $query->where('pages.id', $params['id']);
-        }
-
-        if (isset($params['draft'])) {
-            $query->where('pages.draft', $params['draft']);
-        }
-
-        if (isset($params['user_id'])) {
-            $query->where('pages.user_id', $params['user_id']);
-        }
-
-        if (isset($params['page_category_id'])) {
-            $query->where('pages.page_category_id', $params['page_category_id']);
-        }
+            ->join('page_categories', $table_name . '.page_category_id', '=', 'page_categories.id');
 
         if (isset($params['category_slug'])) {
             $query->where('page_categories.slug', $params['category_slug']);
         }
 
         if (isset($params['slug'])) {
-            $query->where(self::$slug, '=', $params['slug']);
+            $query->where($slug, '=', $params['slug']);
         }
 
-        if (isset($params['search'])) {
-            self::$params = $params;
+        // where equal
+        $query = self::_whereEqual($query, $params, self::$writable_columns, $table_name);
 
-            $query->where(function ($query) {
-                $query->where('pages.name', 'LIKE', '%' . self::$params['search'] . '%')
-                    ->orWhere(self::$slug, 'LIKE', '%' . self::$params['search'] . '%')
-                    ->orWhere('pages.content', 'LIKE', '%' . self::$params['search'] . '%');
-            });
-        }
+        // exclude and include
+        $query = self::_excInc($query, $params, self::$writable_columns, $table_name);
 
-        $query->orderBy('pages.created_at', 'DESC');
+        // search
+        $query = self::_search($query, $params, self::$writable_columns, $table_name, [
+            $slug
+        ]);
+
+        $query->orderBy($table_name . '.created_at', 'DESC');
 
         if (isset($params['object'])) {
             return $query;
@@ -197,9 +181,7 @@ class Page extends Model
     private static function _values($values, $value, $key)
     {
         if (!is_numeric($value)) {
-            if ($value) {
-                $values[$key] = $value;
-            }
+            $values[$key] = $value;
         } else {
             $values[$key] = $value;
         }
@@ -270,7 +252,7 @@ class Page extends Model
      * @param array $params
      * @return null
      */
-    private static function _format($query, $params = [])
+    public static function _format($query, $params = [])
     {
         if (isset($params['single'])) {
             if (!$query) {
@@ -364,6 +346,14 @@ class Page extends Model
 
         // upload cover
         self::_uploadImage($id, $inputs);
+
+        // if the content is null
+        if (!isset($update['content'])) {
+            $update['content'] = null;
+        }
+
+        // store to activity logs
+        ActivityLog::store($id, self::$writable_columns, $query->first(), $inputs, (new self)->getTable());
 
         return (bool)$query->update($update);
     }

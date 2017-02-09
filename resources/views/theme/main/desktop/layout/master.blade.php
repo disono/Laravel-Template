@@ -5,7 +5,7 @@
  *
  * Web styles and master view
 --}}
-        <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" {{html_app_cache()}}>
 <head>
     <meta charset="UTF-8">
@@ -27,8 +27,8 @@
     <title>{{ app_header('title') }} @yield('title')</title>
 
     {{-- CSS loader --}}
-    <script src="{{ asset('assets/js/loadCSS.js') . url_ext() }}"></script>
-    <script src="{{ asset('assets/js/onloadCSS.js') . url_ext() }}"></script>
+    <script src="{{ asset('assets/js/lib/loadCSS.js') . url_ext() }}"></script>
+    <script src="{{ asset('assets/js/lib/onloadCSS.js') . url_ext() }}"></script>
 
     <style id="loaderStyles">
         html, body {
@@ -79,6 +79,9 @@
     @include(current_theme() . 'layout.footer')
 
     @include('modals.include')
+
+    {{-- javascript dynamic container --}}
+    <div id="dynamic_container"></div>
 </main>
 
 @yield('javascript')

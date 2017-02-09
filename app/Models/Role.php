@@ -7,12 +7,8 @@
  */
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
-class Role extends Model
+class Role extends AppModel
 {
-    private static $params;
-
     protected static $writable_columns = [
         'name', 'slug', 'description'
     ];
@@ -50,25 +46,18 @@ class Role extends Model
      */
     public static function get($params = [])
     {
-        $select[] = 'roles.*';
+        $table_name = (new self)->getTable();
+        $select[] = $table_name . '.*';
         $query = self::select($select);
 
-        if (isset($params['id'])) {
-            $query->where('id', $params['id']);
-        }
+        // where equal
+        $query = self::_whereEqual($query, $params, self::$writable_columns, $table_name);
 
-        if (isset($params['slug'])) {
-            $query->where('slug', $params['slug']);
-        }
+        // exclude and include
+        $query = self::_excInc($query, $params, self::$writable_columns, $table_name);
 
-        if (isset($params['search'])) {
-            self::$params = $params;
-            $query->where(function ($query) {
-                $query->where('name', 'LIKE', '%' . self::$params['search'] . '%')
-                    ->orWhere('slug', 'LIKE', '%' . self::$params['search'] . '%')
-                    ->orWhere('description', 'LIKE', '%' . self::$params['search'] . '%');
-            });
-        }
+        // search
+        $query = self::_search($query, $params, self::$writable_columns, $table_name);
 
         $query->orderBy('created_at', 'DESC');
 
@@ -97,28 +86,6 @@ class Role extends Model
     {
         $params['all'] = true;
         return self::get($params);
-    }
-
-    /**
-     * Add formatting on data
-     *
-     * @param $query
-     * @param array $params
-     * @return null
-     */
-    private static function _format($query, $params = [])
-    {
-        if (isset($params['single'])) {
-            if (!$query) {
-                return null;
-            }
-        } else {
-            foreach ($query as $row) {
-
-            }
-        }
-
-        return $query;
     }
 
     /**
@@ -204,6 +171,9 @@ class Role extends Model
                 $update[$key] = $value;
             }
         }
+
+        // store to activity logs
+        ActivityLog::store($id, self::$writable_columns, $query->first(), $inputs, (new self)->getTable());
 
         return (bool)$query->update($update);
     }

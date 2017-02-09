@@ -23,7 +23,7 @@
                             <div class="col-xs-12 col-md-9">
                                 <div class="form-group{{ $errors->has('content') ? ' has-error' : '' }}">
                                     <label for="content">Content*</label>
-                                    <textarea name="content" id="content" class="form-control" cols="4" rows="10"
+                                    <textarea name="content" id="content" class="form-control" rows="22"
                                               placeholder="Description">{!! $event->content !!}</textarea>
 
                                     @if ($errors->has('content'))
@@ -72,6 +72,48 @@
                                         <span class="help-block">{{ $errors->first('template') }}</span>
                                     @endif
                                 </div>
+                                <hr>
+
+                                <div class="form-group{{ $errors->has('start_date') ? ' has-error' : '' }}">
+                                    <label for="start_date">Start Date(Optional)</label>
+                                    <input type="text" class="form-control date-picker-min" name="start_date" id="start_date"
+                                           placeholder="Start Date" value="{{old('start_date', $event->formatted_start_date)}}">
+
+                                    @if ($errors->has('start_date'))
+                                        <span class="help-block">{{ $errors->first('start_date') }}</span>
+                                    @endif
+                                </div>
+
+                                <div class="form-group{{ $errors->has('start_time') ? ' has-error' : '' }}">
+                                    <label for="start_time">Start Time(Optional)</label>
+                                    <input type="text" class="form-control time-picker" name="start_time" id="start_time"
+                                           placeholder="Start Time" value="{{old('start_time', $event->formatted_start_time)}}">
+
+                                    @if ($errors->has('start_time'))
+                                        <span class="help-block">{{ $errors->first('start_time') }}</span>
+                                    @endif
+                                </div>
+
+                                <div class="form-group{{ $errors->has('end_date') ? ' has-error' : '' }}">
+                                    <label for="end_date">End Date(Optional)</label>
+                                    <input type="text" class="form-control date-picker-min" name="end_date" id="end_date"
+                                           placeholder="End Date" value="{{old('end_date', $event->formatted_end_date)}}">
+
+                                    @if ($errors->has('end_date'))
+                                        <span class="help-block">{{ $errors->first('end_date') }}</span>
+                                    @endif
+                                </div>
+
+                                <div class="form-group{{ $errors->has('end_time') ? ' has-error' : '' }}">
+                                    <label for="end_time">End Time(Optional)</label>
+                                    <input type="text" class="form-control time-picker" name="end_time" id="end_time"
+                                           placeholder="End Time" value="{{old('end_time', $event->formatted_end_time)}}">
+
+                                    @if ($errors->has('end_time'))
+                                        <span class="help-block">{{ $errors->first('end_time') }}</span>
+                                    @endif
+                                </div>
+                                <hr>
 
                                 <div class="form-group {{ $errors->has('draft') ? ' has-error' : '' }}">
                                     <div class="checkbox">
@@ -99,5 +141,5 @@
 
 @include('vendor.loaders', ['scripts' => [
     'https://cdnjs.cloudflare.com/ajax/libs/tinymce/4.5.2/tinymce.min.js',
-    'assets/js/tiny-mce-init.js'
+    'assets/js/lib/tiny-mce-init.js'
 ]])

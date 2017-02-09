@@ -30,6 +30,10 @@ class VerifyEmail
 
                 Request::getPathInfo() != '/logout'
             ) {
+                if ($request->ajax()) {
+                    return failed_json_response('Your email is not verified, please check your email for validation URL to verify your email.', 400);
+                }
+
                 return new Response(view('auth.verify_email'));
             }
         }

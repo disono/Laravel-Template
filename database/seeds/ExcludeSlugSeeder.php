@@ -28,7 +28,14 @@ class ExcludeSlugSeeder extends Seeder
                 'admin',
                 'administrator',
                 'images',
-                'img'
+                'image',
+                'img',
+                'store',
+                'profile',
+                'store',
+                'e-commerce',
+                'shop',
+                'administrator',
             ];
 
             foreach ($names as $q) {

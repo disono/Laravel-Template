@@ -31,6 +31,7 @@ class ResetController extends Controller
      */
     public function __construct()
     {
+        parent::__construct();
         $this->middleware('guest');
     }
 
@@ -48,7 +49,7 @@ class ResetController extends Controller
      * Reset the given user's password.
      *
      * @param  \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function postRecover(Request $request)
     {

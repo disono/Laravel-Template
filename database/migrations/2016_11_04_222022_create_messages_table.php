@@ -20,7 +20,7 @@ class CreateMessagesTable extends Migration
             $table->integer('group_id')->default(0);
 
             $table->text('message')->nullable();
-            $table->enum('type', ['text', 'image', 'video', 'file'])->default('text');
+            $table->enum('type', ['text', 'image', 'video', 'doc', 'file'])->default('text');
 
             $table->boolean('is_viewed')->default(0);
             $table->timestamps();

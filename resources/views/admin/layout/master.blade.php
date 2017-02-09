@@ -5,7 +5,7 @@
  *
  * Admin styles and master view
 --}}
-        <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" {{html_app_cache()}}>
 <head>
     <meta charset="UTF-8">
@@ -23,8 +23,8 @@
     <title>{{ app_header('title') }} @yield('title')</title>
 
     {{-- CSS loader --}}
-    <script src="{{ asset('assets/js/loadCSS.js') . url_ext() }}"></script>
-    <script src="{{ asset('assets/js/onloadCSS.js') . url_ext() }}"></script>
+    <script src="{{ asset('assets/js/lib/loadCSS.js') . url_ext() }}"></script>
+    <script src="{{ asset('assets/js/lib/onloadCSS.js') . url_ext() }}"></script>
 
     <style id="loaderStyles">
         html, body {
@@ -103,16 +103,19 @@
                         <div class="col-lg-12 no-padding">
                             @yield('content')
                         </div>
+
+                        {{-- fotter --}}
+                        @include('admin.layout.footer')
                     </div>
                 </div>
             </div>
-
-            {{-- fotter --}}
-            @include('admin.layout.footer')
         </div>
     </div>
 
     @include('modals.include')
+
+    {{-- javascript dynamic container --}}
+    <div id="dynamic_container"></div>
 </main>
 
 @yield('javascript')

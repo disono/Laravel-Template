@@ -7,9 +7,7 @@
  */
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
-class Image extends Model
+class Image extends AppModel
 {
     private static $params;
 
@@ -52,39 +50,18 @@ class Image extends Model
      */
     public static function get($params = [])
     {
-        $select[] = 'images.*';
+        $table_name = (new self)->getTable();
+        $select[] = $table_name . '.*';
         $query = self::select($select);
 
-        if (isset($params['id'])) {
-            $query->where('id', $params['id']);
-        }
+        // where equal
+        $query = self::_whereEqual($query, $params, self::$writable_columns, $table_name);
 
-        if (isset($params['user_id'])) {
-            $query->where('user_id', $params['user_id']);
-        }
+        // exclude and include
+        $query = self::_excInc($query, $params, self::$writable_columns, $table_name);
 
-        if (isset($params['type'])) {
-            $query->where('type', $params['type']);
-        }
-
-        if (isset($params['source_id'])) {
-            $query->where('source_id', $params['source_id']);
-        }
-
-        if (isset($params['is_cover'])) {
-            $query->where('is_cover', $params['is_cover']);
-        }
-
-        if (isset($params['search'])) {
-            self::$params = $params;
-            $query->where(function ($query) {
-                $query->where('id', 'LIKE', '%' . self::$params['search'] . '%')
-                    ->orWhere('user_id', 'LIKE', '%' . self::$params['search'] . '%')
-                    ->orWhere('title', 'LIKE', '%' . self::$params['search'] . '%')
-                    ->orWhere('description', 'LIKE', '%' . self::$params['type'] . '%')
-                    ->orWhere('type', 'LIKE', '%' . self::$params['type'] . '%');
-            });
-        }
+        // search
+        $query = self::_search($query, $params, self::$writable_columns, $table_name);
 
         $query->orderBy('created_at', 'DESC');
 
@@ -122,7 +99,7 @@ class Image extends Model
      * @param array $params
      * @return null
      */
-    private static function _format($query, $params = [])
+    public static function _format($query, $params = [])
     {
         if (isset($params['single'])) {
             if (!$query) {

@@ -8,12 +8,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
-class Event extends Model
+class Event extends AppModel
 {
-    private static $params;
-
     protected static $writable_columns = [
         'user_id', 'name', 'slug', 'content', 'template',
         'start_date', 'start_time', 'end_date', 'end_time',
@@ -24,6 +20,101 @@ class Event extends Model
     {
         $this->fillable(self::$writable_columns);
         parent::__construct($attributes);
+    }
+
+    /**
+     * Get data
+     *
+     * @param array $params
+     * @return null
+     */
+    public static function get($params = [])
+    {
+        $table_name = (new self)->getTable();
+        $select[] = $table_name . '.*';
+        $query = self::select($select);
+
+        // where equal
+        $query = self::_whereEqual($query, $params, self::$writable_columns, $table_name);
+
+        // exclude and include
+        $query = self::_excInc($query, $params, self::$writable_columns, $table_name);
+
+        // search
+        $query = self::_search($query, $params, self::$writable_columns, $table_name);
+
+        $query->orderBy($table_name . '.created_at', 'DESC');
+
+        if (isset($params['object'])) {
+            return $query;
+        } else {
+            if (isset($params['single'])) {
+                return self::_format($query->first(), $params);
+            } else if (isset($params['all'])) {
+                return self::_format($query->get(), $params);
+            } else {
+                $query = paginate($query);
+                return self::_format($query, $params);
+            }
+        }
+    }
+
+    /**
+     * Get all data no pagination
+     *
+     * @param array $params
+     * @return null
+     */
+    public static function getAll($params = [])
+    {
+        $params['all'] = true;
+        return self::get($params);
+    }
+
+    /**
+     * Check for values
+     *
+     * @param $values
+     * @param $value
+     * @param $key
+     * @return mixed
+     */
+    private static function _values($values, $value, $key)
+    {
+        if (!is_numeric($value)) {
+            if ($key == 'start_date') {
+                $values[$key] = sql_date($value, true);
+            } else if ($key == 'start_time') {
+                $values[$key] = sql_time($value);
+            } else if ($key == 'end_date') {
+                $values[$key] = sql_date($value, true);
+            } else if ($key == 'end_time') {
+                $values[$key] = sql_time($value);
+            } else {
+                $values[$key] = $value;
+            }
+        } else {
+            $values[$key] = $value;
+        }
+        return $values;
+    }
+
+    /**
+     * Get single data
+     *
+     * @param $id
+     * @param string $column
+     * @return null
+     */
+    public static function single($id, $column = 'id')
+    {
+        if (!$id) {
+            return null;
+        }
+        return self::get([
+            'single' => true,
+            $column => $id
+        ]);
     }
 
     /**
@@ -48,36 +139,6 @@ class Event extends Model
         self::_uploadImage($id, $inputs);
 
         return $id;
-    }
-
-    /**
-     * Check for values
-     *
-     * @param $values
-     * @param $value
-     * @param $key
-     * @return mixed
-     */
-    private static function _values($values, $value, $key)
-    {
-        if (!is_numeric($value)) {
-            if ($value || is_numeric($value)) {
-                if ($key == 'start_date') {
-                    $values[$key] = sql_date($value, true);
-                } else if ($key == 'start_time') {
-                    $values[$key] = sql_time($value);
-                } else if ($key == 'end_date') {
-                    $values[$key] = sql_date($value, true);
-                } else if ($key == 'end_time') {
-                    $values[$key] = sql_time($value);
-                } else {
-                    $values[$key] = $value;
-                }
-            }
-        } else {
-            $values[$key] = $value;
-        }
-        return $values;
     }
 
     /**
@@ -121,94 +182,13 @@ class Event extends Model
     }
 
     /**
-     * Get single data
-     *
-     * @param $id
-     * @param string $column
-     * @return null
-     */
-    public static function single($id, $column = 'id')
-    {
-        if (!$id) {
-            return null;
-        }
-        return self::get([
-            'single' => true,
-            $column => $id
-        ]);
-    }
-
-    /**
-     * Get data
-     *
-     * @param array $params
-     * @return null
-     */
-    public static function get($params = [])
-    {
-        $select[] = 'events.*';
-        $query = self::select($select);
-        if (isset($params['id'])) {
-            $query->where('events.id', $params['id']);
-        }
-
-        if (isset($params['user_id'])) {
-            $query->where('events.user_id', $params['user_id']);
-        }
-
-        if (isset($params['slug'])) {
-            $query->where('events.slug', $params['slug']);
-        }
-
-        if (isset($params['draft'])) {
-            $query->where('events.draft', $params['draft']);
-        }
-
-        if (isset($params['search'])) {
-            self::$params = $params;
-            $query->where(function ($query) {
-                $query->where('events.name', 'LIKE', '%' . self::$params['search'] . '%')
-                    ->orWhere('events.slug', 'LIKE', '%' . self::$params['search'] . '%')
-                    ->orWhere('events.content', 'LIKE', '%' . self::$params['search'] . '%');
-            });
-        }
-
-        $query->orderBy('events.created_at', 'DESC');
-
-        if (isset($params['object'])) {
-            return $query;
-        } else {
-            if (isset($params['single'])) {
-                return self::_format($query->first(), $params);
-            } else if (isset($params['all'])) {
-                return self::_format($query->get(), $params);
-            } else {
-                $query = paginate($query);
-                return self::_format($query, $params);
-            }
-        }
-    }
-
-    /**
-     * Get all data no pagination
-     *
-     * @param array $params
-     * @return null
-     */
-    public static function getAll($params = [])
-    {
-        $params['all'] = true;
-        return self::get($params);
-    }
-
-    /**
      * Add formatting on data
      *
      * @param $query
      * @param array $params
      * @return null
      */
-    private static function _format($query, $params = [])
+    public static function _format($query, $params = [])
     {
         if (isset($params['single'])) {
             if (!$query) {
@@ -309,6 +289,9 @@ class Event extends Model
 
         // upload cover
         self::_uploadImage($id, $inputs);
+
+        // store to activity logs
+        ActivityLog::store($id, self::$writable_columns, $query->first(), $inputs, (new self)->getTable());
 
         return (bool)$query->update($update);
     }

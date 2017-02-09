@@ -14,7 +14,7 @@
                         <div class="container">
                             <h2>Please verify phone number {{me()->phone}}.</h2>
 
-                            <form action="{{url('phone/verify')}}" class="form-inline" role="form" method="POST">
+                            <form action="{{url('phone/verify')}}" class="form-inline ajax-form" role="form" method="POST">
                                 {{ csrf_field() }}
 
                                 <div class="form-group{{ $errors->has('token') ? ' has-error' : '' }}">

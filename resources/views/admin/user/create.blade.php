@@ -73,8 +73,7 @@
                                 <div class="form-group{{ $errors->has('address') ? ' has-error' : '' }}">
                                     <label for="address">Address*</label>
 
-                                    <textarea name="address" id="address" class="form-control"
-                                              cols="10" rows="4">{{ old('address') }}</textarea>
+                                    <textarea name="address" id="address" class="form-control" rows="4">{{ old('address') }}</textarea>
 
                                     @if ($errors->has('address'))
                                         <span class="help-block">{{ $errors->first('address') }}</span>
@@ -118,7 +117,7 @@
                                     <select name="role" id="role" class="form-control">
                                         <option value="">Select Role</option>
                                         @foreach($roles as $row)
-                                            <option value="{{$row->slug}}">{{$row->name}}</option>
+                                            <option value="{{$row->slug}}" {{is_selected(old('role', $request->get('role')), $row->slug)}}>{{$row->name}}</option>
                                         @endforeach
                                     </select>
 

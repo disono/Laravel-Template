@@ -21,7 +21,7 @@
                             <div class="col-xs-12 col-md-9">
                                 <div class="form-group{{ $errors->has('content') ? ' has-error' : '' }}">
                                     <label for="content">Content*</label>
-                                    <textarea name="content" id="content" class="form-control" cols="10" rows="22"
+                                    <textarea name="content" id="content" class="form-control" rows="24"
                                               placeholder="Content">{!! old('content') !!}</textarea>
 
                                     @if ($errors->has('content'))
@@ -109,5 +109,5 @@
 
 @include('vendor.loaders', ['scripts' => [
     'https://cdnjs.cloudflare.com/ajax/libs/tinymce/4.5.2/tinymce.min.js',
-    'assets/js/tiny-mce-init.js'
+    'assets/js/lib/tiny-mce-init.js'
 ]])

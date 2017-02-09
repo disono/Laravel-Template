@@ -6,40 +6,36 @@
     "type": "project",
     "require": {
         "php": ">=5.6.4",
-        "laravel/framework": "5.3.*",
+        "barryvdh/laravel-dompdf": "^0.7.1",
+        "brozot/laravel-fcm": "^1.2",
+        "graham-campbell/htmlmin": "^4.3",
         "intervention/image": "^2.3",
         "jenssegers/agent": "^2.3",
-        "simplesoftwareio/simple-qrcode": "^1.4",
-        "graham-campbell/htmlmin": "^4.3",
+        "laravel/framework": "5.4.*",
         "laravel/socialite": "^2.0",
-        "mews/purifier": "^2.0",
-        "tymon/jwt-auth": "^0.5.9",
-        "brozot/laravel-fcm": "^1.2",
-        "wisembly/elephant.io": "^3.2",
+        "laravel/tinker": "~1.0",
         "maatwebsite/excel": "^2.1",
-        "setasign/fpdi-tcpdf": "^1.6"
+        "mews/purifier": "^2.0",
+        "setasign/fpdi-tcpdf": "^1.6",
+        "simplesoftwareio/simple-qrcode": "^1.4",
+        "tymon/jwt-auth": "^0.5.9",
+        "wisembly/elephant.io": "^3.2"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
         "mockery/mockery": "0.9.*",
-        "phpunit/phpunit": "~5.0",
-        "symfony/css-selector": "3.1.*",
-        "symfony/dom-crawler": "3.1.*"
+        "phpunit/phpunit": "~5.0"
     },
     "autoload": {
         "classmap": [
             "database"
         ],
         "psr-4": {
-            "App\\": "app/"
+            "App\\": "app/",
+            "Tests\\": "tests/"
         },
         "files": [
-            "app/Disono/functions.php"
-        ]
-    },
-    "autoload-dev": {
-        "classmap": [
-            "tests/TestCase.php"
+            "app/APDApp/functions.php"
         ]
     },
     "scripts": {
@@ -59,6 +55,7 @@
         ]
     },
     "config": {
-        "preferred-install": "dist"
+        "preferred-install": "dist",
+        "sort-packages": true
     }
 }

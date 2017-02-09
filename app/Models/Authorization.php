@@ -7,12 +7,8 @@
  */
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
-class Authorization extends Model
+class Authorization extends AppModel
 {
-    private static $params;
-
     protected static $writable_columns = [
         'name', 'identifier', 'description'
     ];
@@ -50,32 +46,18 @@ class Authorization extends Model
      */
     public static function get($params = [])
     {
-        $select[] = 'authorizations.*';
+        $table_name = (new self)->getTable();
+        $select[] = $table_name . '.*';
         $query = self::select($select);
 
-        if (isset($params['id'])) {
-            $query->where('id', $params['id']);
-        }
+        // where equal
+        $query = self::_whereEqual($query, $params, self::$writable_columns, $table_name);
 
-        if (isset($params['identifier'])) {
-            $query->where('identifier', $params['identifier']);
-        }
+        // exclude and include
+        $query = self::_excInc($query, $params, self::$writable_columns, $table_name);
 
-        if (isset($params['search'])) {
-            self::$params = $params;
-            $query->where(function ($query) {
-                $query->where('name', 'LIKE', '%' . self::$params['search'] . '%')
-                    ->orWhere('identifier', 'LIKE', '%' . self::$params['search'] . '%')
-                    ->orWhere('description', 'LIKE', '%' . self::$params['search'] . '%');
-            });
-        }
-
-        if (isset($params['exclude'])) {
-            $exclude = $params['exclude'];
-            foreach ($exclude['val'] as $key => $val) {
-                $query->where($exclude['key'], '<>', $val);
-            }
-        }
+        // search
+        $query = self::_search($query, $params, self::$writable_columns, $table_name);
 
         $query->orderBy('created_at', 'DESC');
 
@@ -104,27 +86,6 @@ class Authorization extends Model
     {
         $params['all'] = true;
         return self::get($params);
-    }
-
-    /**
-     * Add formatting on data
-     *
-     * @param $query
-     * @param array $params
-     * @return null
-     */
-    private static function _format($query, $params = [])
-    {
-        if (isset($params['single'])) {
-            if (!$query) {
-                return null;
-            }
-        } else {
-            foreach ($query as $row) {
-
-            }
-        }
-        return $query;
     }
 
     /**
@@ -202,6 +163,9 @@ class Authorization extends Model
                 $update[$key] = $value;
             }
         }
+
+        // store to activity logs
+        ActivityLog::store($id, self::$writable_columns, $query->first(), $inputs, (new self)->getTable());
 
         return (bool)$query->update($update);
     }

@@ -37,6 +37,7 @@ body {
     height: 100vh !important;
     overflow-x: scroll !important;
     margin-left: -250px;
+    margin-top: -1px !important;
     background: #2A3F54;
     -webkit-transition: all 0.5s ease;
     -moz-transition: all 0.5s ease;
@@ -145,14 +146,7 @@ body {
     }
 }
 
-.page-header {
-    padding-bottom: 9px;
-    margin: 20px 0 20px;
-    border-bottom: 1px solid #eee;
-    color: #6C7E93;
-}
-
-/* side-menu */
+/* side-menu lu li */
 .nav-side-menu ul,
 .nav-side-menu li {
     list-style: none;
@@ -239,4 +233,11 @@ body {
 
 .s-sub-menu li a {
     padding-left: 30px;
+}
+
+.page-header {
+    padding-bottom: 12px;
+    margin: 16px 0 16px;
+    border-bottom: 1px solid #eee;
+    color: #6C7E93;
 }

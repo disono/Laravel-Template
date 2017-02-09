@@ -168,7 +168,7 @@
 
                                         <div class="col-md-9">
                                                 <textarea class="form-control" name="address"
-                                                          rows="2"
+                                                          rows="4"
                                                           id="address">{{ (old('address')) ? old('address') : $user->address }}</textarea>
 
                                             @if ($errors->has('address'))
@@ -184,7 +184,7 @@
 
                                         <div class="col-md-9">
                                                 <textarea class="form-control" name="about"
-                                                          rows="2"
+                                                          rows="4"
                                                           id="about">{{ (old('about')) ? old('about') : $user->about }}</textarea>
 
                                             @if ($errors->has('about'))

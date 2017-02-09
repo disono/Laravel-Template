@@ -15,7 +15,10 @@ class AdminAccess
      */
     public function handle($request, Closure $next)
     {
-        authorize_route();
+        $has_access = authorize_route();
+        if (!$has_access) {
+            return failed_json_response('Unauthorized access.', 498);
+        }
 
         return $next($request);
     }

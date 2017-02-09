@@ -14,6 +14,7 @@ namespace App\Http\Controllers\Web\Authentication;
  */
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Web\Auth\Register;
 use App\Models\EmailVerification;
 use App\Models\Slug;
 use App\Models\User;
@@ -22,7 +23,6 @@ use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
-use Validator;
 
 class RegisterController extends Controller
 {
@@ -36,6 +36,7 @@ class RegisterController extends Controller
      */
     public function __construct()
     {
+        parent::__construct();
         $this->middleware('guest', ['except' => [
             'resendVerification', 'verifyEmail'
         ]]);
@@ -54,29 +55,28 @@ class RegisterController extends Controller
     /**
      * Handle a registration request for the application.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param Register $request
      * @return \Illuminate\Http\Response
      */
-    public function process(Request $request)
+    public function process(Register $request)
     {
-        return $this->register($request);
-    }
+        $creation = $this->create($request->all());
 
-    /**
-     * Get a validator for an incoming registration request.
-     *
-     * @param  array $data
-     * @return \Illuminate\Contracts\Validation\Validator
-     */
-    protected function validator(array $data)
-    {
-        return Validator::make($data, [
-            'first_name' => 'required|max:100',
-            'last_name' => 'required|max:100',
-            'username' => 'required|max:100|alpha_dash|unique:slugs,name|not_in:' . exclude_slug(),
-            'email' => 'required|email|max:255|unique:users',
-            'password' => 'required|min:6|confirmed',
-        ]);
+        if ($creation) {
+            Auth::loginUsingId($creation->id, true);
+
+            if ($request->all()) {
+                return success_json_response(null, null, null, [
+                    'redirect' => $this->redirectPath()
+                ]);
+            }
+        } else {
+            if ($request->all()) {
+                return failed_json_response('Failed to register, please try again later.');
+            }
+        }
+
+        return redirect($this->redirectPath());
     }
 
     /**
@@ -103,8 +103,12 @@ class RegisterController extends Controller
                 'name' => $data['username']
             ]);
 
-            // send email for email verification
-            Notification::send($create, new RegisterNotification($create));
+            try {
+                // send email for email verification
+                Notification::send($create, new RegisterNotification($create));
+            } catch (\Swift_SwiftException $e) {
+                error_logger('Mail Notification Registration Failed: ' . $e->getMessage());
+            }
         }
 
         return $create;
