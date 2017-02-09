@@ -906,7 +906,9 @@ var WBDate = (function () {
         },
 
         timePicker: function () {
-            jQ('.time-picker').pickatime();
+            jQ('.time-picker').pickatime({
+                format: 'hh:i A'
+            });
         }
     };
 }());
