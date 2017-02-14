@@ -42,7 +42,7 @@ abstract class Request extends FormRequest
     public function forbiddenResponse()
     {
         if ($this->expectsJson()) {
-            return failed_json_response(env('MSG_ACCESS'), 401);
+            return failed_json_response(wb_messages('MSG_ACCESS'), 401);
         }
 
         return new Response('Forbidden', 403);

@@ -52,4 +52,10 @@ Route::group(['middleware' => ['api.auth']], function () {
     // user tokens
     Route::post('v1/user/token/create', 'API\V1\User\UserController@postTokenCreate')->name('api-v1-user-token-create');
     Route::post('v1/user/token/check', 'API\V1\User\UserController@postTokenCheck')->name('api-v1-user-token-check');
+
+    // messenger
+    Route::get('v1/message/inbox', 'API\V1\Message\MessengerController@inbox')->name('api-v1-message-inbox');
+    Route::get('v1/message/reading/{from_id}', 'API\V1\Message\MessengerController@reading')->name('api-v1-message-reading');
+    Route::get('v1/message/group/{group_id}', 'API\V1\Message\MessengerController@group')->name('api-v1-message-group');
+    Route::post('v1/message/send/{to_id}', 'API\V1\Message\MessengerController@send')->name('api-v1-message-send');
 });

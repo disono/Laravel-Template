@@ -9,9 +9,16 @@ namespace App\Http\Controllers\Web\Page;
 
 use App\Http\Controllers\Controller;
 use App\Models\Page;
+use App\Models\PageView;
 
 class PageController extends Controller
 {
+    public function __construct()
+    {
+        $this->view = 'page.';
+        parent::__construct();
+    }
+
     /**
      * Home page
      *
@@ -19,7 +26,8 @@ class PageController extends Controller
      */
     public function getHome()
     {
-        return theme('page.home');
+        PageView::store();
+        return $this->response('home');
     }
 
     /**
@@ -31,7 +39,7 @@ class PageController extends Controller
      */
     public function getShow($function, $slug = null)
     {
-        $template = 'page.show';
+        $template = 'show';
         $page = null;
 
         if (!$slug) {
@@ -46,15 +54,16 @@ class PageController extends Controller
 
         // custom template
         if ($page->template) {
-            $template = 'page.templates.' . $page->template;
+            $template = 'templates.' . $page->template;
         }
 
-        $content['title'] = app_title($page->name);
-        $content['page'] = $page;
+        $this->title = $page->name;
+        $this->content['page'] = $page;
 
         // SEO
-        $content['page_description'] = str_limit(strip_tags($page->description), 155);
+        $this->content['page_description'] = str_limit(strip_tags($page->description), 155);
 
-        return theme($template, $content);
+        PageView::store();
+        return $this->response($template);
     }
 }

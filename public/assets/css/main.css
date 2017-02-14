@@ -166,3 +166,11 @@ td {
     vertical-align: middle !important;
     word-wrap: break-word !important;
 }
+
+.toast {
+    box-shadow: none !important;
+}
+
+.dropdown-toggle {
+    border-radius: 0 !important;
+}

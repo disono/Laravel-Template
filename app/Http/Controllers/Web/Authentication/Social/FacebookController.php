@@ -9,6 +9,7 @@ namespace App\Http\Controllers\Web\Authentication\Social;
 
 use App\Http\Controllers\Controller;
 use App\Models\AuthHistory;
+use App\Models\Slug;
 use App\Models\SocialAuth;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -24,6 +25,11 @@ class FacebookController extends Controller
         $this->middleware('guest', ['except' => [
             'facebook', 'facebookCallback'
         ]]);
+
+        // check if facebook auth is enabled
+        if (app_settings('auth_social_facebook')->value != 'enabled') {
+            abort(404);
+        }
     }
 
     /**
@@ -33,17 +39,27 @@ class FacebookController extends Controller
      */
     public function facebook()
     {
-        return Socialite::driver('facebook')->redirect();
+        return Socialite::driver('facebook')->fields([
+            'name', 'first_name', 'last_name', 'email', 'gender', 'birthday'
+        ])->scopes([
+            'email', 'user_birthday'
+        ])->redirect();
     }
 
     /**
      * Facebook callback
      *
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector|void
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
     public function facebookCallback()
     {
-        $user = Socialite::driver('facebook')->user();
+        try {
+            $user = Socialite::driver('facebook')->fields([
+                'name', 'first_name', 'last_name', 'email', 'gender', 'birthday'
+            ])->user();
+        } catch (\Exception $e) {
+            return redirect('404');
+        }
 
         $user_query = null;
         if ($user->getId()) {
@@ -52,38 +68,14 @@ class FacebookController extends Controller
 
         // check for api authentication
         if (!$user_query) {
-            $create = User::create([
-                'first_name' => ucfirst($user->user['first_name']),
-                'last_name' => ucfirst($user->user['last_name']),
-                'username' => ($user->getNickname()) ? $user->getNickname() : preg_replace('/\s+/', '', $user->getNickname()) . time(),
-                'email' => ($user->user['email']) ? $user->user['email'] : '',
-                'role' => 'client',
-                'enabled' => 1,
-                'email_confirmed' => 1
-            ]);
-
-            // create user
-            if ($create) {
-                SocialAuth::insert([
-                    'user_id' => $create->id,
-                    'identifier' => $user->getId()
-                ]);
-
-                // login the user
-                Auth::loginUsingId($create->id);
-
-                $this->_logAuthentication();
-                return redirect('dashboard');
-            }
+            return $this->_createUser($user);
         } else {
             // login the user
             Auth::loginUsingId($user_query->user_id);
-
             $this->_logAuthentication();
+
             return redirect('dashboard');
         }
-
-        return abort(404);
     }
 
     /**
@@ -100,5 +92,49 @@ class FacebookController extends Controller
                 'type' => 'login'
             ]);
         }
+    }
+
+    /**
+     * Social auth does not require email verification
+     *
+     * @param $user
+     * @return bool|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
+    private function _createUser($user)
+    {
+        $create = User::create([
+            'first_name' => ucfirst($user->user['first_name']),
+            'last_name' => ucfirst($user->user['last_name']),
+            'email' => ($user->user['email']) ? $user->user['email'] : '',
+            'role' => 'client',
+            'enabled' => 1,
+            'email_confirmed' => 1
+        ]);
+
+        // create user
+        if ($create) {
+            // social auth
+            SocialAuth::insert([
+                'user_id' => $create->id,
+                'identifier' => $user->getId(),
+                'created_at' => sql_date()
+            ]);
+
+            // username
+            $username = ($user->getNickname()) ? $user->getNickname() : preg_replace('/\s+/', '', $user->getNickname()) . time();
+            Slug::store([
+                'source_id' => $create->id,
+                'source_type' => 'user',
+                'name' => $username
+            ]);
+
+            // login the user
+            Auth::loginUsingId($create->id);
+
+            $this->_logAuthentication();
+            return redirect('dashboard');
+        }
+
+        return redirect('login');
     }
 }

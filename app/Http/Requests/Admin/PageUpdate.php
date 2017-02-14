@@ -26,6 +26,7 @@ class PageUpdate extends AdminRequest
             'template' => 'max:100',
 
             'draft' => 'integer',
+            'is_email_to_subscriber' => 'integer',
 
             'image' => 'image|max:' . config_file_size(),
         ];

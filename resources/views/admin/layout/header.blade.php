@@ -23,6 +23,14 @@
 
         <div class="collapse navbar-collapse" id="collapseMenuAdmin">
             <ul class="nav navbar-nav pull-right">
+                <li>
+                    <a href="/"><i class="fa fa-home fa-lg" aria-hidden="true"></i></a>
+                </li>
+
+                <li>
+                    <a href="{{url('messenger')}}"><i class="fa fa-comment fa-lg" aria-hidden="true"></i></a>
+                </li>
+
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
                        aria-expanded="false">{{me()->full_name}} <span class="caret"></span></a>
@@ -36,10 +44,6 @@
                         <li><a href="{{url('logout')}}"><i class="fa fa-sign-out" aria-hidden="true"></i> Logout</a>
                         </li>
                     </ul>
-                </li>
-
-                <li>
-                    <a href="/">Home</a>
                 </li>
             </ul>
         </div>

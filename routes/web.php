@@ -20,8 +20,8 @@ Route::post('login', 'Web\Authentication\LoginController@process')->name('web-au
 Route::get('logout', 'Web\Authentication\LoginController@logoutProcess')->name('web-auth-logout');
 
 // social login facebook
-Route::get('auth/social/facebook', 'Web\Authentication\Social@facebook')->name('web-auth-facebook');
-Route::get('auth/social/facebook/callback', 'Web\Authentication\Social@facebookCallback')->name('web-auth-facebook-callback');
+Route::get('auth/social/facebook', 'Web\Authentication\Social\FacebookController@facebook')->name('web-auth-facebook');
+Route::get('auth/social/facebook/callback', 'Web\Authentication\Social\FacebookController@facebookCallback')->name('web-auth-facebook-callback');
 
 // register
 Route::get('register', 'Web\Authentication\RegisterController@registerView')->name('web-auth-register');
@@ -35,6 +35,12 @@ Route::get('password/recover', 'Web\Authentication\ResetController@getRecover')-
 Route::post('password/recover', 'Web\Authentication\ResetController@postRecover')->name('web-auth-password-post-recover');
 Route::get('password/reset/{token}', 'Web\Authentication\RecoveryController@getReset')->name('password.reset');
 Route::post('password/reset', 'Web\Authentication\RecoveryController@postReset')->name('web-auth-password-post-reset');
+
+// event
+Route::get('event/{slug}', 'Web\Event\EventController@show')->name('web-event');
+
+// subscriber
+Route::post('subscriber/store', 'Web\Page\SubscriberController@store')->name('web-subscriber-store');
 
 /*
  * ---------------------------------------------------------------------------------------------------------------------
@@ -62,6 +68,13 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('images', 'Web\File\ImageController@index')->name('web-image');
     Route::post('image/upload', 'Web\File\ImageController@upload')->name('web-image-upload');
 
+    // messaging
+    Route::get('messenger', 'Web\Message\MessageController@index')->name('web-message');
+    Route::get('message/inbox', 'Web\Message\MessageController@inbox')->name('web-message-inbox');
+    Route::get('message/reading/{from_id}', 'Web\Message\MessageController@reading')->name('web-message-reading');
+    Route::get('message/group/{group_id}', 'Web\Message\MessageController@group')->name('web-message-group');
+    Route::post('message/send/{to_id}', 'Web\Message\MessageController@send')->name('web-message-send');
+
     /*
      * -----------------------------------------------------------------------------------------------------------------
      * Administrator / Employee
@@ -79,6 +92,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('admin/user/password/edit/{id}', 'Admin\UserController@passwordEdit')->name('admin-user-password-edit');
         Route::post('admin/user/password/update', 'Admin\UserController@passwordUpdate')->name('admin-user-password-update');
         Route::post('admin/user/destroy/{id}', 'Admin\UserController@destroy')->name('admin-user-destroy');
+        Route::get('admin/user/map', 'Admin\UserController@map')->name('admin-user-map');
 
         // page category
         Route::get('admin/page-categories', 'Admin\Page\PageCategoryController@index')->name('admin-page-categories');
@@ -96,6 +110,14 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('admin/page/update', 'Admin\Page\PageController@update')->name('admin-page-update');
         Route::post('admin/page/destroy/{id}', 'Admin\Page\PageController@destroy')->name('admin-page-destroy');
 
+        // subscriber
+        Route::get('admin/subscriber', 'Admin\Page\SubscriberController@index')->name('admin-subscriber');
+        Route::post('admin/subscriber/destroy/{id}', 'Admin\Page\SubscriberController@destroy')->name('admin-subscriber-destroy');
+
+        // message
+        Route::get('admin/message', 'Admin\MessageController@index')->name('admin-message');
+        Route::get('admin/message/show/{id}', 'Admin\MessageController@show')->name('admin-message-show');
+
         // page views
         Route::get('admin/page/view', 'Admin\Page\PageViewController@index')->name('admin-page-view');
 
@@ -106,51 +128,6 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('admin/event/edit/{id}', 'Admin\Page\EventController@edit')->name('admin-event-edit');
         Route::post('admin/event/update', 'Admin\Page\EventController@update')->name('admin-event-update');
         Route::post('admin/event/destroy/{id}', 'Admin\Page\EventController@destroy')->name('admin-event-destroy');
-
-        // product category
-        Route::get('admin/product/category', 'Admin\ECommerce\ProductCategoryController@index')->name('admin-product-category');
-        Route::get('admin/product/category/create', 'Admin\ECommerce\ProductCategoryController@create')->name('admin-product-category-create');
-        Route::post('admin/product/category/store', 'Admin\ECommerce\ProductCategoryController@store')->name('admin-product-category-store');
-        Route::get('admin/product/category/edit/{id}', 'Admin\ECommerce\ProductCategoryController@edit')->name('admin-product-category-edit');
-        Route::post('admin/product/category/update', 'Admin\ECommerce\ProductCategoryController@update')->name('admin-product-category-update');
-        Route::post('admin/product/category/destroy/{id}', 'Admin\ECommerce\ProductCategoryController@destroy')->name('admin-product-category-destroy');
-
-        // product
-        Route::get('admin/branch', 'Admin\ECommerce\BranchController@index')->name('admin-product-branch');
-        Route::get('admin/branch/create', 'Admin\ECommerce\BranchController@create')->name('admin-branch-create');
-        Route::post('admin/branch/store', 'Admin\ECommerce\BranchController@store')->name('admin-branch-store');
-        Route::get('admin/branch/edit/{id}', 'Admin\ECommerce\BranchController@edit')->name('admin-branch-edit');
-        Route::post('admin/branch/update', 'Admin\ECommerce\BranchController@update')->name('admin-branch-update');
-        Route::post('admin/branch/destroy/{id}', 'Admin\ECommerce\BranchController@destroy')->name('admin-branch-destroy');
-
-        // product inventory
-        Route::get('admin/inventory/{product_id}', 'Admin\ECommerce\InventoryController@index')->name('admin-product-inventory');
-        Route::post('admin/inventory/store/{product_id}', 'Admin\ECommerce\InventoryController@store')->name('admin-product-inventory-store');
-
-        // product
-        Route::get('admin/product', 'Admin\ECommerce\ProductController@index')->name('admin-product-product');
-        Route::get('admin/product/create', 'Admin\ECommerce\ProductController@create')->name('admin-product-create');
-        Route::post('admin/product/store', 'Admin\ECommerce\ProductController@store')->name('admin-product-store');
-        Route::get('admin/product/edit/{id}', 'Admin\ECommerce\ProductController@edit')->name('admin-product-edit');
-        Route::post('admin/product/update', 'Admin\ECommerce\ProductController@update')->name('admin-product-update');
-        Route::post('admin/product/destroy/{id}', 'Admin\ECommerce\ProductController@destroy')->name('admin-product-destroy');
-
-        // voucher
-        Route::get('admin/voucher', 'Admin\ECommerce\VoucherController@index')->name('admin-product-voucher');
-        Route::get('admin/voucher/create', 'Admin\ECommerce\VoucherController@create')->name('admin-voucher-create');
-        Route::post('admin/voucher/store', 'Admin\ECommerce\VoucherController@store')->name('admin-voucher-store');
-        Route::get('admin/voucher/edit/{id}', 'Admin\ECommerce\VoucherController@edit')->name('admin-voucher-edit');
-        Route::post('admin/voucher/update', 'Admin\ECommerce\VoucherController@update')->name('admin-voucher-update');
-        Route::post('admin/voucher/destroy/{id}', 'Admin\ECommerce\VoucherController@destroy')->name('admin-voucher-destroy');
-
-        // order
-        Route::get('admin/order', 'Admin\ECommerce\OrderController@index')->name('admin-product-order');
-        Route::get('admin/order/show/{id}', 'Admin\ECommerce\OrderController@show')->name('admin-order-show');
-        Route::post('admin/order/item/{id}/{status}', 'Admin\ECommerce\OrderController@status')->name('admin-order-status');
-        Route::post('admin/order/transaction/status/{id}/{status}', 'Admin\ECommerce\OrderController@transactionStatus')->name('admin-order-transaction-status');
-
-        // sales
-        Route::get('admin/sales', 'Admin\ECommerce\POSController@sales')->name('admin-pos-sales');
 
         // images
         Route::get('admin/images', 'Admin\Application\Image\ImageController@index')->name('admin-images');

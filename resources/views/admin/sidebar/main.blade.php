@@ -11,6 +11,7 @@
         </li>
         <ul class="sub-menu collapse" id="sidebar-users">
             <li><a href="{{url('admin/user/create')}}">Create User</a></li>
+            <li><a href="{{url('admin/user/map')}}">Locator</a></li>
 
             @foreach(\App\Models\Role::getAll(['exclude' => ['slug' => ['admin']]]) as $row)
                 <li><a href="{{url('admin/users?role=' . $row->slug)}}">{{$row->name}}</a></li>
@@ -26,6 +27,9 @@
         <ul class="sub-menu collapse" id="sidebar-pages">
             <li><a href="{{url('admin/page-categories')}}">Page Categories</a></li>
             <li><a href="{{url('admin/pages')}}">Pages</a></li>
+            <li><a href="{{url('admin/subscriber')}}">Subscriber</a></li>
+            <li><a href="{{url('admin/page/view')}}">Page Activity & Views</a>
+            </li>
         </ul>
 
         {{-- event --}}
@@ -46,6 +50,9 @@
             <li><a href="{{url('admin/images')}}">Images</a></li>
         </ul>
 
+        {{-- messages --}}
+        <li><a href="{{url('admin/message')}}"><i class="fa fa-envelope-o" aria-hidden="true"></i> Messages</a></li>
+
         {{-- settings --}}
         <li data-toggle="collapse" data-target="#settings" class="collapsed">
             <a href="#"><i class="fa fa-cog" aria-hidden="true"></i> Settings <span class="arrow"></span></a>
@@ -55,8 +62,6 @@
                     Settings</a></li>
 
             <li><a href="{{url('admin/activity')}}"><i class="fa fa-sticky-note-o" aria-hidden="true"></i> Activity Logs</a>
-            </li>
-            <li><a href="{{url('admin/page/view')}}"><i class="fa fa-file" aria-hidden="true"></i> Page Activity & Views</a>
             </li>
 
             <li data-toggle="collapse" data-target="#authorization" class="collapsed">

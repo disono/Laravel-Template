@@ -35,6 +35,7 @@ is a starting blank template for Laravel Projects
 * **Sweetalert:** [http://t4t5.github.io/sweetalert](http://t4t5.github.io/sweetalert)
 * **loadCSS:** [https://github.com/filamentgroup/loadCSS](https://github.com/filamentgroup/loadCSS)
 * **Bootstrap 3 Lightbox:** [https://github.com/ashleydw/lightbox](https://github.com/ashleydw/lightbox)
+* **socket.io-client:** [https://github.com/socketio/socket.io-client](https://github.com/socketio/socket.io-client)
 
 # How to install
 ```sh
@@ -58,6 +59,22 @@ gulp --production
 
 uncomment the JWT initializer on ./routes/api.php
 init_token_key();
+
+// for real-time message (Windows)
+1. cd cloud_messaging
+2. npm install
+3. run.bat
+4. update your _socket_uri @ /public/assets/js/lib/socket.js
+
+// for real-time messaging(Unix and Mac)
+1. cd cloud_messaging
+2. npm install
+3. mongod --dbpath ./storage/database
+4. node index.js
+4. update your _socket_uri @ /public/assets/js/lib/socket.js
+
+// facebook auth
+// follow this guide https://github.com/laravel/socialite
 ```
 
 # Laradock
@@ -110,10 +127,7 @@ number_shorten
 html_app_cache
 access_routes
 is_percent
-order_status
-transaction_status
-payment_types
-order_types
+wb_messages
 db_filter_id
 paginate
 exclude_slug
@@ -168,6 +182,11 @@ resource_authorize
 send_sms
 dpf_modify
 dpf_blade
+```
+
+# Additional Artisan Commands
+```sh
+php artisan send_email:subscriber
 ```
 
 # Credits

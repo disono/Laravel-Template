@@ -31,15 +31,17 @@ class RegisterController extends Controller
         $create = null;
         if ($request->get('social_id')) {
             if ($request->get('social_id') > 0 && is_numeric($request->get('social_id'))) {
-                $social_id = (int)$request->get('social_id');
+                $social_id = $request->get('social_id');
             }
         }
 
+        // check social id
         $user = null;
         if ($social_id) {
             $user = SocialAuth::where('identifier', $social_id)->first();
         }
 
+        // create user
         if (!$user) {
             $create = $this->_createUser($request, $social_id);
 
@@ -111,12 +113,14 @@ class RegisterController extends Controller
 
             'phone' => request_value($request, 'phone'),
             'email' => request_value($request, 'email'),
-            'password' => request_value($request, 'password', '', true),
+            'password' => (!$social_id) ? request_value($request, 'password', '', true) : bcrypt(str_random() . time()),
             'address' => request_value($request, 'address', ''),
 
             'role' => 'client',
             'enabled' => 1,
-            'email_confirmed' => (($social_id) ? 1 : 0)
+            'email_confirmed' => (($social_id) ? 1 : 0),
+
+            'created_at' => sql_date()
         ]);
     }
 }

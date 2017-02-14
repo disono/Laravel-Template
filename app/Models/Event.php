@@ -138,6 +138,10 @@ class Event extends AppModel
         // upload cover
         self::_uploadImage($id, $inputs);
 
+        if (!isset($store['draft'])) {
+            $store['draft'] = 0;
+        }
+
         return $id;
     }
 
@@ -209,6 +213,12 @@ class Event extends AppModel
             $query->formatted_end_date = ($query->end_date) ? date('F d, Y', strtotime($query->end_date)) : null;
             $query->formatted_start_time = ($query->start_time) ? date('h:i A', strtotime($query->start_time)) : null;
             $query->formatted_end_time = ($query->end_time) ? date('h:i A', strtotime($query->end_time)) : null;
+
+            // mini content
+            $query->mini_content = str_limit(strip_tags($query->content), 32);
+
+            // url
+            $query->url = url('event/' . $query->slug);
         } else {
             foreach ($query as $row) {
                 // images
@@ -225,6 +235,12 @@ class Event extends AppModel
                 $row->formatted_end_date = ($row->end_date) ? date('F d, Y', strtotime($row->end_date)) : null;
                 $row->formatted_start_time = ($row->start_time) ? date('h:i A', strtotime($row->start_time)) : null;
                 $row->formatted_end_time = ($row->end_time) ? date('h:i A', strtotime($row->end_time)) : null;
+
+                // mini content
+                $row->mini_content = str_limit(strip_tags($row->content), 32);
+
+                // url
+                $row->url = url('event/' . $row->slug);
             }
         }
         return $query;
@@ -289,6 +305,10 @@ class Event extends AppModel
 
         // upload cover
         self::_uploadImage($id, $inputs);
+
+        if (!isset($update['draft'])) {
+            $update['draft'] = 0;
+        }
 
         // store to activity logs
         ActivityLog::store($id, self::$writable_columns, $query->first(), $inputs, (new self)->getTable());

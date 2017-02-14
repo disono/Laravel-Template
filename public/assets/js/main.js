@@ -80,4 +80,26 @@ jQ(document).ready(function () {
 
     // confirm modal for form
     WBHelper.confirmForm();
+
+    // socket
+    WBSocket.connect(function () {
+        // on connect
+
+        // messaging
+        WBSocket.on('message_session_' + jQ('meta[name="_authenticated_id"]').attr('content'), function (data) {
+            if (data.from_id != jQ('#inbox_from_id').val()) {
+                WBErrors.toastMessage({
+                    title: 'New Message',
+                    message: data.message
+                });
+            } else {
+                WBSocket.emitter().emitEvent('msg_received', [data]);
+            }
+        });
+    }, function () {
+        // event
+    }, function () {
+        // disconnect
+    });
 });
+

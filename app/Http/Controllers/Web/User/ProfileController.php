@@ -21,7 +21,9 @@ class ProfileController extends Controller
      */
     public function show($username)
     {
-        $user = User::single($username, 'username');
+        $type = ($this->request->get('type') == 'id') ? 'id' : 'username';
+
+        $user = User::single($username, $type);
 
         if (!$user) {
             return abort(404);

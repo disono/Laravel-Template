@@ -99,7 +99,7 @@ class WBUrl
      */
     public static function activeUrl($url = null)
     {
-        return ((URL::current() == url('/') . '/' . $url) || (URL::current() == url('/') && $url == null)) ? 'active' : 'A';
+        return ((URL::current() == url('/') . '/' . $url) || (URL::current() == url('/') && $url == null)) ? 'active' : '';
     }
 
     /**

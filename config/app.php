@@ -182,6 +182,7 @@ return [
         /*
          * 3rd party service providers
          */
+        Laravel\Socialite\SocialiteServiceProvider::class,
         Intervention\Image\ImageServiceProvider::class,
         Jenssegers\Agent\AgentServiceProvider::class,
         Mews\Purifier\PurifierServiceProvider::class,
@@ -244,6 +245,7 @@ return [
         /*
          * 3rd party aliases
          */
+        'Socialite' => Laravel\Socialite\Facades\Socialite::class,
         'Image' => Intervention\Image\Facades\Image::class,
         'Agent' => Jenssegers\Agent\Facades\Agent::class,
         'Purifier' => Mews\Purifier\Facades\Purifier::class,

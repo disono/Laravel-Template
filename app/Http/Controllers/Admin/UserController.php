@@ -39,7 +39,7 @@ class UserController extends Controller
         if ($this->request->ajax()) {
             $this->content = $data;
         } else {
-            $this->content['title'] = app_title('Users');
+            $this->title = 'Users';
 
             $this->content['countries'] = Country::all();
             $this->content['role'] = Role::all();
@@ -47,6 +47,19 @@ class UserController extends Controller
         }
 
         return $this->response('index');
+    }
+
+    /**
+     * User locator
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function map()
+    {
+        $this->title = 'Locator';
+        $this->content['role'] = Role::all();
+
+        return $this->response('map');
     }
 
     /**

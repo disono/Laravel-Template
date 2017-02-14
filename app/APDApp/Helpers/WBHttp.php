@@ -7,6 +7,7 @@
 namespace App\APDApp\Helpers;
 
 use ElephantIO\Client as Elephant;
+use ElephantIO\Engine\SocketIO\Version1X;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Intervention\Image\Facades\Image;
 use LaravelFCM\Facades\FCM;
@@ -206,7 +207,7 @@ class WBHttp
         }
 
         try {
-            $elephant = new Elephant(new \ElephantIO\Engine\SocketIO\Version1X($uri));
+            $elephant = new Elephant(new Version1X($uri));
             $elephant->initialize();
             $elephant->emit($name, $data);
             $elephant->close();

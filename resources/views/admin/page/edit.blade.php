@@ -86,6 +86,20 @@
                                     @endif
                                 </div>
 
+                                <div class="form-group {{ $errors->has('is_email_to_subscriber') ? ' has-error' : '' }}">
+                                    <div class="checkbox">
+                                        <input type="checkbox" id="is_email_to_subscriber" name="is_email_to_subscriber"
+                                               value="1" {{($page->is_email_to_subscriber) ? 'checked' : null}}>
+                                        <label for="is_email_to_subscriber">
+                                            Email to subscriber
+                                        </label>
+                                    </div>
+
+                                    @if ($errors->has('is_email_to_subscriber'))
+                                        <span class="help-block">{{ $errors->first('is_email_to_subscriber') }}</span>
+                                    @endif
+                                </div>
+
                                 <div class="form-group {{ $errors->has('draft') ? ' has-error' : '' }}">
                                     <div class="checkbox">
                                         <input type="checkbox" id="draft" name="draft"

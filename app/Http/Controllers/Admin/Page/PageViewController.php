@@ -27,6 +27,8 @@ class PageViewController extends Controller
             'search', 'date_range_from', 'date_range_to'
         ]));
 
+        $this->content['page_view_object'] = PageView::getAll(['object' => true]);
+
         return $this->response('views');
     }
 }

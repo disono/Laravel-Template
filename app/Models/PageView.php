@@ -56,21 +56,32 @@ class PageView extends AppModel
     }
 
     /**
+     * Get all data no pagination
+     *
+     * @param array $params
+     * @return null
+     */
+    public static function getAll($params = [])
+    {
+        $params['all'] = true;
+        return self::get($params);
+    }
+
+    /**
      * Store the page views
      *
      * @param null $type
      * @param null $source_id
-     * @return bool
      */
     public static function store($type = null, $source_id = null)
     {
         $me = me();
 
         if (!Schema::hasTable('page_views')) {
-            return false;
+            return;
         }
 
-        return (boolean)self::insert([
+        self::insert([
             'user_id' => ($me) ? $me->id : 0,
             'http_referrer' => (isset($_SERVER['HTTP_REFERER'])) ? $_SERVER['HTTP_REFERER'] : null,
             'current_url' => (isset($_SERVER['HTTP_HOST']) && isset($_SERVER['REQUEST_URI'])) ? $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] : null,

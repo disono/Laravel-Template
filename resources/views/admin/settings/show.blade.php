@@ -18,10 +18,7 @@
                         {{csrf_field()}}
 
                         @foreach($settings as $row)
-                            @if($row->key == 'ecommerce_support' || $row->key == 'ecommerce_cart' || $row->key == 'ecommerce_branch'
-                                || $row->key == 'ecommerce_pos' || $row->key == 'ecommerce_separate_delivery_charge'
-                                || $row->key == 'ecommerce_buy_button' &&
-                                 $row->type == 'ecommerce')
+                            @if($row->key == 'subscriber_form')
 
                                 <div class="form-group {{ $errors->has($row->key) ? ' has-error' : '' }}">
                                     <label for="{{$row->key}}">{{$row->name}}</label>
@@ -36,20 +33,6 @@
                                     @endif
                                 </div>
 
-                            @elseif($row->key == 'ecommerce_default_branch_shop')
-                                <div class="form-group {{ $errors->has($row->key) ? ' has-error' : '' }}">
-                                    <label for="{{$row->key}}">{{$row->name}} (*If Branch Enabled)</label>
-                                    <select name="{{$row->key}}" id="{{$row->key}}" class="form-control">
-                                        <option value="">Select Branch</option>
-                                        @foreach(\App\Models\ECommerce\Branch::getAll() as $row_branch)
-                                            <option value="{{$row_branch->id}}" {{is_selected($row->value, $row_branch->id)}}>{{$row_branch->name}}</option>
-                                        @endforeach
-                                    </select>
-
-                                    @if ($errors->has($row->key))
-                                        <span class="help-block"><strong>{{ $errors->first($row->key) }}</strong></span>
-                                    @endif
-                                </div>
                             @else
 
                                 <div class="form-group {{ $errors->has($row->key) ? ' has-error' : '' }}">

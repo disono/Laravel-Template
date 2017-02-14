@@ -15,7 +15,15 @@
                     <div class="container">
                         <h2 class="page-header">Log in to {{app_header('title')}}</h2>
 
-                        <form role="form" method="POST" action="{{ url('login') }}" class="ajax-form" enctype="multipart/form-data">
+                        @if(app_settings('auth_social_facebook')->value == 'enabled')
+                            <p><a href="{{url('auth/social/facebook')}}"
+                                  class="btn btn-primary btn-block"><i class="fa fa-facebook" aria-hidden="true"></i> Login
+                                    using Facebook</a></p>
+                            <hr>
+                        @endif
+
+                        <form role="form" method="POST" action="{{ url('login') }}" class="ajax-form"
+                              enctype="multipart/form-data">
                             {{ csrf_field() }}
 
                             <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">

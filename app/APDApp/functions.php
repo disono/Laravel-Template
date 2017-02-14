@@ -8,6 +8,7 @@
 
 include_once 'Vendor/dummy_data.php';
 include_once 'Vendor/methods.php';
+include_once 'Vendor/messages.php';
 
 /*
  * --------------------------------------------------------------------------

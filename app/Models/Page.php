@@ -14,7 +14,8 @@ class Page extends AppModel
     protected static $writable_columns = [
         'page_category_id',
         'user_id', 'name',
-        'content', 'template', 'draft'
+        'content', 'template', 'draft',
+        'is_email_to_subscriber'
     ];
 
     public function __construct(array $attributes = [])
@@ -167,6 +168,14 @@ class Page extends AppModel
         // upload cover
         self::_uploadImage($id, $inputs);
 
+        if (!isset($store['is_email_to_subscriber'])) {
+            $store['is_email_to_subscriber'] = 0;
+        }
+
+        if (!isset($store['draft'])) {
+            $store['draft'] = 0;
+        }
+
         return $id;
     }
 
@@ -267,6 +276,12 @@ class Page extends AppModel
 
             // default image
             $query->cover = get_image((count($query->images)) ? $query->images[0]->filename : null);
+
+            // mini content
+            $query->mini_content = str_limit(strip_tags($query->content), 32);
+
+            // url
+            $query->url = url($query->slug);
         } else {
             foreach ($query as $row) {
                 // images
@@ -277,6 +292,12 @@ class Page extends AppModel
 
                 // default image
                 $row->cover = get_image((count($row->images)) ? $row->images[0]->filename : null);
+
+                // mini content
+                $row->mini_content = str_limit(strip_tags($row->content), 32);
+
+                // url
+                $row->url = url($row->slug);
             }
         }
 
@@ -350,6 +371,14 @@ class Page extends AppModel
         // if the content is null
         if (!isset($update['content'])) {
             $update['content'] = null;
+        }
+
+        if (!isset($update['is_email_to_subscriber'])) {
+            $store['is_email_to_subscriber'] = 0;
+        }
+
+        if (!isset($update['draft'])) {
+            $store['draft'] = 0;
         }
 
         // store to activity logs

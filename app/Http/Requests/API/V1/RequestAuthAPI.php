@@ -47,6 +47,6 @@ class RequestAuthAPI extends RequestGuestAPI
      */
     public function forbiddenResponse()
     {
-        return failed_json_response(env('MSG_ACCESS'), 401);
+        return failed_json_response(wb_messages('MSG_ACCESS'), 401);
     }
 }

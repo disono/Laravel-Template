@@ -12,6 +12,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="_token" content="{{csrf_token()}}">
+    @if(auth()->check())
+        <meta name="_authenticated_id" content="{{auth()->user()->id}}">
+    @endif
 
     <meta name="description" content="{{ app_header('description') }}">
     <meta name="keywords" content="{{ app_header('keywords') }}">
@@ -122,12 +125,13 @@
 
 <script src="https://maps.googleapis.com/maps/api/js?key={{env('GOOGLE_API_KEY')}}&libraries=places"></script>
 
-@if(env('APP_DEBUG'))
+@if(env('APP_ENV') == 'local')
     @include('vendor.loaders', array('after_load' => true, 'scripts' => [
         'assets/js/vendor.js',
         'assets/js/lib/helper.js',
-        'assets/js/main.js',
         'assets/js/lib/upload.js',
+        'assets/js/lib/socket.js',
+        'assets/js/main.js',
         'assets/js/app.js',
         'assets/js/admin/main.js'
     ]))

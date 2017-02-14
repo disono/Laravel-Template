@@ -18,22 +18,22 @@
         </script>
     @endif
 @else
-@section('javascript')
-    <script>
-        function appScriptLoader() {
-            setTimeout(function () {
-                [
-                    @foreach($scripts as $script)
-                        '{!! asset($script) . url_ext() !!}',
-                    @endforeach
-                ].forEach(function (src) {
-                    var script = document.createElement('script');
-                    script.src = src;
-                    script.async = false;
-                    document.head.appendChild(script);
-                });
-            }, 300);
-        }
-    </script>
-@endsection
+    @section('javascript')
+        <script>
+            function appScriptLoader() {
+                setTimeout(function () {
+                    [
+                        @foreach($scripts as $script)
+                            '{!! asset($script) . url_ext() !!}',
+                        @endforeach
+                    ].forEach(function (src) {
+                        var script = document.createElement('script');
+                        script.src = src;
+                        script.async = false;
+                        document.head.appendChild(script);
+                    });
+                }, 600);
+            }
+        </script>
+    @endsection
 @endif

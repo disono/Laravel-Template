@@ -9,7 +9,6 @@ namespace App\Http\Controllers\Web\Authentication;
 
 use App\Http\Controllers\Controller;
 use App\Models\AuthHistory;
-use App\Models\ECommerce\Cart;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 
@@ -60,8 +59,6 @@ class LoginController extends Controller
      */
     public function process(Request $request)
     {
-        $cart_contents = Cart::content();
-
         // redirect to previous url
         if(!str_contains($request->session()->previousUrl(), "/login")) {
             $this->redirectTo = $request->session()->previousUrl();
@@ -86,7 +83,7 @@ class LoginController extends Controller
         if (auth()->attempt(['email' => $request->get('email'), 'password' => $request->get('password'),
             'email_confirmed' => 1, 'enabled' => 1])
         ) {
-            return $this->_authenticated($cart_contents, $request);
+            return $this->_authenticated($request);
         } else {
             $error = 'Invalid username or password.';
 
@@ -102,11 +99,10 @@ class LoginController extends Controller
     /**
      * Authenticated user
      *
-     * @param $cart_contents
      * @param $request
      * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    private function _authenticated($cart_contents, $request)
+    private function _authenticated($request)
     {
         $request->session()->regenerate();
         $this->clearLoginAttempts($request);
@@ -120,9 +116,6 @@ class LoginController extends Controller
                     'platform' => get_user_agent(),
                     'type' => 'login'
                 ]);
-
-                // migrate cart
-                Cart::migrate($cart_contents);
             }
         } catch (\Exception $e) {
             error_logger('AuthHistory: ' . $e->getMessage());

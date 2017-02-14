@@ -104,6 +104,8 @@ var WBHelper = (function () {
                 data: options.data,
                 async: options.async,
                 beforeSend: function (jqXHR, settings) {
+                    console.log('Before Sending the AJAX request.');
+
                     // disable forms
                     if (options.disableForm && jQ(options.formId).length) {
                         WBHelper.disableFormInputs(options.formId);
@@ -126,6 +128,8 @@ var WBHelper = (function () {
                     options.beforeSend(jqXHR, settings);
                 },
                 success: function (data, textStatus, jqXHR) {
+                    console.log('Success response on AJAX request data: ' + data);
+
                     // clear messages
                     if (options.clearMessage) {
                         WBErrors.clearMessages(false);
@@ -138,6 +142,8 @@ var WBHelper = (function () {
                     options.success(data, textStatus, jqXHR);
                 },
                 error: function (xhr, status, error) {
+                    console.log('Error response on AJAX request.');
+
                     // clear messages
                     if (options.clearMessage) {
                         WBErrors.clearMessages(false);
@@ -161,6 +167,8 @@ var WBHelper = (function () {
                     }
                 },
                 complete: function (jqXHR, textStatus) {
+                    console.log('Complete response on AJAX request.');
+
                     // enable form
                     if (options.disableForm && jQ(options.formId).length) {
                         if (options.enableForm) {

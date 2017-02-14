@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\DB;
 
 class AppModel extends Model
 {
+    public static $query_object = null;
+
     /**
      * Exclude and Include
      *

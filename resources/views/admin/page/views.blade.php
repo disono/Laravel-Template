@@ -39,6 +39,8 @@
 
                 <div class="app-container">
                     @if(count($page_views))
+                        <p>You have {{$page_view_object->count()}} page views.</p>
+
                         <table class="table table-hover">
                             <thead>
                             <tr>
