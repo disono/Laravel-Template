@@ -600,6 +600,30 @@ if (!function_exists('admin_view')) {
     }
 }
 
+if (!function_exists('js_view_loader')) {
+    /**
+     * Load javascript
+     *
+     * @param array $js_list
+     */
+    function js_view_loader($js_list = [])
+    {
+        App\APDApp\Helpers\WBView::js_view_loader($js_list);
+    }
+}
+
+if (!function_exists('js_view_runner')) {
+    /**
+     * Javascript runner
+     *
+     * @return array|mixed
+     */
+    function js_view_runner()
+    {
+        return App\APDApp\Helpers\WBView::js_view_runner();
+    }
+}
+
 /*
  * --------------------------------------------------------------------------
  * WBUrl method

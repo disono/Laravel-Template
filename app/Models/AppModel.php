@@ -124,7 +124,7 @@ class AppModel extends Model
      * @param $search
      * @return mixed
      */
-    private static function _searchQuery($index, $query, $column_name, $search)
+    public static function _searchQuery($index, $query, $column_name, $search)
     {
         // check values to search must not be empty
         if ($search != '' && $search != null) {

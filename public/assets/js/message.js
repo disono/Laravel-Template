@@ -5,19 +5,26 @@
  */
 
 jQ(document).ready(function () {
+    var reading_from_id = 0;
+
+    // sending
+    var is_sending = false;
+
     // inbox
     var is_inbox_loading = false;
     var page_inbox = 1;
     var view_inbox = '';
-
-    var reading_from_id = 0;
 
     // reading messages
     var is_reading_loading = false;
     var page_reading = 1;
     var view_reading = '';
 
-    var is_sending = false;
+    // users
+    var is_users_loading = false;
+    var page_users = 1;
+    var view_users = '';
+    var query_search_users = '';
 
     jQ('#btn_reading_load').hide();
     jQ('#footer_message').hide();
@@ -148,6 +155,12 @@ jQ(document).ready(function () {
         } else {
             jQ('#reading_container').html('<h4 class="text-center">Please select message\'s from Inbox.</h4>');
         }
+
+        // after inbox loads
+        // fetch the users on server
+        search_users(null, function () {
+            // after users loads
+        });
     });
 
     /**
@@ -307,6 +320,106 @@ jQ(document).ready(function () {
         temp_view_reading_content(response.data);
 
         jQ('#reading_container').append(view_reading);
+    }
+
+    /**
+     * Search input for users
+     */
+    jQ('#inbox_search_user').keypress(function (e) {
+        if (e.which == 13) {
+            var value = jQ(this).val();
+            if (!value) {
+                return;
+            }
+
+            page_users = 1;
+            query_search_users = value;
+            search_users(value);
+            return false;
+        }
+    });
+
+    /**
+     * Load more data on users
+     */
+    jQ('#btn_user_load').off().on('click', function (e) {
+        e.preventDefault();
+        search_users(query_search_users);
+    });
+
+    /**
+     * Search for users
+     *
+     * @param query
+     * @param callback
+     */
+    function search_users(query, callback) {
+        console.log('Loading Users.');
+
+        if (is_users_loading) {
+            return;
+        }
+
+        WBHelper.ajax({
+            url: '/user',
+            data: {
+                page: parseInt(page_users),
+                search: query
+            },
+            type: 'get',
+            beforeSend: function () {
+                is_users_loading = true;
+            },
+            success: function (response) {
+                if (response.data.length) {
+                    temp_view_user_formatter(response.data);
+                    page_users++;
+                } else if (page_users == 1) {
+                    jQ('#inbox_new_message_container').html('<h4 class="text-center">No User Found.</h4>');
+                }
+            },
+            complete: function () {
+                is_users_loading = false;
+
+                if (callback) {
+                    callback();
+                }
+            }
+        });
+    }
+
+    /**
+     * List of users template formatter (card type)
+     *
+     * @param data
+     */
+    function temp_view_user_formatter(data) {
+        view_users = '';
+
+        for (var i = 0; i < data.length; i++) {
+            console.log(data[i]);
+
+            view_users += '<div class="media read_inbox" data-from-id="' + data[i].id + '"> \
+                    <div class="media-left"> \
+                        <a href="#"> \
+                            <img class="media-object" src="' + data[i].avatar + '" alt="' + data[i].full_name + '" style="width: 64px!important;"> \
+                        </a> \
+                    </div> \
+                    \
+                    <div class="media-body"> \
+                        <h4 class="media-heading">' + data[i].full_name + '</h4> \
+                        <p><small>' + data[i].role + '</small></p>\
+                    </div> \
+                </div>';
+        }
+
+        if (page_users > 1) {
+            jQ('#inbox_new_message_container').append(view_users);
+        } else {
+            jQ('#inbox_new_message_container').html(view_users);
+        }
+
+        read_inbox();
     }
 
     /**

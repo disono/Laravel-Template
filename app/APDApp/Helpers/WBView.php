@@ -11,6 +11,8 @@ use Jenssegers\Agent\Agent;
 
 class WBView
 {
+    private static $js = 'wb_javascript_loader';
+
     /**
      * Theme
      *
@@ -56,5 +58,49 @@ class WBView
         }
 
         return HTMLMin::blade(view('admin.' . $file, $data));
+    }
+
+    /**
+     * Load javascript
+     *
+     * @param array $js_list
+     */
+    public static function js_view_loader($js_list = [])
+    {
+        $wb_js = self::$js;
+
+        if (!session()->exists($wb_js)) {
+            session()->put($wb_js, json_encode($js_list));
+        } else {
+            $javascript = json_decode(session()->get($wb_js));
+
+            // delete the old data scripts
+            session()->forget($wb_js);
+
+            // let's combine the javascript
+            $scripts_list = (is_array($javascript)) ? array_merge($js_list, $javascript) : $js_list;
+
+            // let's add a new data
+            session()->put($wb_js, json_encode($scripts_list));
+        }
+    }
+
+    /**
+     * Javascript runner
+     *
+     * @return array|mixed
+     */
+    public static function js_view_runner()
+    {
+        $wb_js = self::$js;
+
+        if (!session()->exists($wb_js)) {
+            return [];
+        } else {
+            $js = json_decode(session()->get($wb_js));
+            session()->forget($wb_js);
+
+            return $js;
+        }
     }
 }

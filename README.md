@@ -36,6 +36,7 @@ is a starting blank template for Laravel Projects
 * **loadCSS:** [https://github.com/filamentgroup/loadCSS](https://github.com/filamentgroup/loadCSS)
 * **Bootstrap 3 Lightbox:** [https://github.com/ashleydw/lightbox](https://github.com/ashleydw/lightbox)
 * **socket.io-client:** [https://github.com/socketio/socket.io-client](https://github.com/socketio/socket.io-client)
+* **jQuery.NiceScroll:** [https://github.com/inuyaksa/jquery.nicescroll](https://github.com/inuyaksa/jquery.nicescroll)
 
 # How to install
 ```sh

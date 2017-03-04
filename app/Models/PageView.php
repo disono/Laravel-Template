@@ -81,6 +81,15 @@ class PageView extends AppModel
             return;
         }
 
+        // check if this user is already visited the site
+        if (request()->session()->has('visitor_counter')) {
+            return;
+        }
+
+        // save the counter
+        request()->session()->put('visitor_counter', 'true');
+
+        // insert to database
         self::insert([
             'user_id' => ($me) ? $me->id : 0,
             'http_referrer' => (isset($_SERVER['HTTP_REFERER'])) ? $_SERVER['HTTP_REFERER'] : null,

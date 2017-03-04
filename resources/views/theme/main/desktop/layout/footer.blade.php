@@ -7,7 +7,7 @@
 <div class="container">
     <footer class="footer">
         {{-- subscriber form --}}
-        @if(app_settings('subscriber_form')->value == 'enabled' && !auth()->check() && !request()->is('login') && !request()->is('register'))
+        @if(app_settings('subscriber_form')->value == 'enabled' && !auth()->check() && !request()->is('login') && !request()->is('register') && !request()->is('password/recover'))
             @include(current_theme() . 'page.subscriber')
         @endif
 

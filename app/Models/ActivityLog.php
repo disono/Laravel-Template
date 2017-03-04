@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * Author: Archie, Disono (webmonsph@gmail.com)
+ * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
+ * Copyright 2016 Webmons Development Studio.
+ * License: Apache 2.0
+ */
 namespace App\Models;
 
 use Illuminate\Support\Facades\DB;
@@ -37,7 +42,7 @@ class ActivityLog extends AppModel
         self::$full_name = 'CONCAT(first_name, " ", last_name)';
         $select[] = DB::raw(self::$full_name . ' as full_name');
 
-        self::$username = '(' . self::_username() . ')';
+        self::$username = '(' . self::_username($table_name) . ')';
         $select[] = DB::raw(self::$username . ' as username');
 
         $query = self::select($select)
@@ -104,11 +109,12 @@ class ActivityLog extends AppModel
     /**
      * Username query string
      *
+     * @param $table_name
      * @return string
      */
-    private static function _username()
+    private static function _username($table_name)
     {
-        return 'SELECT name FROM slugs WHERE source_id = users.id AND source_type = "user"';
+        return 'SELECT name FROM slugs WHERE source_id = ' . $table_name . '.user_id AND source_type = "user"';
     }
 
     /**

@@ -685,6 +685,14 @@ var WBHelper = (function () {
 
         /**
          * Confirm
+         *
+         * if href attribute is available redirect to href
+         *
+         * Attributes: data-modal-title, data-modal-content, data-modal-callback, data-modal-redirect
+         * data-modal-title: title for the modal
+         * data-modal-content: content for the modal
+         * data-modal-callback: callback function after the continue click
+         * data-modal-redirect: redirect to href
          */
         confirm: function () {
             // confirm
@@ -695,12 +703,20 @@ var WBHelper = (function () {
                 var title = me.attr('data-modal-title');
                 title = (title) ? title : 'Confirm';
 
+                // if href is available redirect instead
+                var href = me.attr('href');
+
                 var content = me.attr('data-modal-content');
                 content = (content) ? content : 'Are you sure to continue?';
 
                 var callback = me.attr('data-modal-callback');
                 callback = (callback) ? new Function(callback) : function () {
                         console.log('Callback Confirm.');
+
+                        // redirect
+                        if (href && me.attr('data-modal-redirect') == 'yes') {
+                            window.location = href;
+                        }
                     };
 
                 WBHelper.modal(title, '<h4 class="text-danger">' + content + '</h4>', callback, 'Continue');
@@ -709,6 +725,9 @@ var WBHelper = (function () {
 
         /**
          * Confirm form
+         *
+         * continue to form Action
+         * please check to confirm: function()
          */
         confirmForm: function () {
             // confirm
@@ -928,8 +947,8 @@ var WBDate = (function () {
  */
 var WBErrors = (function () {
     var _private = {
-        errorTimeout: null,   // timeout clear
-        errorTimer: 3000,   // timer 3 seconds
+        errorTimeout: null,     // timeout clear
+        errorTimer: null,       // timer 3 seconds
         errorAnimation: 800     // animation timer
     };
 
@@ -1043,15 +1062,17 @@ var WBErrors = (function () {
 
                 // remove messages
                 if (options.removeMessage) {
-                    setTimeout(function () {
-                        jQ('.errorResponse').fadeOut(_private.errorAnimation, function () {
-                            jQ(this).remove();
-                        });
+                    if (_private.errorTimer) {
+                        setTimeout(function () {
+                            jQ('.errorResponse').fadeOut(_private.errorAnimation, function () {
+                                jQ(this).remove();
+                            });
 
-                        if (_private.errorTimeout != null) {
-                            _private.errorTimeout = null;
-                        }
-                    }, _private.errorTimer);
+                            if (_private.errorTimeout != null) {
+                                _private.errorTimeout = null;
+                            }
+                        }, _private.errorTimer);
+                    }
                 }
             } else {
                 WBErrors.toastMessage({message: options.errors, type: 'error'});
@@ -1128,7 +1149,14 @@ var WBErrors = (function () {
                     }
                 });
             } else {
-                WBErrors.toastMessage({message: options.errors, type: 'error'});
+                if (jQ(options.container).length) {
+                    WBErrors.responseMessage({
+                        errors: options.errors,
+                        container: options.container
+                    });
+                } else {
+                    WBErrors.toastMessage({message: options.errors, type: 'error'});
+                }
             }
         },
 

@@ -1,39 +1,17 @@
-@if(isset($after_load))
-    @if($after_load === true)
-        <script>
-            [
-                @foreach($scripts as $script)
-                    '{!! asset($script) . url_ext() !!}',
-                @endforeach
-            ].forEach(function (src) {
-                var script = document.createElement('script');
-                script.src = src;
-                script.async = false;
-                document.head.appendChild(script);
-            });
-
-            if (typeof appScriptLoader == 'function') {
-                appScriptLoader();
-            }
-        </script>
-    @endif
-@else
-    @section('javascript')
-        <script>
-            function appScriptLoader() {
-                setTimeout(function () {
-                    [
-                        @foreach($scripts as $script)
-                            '{!! asset($script) . url_ext() !!}',
-                        @endforeach
-                    ].forEach(function (src) {
-                        var script = document.createElement('script');
-                        script.src = src;
-                        script.async = false;
-                        document.head.appendChild(script);
-                    });
-                }, 600);
-            }
-        </script>
-    @endsection
+@if(isset($scripts))
+    {{-- let's load the vendors javascript on session --}}
+    <?php js_view_loader($scripts) ?>
+@elseif(isset($js_run))
+    <script>
+        [
+            @foreach(js_view_runner() as $script_load)
+                '{!! asset($script_load) . url_ext() !!}',
+            @endforeach
+        ].forEach(function (src) {
+            var script = document.createElement('script');
+            script.src = src;
+            script.async = false;
+            document.head.appendChild(script);
+        });
+    </script>
 @endif

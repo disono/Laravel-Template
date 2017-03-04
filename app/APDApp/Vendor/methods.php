@@ -331,9 +331,39 @@ if (!function_exists('html_app_cache')) {
      */
     function html_app_cache()
     {
-        $path_cache = clean(preg_replace('/\s+/', '_', app_settings('title')->value)) . '.cache"';
+        // make sure the web cache is enabled on environment
+        if (env('WEB_CACHE') !== true) {
+            return null;
+        }
 
-        return (env('APP_ENV') === 'local') ? null : 'manifest="' . $path_cache;
+        $path_cache = clean(preg_replace('/\s+/', '_', app_settings('title')->value)) . '.cache';
+        $env_mode = env('APP_ENV');
+
+        // check cache exists
+        if (!file_exists($path_cache) && $env_mode != 'local' && $env_mode) {
+            $cache_create = fopen($path_cache, "w");
+            fclose($cache_create);
+
+            $cache_create = fopen($path_cache, "w");
+            $txt = "CACHE MANIFEST\n";
+            $txt .= "# " . $path_cache . "\n";
+
+            $txt .= "CACHE:\n";
+            $txt .= "/assets/js/vendor.js\n";
+            $txt .= "/assets/js/lib/helper.js\n";
+            $txt .= "/assets/js/main.js\n";
+            $txt .= "/assets/js/app.js\n";
+            $txt .= "/assets/js/admin/main.js\n";
+
+            $txt .= "\n";
+            $txt .= "NETWORK:\n";
+            $txt .= "*\n";
+
+            fwrite($cache_create, $txt);
+            fclose($cache_create);
+        }
+
+        return ($env_mode != 'local' && $env_mode) ? 'manifest="/' . $path_cache . '"' : null;
     }
 }
 

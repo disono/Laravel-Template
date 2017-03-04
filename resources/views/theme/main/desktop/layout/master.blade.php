@@ -87,23 +87,23 @@
     <div id="dynamic_container"></div>
 </main>
 
-@yield('javascript')
-
-<script src="https://maps.googleapis.com/maps/api/js?key={{env('GOOGLE_API_KEY')}}&libraries=places"></script>
-
-@if(env('APP_ENV') == 'local')
+@if(env('APP_DEBUG'))
     @include('vendor.loaders', ['scripts' => [
+        'https://maps.googleapis.com/maps/api/js?key=' . env('GOOGLE_API_KEY') . '&libraries=places',
         'assets/js/vendor.js',
         'assets/js/lib/helper.js',
-        'assets/js/lib/upload.js',
         'assets/js/lib/socket.js',
         'assets/js/main.js',
         'assets/js/app.js'
     ], 'after_load' => true])
 @else
     @include('vendor.loaders', ['scripts' => [
-        'assets/js/vendor.js'
+        'https://maps.googleapis.com/maps/api/js?key=' . env('GOOGLE_API_KEY') . '&libraries=places',
+        'assets/js/vendor.js',
     ], 'after_load' => true])
 @endif
+
+@yield('javascript')
+@include('vendor.loaders', ['js_run' => true])
 </body>
 </html>

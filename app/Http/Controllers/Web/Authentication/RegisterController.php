@@ -154,7 +154,7 @@ class RegisterController extends Controller
         // login user
         Auth::loginUsingId($user->id);
 
-        return redirect('dashboard');
+        return view('auth.registration_successful');
     }
 
     /**

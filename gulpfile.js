@@ -33,6 +33,7 @@ if (type == 'local') {
             '../../../bower_modules/leaflet/dist/leaflet.js',
             '../../../bower_modules/leaflet-search/dist/leaflet-search.min.js',
             '../../../bower_modules/leaflet-routing-machine/dist/leaflet-routing-machine.min.js',
+            '../../../bower_modules/jquery.nicescroll/dist/jquery.nicescroll.min.js',
             '../../../bower_modules/eventEmitter/EventEmitter.js',
         ], 'public/assets/js/vendor.js');
 
@@ -86,6 +87,7 @@ if (type == 'local') {
             '../../../bower_modules/leaflet/dist/leaflet.js',
             '../../../bower_modules/leaflet-search/dist/leaflet-search.min.js',
             '../../../bower_modules/leaflet-routing-machine/dist/leaflet-routing-machine.min.js',
+            '../../../bower_modules/jquery.nicescroll/dist/jquery.nicescroll.min.js',
             '../../../bower_modules/eventEmitter/EventEmitter.js',
 
             '../../../public/assets/js/lib/helper.js',

@@ -13,12 +13,14 @@
                                     <small>(* indicates required)</small>
                                 </h4>
 
-                                @if ($errors->has('email'))
-                                    <p class="text-danger">{{ $errors->first('email') }}</p>
+                                @if(isset($errors))
+                                    @if ($errors->has('email'))
+                                        <p class="text-danger">{{ $errors->first('email') }}</p>
+                                    @endif
                                 @endif
                             </div>
 
-                            <div class="col-sm-12 col-md-3{{ $errors->has('email') ? ' has-error' : '' }}">
+                            <div class="col-sm-12 col-md-3{{ (isset($errors)) ? $errors->has('email') ? ' has-error' : '' : '' }}">
                                 <input type="email" value="" name="email" class="required email form-control"
                                        id="mce-EMAIL" placeholder="Email Address*">
                             </div>

@@ -34,6 +34,7 @@
     "leaflet-routing-machine": "^3.2.4",
     "socket.io-client": "^1.7.2",
     "moment": "^2.17.1",
-    "eventEmitter": "^5.1.0"
+    "eventEmitter": "^5.1.0",
+    "jquery.nicescroll": "^3.6.8"
   }
 }

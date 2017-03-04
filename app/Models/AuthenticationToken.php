@@ -35,6 +35,9 @@ class AuthenticationToken extends Model
                 $user->secret_key = $secret_key;
                 $user->token_key = $token_key;
 
+                // add sql timestamp
+                $user->server_timestamp = sql_date();
+
                 return $user;
             }
         }

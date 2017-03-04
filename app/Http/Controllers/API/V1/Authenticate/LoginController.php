@@ -23,12 +23,21 @@ class LoginController extends Controller
      */
     public function login(Requests\API\V1\AuthLogin $request)
     {
-        if (auth()->once(['email' => $request->get('email'), 'password' => $request->get('password'),
-            'email_confirmed' => 1, 'enabled' => 1])
+        if (auth()->once(['email' => $request->get('email'), 'password' => $request->get('password')])
         ) {
             $user = User::single($request->get('email'), 'email');
 
             if ($user) {
+                // check if user email is confirmed
+                if (!$user->email_confirmed) {
+                    return failed_json_response('Your email is not confirmed, please confirm your email.');
+                }
+
+                // check if user profile is enabled
+                if (!$user->enabled) {
+                    return failed_json_response('Your account is not enabled, please contact us.');
+                }
+                
                 // create token
                 $user = AuthenticationToken::createToken($user);
 

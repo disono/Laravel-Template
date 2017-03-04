@@ -58,6 +58,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('email/resend/verification', 'Web\Authentication\RegisterController@resendVerification')->name('web-email-resent-verification');
 
     // user
+    Route::get('user', 'Web\User\UserController@index')->name('web-user-index');
     Route::get('dashboard', 'Web\User\DashboardController@getIndex')->name('web-user-dashboard');
     Route::get('user/settings', 'Web\User\SettingsController@getIndex')->name('web-user-settings');
     Route::post('user/update/setting', 'Web\User\SettingsController@postUpdate')->name('web-user-update-settings');
