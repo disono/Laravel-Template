@@ -31,6 +31,7 @@ class AppModel extends Model
         // ['column_name' => [value, value, value]]
         if (isset($params['exclude'])) {
             $exclude = $params['exclude'];
+            $exclude = self::_extractIncExcData($exclude);
 
             foreach ($exclude as $key => $value) {
                 if (in_array($key, $writable_columns)) {
@@ -43,9 +44,10 @@ class AppModel extends Model
 
         // ['column_name' => [value, value, value]]
         if (isset($params['include'])) {
-            $exclude = $params['include'];
+            $include = $params['include'];
+            $include = self::_extractIncExcData($include);
 
-            foreach ($exclude as $key => $value) {
+            foreach ($include as $key => $value) {
                 if (in_array($key, $writable_columns)) {
                     if (is_array($value)) {
                         $query->whereIn($table_name . $key, $value);
@@ -55,6 +57,34 @@ class AppModel extends Model
         }
 
         return $query;
+    }
+
+    /**
+     * Extract data
+     * string e.g. column_name:value1,value2|column_name:value1,value2
+     *
+     * @param $data
+     * @return array|string
+     */
+    private static function _extractIncExcData($data)
+    {
+        // if string e.g. column_name:value1,value2|column_name:value1,value2
+        if (is_string($data)) {
+            $divider = explode('|', $data);
+
+            $clean = [];
+            foreach ($divider as $extract) {
+                $column = explode(':', $extract);
+
+                if (count($column) == 2) {
+                    $clean[$column[0]] = explode(',', $column[1]);
+                }
+            }
+
+            $data = $clean;
+        }
+
+        return $data;
     }
 
     /**

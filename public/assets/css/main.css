@@ -23,11 +23,19 @@ body {
 
 /* Form Control */
 .form-control {
-    border: solid 3px #E5E5E5;
+    border: none;
     box-shadow: none;
     -webkit-box-shadow: none;
-    border-radius: 0;
-    padding: 5px;
+    border-radius: 4px;
+    padding: 6px;
+    background-color: #F8F8F8;
+}
+
+.form-control:focus {
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    border: none;
+    background-color: #EAEAEA;
 }
 
 .picker__wrap {
@@ -46,22 +54,12 @@ body {
     border-radius: 0 !important;
 }
 
-.form-control:focus {
-    box-shadow: none !important;
-    -webkit-box-shadow: none !important;
-    border: solid 3px #337AB7;
-}
-
 .has-header {
     margin-top: 68px;
 }
 
 .input-group-addon-lg {
     border: solid 3px #E5E5E5;
-}
-
-.btn {
-    border-radius: 0 !important;
 }
 
 .btn-primary {
@@ -71,6 +69,36 @@ body {
 
 .btn-primary:hover {
     background: #025AA5 !important;
+}
+
+.btn-facebook {
+    color: #fff !important;
+    background: #48649F !important;
+}
+
+.btn-line-primary {
+    border: solid #0275D8 1px !important;
+    background: #fff !important;
+}
+
+.btn-line-success {
+    border: solid #5CB85C 1px !important;
+    background: #fff !important;
+}
+
+.btn-line-info {
+    border: solid #5BC0DE 1px !important;
+    background: #fff !important;
+}
+
+.btn-line-warning {
+    border: solid #F0AD4E 1px !important;
+    background: #fff !important;
+}
+
+.btn-line-danger {
+    border: solid #D9534F 1px !important;
+    background: #fff !important;
 }
 
 .dropdown-menu {
@@ -173,4 +201,11 @@ td {
 
 .dropdown-toggle {
     border-radius: 0 !important;
+}
+
+.nicescroll-cursors {
+    width: 8px !important;
+    border: none !important;
+    border-radius: 0 !important;
+    background-color: #337AB7 !important;
 }

@@ -13,13 +13,12 @@
             <div class="col-md-4 col-md-offset-4">
                 <div class="jumbotron jumbotron-sm material-shadow-3">
                     <div class="container">
-                        <h2 class="page-header">Log in to {{app_header('title')}}</h2>
+                        <h2 class="text-center">Log In</h2>
 
                         @if(app_settings('auth_social_facebook')->value == 'enabled')
                             <p><a href="{{url('auth/social/facebook')}}"
-                                  class="btn btn-primary btn-block"><i class="fa fa-facebook" aria-hidden="true"></i> Login
+                                  class="btn btn-facebook btn-block btn-lg"><i class="fa fa-facebook" aria-hidden="true"></i> Login
                                     using Facebook</a></p>
-                            <hr>
                         @endif
 
                         <form role="form" method="POST" action="{{ url('login') }}" class="ajax-form"
@@ -27,7 +26,7 @@
                             {{ csrf_field() }}
 
                             <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
-                                <label for="email" class="control-label">E-Mail/Username</label>
+                                <label for="email" class="control-label">Email</label>
 
                                 <input id="email" type="text" class="form-control" name="email"
                                        value="{{ old('email') }}">
@@ -57,17 +56,18 @@
                             </div>
 
                             <div class="form-group">
-                                <button type="submit" class="btn btn-primary">Login</button>
-
-                                <a class="btn btn-link" href="{{ url('password/recover') }}">Forgot Your
-                                    Password?</a>
+                                <button type="submit" class="btn btn-primary btn-block">Login</button>
                             </div>
                         </form>
 
-                        <hr>
                         <div class="row">
                             <div class="col-md-9 col-md-offset-3">
-                                No account? <a href="{{url('register')}}">Regsiter now.</a>
+                                <a class="btn btn-link" href="{{ url('password/recover') }}">Forgot Your
+                                    Password?</a>
+                            </div>
+
+                            <div class="col-md-9 col-md-offset-3">
+                                No account? <a href="{{url('register')}}">Register now.</a>
                             </div>
                         </div>
                     </div>

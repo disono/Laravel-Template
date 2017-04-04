@@ -11,7 +11,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests;
 use App\Models\AuthHistory;
 use App\Models\Authorization;
+use App\Models\Role;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Route;
 
 class AuthorizationController extends Controller
 {
@@ -106,6 +109,49 @@ class AuthorizationController extends Controller
     public function update(Requests\Admin\AuthorizationUpdate $request)
     {
         Authorization::edit($request->get('id'), $request->all());
+        return redirect('admin/authorizations');
+    }
+
+    /**
+     * Reset all authorization
+     *
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
+    public function reset()
+    {
+        DB::table('authorizations')->truncate();
+        DB::table('authorization_roles')->truncate();
+
+        // routes
+        foreach (Route::getRoutes() as $value) {
+            $name = $value->getName();
+            if ($name) {
+                DB::table('authorizations')->insert([
+                    'name' => ucwords(str_replace('_', ' ', str_replace('-', ' ', $name))),
+                    'identifier' => $name,
+                    'created_at' => sql_date()
+                ]);
+            }
+        }
+
+        // authorization role (administrator)
+        $authorization = DB::table('authorizations');
+        $roles = ['admin', 'employee', 'cashier', 'supplier', 'tel_agent'];
+
+        foreach ($roles as $role) {
+            $find_role = Role::where('slug', $role)->first();
+
+            if ($find_role) {
+                foreach ($authorization->get() as $row) {
+                    DB::table('authorization_roles')->insert([
+                        'role_id' => $find_role->id,
+                        'authorization_id' => $row->id,
+                        'created_at' => sql_date()
+                    ]);
+                }
+            }
+        }
+
         return redirect('admin/authorizations');
     }
 

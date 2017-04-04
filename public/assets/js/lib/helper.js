@@ -867,16 +867,19 @@ var WBHelper = (function () {
          * Preload images
          */
         preLoadImg: function () {
-            setTimeout(function () {
-                jQ('.preload-img').each(function () {
-                    var me = jQ(this);
-                    me.attr('src', me.attr('data-img'));
+            jQ('.preload-img').each(function (i, obj) {
+                var me = jQ(this);
+                me.attr('src', me.attr('data-img'));
 
-                    me.load(function () {
-                        me.removeClass('event-coverLoader-mnl').addClass('event-cover-mnl');
-                    });
+                me.on('load', function () {
+                    console.log('Image is Loaded: ' + me.attr('src'));
+
+                    // add custom styles
+                    if (me.attr('data-style')) {
+                        me.attr('style', me.attr('data-style'));
+                    }
                 });
-            }, 3000);
+            });
         },
 
         /**

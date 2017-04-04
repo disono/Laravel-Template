@@ -18,7 +18,7 @@
                         {{csrf_field()}}
 
                         @foreach($settings as $row)
-                            @if($row->key == 'subscriber_form')
+                            @if($row->key == 'subscriber_form' || $row->key == 'auth_social_facebook')
 
                                 <div class="form-group {{ $errors->has($row->key) ? ' has-error' : '' }}">
                                     <label for="{{$row->key}}">{{$row->name}}</label>

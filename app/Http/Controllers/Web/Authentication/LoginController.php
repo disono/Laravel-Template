@@ -32,6 +32,7 @@ class LoginController extends Controller
      * @var string
      */
     protected $redirectTo = '/dashboard';
+    private $previous_url_key = 'wb_previous_url';
 
     /**
      * Create a new authentication controller instance.
@@ -48,6 +49,11 @@ class LoginController extends Controller
      */
     public function loginView()
     {
+        $previous_url = request()->session()->previousUrl();
+        if (!str_contains($previous_url, "/login") && !str_contains($previous_url, "/register") && !str_contains($previous_url, "/password/recover")) {
+            request()->session()->put($this->previous_url_key, $previous_url);
+        }
+
         return view('auth.login');
     }
 
@@ -60,8 +66,9 @@ class LoginController extends Controller
     public function process(Request $request)
     {
         // redirect to previous url
-        if(!str_contains($request->session()->previousUrl(), "/login")) {
-            $this->redirectTo = $request->session()->previousUrl();
+        $previous_url = session($this->previous_url_key, $this->redirectTo);
+        if ($previous_url && $previous_url != url('/')) {
+            $this->redirectTo = $previous_url;
         }
 
         // required

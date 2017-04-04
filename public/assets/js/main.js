@@ -5,6 +5,10 @@
  */
 
 jQ(document).ready(function () {
+    WBInitializeApp();
+});
+
+var WBInitializeApp = function () {
     // setup token for ajax request
     jQ.ajaxSetup({
         headers: {
@@ -101,5 +105,12 @@ jQ(document).ready(function () {
     }, function () {
         // disconnect
     });
-});
+
+    // scroll-bar style
+    jQ("html").niceScroll();
+    jQ(".scroll_app").niceScroll();
+
+    // pre-load images
+    WBHelper.preLoadImg();
+};
 

@@ -11,6 +11,11 @@ jQ(document).ready(function () {
         selector: 'textarea',
         menubar: false,
         theme: 'modern',
+
+        relative_urls: false,
+        remove_script_host: false,
+        convert_urls: true,
+
         plugins: [
             'advlist autolink lists link image charmap preview hr anchor pagebreak',
             'searchreplace wordcount visualblocks visualchars code fullscreen',

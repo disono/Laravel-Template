@@ -13,15 +13,14 @@
             <div class="col-md-6 col-md-offset-3">
                 <div class="jumbotron jumbotron-sm material-shadow-3">
                     <div class="container">
-                        <h2 class="page-header">Join Today.</h2>
-                        <p class="text-muted">Fill in the form below to get instant access.</p>
+                        <h2 class="text-center">Join Today.</h2>
+                        <p class="text-muted text-center">Fill in the form below to get instant access.</p>
 
                         @if(app_settings('auth_social_facebook')->value == 'enabled')
                             <p><a href="{{url('auth/social/facebook')}}"
-                                  class="btn btn-primary btn-block"><i class="fa fa-facebook" aria-hidden="true"></i>
+                                  class="btn btn-facebook btn-block btn-lg"><i class="fa fa-facebook" aria-hidden="true"></i>
                                     Register
                                     using Facebook</a></p>
-                            <hr>
                         @endif
 
                         <form class="ajax-form" role="form" method="POST" action="{{url('register')}}">
@@ -56,7 +55,7 @@
                             </div>
 
                             <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
-                                <label for="email" class="control-label">E-Mail Address</label>
+                                <label for="email" class="control-label">Email</label>
 
                                 <input id="email" type="email" class="form-control" name="email"
                                        value="{{old('email')}}">
@@ -105,9 +104,15 @@
                             </div>
 
                             <div class="form-group">
-                                <button type="submit" class="btn btn-primary pull-right">Register</button>
+                                <button type="submit" class="btn btn-primary btn-block">Register</button>
                             </div>
                         </form>
+
+                        <div class="row">
+                            <div class="col-md-12 text-center">
+                                <a class="btn btn-block" href="{{url('login')}}">or Log In</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

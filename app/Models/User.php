@@ -255,6 +255,12 @@ class User extends Authenticatable
         // delete all related images to user
         Image::destroySource($id, 'user');
 
+        // delete the slug/username
+        Slug::where('source_type', 'user')->where('source_id', $id)->delete();
+
+        // delete social auth
+        SocialAuth::where('user_id', $id)->delete();
+
         return (bool)self::destroy($id);
     }
 

@@ -102,10 +102,14 @@ class FacebookController extends Controller
      */
     private function _createUser($user)
     {
+        // let's create a temporary email
+        $email = ($user->user['email']) ? $user->user['email'] :
+            url_title(app_settings('title')->value, '.') . time() . str_random(4) . '@' . env('APP_DOMAIN');
+
         $create = User::create([
             'first_name' => ucfirst($user->user['first_name']),
             'last_name' => ucfirst($user->user['last_name']),
-            'email' => ($user->user['email']) ? $user->user['email'] : '',
+            'email' => $email,
             'role' => 'client',
             'enabled' => 1,
             'email_confirmed' => 1

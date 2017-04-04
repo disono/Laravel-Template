@@ -154,6 +154,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('admin/authorization/edit/{id}', 'Admin\Application\Settings\AuthorizationController@edit')->name('admin-authorization-edit');
         Route::post('admin/authorization/update', 'Admin\Application\Settings\AuthorizationController@update')->name('admin-authorization-update');
         Route::post('admin/authorization/destroy/{id}', 'Admin\Application\Settings\AuthorizationController@destroy')->name('admin-authorization-destroy');
+        Route::get('admin/authorization/reset', 'Admin\Application\Settings\AuthorizationController@reset')->name('admin-authorization-reset');
 
         // role
         Route::get('admin/roles', 'Admin\Application\Settings\RoleController@index')->name('admin-roles');
