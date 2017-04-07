@@ -67,12 +67,12 @@ init_token_key();
 3. run.bat
 4. update your _socket_uri @ /public/assets/js/lib/socket.js
 
-// for real-time messaging(Unix and Mac)
+// for real-time messaging (Unix and Mac)
 1. cd cloud_messaging
 2. npm install
 3. mongod --dbpath ./storage/database
 4. node index.js
-4. update your _socket_uri @ /public/assets/js/lib/socket.js
+5. update your _socket_uri @ /public/assets/js/lib/socket.js
 
 // facebook auth
 // follow this guide https://github.com/laravel/socialite
@@ -84,7 +84,6 @@ LaraDock strives to make the development experience easier. It contains pre-pack
 Usage Overview:
 
 Let's see how easy it is to install NGINX, PHP, Composer, MySQL and Redis. Then run Laravel.
-
     1. Get LaraDock inside your Laravel project: 
         git clone https://github.com/LaraDock/laradock.git.
     2. Enter the laradock folder and run only these Containers: 

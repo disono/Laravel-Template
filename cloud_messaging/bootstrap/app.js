@@ -9,7 +9,7 @@ var bodyParser = require('body-parser');
 var expressValidator = require('express-validator');
 
 // application routing
-var routes = require('../routes.js');
+var routes = require('../routes/web.js');
 
 // session
 var SESSION = require('../models/mongo/session.js');

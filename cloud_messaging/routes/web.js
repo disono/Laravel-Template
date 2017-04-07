@@ -5,8 +5,8 @@
  * License: Apache 2.0
  */
 
-var _controller_socket_path = './controllers/socket/';
-var _controller_express_path = './controllers/express/';
+var _controller_socket_path = '../controllers/socket/';
+var _controller_express_path = '../controllers/express/';
 
 // list of routes fort socket
 var _socket_routes = [

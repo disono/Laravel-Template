@@ -111,7 +111,7 @@ class RegisterController extends Controller
         $email = ($request->get('email')) ? $request->get('email') :
             url_title(app_settings('title')->value, '.') . time() . str_random(4) . '@' . env('APP_DOMAIN');
 
-        return User::create([
+        $user = User::create([
             'first_name' => ucfirst(request_value($request, 'first_name')),
             'last_name' => ucfirst(request_value($request, 'last_name')),
 
@@ -126,5 +126,10 @@ class RegisterController extends Controller
 
             'created_at' => sql_date()
         ]);
+
+        // user's Facebook avatar
+        User::downloadFBAvatar($user->id, $social_id);
+
+        return $user;
     }
 }

@@ -5,6 +5,7 @@
  * Copyright 2016 Webmons Development Studio.
  * License: Apache 2.0
  */
+
 namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -241,6 +242,44 @@ class User extends Authenticatable
         ActivityLog::store($id, self::$writable_columns, $query->first(), $inputs, (new self)->getTable());
 
         return (bool)$query->update($update);
+    }
+
+    /**
+     * Download user's avatar
+     *
+     * @param $user_id
+     * @param $social_id
+     */
+    public static function downloadFBAvatar($user_id, $social_id)
+    {
+        if (!$social_id) {
+            return;
+        }
+
+        $user = self::single($user_id);
+        if (!$user) {
+            return;
+        }
+
+        // save the image from auth social (Facebook)
+        // we only support facebook
+        if ($user && $social_id) {
+            $filename = download_image($social_id . '-' . time() . '-' . str_random(), 'http://graph.facebook.com/' . $social_id . '/picture?type=large');
+
+            if ($filename) {
+                $image_id = Image::store([
+                    'user_id' => $user->id,
+                    'source_id' => $user->id,
+                    'title' => $user->first_name . ' ' . $user->last_name,
+                    'type' => 'user',
+                    'filename' => $filename
+                ]);
+
+                self::edit($user_id, [
+                    'image_id' => $image_id
+                ]);
+            }
+        }
     }
 
     /**

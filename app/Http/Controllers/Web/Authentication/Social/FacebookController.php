@@ -132,6 +132,9 @@ class FacebookController extends Controller
                 'name' => $username
             ]);
 
+            // user's Facebook avatar
+            User::downloadFBAvatar($user->id, $user->getId());
+
             // login the user
             Auth::loginUsingId($create->id);
 
