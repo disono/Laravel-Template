@@ -4,5 +4,7 @@
 /bower_modules
 /vendor
 /.idea
+/laradock
+.gitmodules
 Homestead.json
 Homestead.yaml

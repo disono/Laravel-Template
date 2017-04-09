@@ -40,56 +40,61 @@ is a starting blank template for Laravel Projects
 
 # How to install
 ```sh
-Update your .local.env, .laradock.env and .production.env
+1.) Update your .local.env, .laradock.env and .production.env
 
-composer install
-php artisan migrate:refresh --seed
+2.) Provide some Laravel permissions
+    sudo chmod -R 755 storage bootstrap/cache
+    sudo chmod -R 755 storage storage
 
-npm install --no-bin-links
+4.) composer install
+5.) php artisan migrate:refresh --seed
 
-// update all css and javascript
-bower install
-bower update
+6.) npm install --no-bin-links
 
-// run all Mix tasks and minify output...
-// details @ https://laravel.com/docs/5.4/mix
-npm run production
+7.) update all css and javascript
+    bower install
+    bower update
+    
+    // run all Mix tasks and minify output...
+    // details @ https://laravel.com/docs/5.4/mix
+    npm run production
 
-// deprecated for Laravel 5.3 below
-gulp --production
+    // deprecated for Laravel 5.3 below
+    gulp --production
 
-uncomment the JWT initializer on ./routes/api.php
-init_token_key();
+8.) uncomment the JWT initializer on ./routes/api.php
+    init_token_key();
 
-// for real-time message (Windows)
-1. cd cloud_messaging
-2. npm install
-3. run.bat
-4. update your _socket_uri @ /public/assets/js/lib/socket.js
+9.) for real-time message (Windows)
+    1. cd cloud_messaging
+    2. npm install
+    3. run.bat
+    4. update your _socket_uri @ /public/assets/js/lib/socket.js
 
-// for real-time messaging (Unix and Mac)
-1. cd cloud_messaging
-2. npm install
-3. mongod --dbpath ./storage/database
-4. node index.js
-5. update your _socket_uri @ /public/assets/js/lib/socket.js
+    for real-time messaging (Unix and Mac)
+    1. cd cloud_messaging
+    2. npm install
+    3. mongod --dbpath ./storage/database
+    4. node index.js
+    5. update your _socket_uri @ /public/assets/js/lib/socket.js
 
-// facebook auth
-// follow this guide https://github.com/laravel/socialite
+10.) Facebook auth follow this guide https://github.com/laravel/socialite
 ```
 
 # Laradock
-LaraDock strives to make the development experience easier. It contains pre-packaged Docker Images that provides you a wonderful development environment without requiring you to install PHP, NGINX, MySQL, REDIS, and any other software on your local machine. [https://github.com/LaraDock/laradock](https://github.com/LaraDock/laradock) 
+LaraDock strives to make the development experience easier. It contains pre-packaged Docker Images that provides you a wonderful development environment without requiring you to install PHP, NGINX, MySQL, REDIS, and any other software on your local machine. [(http://laradock.io/)]((http://laradock.io/)) 
 ```sh
 Usage Overview:
-
 Let's see how easy it is to install NGINX, PHP, Composer, MySQL and Redis. Then run Laravel.
-    1. Get LaraDock inside your Laravel project: 
-        git clone https://github.com/LaraDock/laradock.git.
-    2. Enter the laradock folder and run only these Containers: 
-        docker-compose up -d nginx mysql redis
-    3. Open your .env file and set DB_HOST to mysql and REDIS_HOST to redis.
-    4. Open your browser and visit the localhost: http://localdock
+    1. git submodule add https://github.com/LaraDock/laradock.git
+    2. cd laradock
+    3. cp env-example .env
+    4. Build the enviroment and run it using docker-compose
+        docker-composer up -d nginx mysql redis beanstalkd
+    5. List current running Containers
+        docker-compose ps
+    6. Enter the Workspace container, to execute commands like (Artisan, Composer, PHPUnit, Gulp, …)
+        docker-compose exec workspace bash
 ```
 
 # Bug
