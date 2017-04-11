@@ -6,6 +6,7 @@
  */
 namespace App\APDApp\Helpers;
 
+use App\APDApp\Helpers\libs\VideoStream;
 use ElephantIO\Client as Elephant;
 use ElephantIO\Engine\SocketIO\Version1X;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -270,5 +271,23 @@ class WBHttp
         $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
 
         return $topicResponse->isSuccess();
+    }
+
+    /**
+     * Stream video
+     *
+     * @param null $file_path
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response|\Symfony\Component\HttpFoundation\StreamedResponse
+     */
+    public static function videoStream($file_path = null)
+    {
+        if (file_exists($file_path)) {
+            $stream = new VideoStream($file_path);
+            return response()->stream(function () use ($stream) {
+                $stream->start();
+            });
+        }
+
+        return response("File doesn't exists", 404);
     }
 }

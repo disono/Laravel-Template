@@ -191,6 +191,19 @@ if (!function_exists('fcm_topic')) {
     }
 }
 
+if (!function_exists('video_stream')) {
+    /**
+     * Stream video
+     *
+     * @param null $file_path
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response|\Symfony\Component\HttpFoundation\StreamedResponse
+     */
+    function video_stream($file_path = null)
+    {
+        return App\APDApp\Helpers\WBHttp::videoStream($file_path);
+    }
+}
+
 /*
  * --------------------------------------------------------------------------
  * WBFile method

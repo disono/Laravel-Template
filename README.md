@@ -90,7 +90,7 @@ Let's see how easy it is to install NGINX, PHP, Composer, MySQL and Redis. Then 
     2. cd laradock
     3. cp env-example .env
     4. Build the enviroment and run it using docker-compose
-        docker-composer up -d nginx mysql redis beanstalkd
+        docker-compose up -d nginx mysql redis beanstalkd
     5. List current running Containers
         docker-compose ps
     6. Enter the Workspace container, to execute commands like (Artisan, Composer, PHPUnit, Gulp, …)

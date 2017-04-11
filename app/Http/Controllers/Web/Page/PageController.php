@@ -66,4 +66,15 @@ class PageController extends Controller
         PageView::store();
         return $this->response($template);
     }
+
+    /**
+     * Stream video
+     *
+     * @param $file
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response|\Symfony\Component\HttpFoundation\StreamedResponse
+     */
+    public function streamVideo($file)
+    {
+        return video_stream('assets/video/' . $file);
+    }
 }

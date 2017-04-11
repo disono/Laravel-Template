@@ -114,18 +114,18 @@ class WBUrl
                 return null;
             }
 
-            $db_css_version = app_settings('css_version')->value;
-            $css_version = '?' . $db_css_version;
-            if (request()->session()->get('css_version') != $db_css_version || env('APP_ENV') == 'local') {
-                // store the current css version
-                if (env('APP_ENV') == 'production') {
-                    request()->session()->put('css_version', $db_css_version);
-                } else {
-                    $css_version = rand(100, 5000);
+            $css_version = app_settings('css_version')->value;
+            if (request()->session()->has('css_version') && env('APP_ENV') != 'local') {
+                if (request()->session()->get('css_version') != $css_version) {
+                    $version = rand(10, 100) . time();
+                    $css_version = '?' . $version;
+
+                    // store the current css version
+                    request()->session()->put('css_version', $version);
                 }
             }
 
-            return (env('APP_ENV') == 'local') ? '?' . rand(10, 100) . time() : $css_version;
+            return (env('APP_ENV') == 'local') ? '?' . rand(10, 100) . time() : '?' . $css_version;
         } catch (\Exception $e) {
             error_logger($e->getMessage());
             return null;

@@ -42,6 +42,9 @@ Route::get('event/{slug}', 'Web\Event\EventController@show')->name('web-event');
 // subscriber
 Route::post('subscriber/store', 'Web\Page\SubscriberController@store')->name('web-subscriber-store');
 
+// video stream
+Route::get('stream/video/{file}', 'Web\Page\PageController@streamVideo')->name('web-page-stream-video');
+
 /*
  * ---------------------------------------------------------------------------------------------------------------------
  * Authenticated

@@ -26,10 +26,6 @@
     {{-- ICON --}}
     <link rel="icon" type="image/png" href="{{url('assets/img/placeholder/favicon.png')}}"/>
 
-    {{-- CSS loader --}}
-    <script src="{{ asset('assets/js/lib/loadCSS.js') . url_ext() }}"></script>
-    <script src="{{ asset('assets/js/lib/onloadCSS.js') . url_ext() }}"></script>
-
     <style id="loaderStyles">
         html, body {
             margin: 0;
@@ -45,6 +41,10 @@
             vertical-align: middle;
         }
     </style>
+
+    {{-- CSS loader --}}
+    <script src="{{ asset('assets/js/lib/loadCSS.js') . url_ext() }}"></script>
+    <script src="{{ asset('assets/js/lib/onloadCSS.js') . url_ext() }}"></script>
 
     @include('vendor.css', ['load_admin_styles' => true])
 </head>

@@ -26,12 +26,6 @@
 
     {{-- ICON --}}
     <link rel="icon" type="image/png" href="{{url('assets/img/placeholder/favicon.png')}}"/>
-    {{-- FONT --}}
-    <link href="https://fonts.googleapis.com/css?family=Lato:400,700" rel="stylesheet">
-
-    {{-- CSS loader --}}
-    <script src="{{ asset('assets/js/lib/loadCSS.js') . url_ext() }}"></script>
-    <script src="{{ asset('assets/js/lib/onloadCSS.js') . url_ext() }}"></script>
 
     <style id="loaderStyles">
         html, body {
@@ -52,6 +46,10 @@
             opacity: 0.5;
         }
     </style>
+
+    {{-- CSS loader --}}
+    <script src="{{ asset('assets/js/lib/loadCSS.js') . url_ext() }}"></script>
+    <script src="{{ asset('assets/js/lib/onloadCSS.js') . url_ext() }}"></script>
 
     @include('vendor.css')
 </head>
