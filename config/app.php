@@ -192,6 +192,7 @@ return [
         LaravelFCM\FCMServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
         Barryvdh\DomPDF\ServiceProvider::class,
+        Appstract\Opcache\OpcacheServiceProvider::class,
 
     ],
 

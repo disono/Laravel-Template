@@ -79,6 +79,10 @@ is a starting blank template for Laravel Projects
     5. update your _socket_uri @ /public/assets/js/lib/socket.js
 
 10.) Facebook auth follow this guide https://github.com/laravel/socialite
+
+11.) Configure OPcache, useful commands (https://github.com/appstract/laravel-opcache)
+    - Make sure your APP_URL is set correctly in .env.
+    - Learn more about OPcache (https://medium.com/appstract/make-your-laravel-app-fly-with-php-opcache-9948db2a5f93)
 ```
 
 # Laradock
