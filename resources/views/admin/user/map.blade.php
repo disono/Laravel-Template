@@ -9,7 +9,7 @@
 
 @section('content')
     <div class="container-fluid">
-        <h2 class="page-header">User Locator <small>(Mobile User ONLY)</small></h2>
+        <h2>User Locator <small>(Mobile User ONLY)</small></h2>
 
         {{-- search options --}}
         <div class="app-container">

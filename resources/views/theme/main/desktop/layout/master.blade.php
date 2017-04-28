@@ -51,22 +51,14 @@
     <script src="{{ asset('assets/js/lib/loadCSS.js') . url_ext() }}"></script>
     <script src="{{ asset('assets/js/lib/onloadCSS.js') . url_ext() }}"></script>
 
+    {{-- load all css --}}
     @include('vendor.css')
 </head>
 
 <body>
 {{-- loader --}}
 <div id="loaderContent">
-    <div id="cssload-pgloading">
-        <div class="cssload-loadingwrap">
-            <ul class="cssload-bokeh">
-                <li></li>
-                <li></li>
-                <li></li>
-                <li></li>
-            </ul>
-        </div>
-    </div>
+    <img src="{{asset('assets/img/loaders/rolling.svg')}}" alt="Loading...">
 </div>
 
 {{-- main application content --}}

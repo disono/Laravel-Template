@@ -11,7 +11,6 @@
             @include(current_theme() . 'page.subscriber')
         @endif
 
-        <hr>
-        <p>{{app_settings('title')->value}} &copy; {{date('Y')}}</p>
+        <div class="has-header">{{app_settings('title')->value}} &copy; {{date('Y')}}</div>
     </footer>
 </div>

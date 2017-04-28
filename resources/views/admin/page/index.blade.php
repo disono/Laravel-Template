@@ -11,7 +11,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-xs-12 col-md-12">
-                <h3 class="page-header">Pages
+                <h3>Pages
                     <a href="{{url('admin/page/create')}}" class="btn btn-primary pull-right">Create New Page</a>
                 </h3>
 

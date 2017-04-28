@@ -23,7 +23,6 @@ class CreateImagesTable extends Migration
             $table->string('filename', 100);
             $table->string('type', 32)->nullable();
 
-            $table->boolean('is_cover')->default(0);
             $table->timestamps();
         });
     }

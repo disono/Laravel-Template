@@ -106,10 +106,6 @@ var WBInitializeApp = function () {
         // disconnect
     });
 
-    // scroll-bar style
-    jQ("html").niceScroll();
-    jQ(".scroll_app").niceScroll();
-
     // pre-load images
     WBHelper.preLoadImg();
 };

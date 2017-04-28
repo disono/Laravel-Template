@@ -11,7 +11,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-xs-12 col-md-12">
-                <h3 class="page-header">Subscribers</h3>
+                <h3>Subscribers</h3>
 
                 {{-- search options --}}
                 <div class="app-container">

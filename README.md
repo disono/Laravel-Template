@@ -15,6 +15,7 @@ is a starting blank template for Laravel Projects
 * **Laravel Excel:** [https://github.com/Maatwebsite/Laravel-Excel](https://github.com/Maatwebsite/Laravel-Excel)
 * **Free PDF Document Importer:** [https://www.setasign.com/products/fpdi/about](https://www.setasign.com/products/fpdi/about)
 * **DOMPDF Wrapper for Laravel 5:** [https://github.com/barryvdh/laravel-dompdf](https://github.com/barryvdh/laravel-dompdf)
+* **CORS Middleware for Laravel 5:** [https://github.com/barryvdh/laravel-cors](https://github.com/barryvdh/laravel-cors)
 
 # JavaScript Libraries
 * **jQuery:** [https://jquery.com](https://jquery.com)
@@ -83,6 +84,9 @@ is a starting blank template for Laravel Projects
 11.) Configure OPcache, useful commands (https://github.com/appstract/laravel-opcache)
     - Make sure your APP_URL is set correctly in .env.
     - Learn more about OPcache (https://medium.com/appstract/make-your-laravel-app-fly-with-php-opcache-9948db2a5f93)
+
+12.) Application Key
+    php artisan key:generate
 ```
 
 # Laradock
@@ -149,6 +153,7 @@ node_connector
 socket_emit
 fcm_send
 fcm_topic
+video_stream
 delete_file
 filename_creator
 error_logger
@@ -177,6 +182,8 @@ count_hours
 theme
 current_theme
 admin_view
+js_view_loader
+js_view_runner
 url_ext
 url_title
 profile_url

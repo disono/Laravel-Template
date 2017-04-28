@@ -21,7 +21,7 @@ class ImageController extends Controller
         }
 
         $this->content = Image::get(request_options([
-            'type', 'is_cover', 'search'
+            'type', 'search'
         ], $options));
 
         return $this->response();

@@ -33,16 +33,10 @@ if (type == 'local') {
             '../../../bower_modules/leaflet/dist/leaflet.js',
             '../../../bower_modules/leaflet-search/dist/leaflet-search.min.js',
             '../../../bower_modules/leaflet-routing-machine/dist/leaflet-routing-machine.min.js',
-            '../../../bower_modules/jquery.nicescroll/dist/jquery.nicescroll.min.js',
             '../../../bower_modules/eventEmitter/EventEmitter.js',
         ], 'public/assets/js/vendor.js');
 
-        mix.copy('bower_modules/loadcss/src/loadCSS.js', 'public/assets/js/lib');
-        mix.copy('bower_modules/loadcss/src/onloadCSS.js', 'public/assets/js/lib');
-
         mix.styles([
-            '../../../public/assets/css/animated-loading.css',
-
             '../../../bower_modules/tether/dist/css/tether.min.css',
             '../../../bower_modules/tether/dist/css/tether-theme-basic.min.css',
             '../../../bower_modules/bootstrap/dist/css/bootstrap.min.css',
@@ -87,7 +81,6 @@ if (type == 'local') {
             '../../../bower_modules/leaflet/dist/leaflet.js',
             '../../../bower_modules/leaflet-search/dist/leaflet-search.min.js',
             '../../../bower_modules/leaflet-routing-machine/dist/leaflet-routing-machine.min.js',
-            '../../../bower_modules/jquery.nicescroll/dist/jquery.nicescroll.min.js',
             '../../../bower_modules/eventEmitter/EventEmitter.js',
 
             '../../../public/assets/js/lib/helper.js',
@@ -98,12 +91,7 @@ if (type == 'local') {
             '../../../public/assets/js/admin/main.js'
         ], 'public/assets/js/vendor.js');
 
-        mix.copy('bower_modules/loadcss/src/loadCSS.js', 'public/assets/js/lib');
-        mix.copy('bower_modules/loadcss/src/onloadCSS.js', 'public/assets/js/lib');
-
         mix.styles([
-            '../../../public/assets/css/animated-loading.css',
-
             '../../../bower_modules/tether/dist/css/tether.min.css',
             '../../../bower_modules/tether/dist/css/tether-theme-basic.min.css',
             '../../../bower_modules/bootstrap/dist/css/bootstrap.min.css',

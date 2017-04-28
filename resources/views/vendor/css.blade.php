@@ -34,7 +34,6 @@
     <noscript>
         <link rel="stylesheet" href="{{ asset('assets/css/vendor.css') . url_ext() }}"/>
         @if(env('APP_DEBUG'))
-            <link rel="stylesheet" href="{{ asset('assets/css/animated-loading.css') . url_ext() }}"/>
             <link rel="stylesheet" href="{{ asset('assets/css/main.css') . url_ext() }}"/>
         @endif
     </noscript>
@@ -44,18 +43,15 @@
 @if(isset($load_admin_styles))
     {{-- load all CSS --}}
     <script>
-        {{-- load the animated loader --}}
-        onloadCSS(loadCSS('{{ asset('assets/css/animated-loading.css') . url_ext() }}'), function () {
-            {{-- load the vendor CSS --}}
-            onloadCSS(loadCSS('{{ asset('assets/css/vendor.css') . url_ext() }}'), function () {
-                {{-- load the style for app --}}
-                onloadCSS(loadCSS('{{ asset('assets/css/main.css') . url_ext() }}'), function () {
-                    {{-- load the style for admin --}}
-                    onloadCSS(loadCSS('{{ asset('assets/css/admin.css') . url_ext() }}'), function () {
-                        document.querySelector('#WBMainApp').style.display = null;
-                        document.getElementById("loaderContent").remove();
-                        document.getElementById("loaderStyles").remove();
-                    });
+        {{-- load the vendor CSS --}}
+        onloadCSS(loadCSS('{{ asset('assets/css/vendor.css') . url_ext() }}'), function () {
+            {{-- load the style for app --}}
+            onloadCSS(loadCSS('{{ asset('assets/css/main.css') . url_ext() }}'), function () {
+                {{-- load the style for admin --}}
+                onloadCSS(loadCSS('{{ asset('assets/css/admin.css') . url_ext() }}'), function () {
+                    document.querySelector('#WBMainApp').style.display = null;
+                    document.getElementById("loaderContent").remove();
+                    document.getElementById("loaderStyles").remove();
                 });
             });
         });

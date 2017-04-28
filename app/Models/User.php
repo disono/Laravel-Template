@@ -201,11 +201,10 @@ class User extends Authenticatable
         // avatar
         if (isset($inputs['image'])) {
             $user = $query->first();
-            $value = $inputs['image'];
 
             if ($user) {
                 // image
-                $upload_image = upload_image($value, [
+                $upload_image = upload_image($inputs['image'], [
                     'user_id' => $user->id,
                     'source_id' => $user->id,
                     'title' => $user->first_name . ' ' . $user->last_name,
@@ -221,20 +220,16 @@ class User extends Authenticatable
 
         // username
         if (isset($inputs['username'])) {
-            $value = $inputs['username'];
+            $slug = Slug::get([
+                'source_id' => $id,
+                'source_type' => 'user',
+                'single' => true
+            ]);
 
-            if ($value) {
-                $slug = Slug::get([
-                    'source_id' => $id,
-                    'source_type' => 'user',
-                    'single' => true
+            if ($slug) {
+                Slug::edit($slug->id, [
+                    'name' => $inputs['username']
                 ]);
-
-                if ($slug) {
-                    Slug::edit($slug->id, [
-                        'name' => $value
-                    ]);
-                }
             }
         }
 
@@ -317,33 +312,36 @@ class User extends Authenticatable
                 return $query;
             }
 
-            // country
-            $query->country = Country::find($query->country_id);
-
-            // birthday
-            $query->birthday = date('F j, Y', strtotime($query->birthday));
-
-            // age
-            $query->age = count_years($query->birthday);
-
-            // avatar image
-            $query->avatar = get_image($query->image_id, 'avatar');
+            self::_dataFormat($query);
         } else {
             foreach ($query as $row) {
-                // country
-                $row->country = Country::find($row->country_id);
-
-                // birthday
-                $row->birthday = date('F j, Y', strtotime($row->birthday));
-
-                // age
-                $row->age = count_years($row->birthday);
-
-                // avatar image
-                $row->avatar = get_image($row->image_id, 'avatar');
+                self::_dataFormat($row);
             }
         }
 
         return $query;
+    }
+
+    /**
+     * Add formatting to data
+     *
+     * @param $row
+     * @return mixed
+     */
+    private static function _dataFormat($row)
+    {
+        // country
+        $row->country = Country::find($row->country_id);
+
+        // birthday
+        $row->birthday = date('F j, Y', strtotime($row->birthday));
+
+        // age
+        $row->age = count_years($row->birthday);
+
+        // avatar image
+        $row->avatar = get_image($row->image_id, 'avatar');
+
+        return $row;
     }
 }

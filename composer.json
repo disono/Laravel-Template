@@ -7,6 +7,7 @@
     "require": {
         "php": ">=5.6.4",
         "appstract/laravel-opcache": "^1.1",
+        "barryvdh/laravel-cors": "^0.9.2",
         "barryvdh/laravel-dompdf": "^0.7.1",
         "brozot/laravel-fcm": "^1.2",
         "graham-campbell/htmlmin": "^4.3",

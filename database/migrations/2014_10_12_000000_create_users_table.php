@@ -33,6 +33,8 @@ class CreateUsersTable extends Migration
             $table->boolean('email_confirmed', 1)->default(0);
 
             $table->string('role', 22)->nullable();
+            $table->boolean('is_activated')->default(1);
+
             $table->rememberToken();
             $table->timestamps();
         });

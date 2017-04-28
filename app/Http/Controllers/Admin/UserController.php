@@ -5,6 +5,7 @@
  * Copyright 2016 Webmons Development Studio.
  * License: Apache 2.0
  */
+
 namespace App\Http\Controllers\Admin;
 
 use App\Events\EventResetPassword;
@@ -33,7 +34,7 @@ class UserController extends Controller
     public function index()
     {
         $data = User::get(request_options([
-            'id', 'search', 'country_id', 'enabled', 'email_confirmed', 'date_from', 'date_to', 'role'
+            'id', 'search', 'country_id', 'enabled', 'email_confirmed', 'is_activated', 'date_from', 'date_to', 'role'
         ]));
 
         if ($this->request->ajax()) {
@@ -106,9 +107,10 @@ class UserController extends Controller
         }
 
         // avatar
-        if ($create->file('image') && $user) {
+        $image = $create->file('image');
+        if ($image && $user) {
             // image
-            $upload_image = upload_image($create->file('image'), [
+            $upload_image = upload_image($image, [
                 'user_id' => $user->id,
                 'source_id' => $user->id,
                 'title' => $user->first_name . ' ' . $user->last_name,
@@ -192,9 +194,10 @@ class UserController extends Controller
         $user = User::find($request->get('id'));
 
         // avatar
-        if ($request->file('image') && $user) {
+        $image = $request->file('image');
+        if ($image && $user) {
             // image
-            $upload_image = upload_image($request->file('image'), [
+            $upload_image = upload_image($image, [
                 'user_id' => $user->id,
                 'source_id' => $user->id,
                 'title' => $user->first_name . ' ' . $user->last_name,
@@ -273,8 +276,7 @@ class UserController extends Controller
 
         if ($update) {
             $user = User::single($request->get('id'));
-            $user->new_password = $request->get('password');
-            $user->sent_to = $request->get('email');
+            $this->_addNewAuth($user, $request);
 
             // send email for password reset
             event(new EventResetPassword([
@@ -286,6 +288,21 @@ class UserController extends Controller
     }
 
     /**
+     * Add new auth
+     *
+     * @param $user
+     * @param $request
+     * @return mixed
+     */
+    private function _addNewAuth($user, $request)
+    {
+        $user->new_password = $request->get('password');
+        $user->sent_to = $request->get('email');
+
+        return $user;
+    }
+
+    /**
      * Confirm
      *
      * @param Request $request
@@ -293,34 +310,33 @@ class UserController extends Controller
      */
     public function confirm(Request $request)
     {
-        // email
-        if ($request->get('type') === 'email' && is_numeric($request->get('id'))) {
-            $user = User::find($request->get('id'));
+        $user = User::find($request->get('id'));
+        if (!$user) {
+            return redirect()->back();
+        }
 
-            if ($user) {
-                $user->email_confirmed = (($user->email_confirmed) ? 0 : 1);
-                $user->save();
-            }
+        // email
+        if ($request->get('type') === 'email') {
+            $user->email_confirmed = (($user->email_confirmed) ? 0 : 1);
+            $user->save();
         }
 
         // phone
-        if ($request->get('type') === 'phone' && is_numeric($request->get('id'))) {
-            $user = User::find($request->get('id'));
-
-            if ($user) {
-                $user->enabled = (($user->phone_confirmed) ? 0 : 1);
-                $user->save();
-            }
+        if ($request->get('type') === 'phone') {
+            $user->enabled = (($user->phone_confirmed) ? 0 : 1);
+            $user->save();
         }
 
-        // acount enabled
-        if ($request->get('type') === 'account' && is_numeric($request->get('id'))) {
-            $user = User::find($request->get('id'));
+        // account enabled
+        if ($request->get('type') === 'account') {
+            $user->enabled = (($user->enabled) ? 0 : 1);
+            $user->save();
+        }
 
-            if ($user) {
-                $user->enabled = (($user->enabled) ? 0 : 1);
-                $user->save();
-            }
+        // account is activated
+        if ($request->get('type') === 'is_activated') {
+            $user->is_activated = (($user->is_activated) ? 0 : 1);
+            $user->save();
         }
 
         return redirect()->back();

@@ -14,8 +14,7 @@ class Image extends AppModel
     protected static $writable_columns = [
         'user_id', 'source_id',
         'title', 'description',
-        'filename', 'type',
-        'is_cover'
+        'filename', 'type'
     ];
 
     public function __construct(array $attributes = [])
@@ -146,24 +145,6 @@ class Image extends AppModel
         $store['created_at'] = sql_date();
 
         return (int)self::insertGetId($store);
-    }
-
-    /**
-     * Make image default cover
-     *
-     * @param $id
-     * @param $source_id
-     */
-    public static function defaultCover($id, $source_id)
-    {
-        // reset default cover
-        self::where('source_id', $source_id)->update([
-            'is_cover' => 0
-        ]);
-
-        self::where('id', $id)->update([
-            'is_cover' => 1
-        ]);
     }
 
     /**

@@ -11,7 +11,11 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-xs-12 col-md-12">
-                <h3 class="page-header">Authorizations</h3>
+                <h3>
+                    Authorizations
+
+                    <a href="{{url('admin/authorization/reset')}}" class="pull-right btn btn-primary">Reset Authorizations</a>
+                </h3>
 
                 <div class="app-container">
                     @if(count($authorizations))

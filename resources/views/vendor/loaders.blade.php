@@ -15,7 +15,7 @@
                 script.async = false;
                 document.head.appendChild(script);
             });
-        }, 300);
+        }, 100);
 
         {{-- Google Analytics --}}
     </script>

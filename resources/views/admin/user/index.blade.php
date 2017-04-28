@@ -11,7 +11,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-xs-12 col-md-12">
-                <h3 class="page-header">Users</h3>
+                <h3>Users</h3>
 
                 {{-- search options --}}
                 <div class="app-container">
@@ -29,6 +29,18 @@
                                 </option>
                                 <option value="0" {{ ($request->get('enabled') == '0') ? 'selected' : '' }}>
                                     Disabled
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <select class="form-control" name="is_activated">
+                                <option value="">Active/InActive Account</option>
+                                <option value="1" {{ ($request->get('is_activated') == '1') ? 'selected' : '' }}>
+                                    Active
+                                </option>
+                                <option value="0" {{ ($request->get('is_activated') == '0') ? 'selected' : '' }}>
+                                    InActive
                                 </option>
                             </select>
                         </div>
@@ -84,6 +96,7 @@
                                 <th>Email</th>
                                 <th>Country</th>
                                 <th>Account enabled</th>
+                                <th>Account Active</th>
                                 <th>Email confirmed</th>
                                 <th>Role</th>
                                 <th>Action</th>
@@ -99,6 +112,9 @@
                                     <td>{{$row->country->name}}</td>
                                     <td>
                                         <a href="{{url('admin/user/confirm?type=' . 'account' . '&id=' . $row->id)}}">{{($row->enabled) ? 'Yes' : 'No'}}</a>
+                                    </td>
+                                    <td>
+                                        <a href="{{url('admin/user/confirm?type=' . 'is_activated' . '&id=' . $row->id)}}">{{($row->is_activated) ? 'Deactivate' : 'Activate'}}</a>
                                     </td>
                                     <td>
                                         <a href="{{url('admin/user/confirm?type=' . 'email' . '&id=' . $row->id)}}">{{($row->email_confirmed) ? 'Yes' : 'No'}}</a>

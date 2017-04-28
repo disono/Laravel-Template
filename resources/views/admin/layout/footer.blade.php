@@ -5,6 +5,5 @@
 --}}
 
 <footer class="footer col-lg-12 no-padding">
-    <hr>
-    <p>{{app_settings('title')->value}} &copy; {{date('Y')}}</p>
+    <div class="has-header">{{app_settings('title')->value}} &copy; {{date('Y')}}</div>
 </footer>
