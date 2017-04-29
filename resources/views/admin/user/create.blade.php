@@ -141,7 +141,7 @@
                             </div>
                         </div>
 
-                        <button type="submit" class="btn btn-primary">Create new user</button>
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-floppy-o"></i> Create new user</button>
                     </form>
                 </div>
             </div>

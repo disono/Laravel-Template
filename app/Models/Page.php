@@ -44,7 +44,7 @@ class Page extends AppModel
             ->join('page_categories', $table_name . '.page_category_id', '=', 'page_categories.id');
 
         if (isset($params['category_slug'])) {
-            $query->where('page_categories.slug', $params['category_slug']);
+            $query->where(DB::raw('(' . self::_pageCategorySlug() . ')'), $params['category_slug']);
         }
 
         if (isset($params['slug'])) {

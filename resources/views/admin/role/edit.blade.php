@@ -48,7 +48,7 @@
                             @endif
                         </div>
 
-                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-floppy-o"></i> Save Changes</button>
                     </form>
                 </div>
             </div>

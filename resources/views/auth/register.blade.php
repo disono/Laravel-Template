@@ -104,13 +104,13 @@
                             </div>
 
                             <div class="form-group">
-                                <button type="submit" class="btn btn-primary btn-block">Register</button>
+                                <button type="submit" class="btn btn-primary btn-block btn-lg">Register</button>
                             </div>
                         </form>
 
                         <div class="row">
                             <div class="col-md-12 text-center">
-                                <a class="btn btn-block" href="{{url('login')}}">or Log In</a>
+                                Already registered? <a class="btn-link" href="{{url('login')}}">Login here.</a>
                             </div>
                         </div>
                     </div>

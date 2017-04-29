@@ -46,7 +46,7 @@
                             @endif
                         </div>
 
-                        <button type="submit" class="btn btn-primary">Save new password</button>
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-floppy-o"></i> Save new password</button>
                     </form>
                 </div>
             </div>

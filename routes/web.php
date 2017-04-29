@@ -190,4 +190,5 @@ Route::get('user/{username}', 'Web\User\ProfileController@show')->name('web-user
 
 // page
 Route::get('{slug}', 'Web\Page\PageController@getShow')->name('web-page-show');
+// page with page category and page slug
 Route::get('{type}/{slug}', 'Web\Page\PageController@getShow')->name('web-page-show-type');

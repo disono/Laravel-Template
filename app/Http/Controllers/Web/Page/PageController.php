@@ -5,6 +5,7 @@
  * Copyright 2016 Webmons Development Studio.
  * License: Apache 2.0
  */
+
 namespace App\Http\Controllers\Web\Page;
 
 use App\Http\Controllers\Controller;
@@ -45,7 +46,11 @@ class PageController extends Controller
         if (!$slug) {
             $page = Page::single($function, 'slug');
         } else {
-            $page = Page::single($slug, 'slug');
+            $page = Page::get([
+                'category_slug' => $function,
+                'slug' => $slug,
+                'single' => true
+            ]);
         }
 
         if (!$page) {

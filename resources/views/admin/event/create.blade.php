@@ -125,7 +125,7 @@
                                     @endif
                                 </div>
 
-                                <button type="submit" class="btn btn-primary">Create</button>
+                                <button type="submit" class="btn btn-primary"><i class="fa fa-floppy-o"></i> Create</button>
                             </div>
                         </div>
                     </form>

@@ -152,7 +152,7 @@
                             </div>
                         </div>
 
-                        <button type="submit" class="btn btn-primary">Save changes</button>
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-floppy-o"></i> Save changes</button>
                     </form>
                 </div>
             </div>
