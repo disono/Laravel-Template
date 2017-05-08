@@ -87,7 +87,6 @@ if (type == 'local') {
             '../../../public/assets/js/lib/upload.js',
             '../../../public/assets/js/lib/socket.js',
             '../../../public/assets/js/main.js',
-            '../../../public/assets/js/app.js',
             '../../../public/assets/js/admin/main.js'
         ], 'public/assets/js/vendor.js');
 

@@ -16,6 +16,10 @@ var WBInitializeApp = function () {
         }
     });
 
+    // add this to last
+    // CSS loader
+    WBRemoveLoader();
+
     // delete modal confirmation box
     WBHelper.delAjax({
         selector: '.delete-data',
@@ -59,9 +63,12 @@ var WBInitializeApp = function () {
     });
 
     // select picker initialize
-    jQ('select').selectpicker({
-        liveSearch: true
-    });
+    jQ('select').selectpicker('destroy');
+    setTimeout(function () {
+        jQ('select').not(".bar-rating").selectpicker({
+            liveSearch: true
+        });
+    }, 100);
 
     // date picker
     // class="date-picker"

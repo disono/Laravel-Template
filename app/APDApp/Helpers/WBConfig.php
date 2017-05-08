@@ -7,6 +7,8 @@
  */
 namespace App\APDApp\Helpers;
 
+use App\Models\Setting;
+
 class WBConfig
 {
     /**
@@ -40,15 +42,15 @@ class WBConfig
      */
     public static function settings($key)
     {
-        $settings = \App\Models\Setting::where('key', $key);
+        $settings = Setting::single($key, 'key');
 
-        if ($settings->count()) {
-            return $settings->first();
+        if (!$settings) {
+            return (object)[
+                'name' => null, 'key' => null, 'value' => null, 'created_at' => null
+            ];
         }
 
-        return (object)[
-            'name' => null, 'key' => null, 'value' => null, 'created_at' => null
-        ];
+        return $settings;
     }
 
     /**

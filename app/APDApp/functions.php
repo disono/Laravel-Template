@@ -728,6 +728,38 @@ if (!function_exists('authorize_me')) {
     }
 }
 
+if (!function_exists('is_authorize')) {
+    /**
+     * Authorization on none routes
+     *
+     * @param array $roles
+     * @param bool $boolean_only
+     * @param string $delimiter
+     * @return bool|\Illuminate\Http\JsonResponse
+     */
+    function is_authorize($roles = [], $boolean_only = false, $delimiter = '|')
+    {
+        $auth_id = (auth()->check()) ? auth()->user()->id : 0;
+
+        $roles = (is_array($roles)) ? $roles : explode($delimiter, $roles);
+        $response = App\APDApp\Helpers\WBAuth::authorizeMe($roles, $auth_id, false);
+
+        if (!$response) {
+            if ($boolean_only) {
+                return false;
+            }
+
+            if (request()->ajax()) {
+                return failed_json_response('You are not authorize to view this resource.');
+            }
+
+            abort(403);
+        }
+
+        return true;
+    }
+}
+
 if (!function_exists('authorize_route')) {
     /**
      * Authorize routes

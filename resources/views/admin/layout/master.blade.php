@@ -41,13 +41,6 @@
             vertical-align: middle;
         }
     </style>
-
-    {{-- CSS loader --}}
-    <script src="{{ asset('assets/js/lib/loadCSS.js') . url_ext() }}"></script>
-    <script src="{{ asset('assets/js/lib/onloadCSS.js') . url_ext() }}"></script>
-
-    {{-- load all css --}}
-    @include('vendor.css', ['load_admin_styles' => true])
 </head>
 
 <body>
@@ -88,6 +81,10 @@
     <div id="dynamic_container"></div>
 </main>
 
+{{-- Styles --}}
+@include('vendor.css', ['load_admin_styles' => true])
+
+{{-- Scripts --}}
 @if(env('APP_DEBUG'))
     @include('vendor.loaders', array('after_load' => true, 'scripts' => [
         'https://maps.googleapis.com/maps/api/js?key=' . env('GOOGLE_API_KEY') . '&libraries=places',
@@ -104,7 +101,7 @@
         'https://maps.googleapis.com/maps/api/js?key=' . env('GOOGLE_API_KEY') . '&libraries=places',
 
         'assets/js/vendor.js',
-        'assets/js/admin/main.js'
+        'assets/js/app.js'
     ]])
 @endif
 

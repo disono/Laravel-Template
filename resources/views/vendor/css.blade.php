@@ -1,3 +1,7 @@
+{{-- CSS Loaders --}}
+<script src="{{ asset('assets/js/lib/loadCSS.js') . url_ext() }}"></script>
+<script src="{{ asset('assets/js/lib/onloadCSS.js') . url_ext() }}"></script>
+
 {{-- Guest Styles --}}
 @if(!isset($load_admin_styles))
     {{-- load all CSS --}}
@@ -8,23 +12,7 @@
             onloadCSS(loadCSS('{{ asset('assets/css/vendor.css') . url_ext() }}'), function () {
                 {{-- load the style for app --}}
                 onloadCSS(loadCSS('{{ asset('assets/css/main.css') . url_ext() }}'), function () {
-                    document.querySelector('#WBMainApp').style.display = null;
-                    document.getElementById("loaderContent").remove();
-                    document.getElementById("loaderStyles").remove();
-
-                        {{-- load custom CSS --}}
-                        @if(isset($styles))
-                    [
-                        @foreach($styles as $style)
-                            '{!! asset($style) . url_ext() !!}',
-                        @endforeach
-                    ].forEach(function (href) {
-                        var script = document.createElement('link');
-                        script.href = href;
-                        script.async = false;
-                        document.head.appendChild(script);
-                    });
-                    @endif
+                    WBLoadJS();
                 });
             });
         });
@@ -49,9 +37,7 @@
             onloadCSS(loadCSS('{{ asset('assets/css/main.css') . url_ext() }}'), function () {
                 {{-- load the style for admin --}}
                 onloadCSS(loadCSS('{{ asset('assets/css/admin.css') . url_ext() }}'), function () {
-                    document.querySelector('#WBMainApp').style.display = null;
-                    document.getElementById("loaderContent").remove();
-                    document.getElementById("loaderStyles").remove();
+                    WBLoadJS();
                 });
             });
         });
@@ -66,3 +52,17 @@
         <link rel="stylesheet" href="{{ asset('assets/css/admin.css') . url_ext() }}"/>
     </noscript>
 @endif
+
+{{-- remove the loader look for at the bottom of assets/js/main.js --}}
+<script>
+    var WBRemoveLoader = function () {
+        if (document.querySelector('#WBMainApp')) {
+            document.querySelector('#WBMainApp').style.display = null;
+        }
+
+        if (document.getElementById("loaderContent")) {
+            document.getElementById("loaderContent").remove();
+            document.getElementById("loaderStyles").remove();
+        }
+    };
+</script>

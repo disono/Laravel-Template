@@ -1273,11 +1273,6 @@ var WBHeaders = (function () {
                 case 498:
                     WBErrors.toastMessage({message: 'Invalid token form.', type: 'error'});
 
-                    setTimeout(function () {
-                        // invalid token reload page
-                        location.reload();
-                    }, 800);
-
                     break;
                 case 401:
                     // authentication required show login modal
@@ -1300,10 +1295,6 @@ var WBHeaders = (function () {
 
                     // bad request
                     WBErrors.toastMessage({message: '400 Bad Request', type: 'error'});
-
-                    setTimeout(function () {
-                        location.reload();
-                    }, 800);
 
                     break;
                 case 405:

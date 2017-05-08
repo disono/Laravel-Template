@@ -3,8 +3,7 @@
     <?php js_view_loader($scripts) ?>
 @elseif(isset($js_run))
     <script>
-        {{-- JS loaders --}}
-        setTimeout(function () {
+        var WBLoadJS = function () {
             [
                 @foreach(js_view_runner() as $script_load)
                     '{!! asset($script_load) . url_ext() !!}',
@@ -15,7 +14,7 @@
                 script.async = false;
                 document.head.appendChild(script);
             });
-        }, 100);
+        };
 
         {{-- Google Analytics --}}
     </script>
