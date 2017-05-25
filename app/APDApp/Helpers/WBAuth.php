@@ -5,6 +5,7 @@
  * Copyright 2016 Webmons Development Studio.
  * License: Apache 2.0
  */
+
 namespace App\APDApp\Helpers;
 
 use App\Models\AuthenticationToken;
@@ -13,7 +14,6 @@ use App\Models\AuthorizationRole;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Schema;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;

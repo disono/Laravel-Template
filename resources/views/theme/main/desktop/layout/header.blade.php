@@ -22,6 +22,9 @@
                 <li class="{{active_url(null)}}">
                     <a class="nav-link" href="{{url('/')}}">Home <span class="sr-only">(current)</span></a>
                 </li>
+
+                {{-- categories --}}
+                {!! \App\Models\PageCategory::categoryMenu([1]) !!}
             </ul>
 
             <ul class="nav navbar-nav pull-right">

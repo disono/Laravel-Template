@@ -16,6 +16,10 @@ var WBSocket = (function () {
          * Connect
          */
         connect: function (connectCallback, eventCallback, disconnectCallback) {
+            if (_socket_uri === 'http://your-domain:3000/') {
+                return;
+            }
+
             this.socket = io.connect(_socket_uri);
 
             // on connect

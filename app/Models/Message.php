@@ -1,11 +1,16 @@
 <?php
+/**
+ * Author: Archie, Disono (webmonsph@gmail.com)
+ * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
+ * Copyright 2016 Webmons Development Studio.
+ * License: Apache 2.0
+ */
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
-class Message extends Model
+class Message extends AppModel
 {
     private static $params;
     private static $query_params;
@@ -470,100 +475,52 @@ class Message extends Model
     }
 
     /**
-     * Add formatting on data
+     * Add formatting to data
      *
-     * @param $query
-     * @param array $params
-     * @return null
+     * @param $row
+     * @return mixed
      */
-    private static function _format($query, $params = [])
+    public static function _dataFormatting($row)
     {
-        if (isset($params['single'])) {
-            if (!$query) {
-                return null;
-            }
+        // avatar image
+        $row->from_avatar = get_image($row->from_image_id, 'avatar');
+        if (!isset($params['group_id'])) {
+            $row->to_avatar = get_image($row->to_image_id, 'avatar');
+        }
 
-            // avatar image
-            $query->from_avatar = get_image($query->from_image_id, 'avatar');
-            if (!isset($params['group_id'])) {
-                $query->to_avatar = get_image($query->to_image_id, 'avatar');
-            }
+        // file url
+        $row->file = null;
+        if (in_array($row->type, ['image', 'video', 'file', 'doc'])) {
+            $row->file = url('private/any/' . $row->message);
+        }
 
-            // file url
-            $query->file = null;
-            if (in_array($query->type, ['image', 'video', 'file', 'doc'])) {
-                $query->file = url('private/any/' . $query->message);
-            }
+        // format date and time
+        $row->formatted_created_at = human_date($row->created_at);
 
-            // format date and time
-            $query->formatted_created_at = human_date($query->created_at);
+        // latest (Inbox)
+        // Laravel dirty works for Group By and Order By
+        if (isset($params['to_id']) && isset($params['from_id']) && isset($params['group_by'])) {
+            $latest = self::where('from_id', $row->to_id)
+                ->where('to_id', $row->from_id)
+                ->orderBy('created_at', 'DESC')
+                ->first();
 
-            // latest (Inbox)
-            // Laravel dirty works for Group By and Order By
-            if (isset($params['to_id']) && isset($params['from_id']) && isset($params['group_by'])) {
-                $latest = self::where('from_id', $query->to_id)
-                    ->where('to_id', $query->from_id)
-                    ->orderBy('created_at', 'DESC')
-                    ->first();
-
-                if ($latest) {
-                    $query->message = $latest->message;
-
-                    // format date and time
-                    $query->formatted_created_at = human_date($latest->created_at);
-
-                    // file url
-                    if (in_array($latest->type, ['image', 'video', 'file', 'doc'])) {
-                        $query->file = url('private/any/' . $latest->message);
-                    }
-                }
-            }
-
-            // limit text message
-            $query->limit_message = str_limit($query->message, 32);
-        } else {
-            foreach ($query as $row) {
-                // avatar image
-                $row->from_avatar = get_image($row->from_image_id, 'avatar');
-                if (!isset($params['group_id'])) {
-                    $row->to_avatar = get_image($row->to_image_id, 'avatar');
-                }
-
-                // file url
-                $row->file = null;
-                if (in_array($row->type, ['image', 'video', 'file', 'doc'])) {
-                    $row->file = url('private/any/' . $row->message);
-                }
+            if ($latest) {
+                $row->message = $latest->message;
 
                 // format date and time
-                $row->formatted_created_at = human_date($row->created_at);
+                $row->formatted_created_at = human_date($latest->created_at);
 
-                // latest (Inbox)
-                // Laravel dirty works for Group By and Order By
-                if (isset($params['to_id']) && isset($params['from_id']) && isset($params['group_by'])) {
-                    $latest = self::where('from_id', $row->to_id)
-                        ->where('to_id', $row->from_id)
-                        ->orderBy('created_at', 'DESC')
-                        ->first();
-
-                    if ($latest) {
-                        $row->message = $latest->message;
-
-                        // format date and time
-                        $row->formatted_created_at = human_date($latest->created_at);
-
-                        // file url
-                        if (in_array($latest->type, ['image', 'video', 'file', 'doc'])) {
-                            $row->file = url('private/any/' . $latest->message);
-                        }
-                    }
+                // file url
+                if (in_array($latest->type, ['image', 'video', 'file', 'doc'])) {
+                    $row->file = url('private/any/' . $latest->message);
                 }
-
-                // limit text message
-                $row->limit_message = str_limit($row->message, 32);
             }
         }
 
-        return $query;
+        // limit text message
+        $row->limit_message = str_limit($row->message, 32);
+
+        return $row;
     }
 }

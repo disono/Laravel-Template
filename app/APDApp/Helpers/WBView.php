@@ -4,6 +4,7 @@
  * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
  * License: Apache 2.0
  */
+
 namespace App\APDApp\Helpers;
 
 use GrahamCampbell\HTMLMin\Facades\HTMLMin;

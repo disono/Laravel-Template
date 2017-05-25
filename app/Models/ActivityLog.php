@@ -5,6 +5,7 @@
  * Copyright 2016 Webmons Development Studio.
  * License: Apache 2.0
  */
+
 namespace App\Models;
 
 use Illuminate\Support\Facades\DB;
@@ -118,39 +119,22 @@ class ActivityLog extends AppModel
     }
 
     /**
-     * Add formatting on data
+     * Add formatting to data
      *
-     * @param $query
-     * @param array $params
-     * @return null
+     * @param $row
+     * @return mixed
      */
-    public static function _format($query, $params = [])
+    public static function _dataFormatting($row)
     {
-        if (isset($params['single'])) {
-            if (!$query) {
-                return null;
-            }
-
-            if ($query->content) {
-                $query->content = json_decode($query->content, true);
-            } else {
-                $query->content = [];
-            }
-
-            $query->formatted_created_at = human_date($query->created_at);
+        if ($row->content) {
+            $row->content = json_decode($row->content, true);
         } else {
-            foreach ($query as $row) {
-                if ($row->content) {
-                    $row->content = json_decode($row->content, true);
-                } else {
-                    $row->content = [];
-                }
-
-                $row->formatted_created_at = human_date($row->created_at);
-            }
+            $row->content = [];
         }
 
-        return $query;
+        $row->formatted_created_at = human_date($row->created_at);
+
+        return $row;
     }
 
     /**

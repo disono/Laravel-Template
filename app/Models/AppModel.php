@@ -10,6 +10,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class AppModel extends Model
 {
@@ -66,7 +67,7 @@ class AppModel extends Model
      * @param $data
      * @return array|string
      */
-    private static function _extractIncExcData($data)
+    public static function _extractIncExcData($data)
     {
         // if string e.g. column_name:value1,value2|column_name:value1,value2
         if (is_string($data)) {
@@ -257,12 +258,117 @@ class AppModel extends Model
             if (!$query) {
                 return null;
             }
+
+            static::_dataFormatting($query);
         } else {
             foreach ($query as $row) {
-
+                static::_dataFormatting($row);
             }
         }
 
         return $query;
+    }
+
+    /**
+     * Add formatting to data
+     *
+     * @param $row
+     * @return mixed
+     */
+    public static function _dataFormatting($row)
+    {
+        return $row;
+    }
+
+    /**
+     * Clean Update
+     *
+     * @param $id
+     * @param $inputs
+     * @param array $writable_columns
+     * @param $column_name
+     * @return array|bool
+     */
+    protected static function _cleanUpdate($id, $inputs, $writable_columns = [], $column_name = null)
+    {
+        $query = null;
+
+        // where
+        if (!$column_name) {
+            $column_name = 'id';
+        }
+
+        // let's find the query
+        if ($id && !is_array($column_name)) {
+            $query = self::where($column_name, $id);
+        } else {
+            $i = 0;
+
+            foreach ($column_name as $key => $value) {
+                if (!in_array($key, $writable_columns)) {
+                    return false;
+                }
+
+                if (!$i) {
+                    $query = self::where($key, $value);
+                } else {
+                    if ($query) {
+                        $query->where($key, $value);
+                    }
+                }
+
+                $i++;
+            }
+        }
+
+        // make sure the data is valid and clean
+        $update = self::_cleanInputs($inputs, $writable_columns);
+
+        // check if data exists
+        if (!$query->first()) {
+            return false;
+        }
+
+        return [$query, $update];
+    }
+
+    /**
+     * Make sure all inputs is on writable columns
+     *
+     * @param $inputs
+     * @param array $writable_columns
+     * @return array
+     */
+    protected static function _cleanInputs($inputs, $writable_columns = [])
+    {
+        $values = [];
+
+        foreach ($inputs as $key => $value) {
+            if (in_array($key, $writable_columns)) {
+                $values[$key] = $value;
+            }
+        }
+
+        return $values;
+    }
+
+    /**
+     * Column names on table
+     *
+     * @param $table_name
+     * @param array $exclude
+     * @return mixed
+     */
+    protected static function _columnNames($table_name, $exclude = ['id', 'created_at', 'updated_at'])
+    {
+        $columns = Schema::getColumnListing($table_name);
+
+        foreach ($exclude as $exclude_names) {
+            foreach (array_keys($columns, $exclude_names) as $key) {
+                unset($columns[$key]);
+            }
+        }
+
+        return array_values($columns);
     }
 }

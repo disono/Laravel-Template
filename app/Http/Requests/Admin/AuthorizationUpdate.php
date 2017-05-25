@@ -5,6 +5,7 @@
  * Copyright 2016 Webmons Development Studio.
  * License: Apache 2.0
  */
+
 namespace App\Http\Requests\Admin;
 
 class AuthorizationUpdate extends AdminRequest

@@ -49,7 +49,46 @@
                             @endif
                         </div>
 
-                        <button type="submit" class="btn btn-primary"><i class="fa fa-floppy-o"></i> Save Changes</button>
+                        <div class="form-group{{ $errors->has('parent_id') ? ' has-error' : '' }}">
+                            <label for="parent_id">Parent Category</label>
+                            <select name="parent_id" id="parent_id" class="form-control">
+                                <option value="">Select parent category</option>
+                                @foreach(\App\Models\PageCategory::nestedToTabs() as $row)
+                                    <option value="{{$row->id}}" {{is_selected($row->id, $page_category->parent_id)}}>{{$row->name}}</option>
+                                @endforeach
+                            </select>
+
+                            @if ($errors->has('parent_id'))
+                                <span class="help-block">{{ $errors->first('parent_id') }}</span>
+                            @endif
+                        </div>
+
+                        <div class="form-group {{ $errors->has('is_link') ? ' has-error' : '' }}">
+                            <div class="checkbox">
+                                <input type="checkbox" id="is_link" name="is_link"
+                                       value="1" {{($page_category->is_link) ? 'checked' : null}}>
+                                <label for="is_link">
+                                    Link
+                                </label>
+                            </div>
+
+                            @if ($errors->has('is_link'))
+                                <span class="help-block">{{ $errors->first('is_link') }}</span>
+                            @endif
+                        </div>
+
+                        <div class="form-group{{ $errors->has('external_link') ? ' has-error' : '' }}">
+                            <label for="external_link">External Link</label>
+                            <input type="text" class="form-control" name="external_link"
+                                   id="external_link" placeholder="External Link" value="{{$page_category->external_link}}">
+
+                            @if ($errors->has('external_link'))
+                                <span class="help-block">{{ $errors->first('external_link') }}</span>
+                            @endif
+                        </div>
+
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-floppy-o"></i> Save Changes
+                        </button>
                     </form>
                 </div>
             </div>

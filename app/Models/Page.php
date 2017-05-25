@@ -5,6 +5,7 @@
  * Copyright 2016 Webmons Development Studio.
  * License: Apache 2.0
  */
+
 namespace App\Models;
 
 use Illuminate\Support\Facades\DB;
@@ -40,11 +41,25 @@ class Page extends AppModel
         $slug = DB::raw('(' . self::_pageSlug() . ')');
         $select[] = DB::raw($slug . ' as slug');
 
+        // month name
+        $select[] = DB::raw('(DATE_FORMAT(' . $table_name . '.created_at, "%M")) AS month_name');
+        // day name (01, 02, 10 etc.)
+        $select[] = DB::raw('(DATE_FORMAT(' . $table_name . '.created_at, "%e")) AS day_name');
+        // year name four digits 2017
+        $select[] = DB::raw('(DATE_FORMAT(' . $table_name . '.created_at, "%Y")) AS year_name');
+
         $query = self::select($select)
             ->join('page_categories', $table_name . '.page_category_id', '=', 'page_categories.id');
 
         if (isset($params['category_slug'])) {
             $query->where(DB::raw('(' . self::_pageCategorySlug() . ')'), $params['category_slug']);
+        } else if (isset($params['category_slug_inc'])) {
+            $cat_slugs = $params['category_slug_inc'];
+            if (!is_array($cat_slugs) && is_string($cat_slugs)) {
+                $cat_slugs = explode('|', $cat_slugs);
+            }
+
+            $query->whereIn(DB::raw('(' . self::_pageCategorySlug() . ')'), $cat_slugs);
         }
 
         if (isset($params['slug'])) {
@@ -62,7 +77,39 @@ class Page extends AppModel
             $slug
         ]);
 
-        $query->orderBy($table_name . '.created_at', 'DESC');
+        // search year
+        // 2017
+        if (isset($params['search_year'])) {
+            $query->where(DB::raw('DATE_FORMAT(' . $table_name . '.created_at, "%Y")'), $params['search_year']);
+        }
+
+        // search month
+        // January
+        if (isset($params['search_month'])) {
+            $query->where(DB::raw('DATE_FORMAT(' . $table_name . '.created_at, "%M")'), $params['search_month']);
+        }
+
+        // search day
+        // 01
+        if (isset($params['search_day'])) {
+            $query->where(DB::raw('DATE_FORMAT(' . $table_name . '.created_at, "%e")'), $params['search_day']);
+        }
+
+        if (isset($params['order_by_month'])) {
+            // order by month and group by
+            $query->groupBy(DB::raw('DATE_FORMAT(' . $table_name . '.created_at, "%M")'));
+            $query->orderBy(DB::raw('DATE_FORMAT(' . $table_name . '.created_at, "%m")'), 'DESC');
+        } else if (isset($params['order_by_day'])) {
+            // order by day and group by
+            $query->groupBy(DB::raw('DATE_FORMAT(' . $table_name . '.created_at, "%e")'));
+            $query->orderBy(DB::raw('DATE_FORMAT(' . $table_name . '.created_at, "%e")'), 'DESC');
+        } else if (isset($params['order_by_year'])) {
+            // order by year and group by
+            $query->groupBy(DB::raw('DATE_FORMAT(' . $table_name . '.created_at, "%Y")'));
+            $query->orderBy(DB::raw('DATE_FORMAT(' . $table_name . '.created_at, "%Y")'), 'DESC');
+        } else {
+            $query->orderBy($table_name . '.created_at', 'DESC');
+        }
 
         if (isset($params['object'])) {
             return $query;
@@ -89,6 +136,52 @@ class Page extends AppModel
     {
         $params['all'] = true;
         return self::get($params);
+    }
+
+    /**
+     * Top pages (latest)
+     *
+     * @param string $category
+     * @param int $limit
+     * @return null
+     * @internal param array $params
+     */
+    public static function latest($category = null, $limit = 5)
+    {
+        $params['object'] = true;
+        if ($category) {
+            $params['category_slug_inc'] = $category;
+        }
+
+        return self::_format(self::get($params)->limit($limit)->get());
+    }
+
+    /**
+     * Archive list
+     *
+     * @param array $params
+     * @return array
+     */
+    public static function archive($params = [])
+    {
+        $years = self::get(array_merge([
+            'order_by_year' => true,
+            'all' => true
+        ], $params));
+
+        $ar = [];
+        foreach ($years as $yr) {
+            $ar[] = [
+                'top' => $yr,
+                'sub' => self::get([
+                    'search_year' => $yr->year_name,
+                    'order_by_month' => true,
+                    'all' => true
+                ])
+            ];
+        }
+
+        return $ar;
     }
 
     /**
@@ -128,6 +221,32 @@ class Page extends AppModel
     private static function _pageSlug()
     {
         return 'SELECT name FROM slugs WHERE slugs.source_id = pages.id AND slugs.source_type = "page"';
+    }
+
+    /**
+     * Add formatting to data
+     *
+     * @param $row
+     * @return mixed
+     */
+    public static function _dataFormatting($row)
+    {
+        // images
+        $row->images = Image::getAll([
+            'type' => 'page',
+            'source_id' => $row->id
+        ]);
+
+        // default image
+        $row->cover = get_image((count($row->images)) ? $row->images[0]->filename : null);
+
+        // mini content
+        $row->mini_content = str_limit(strip_tags($row->content), 32);
+
+        // url
+        $row->url = url($row->slug);
+
+        return $row;
     }
 
     /**
@@ -252,56 +371,6 @@ class Page extends AppModel
                 }
             }
         }
-    }
-
-    /**
-     * Add formatting on data
-     *
-     * @param $query
-     * @param array $params
-     * @return null
-     */
-    public static function _format($query, $params = [])
-    {
-        if (isset($params['single'])) {
-            if (!$query) {
-                return null;
-            }
-
-            // images
-            $query->images = Image::getAll([
-                'type' => 'page',
-                'source_id' => $query->id
-            ]);
-
-            // default image
-            $query->cover = get_image((count($query->images)) ? $query->images[0]->filename : null);
-
-            // mini content
-            $query->mini_content = str_limit(strip_tags($query->content), 32);
-
-            // url
-            $query->url = url($query->slug);
-        } else {
-            foreach ($query as $row) {
-                // images
-                $row->images = Image::getAll([
-                    'type' => 'page',
-                    'source_id' => $row->id
-                ]);
-
-                // default image
-                $row->cover = get_image((count($row->images)) ? $row->images[0]->filename : null);
-
-                // mini content
-                $row->mini_content = str_limit(strip_tags($row->content), 32);
-
-                // url
-                $row->url = url($row->slug);
-            }
-        }
-
-        return $query;
     }
 
     /**

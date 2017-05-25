@@ -5,6 +5,7 @@
  * Copyright 2016 Webmons Development Studio.
  * License: Apache 2.0
  */
+
 namespace App\Models;
 
 use Illuminate\Support\Facades\DB;
@@ -12,8 +13,20 @@ use Illuminate\Support\Facades\DB;
 class PageCategory extends AppModel
 {
     protected static $writable_columns = [
-        'name', 'description'
+        'parent_id', 'name', 'description',
+        'is_link', 'external_link'
     ];
+
+    /**
+     * List categories
+     *
+     * @param array $array
+     * @param int $count
+     * @param bool $include_tab
+     * @param bool $strong
+     * @return mixed
+     */
+    public static $list = [];
 
     public function __construct(array $attributes = [])
     {
@@ -104,6 +117,235 @@ class PageCategory extends AppModel
     }
 
     /**
+     * Category tree
+     *
+     * @param array $params
+     * @return mixed
+     */
+    public static function getTree($params = [])
+    {
+        $params['all'] = true;
+        $query = self::get($params);
+
+        $categories = [];
+        foreach ($query as $category) {
+            $categories[] = [
+                'id' => $category->id,
+                'name' => $category->name,
+                'description' => $category->description,
+                'parent_id' => $category->parent_id
+            ];
+        }
+
+        $map = array(
+            0 => array('sub_categories' => array())
+        );
+
+        foreach ($categories as &$category) {
+            $category['sub_categories'] = array();
+            $map[$category['id']] = &$category;
+        }
+
+        foreach ($categories as &$category) {
+            $map[$category['parent_id']]['sub_categories'][] = &$category;
+        }
+
+        return $map[0]['sub_categories'];
+    }
+
+    /**
+     * Add formatting
+     *
+     * @param array $array
+     * @param int $count
+     * @param bool $include_tab
+     * @param bool $strong
+     * @return array
+     */
+    public static function print_ar($array = [], $count = 0, $include_tab = true, $strong = false)
+    {
+        $i = 0;
+        $tab = '';
+        while ($i != $count) {
+            $i++;
+            $tab .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+        }
+
+        foreach ($array as $key) {
+            $tab_primary = substr($tab, 0, -12);
+
+            if ($strong) {
+                if ($include_tab) {
+                    $key['name'] = $tab_primary . (($tab === '') ? '<strong>' . $key['name'] . '</strong>' : $key['name']);
+                } else {
+                    $key['name'] = (($tab === '') ? '<strong>' . $key['name'] . '</strong>' : $key['name']);
+                }
+            } else {
+                if ($include_tab) {
+                    $key['name'] = $tab_primary . (($tab === '') ? $key['name'] : $key['name']);
+                } else {
+                    $key['name'] = (($tab === '') ? $key['name'] : $key['name']);
+                }
+            }
+
+            $key['tab'] = $tab;
+            self::$list[] = (object)$key;
+
+            if (count($key['sub_categories']) > 0) {
+                $count++;
+                self::print_ar($key['sub_categories'], $count, $include_tab);
+                $count--;
+            }
+        }
+
+        return self::$list;
+    }
+
+    /**
+     * Formatted tab list
+     *
+     * @param array $params
+     * @return mixed
+     */
+    public static function nestedToTabs($params = [])
+    {
+        $include_tab = true;
+        if (isset($params['include_tab'])) {
+            $include_tab = $params['include_tab'];
+        }
+
+        $strong = false;
+        if (isset($params['strong'])) {
+            $strong = $params['strong'];
+        }
+
+        $data = self::print_ar(self::getTree($params), 0, $include_tab, $strong);
+
+        // query sub categories (counting)
+        $query = [
+            'all' => true
+        ];
+
+        if (isset($params['exclude'])) {
+            $query = array_merge($query, $params['exclude']);
+        }
+        $count_cat = count(self::get($query));
+
+        $query = [];
+        $num = 0;
+        foreach ($data as $row) {
+            if ($num < $count_cat) {
+                $query[] = $row;
+            }
+
+            $num++;
+        }
+
+        return $query;
+    }
+
+    /**
+     * Nested to ul
+     *
+     * @param $data
+     * @return string
+     */
+    public static function nested2ul($data)
+    {
+        $result = array();
+
+        if (sizeof($data) > 0) {
+            $result[] = '<ul style="list-style-type: none;">';
+
+            foreach ($data as $row) {
+                $result[] = sprintf(
+                    '<li><a href="' . url('pages?category_slug=' . $row['slug']) . '">%s</a> %s</li>',
+                    $row['name'],
+                    self::nested2ul($row['sub_categories'])
+                );
+            }
+
+            $result[] = '</ul>';
+        }
+
+        return implode($result);
+    }
+
+    /**
+     * Get the sub-menu for top category indicated (id)
+     *
+     * @param $id
+     *  The top menu
+     * @return null
+     */
+    public static function subMenu($id)
+    {
+        $top_menu = self::single($id);
+        $view = '';
+
+        if ($top_menu) {
+            // pages
+            $pages_top = Page::get([
+                'page_category_id' => $top_menu->id,
+                'all' => true
+            ]);
+            foreach ($pages_top as $page) {
+                $view .= '<li><a tabindex="-1" href="' . $page->url . '">' . $page->name . '</a></li>';
+            }
+
+            // sub-menu (page category)
+            $subs = self::get([
+                'parent_id' => $top_menu->id,
+                'all' => true
+            ]);
+            foreach ($subs as $cat) {
+                $view .= '<li class="dropdown-submenu">';
+                if ($cat->is_link) {
+                    $view .= '<a href="' . (($cat->external_link) ? $cat->external_link :
+                            url('pages?category_slug=' . $cat->slug)) . '">' . $cat->name . '</a>';
+                } else {
+                    $view .= '<a class="submenu" tabindex="-1" href="#">' . $cat->name . ' <span class="caret-right"></span></a>';
+                    $view .= self::subMenu($cat->id);
+                }
+                $view .= '</li>';
+            }
+        }
+
+        return ($view != '') ? '<ul class="dropdown-menu">' . $view . '</ul>' : '';
+    }
+
+    /**
+     * Category menu
+     *
+     * @param $include
+     * @return string
+     */
+    public static function categoryMenu($include)
+    {
+        $view = '';
+        foreach ($include as $id) {
+            $top_menu = self::single($id);
+
+            if ($top_menu) {
+                $view .= '<li class="dropdown">';
+                if ($top_menu->is_link) {
+                    $view .= '<a href="' . (($top_menu->external_link) ? $top_menu->external_link :
+                            url('pages?category_slug=' . $top_menu->slug)) . '">' . $top_menu->name . '</a>';
+                } else {
+                    $view .= '<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" ' .
+                        'aria-expanded="false">' . $top_menu->name . ' <span class="caret"></span></a>';
+                }
+
+                // sub-menu
+                $view .= self::subMenu($top_menu->id);
+                $view .= '</li>';
+            }
+        }
+
+        return $view;
+    }
+
+    /**
      * Store new data
      *
      * @param array $inputs
@@ -119,6 +361,14 @@ class PageCategory extends AppModel
                     $store[$key] = $value;
                 }
             }
+        }
+
+        if (!isset($store['parent_id'])) {
+            $store['parent_id'] = 0;
+        }
+
+        if (!isset($store['is_link'])) {
+            $store['is_link'] = 0;
         }
 
         $store['created_at'] = sql_date();
@@ -166,6 +416,13 @@ class PageCategory extends AppModel
         $update = [];
         $query = null;
 
+        // make sure parent id is not self
+        if (isset($inputs['parent_id'])) {
+            if ($id == $inputs['parent_id']) {
+                return false;
+            }
+        }
+
         if (!$column_name) {
             $column_name = 'id';
         }
@@ -212,6 +469,14 @@ class PageCategory extends AppModel
                     ]);
                 }
             }
+        }
+
+        if (!isset($update['parent_id'])) {
+            $update['parent_id'] = 0;
+        }
+
+        if (!isset($update['is_link'])) {
+            $update['is_link'] = 0;
         }
 
         // store to activity logs

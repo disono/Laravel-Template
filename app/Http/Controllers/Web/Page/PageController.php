@@ -10,6 +10,7 @@ namespace App\Http\Controllers\Web\Page;
 
 use App\Http\Controllers\Controller;
 use App\Models\Page;
+use App\Models\PageCategory;
 use App\Models\PageView;
 
 class PageController extends Controller
@@ -29,6 +30,32 @@ class PageController extends Controller
     {
         PageView::store();
         return $this->response('home');
+    }
+
+    /**
+     * List of pages
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function index()
+    {
+        $options = [];
+
+        // page category
+        $this->content['category'] = null;
+        if ($this->get('category_slug')) {
+            $this->content['category'] = PageCategory::single($this->get('category_slug'), 'slug');
+
+            if (!$this->content['category']) {
+                abort(404);
+            }
+        }
+
+        // list of pages
+        $this->content['pages'] = Page::get(request_options([
+            'search', 'category_slug', 'search_month', 'search_year'
+        ], $options));
+        return $this->response('index');
     }
 
     /**

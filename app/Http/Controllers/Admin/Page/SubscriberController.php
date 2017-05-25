@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Admin\Page;
 
-use App\Models\Subscriber;
 use App\Http\Controllers\Controller;
+use App\Models\Subscriber;
 
 class SubscriberController extends Controller
 {

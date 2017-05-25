@@ -2,20 +2,24 @@
     {{-- let's load the vendors javascript on session --}}
     <?php js_view_loader($scripts) ?>
 @elseif(isset($js_run))
-    <script>
-        var WBLoadJS = function () {
-            [
-                @foreach(js_view_runner() as $script_load)
-                    '{!! asset($script_load) . url_ext() !!}',
-                @endforeach
-            ].forEach(function (src) {
-                var script = document.createElement('script');
-                script.src = src;
-                script.async = false;
-                document.head.appendChild(script);
-            });
-        };
+    @foreach(js_view_runner() as $script_load)
+        <script src="{!! asset($script_load) . url_ext() !!}"></script>
+    @endforeach
 
-        {{-- Google Analytics --}}
+    <script>
+        setTimeout(function () {
+            console.log('All script is loaded.');
+
+            if (document.querySelector('#WBMainApp')) {
+                document.querySelector('#WBMainApp').style.display = null;
+            }
+
+            if (document.getElementById("loaderContent")) {
+                document.getElementById("loaderContent").remove();
+                document.getElementById("loaderStyles").remove();
+            }
+        }, 300);
     </script>
+
+    {{-- Google Analytics --}}
 @endif

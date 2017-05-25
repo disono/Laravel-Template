@@ -1,4 +1,10 @@
 <?php
+/**
+ * Author: Archie, Disono (webmonsph@gmail.com)
+ * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
+ * Copyright 2016 Webmons Development Studio.
+ * License: Apache 2.0
+ */
 
 namespace App\Models;
 
@@ -133,27 +139,16 @@ class Subscriber extends AppModel
     }
 
     /**
-     * Add formatting on data
+     * Add formatting to data
      *
-     * @param $query
-     * @param array $params
-     * @return null
+     * @param $row
+     * @return mixed
      */
-    public static function _format($query, $params = [])
+    public static function _dataFormatting($row)
     {
-        if (isset($params['single'])) {
-            if (!$query) {
-                return null;
-            }
+        $row->full_name = $row->first_name . ' ' . $row->last_name;
 
-            $query->full_name = $query->first_name . ' ' . $query->last_name;
-        } else {
-            foreach ($query as $row) {
-                $row->full_name = $row->first_name . ' ' . $row->last_name;
-            }
-        }
-
-        return $query;
+        return $row;
     }
 
     /**

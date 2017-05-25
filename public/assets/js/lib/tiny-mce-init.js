@@ -12,6 +12,8 @@ jQ(document).ready(function () {
         menubar: false,
         theme: 'modern',
 
+        height : "480",
+
         relative_urls: false,
         remove_script_host: false,
         convert_urls: true,
@@ -25,7 +27,7 @@ jQ(document).ready(function () {
 
         // list of menu
         toolbar: 'insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | ' +
-            'bullist numlist outdent indent | link image | preview media | forecolor backcolor',
+            'bullist numlist outdent indent | link image | preview media | forecolor backcolor | file_upload',
         image_advtab: true,
 
         // added styles
@@ -46,13 +48,19 @@ jQ(document).ready(function () {
             });
         },
 
-        // experimental (bootstrap components)
+        // add button for file upload
         setup: function (editor) {
-            editor.addButton('bootstrap', {
-                text: 'Components',
-                icon: false,
+            editor.addButton('file_upload', {
+                icon: 'fa fa-cloud-upload',
                 onclick: function () {
-                    editor.insertContent('');
+                    // modal to upload file
+                    WBHelper.fileChooser(function (data) {
+                        if (!data) {
+                            return;
+                        }
+
+                        editor.insertContent('<a href="' + data.path + '" target="_blank" class="btn btn-primary">Download</a>');
+                    });
                 }
             });
         }

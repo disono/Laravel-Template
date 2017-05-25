@@ -5,6 +5,7 @@
  * Copyright 2016 Webmons Development Studio.
  * License: Apache 2.0
  */
+
 namespace App\Http\Controllers\API\V1\Authenticate;
 
 use App\Http\Controllers\Controller;
@@ -37,7 +38,7 @@ class LoginController extends Controller
                 if (!$user->enabled) {
                     return failed_json_response('Your account is not enabled, please contact us.');
                 }
-                
+
                 // create token
                 $user = AuthenticationToken::createToken($user);
 

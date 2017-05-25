@@ -4,6 +4,7 @@
  * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
  * License: Apache 2.0
  */
+
 namespace App\APDApp\Helpers;
 
 class WBDate
@@ -48,6 +49,10 @@ class WBDate
      */
     public static function humanDate($date = null, $date_only = false)
     {
+        if ($date == '0000-00-00') {
+            return null;
+        }
+
         if ($date == null) {
             return date('F d Y' . (($date_only == true) ? '' : ' h:i A'), time());
         } else {

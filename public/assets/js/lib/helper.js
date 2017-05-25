@@ -150,8 +150,8 @@ var WBHelper = (function () {
                         jQ('[data-error-block]').remove();
                     }
 
-                    if (xhr.status == 422) {
-                        var response = (typeof xhr.responseText == 'string') ? xhr.responseText : "";
+                    if (xhr.status === 422) {
+                        var response = (typeof xhr.responseText === 'string') ? xhr.responseText : "";
                         WBErrors.run(JSON.parse(response), options);
                     }
 
@@ -233,7 +233,7 @@ var WBHelper = (function () {
                 var url = me.attr('href');
 
                 // default url
-                if (url && (url != '#') && (url != '/') && (url != '')) {
+                if (url && (url !== '#') && (url !== '/') && (url !== '')) {
                     options.url = url;
                 }
 
@@ -301,8 +301,8 @@ var WBHelper = (function () {
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
                         // validation errors
-                        if (jqXHR.status == 422) {
-                            var response = (typeof jqXHR.responseText == 'string') ? jqXHR.responseText : "";
+                        if (jqXHR.status === 422) {
+                            var response = (typeof jqXHR.responseText === 'string') ? jqXHR.responseText : "";
                             WBErrors.run(JSON.parse(response), options);
                         }
 
@@ -488,7 +488,7 @@ var WBHelper = (function () {
                         // this file is array
                         var array_cache_found = false;
                         for (var search_index = 0; search_index < found_array_files.length; search_index++) {
-                            if (found_array_files[search_index] == jQ(obj).attr('name')) {
+                            if (found_array_files[search_index] === jQ(obj).attr('name')) {
                                 array_cache_found = true;
                                 break;
                             }
@@ -711,13 +711,13 @@ var WBHelper = (function () {
 
                 var callback = me.attr('data-modal-callback');
                 callback = (callback) ? new Function(callback) : function () {
-                        console.log('Callback Confirm.');
+                    console.log('Callback Confirm.');
 
-                        // redirect
-                        if (href && me.attr('data-modal-redirect') == 'yes') {
-                            window.location = href;
-                        }
-                    };
+                    // redirect
+                    if (href && me.attr('data-modal-redirect') === 'yes') {
+                        window.location = href;
+                    }
+                };
 
                 WBHelper.modal(title, '<h4 class="text-danger">' + content + '</h4>', callback, 'Continue');
             });
@@ -743,9 +743,9 @@ var WBHelper = (function () {
 
                 var callback = me.attr('data-modal-callback');
                 callback = (callback) ? new Function(callback) : function () {
-                        console.log('Callback Confirm.');
-                        me.off('submit').submit();
-                    };
+                    console.log('Callback Confirm.');
+                    me.off('submit').submit();
+                };
 
                 WBHelper.modal(title, '<h4 class="text-danger">' + content + '</h4>', callback, 'Continue');
 
@@ -758,9 +758,10 @@ var WBHelper = (function () {
          */
         imageChooser: function (callback) {
             // reset the input
-            jQ('#chooserImageFile').val('');
+            jQ('#chooserMFFile').val('');
+            jQ('#imageListUploaded').html('');
 
-            jQ('.modal-image-chooser').modal({
+            jQ('.modal-mf-chooser').modal({
                 show: true
             });
 
@@ -769,7 +770,7 @@ var WBHelper = (function () {
 
             // view initializer for list images
             function view_images_list(response) {
-                var view = '<div class="row">';
+                var view = '';
 
                 for (var i = 0; i < response.length; i++) {
                     view += '<div class="col-xs-6 col-md-3">' +
@@ -779,8 +780,7 @@ var WBHelper = (function () {
                         '</div>';
                 }
 
-                view += '</div>';
-                jQ('#imageChooserList').html(view);
+                jQ('#imageListUploaded').append(view);
 
                 jQ('.image_chooser_data').off().on('click', function (e) {
                     e.preventDefault();
@@ -791,9 +791,10 @@ var WBHelper = (function () {
             }
 
             // response
-            function fetch_images() {
+            function fetch_media_files(params, callbackList) {
                 WBHelper.ajax({
-                    url: '/images',
+                    url: '/media-files',
+                    data: params,
                     type: 'GET',
                     success: function (data, textStatus, jqXHR) {
                         console.log('Response' + JSON.stringify(data));
@@ -801,30 +802,55 @@ var WBHelper = (function () {
                         if (data.success) {
                             var response = data.data;
                             view_images_list(response);
+
+                            if (callbackList) {
+                                callbackList(response);
+                            }
                         }
                     }
                 });
             }
 
             // fetch the images
-            fetch_images();
+            fetch_media_files({
+                request_type: 'images',
+                page: 1
+            });
+
+            // load more files
+            var page = 1;
+            jQ('#loadMoreImageFiles').off().on('click', function (e) {
+                e.preventDefault();
+                if (page === 1) {
+                    page++;
+                }
+
+                fetch_media_files({
+                    request_type: 'images',
+                    page: page
+                }, function (res) {
+                    if (res.length) {
+                        page++;
+                    }
+                });
+            });
 
             // images have been selected
-            jQ('#selectImageYes').off().on('click', function (e) {
+            jQ('#selectMFYes').off().on('click', function (e) {
                 e.preventDefault();
                 console.log('Selected Image');
 
                 // callback returns the image selected url
                 callback(selected_image);
-                jQ('.modal-image-chooser').modal('hide');
+                jQ('.modal-mf-chooser').modal('hide');
             });
 
             // upload image
-            jQ('#frmImageChooser').off().on('submit', function (e) {
+            jQ('#frmMFChooser').off().on('submit', function (e) {
                 e.preventDefault();
                 console.log('Submitting Form');
 
-                var file = jQ('#chooserImageFile').prop('files');
+                var file = jQ('#chooserMFFile').prop('files');
                 if (!file || !file[0]) {
                     console.debug('No file selected.');
                     return;
@@ -832,24 +858,161 @@ var WBHelper = (function () {
 
                 console.log(file[0]);
 
-                WBHelper.upload('/image/upload', {
-                    files: {image: file[0]}
+                WBHelper.upload('/media-file/upload', {
+                    files: {image: file[0]},
+                    inputs: {request_type: 'images'}
                 }, function () {
                     // before sending
-                    WBHelper.disableFormInputs('#frmImageChooser');
+                    WBHelper.disableFormInputs('#frmMFChooser');
                 }, function (res) {
                     // success
-                    WBHelper.enableFormInputs('#frmImageChooser');
+                    WBHelper.enableFormInputs('#frmMFChooser');
 
                     // refresh image list
                     var response = res.data;
+                    // reset the list
+                    jQ('#imageListUploaded').html('');
                     view_images_list(response);
 
                     // reset the input
-                    jQ('#chooserImageFile').val('');
+                    jQ('#chooserMFFile').val('');
                 }, function (res) {
                     // error
-                    WBHelper.enableFormInputs('#frmImageChooser');
+                    WBHelper.enableFormInputs('#frmMFChooser');
+                });
+            });
+        },
+
+        /**
+         * File modal chooser
+         */
+        fileChooser: function (callback) {
+            // reset the input
+            jQ('#chooserFile').val('');
+            jQ('#fileListUploaded').html('');
+
+            jQ('.modal-file-chooser').modal({
+                show: true
+            });
+
+            // view initializer for list file
+            function view_files_list(response) {
+                var view = '';
+
+                for (var i = 0; i < response.length; i++) {
+                    view += '<tr>' +
+                        '<td>' + response[i].title + '</td>' +
+                        '<td><a href="#" class="file_chooser_data" data-index="' + i + '">Select</a></td>' +
+                        '</tr>';
+                }
+
+                jQ('#fileListUploaded').append(view);
+
+                jQ('.file_chooser_data').off().on('click', function (e) {
+                    e.preventDefault();
+                    console.log(response[parseInt(jQ(this).attr('data-index'))]);
+
+                    // close the modal
+                    console.log('Selected File');
+
+                    // callback returns the image selected url
+                    callback(response[parseInt(jQ(this).attr('data-index'))]);
+                    jQ('.modal-file-chooser').modal('hide');
+                });
+            }
+
+            // response
+            function fetch_media_files(params, callbackList) {
+                WBHelper.ajax({
+                    url: '/media-files',
+                    data: params,
+                    type: 'GET',
+                    success: function (data, textStatus, jqXHR) {
+                        console.log('Response' + JSON.stringify(data));
+
+                        if (data.success) {
+                            var response = data.data;
+                            view_files_list(response);
+
+                            if (callbackList) {
+                                callbackList(response);
+                            }
+                        }
+                    }
+                });
+            }
+
+            // fetch the images
+            fetch_media_files({
+                request_type: 'files',
+                page: 1
+            });
+
+            // load more files
+            var page = 1;
+            jQ('#loadMoreFiles').off().on('click', function (e) {
+                e.preventDefault();
+                if (page === 1) {
+                    page++;
+                }
+
+                fetch_media_files({
+                    request_type: 'files',
+                    page: page
+                }, function (res) {
+                    if (res.length) {
+                        page++;
+                    }
+                });
+            });
+
+            // upload file
+            jQ('#frmChooser').off().on('submit', function (e) {
+                e.preventDefault();
+                console.log('Submitting Form');
+
+                if (!jQ('#titleFile').val()) {
+                    WBErrors.toastMessage({
+                        title: 'Oops title is required',
+                        message: 'Please indicate the title or name of the file.',
+                        type: 'error'
+                    });
+
+                    return;
+                }
+
+                var file = jQ('#chooserFile').prop('files');
+                if (!file || !file[0]) {
+                    console.debug('No file selected.');
+                    return;
+                }
+
+                console.log(file[0]);
+
+                WBHelper.upload('/media-file/upload', {
+                    files: {file: file[0]},
+                    inputs: {request_type: 'files', title: jQ('#titleFile').val(), description: jQ('#descriptionFile').val()}
+                }, function () {
+                    // before sending
+                    WBHelper.disableFormInputs('#frmChooser');
+                }, function (res) {
+                    alert(JSON.stringify(res));
+                    // success
+                    WBHelper.enableFormInputs('#frmChooser');
+
+                    // refresh image list
+                    var response = res.data;
+                    // reset the list
+                    jQ('#fileListUploaded').html('');
+                    view_files_list(response);
+
+                    // reset the input
+                    jQ('#chooserFile').val('');
+                    jQ('#titleFile').val('');
+                    jQ('#descriptionFile').val('');
+                }, function (res) {
+                    // error
+                    WBHelper.enableFormInputs('#frmChooser');
                 });
             });
         },
@@ -935,6 +1098,9 @@ var WBDate = (function () {
             });
         },
 
+        /**
+         * Time
+         */
         timePicker: function () {
             jQ('.time-picker').pickatime({
                 format: 'hh:i A'
@@ -963,7 +1129,7 @@ var WBErrors = (function () {
          * @param data
          */
         run: function (data, options) {
-            if (typeof data == 'object') {
+            if (typeof data === 'object') {
                 // initialize defaults
                 data = WBHelper.initDefaults({
                     success: false,
@@ -976,11 +1142,11 @@ var WBErrors = (function () {
                         var errorType = options.errorType;
 
                         // type of error messages
-                        if (errorType == 'bottomMessage') {
+                        if (errorType === 'bottomMessage') {
                             WBErrors.errorType(data.errors, options.formId, options.statusContainer, null, 'bottomMessage');
-                        } else if (errorType == 'responseMessage') {
+                        } else if (errorType === 'responseMessage') {
                             WBErrors.errorType(data.errors, options.formId, options.statusContainer, options.removeMessage, 'responseMessage');
-                        } else if (errorType == 'toastMessage') {
+                        } else if (errorType === 'toastMessage') {
                             WBErrors.errorType(data.errors, null, null, null, 'toastMessage');
                         }
                     }
@@ -999,20 +1165,20 @@ var WBErrors = (function () {
          */
         errorType: function (errors, formId, container, removeMessage, errorType) {
             // type of error messages
-            if (errorType == 'bottomMessage') {
+            if (errorType === 'bottomMessage') {
                 WBErrors.bottomMessage({
                     errors: errors,
                     formId: formId,
                     container: container
                 });
-            } else if (errorType == 'responseMessage') {
+            } else if (errorType === 'responseMessage') {
                 WBErrors.responseMessage({
                     errors: errors,
                     formId: formId,
                     container: container,
                     removeMessage: removeMessage
                 });
-            } else if (errorType == 'toastMessage') {
+            } else if (errorType === 'toastMessage') {
                 WBErrors.toastMessage({
                     title: 'Oops error occurred',
                     message: errors,
@@ -1071,7 +1237,7 @@ var WBErrors = (function () {
                                 jQ(this).remove();
                             });
 
-                            if (_private.errorTimeout != null) {
+                            if (_private.errorTimeout !== null) {
                                 _private.errorTimeout = null;
                             }
                         }, _private.errorTimer);
@@ -1136,7 +1302,7 @@ var WBErrors = (function () {
                         // show toast instead
                         if (jQ(options.formId + ' [name="' + inputName + '"]').length) {
                             // if input field is hidden show error as toast
-                            if (jQ(options.formId + ' [name="' + inputName + '"]').attr('type') == 'hidden') {
+                            if (jQ(options.formId + ' [name="' + inputName + '"]').attr('type') === 'hidden') {
                                 WBErrors.toastMessage({message: error, type: 'error'});
                             }
                         } else {
@@ -1241,7 +1407,7 @@ var WBErrors = (function () {
             jQ('.error-block').remove();
 
             // clear all running messages
-            if (_private.errorTimeout != null) {
+            if (_private.errorTimeout !== null) {
                 _private.errorTimeout = null;
             }
         },
@@ -1389,11 +1555,11 @@ var WBCookie = (function () {
             for (var i = 0; i < ca.length; i++) {
                 var c = ca[i];
 
-                while (c.charAt(0) == ' ') {
+                while (c.charAt(0) === ' ') {
                     c = c.substring(1);
                 }
 
-                if (c.indexOf(name) == 0) {
+                if (c.indexOf(name) === 0) {
                     return c.substring(name.length, c.length);
                 }
             }
@@ -1410,7 +1576,7 @@ var WBCookie = (function () {
         check: function (key) {
             var user = WBCookie.get(key);
 
-            return (user) ? true : false;
+            return !!(user);
         },
 
         /**
@@ -1547,7 +1713,7 @@ var WBMap = (function () {
             };
 
             _directionsService.route(request, function (result, status) {
-                if (status == 'OK') {
+                if (status === 'OK') {
                     _directionsDisplay.setDirections(result);
 
                     // center the map to destination
@@ -1616,7 +1782,7 @@ var WBMap = (function () {
             }
 
             _centerTimer = setTimeout(function () {
-                if (lat == null || lng == null) {
+                if (lat === null || lng === null) {
                     var bounds = new google.maps.LatLngBounds();
                     for (var i = 0; i < _markers.length; i++) {
                         bounds.extend(_markers[i].getPosition());
@@ -1753,7 +1919,7 @@ var WBLeafMap = (function () {
             searchBox.addListener('places_changed', function () {
                 var places = searchBox.getPlaces();
 
-                if (places.length == 0) {
+                if (places.length === 0) {
                     return;
                 }
 

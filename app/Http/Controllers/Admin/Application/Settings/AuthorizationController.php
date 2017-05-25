@@ -5,6 +5,7 @@
  * Copyright 2016 Webmons Development Studio.
  * License: Apache 2.0
  */
+
 namespace App\Http\Controllers\Admin\Application\Settings;
 
 use App\Http\Controllers\Controller;

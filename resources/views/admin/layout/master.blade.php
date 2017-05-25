@@ -26,6 +26,9 @@
     {{-- ICON --}}
     <link rel="icon" type="image/png" href="{{url('assets/img/placeholder/favicon.png')}}"/>
 
+    {{-- Styles --}}
+    @include('vendor.css', ['load_admin_styles' => true])
+
     <style id="loaderStyles">
         html, body {
             margin: 0;
@@ -75,18 +78,16 @@
         </div>
     </div>
 
+    {{-- modals --}}
     @include('modals.include')
 
     {{-- javascript dynamic container --}}
     <div id="dynamic_container"></div>
 </main>
 
-{{-- Styles --}}
-@include('vendor.css', ['load_admin_styles' => true])
-
 {{-- Scripts --}}
 @if(env('APP_DEBUG'))
-    @include('vendor.loaders', array('after_load' => true, 'scripts' => [
+    @include('vendor.loaders', ['after_load' => true, 'scripts' => [
         'https://maps.googleapis.com/maps/api/js?key=' . env('GOOGLE_API_KEY') . '&libraries=places',
 
         'assets/js/vendor.js',
@@ -95,7 +96,7 @@
         'assets/js/main.js',
         'assets/js/app.js',
         'assets/js/admin/main.js'
-    ]))
+    ]])
 @else
     @include('vendor.loaders', ['after_load' => true, 'scripts' => [
         'https://maps.googleapis.com/maps/api/js?key=' . env('GOOGLE_API_KEY') . '&libraries=places',

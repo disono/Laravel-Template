@@ -186,64 +186,35 @@ class Event extends AppModel
     }
 
     /**
-     * Add formatting on data
+     * Add formatting to data
      *
-     * @param $query
-     * @param array $params
-     * @return null
+     * @param $row
+     * @return mixed
      */
-    public static function _format($query, $params = [])
+    public static function _dataFormatting($row)
     {
-        if (isset($params['single'])) {
-            if (!$query) {
-                return null;
-            }
+        // images
+        $row->images = Image::getAll([
+            'type' => 'event',
+            'source_id' => $row->id
+        ]);
 
-            // images
-            $query->images = Image::getAll([
-                'type' => 'event',
-                'source_id' => $query->id
-            ]);
+        // default image
+        $row->cover = get_image((count($row->images)) ? $row->images[0]->filename : null);
 
-            // default image
-            $query->cover = get_image((count($query->images)) ? $query->images[0]->filename : null);
+        // format
+        $row->formatted_start_date = ($row->start_date) ? date('F d, Y', strtotime($row->start_date)) : null;
+        $row->formatted_end_date = ($row->end_date) ? date('F d, Y', strtotime($row->end_date)) : null;
+        $row->formatted_start_time = ($row->start_time) ? date('h:i A', strtotime($row->start_time)) : null;
+        $row->formatted_end_time = ($row->end_time) ? date('h:i A', strtotime($row->end_time)) : null;
 
-            // format
-            $query->formatted_start_date = ($query->start_date) ? date('F d, Y', strtotime($query->start_date)) : null;
-            $query->formatted_end_date = ($query->end_date) ? date('F d, Y', strtotime($query->end_date)) : null;
-            $query->formatted_start_time = ($query->start_time) ? date('h:i A', strtotime($query->start_time)) : null;
-            $query->formatted_end_time = ($query->end_time) ? date('h:i A', strtotime($query->end_time)) : null;
+        // mini content
+        $row->mini_content = str_limit(strip_tags($row->content), 32);
 
-            // mini content
-            $query->mini_content = str_limit(strip_tags($query->content), 32);
+        // url
+        $row->url = url('event/' . $row->slug);
 
-            // url
-            $query->url = url('event/' . $query->slug);
-        } else {
-            foreach ($query as $row) {
-                // images
-                $row->images = Image::getAll([
-                    'type' => 'event',
-                    'source_id' => $row->id
-                ]);
-
-                // default image
-                $row->cover = get_image((count($row->images)) ? $row->images[0]->filename : null);
-
-                // format
-                $row->formatted_start_date = ($row->start_date) ? date('F d, Y', strtotime($row->start_date)) : null;
-                $row->formatted_end_date = ($row->end_date) ? date('F d, Y', strtotime($row->end_date)) : null;
-                $row->formatted_start_time = ($row->start_time) ? date('h:i A', strtotime($row->start_time)) : null;
-                $row->formatted_end_time = ($row->end_time) ? date('h:i A', strtotime($row->end_time)) : null;
-
-                // mini content
-                $row->mini_content = str_limit(strip_tags($row->content), 32);
-
-                // url
-                $row->url = url('event/' . $row->slug);
-            }
-        }
-        return $query;
+        return $row;
     }
 
     /**

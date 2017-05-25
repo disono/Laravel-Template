@@ -22,7 +22,7 @@
                             <div class="col-xs-12 col-md-9">
                                 <div class="form-group{{ $errors->has('content') ? ' has-error' : '' }}">
                                     <label for="content">Content*</label>
-                                    <textarea name="content" id="content" class="form-control" rows="24"
+                                    <textarea name="content" id="content" class="form-control" rows="32"
                                               placeholder="Description">{!! $page->content !!}</textarea>
 
                                     @if ($errors->has('content'))
@@ -47,7 +47,8 @@
                                     <label for="page_category_id">Category*</label>
                                     <select name="page_category_id" id="page_category_id" class="form-control">
                                         <option value="">Select Page Category</option>
-                                        @foreach($page_categories as $row)
+
+                                        @foreach(\App\Models\PageCategory::nestedToTabs() as $row)
                                             <option value="{{$row->id}}" {{is_selected($page->page_category_id, $row->id)}}>{{$row->name}}</option>
                                         @endforeach
                                     </select>

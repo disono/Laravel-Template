@@ -45,6 +45,9 @@ Route::post('subscriber/store', 'Web\Page\SubscriberController@store')->name('we
 // video stream
 Route::get('stream/video/{file}', 'Web\Page\PageController@streamVideo')->name('web-page-stream-video');
 
+// pages
+Route::get('pages', 'Web\Page\PageController@index')->name('web-page');
+
 /*
  * ---------------------------------------------------------------------------------------------------------------------
  * Authenticated
@@ -69,8 +72,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('user/update/security', 'Web\User\SettingsController@updateSecurity')->name('web-user-update-security');
 
     // images
-    Route::get('images', 'Web\File\ImageController@index')->name('web-image');
-    Route::post('image/upload', 'Web\File\ImageController@upload')->name('web-image-upload');
+    Route::get('media-files', 'Web\File\MediaFileController@index')->name('web-media-file');
+    Route::post('media-file/upload', 'Web\File\MediaFileController@upload')->name('web-media-file-upload');
 
     // messaging
     Route::get('messenger', 'Web\Message\MessageController@index')->name('web-message');

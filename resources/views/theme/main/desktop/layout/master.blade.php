@@ -27,6 +27,9 @@
     {{-- ICON --}}
     <link rel="icon" type="image/png" href="{{url('assets/img/placeholder/favicon.png')}}"/>
 
+    {{-- Styles --}}
+    @include('vendor.css')
+
     <style id="loaderStyles">
         html, body {
             margin: 0;
@@ -64,14 +67,12 @@
 
     @include(current_theme() . 'layout.footer')
 
+    {{-- modals --}}
     @include('modals.include')
 
     {{-- javascript dynamic container --}}
     <div id="dynamic_container"></div>
 </main>
-
-{{-- Styles --}}
-@include('vendor.css')
 
 {{-- Scripts --}}
 @if(env('APP_DEBUG'))

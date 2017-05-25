@@ -229,9 +229,45 @@ td {
     border-radius: 0 !important;
 }
 
+/* tiny mce for font awesome icon on buttons */
 .nicescroll-cursors {
     width: 8px !important;
     border: none !important;
     border-radius: 0 !important;
     background-color: #337AB7 !important;
+}
+
+.mce-ico.mce-i-fa {
+    display: inline-block;
+    font: normal normal normal 14px/1 FontAwesome;
+    font-size: inherit;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* sub menu for bootstrap */
+.dropdown-submenu {
+    position: relative;
+}
+
+.dropdown-submenu .dropdown-menu {
+    top: 0;
+    left: 100%;
+    margin-top: -1px;
+}
+
+/* caret right for sub menu */
+.caret-right {
+    float: right;
+    display: inline-block;
+    width: 0;
+    height: 0;
+    margin-left: 2px;
+    vertical-align: middle;
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    border-left: 5px solid #999999;
+    margin-top: 5px;
+    margin-right: -8px;
 }

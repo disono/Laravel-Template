@@ -16,10 +16,6 @@ var WBInitializeApp = function () {
         }
     });
 
-    // add this to last
-    // CSS loader
-    WBRemoveLoader();
-
     // delete modal confirmation box
     WBHelper.delAjax({
         selector: '.delete-data',
@@ -68,19 +64,18 @@ var WBInitializeApp = function () {
         jQ('select').not(".bar-rating").selectpicker({
             liveSearch: true
         });
+
+        // date picker
+        // class="date-picker"
+        WBDate.datePicker();
+        // class="date-picker-min"
+        WBDate.datePickerMin();
+        // class="date-picker-none"
+        WBDate.none();
+        // time picker
+        // class="time-picker"
+        WBDate.timePicker();
     }, 100);
-
-    // date picker
-    // class="date-picker"
-    WBDate.datePicker();
-    // class="date-picker-min"
-    WBDate.datePickerMin();
-    // class="date-picker-none"
-    WBDate.none();
-
-    // time picker
-    // class="time-picker"
-    WBDate.timePicker();
 
     // form ajax call
     // class="ajax-form"
@@ -98,7 +93,7 @@ var WBInitializeApp = function () {
 
         // messaging
         WBSocket.on('message_session_' + jQ('meta[name="_authenticated_id"]').attr('content'), function (data) {
-            if (data.from_id != jQ('#inbox_from_id').val()) {
+            if (data.from_id !== jQ('#inbox_from_id').val()) {
                 WBErrors.toastMessage({
                     title: 'New Message',
                     message: data.message
@@ -113,7 +108,13 @@ var WBInitializeApp = function () {
         // disconnect
     });
 
+    // sub menu
+    jQ('.dropdown-submenu a.submenu').off().on("click", function (e) {
+        jQ(this).next('ul').toggle();
+        e.stopPropagation();
+        e.preventDefault();
+    });
+
     // pre-load images
     WBHelper.preLoadImg();
 };
-

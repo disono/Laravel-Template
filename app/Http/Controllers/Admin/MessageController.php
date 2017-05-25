@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Message;
 use App\Http\Controllers\Controller;
+use App\Models\Message;
 
 class MessageController extends Controller
 {

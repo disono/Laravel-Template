@@ -5,12 +5,11 @@
  * Copyright 2016 Webmons Development Studio.
  * License: Apache 2.0
  */
+
 namespace App\Models;
 
 class ImageAlbum extends AppModel
 {
-    private static $params;
-
     protected static $writable_columns = [
         'name', 'slug', 'description'
     ];
@@ -91,47 +90,26 @@ class ImageAlbum extends AppModel
     }
 
     /**
-     * Add formatting on data
+     * Add formatting to data
      *
-     * @param $query
-     * @param array $params
-     * @return null
+     * @param $row
+     * @return mixed
      */
-    public static function _format($query, $params = [])
+    public static function _dataFormatting($row)
     {
-        if (isset($params['single'])) {
-            if (!$query) {
-                return null;
-            }
+        $images = Image::get([
+            'type' => 'album',
+            'source_id' => $row->id,
+            'all' => true
+        ]);
 
-            $images = Image::get([
-                'type' => 'album',
-                'source_id' => $query->id,
-                'all' => true
-            ]);
+        // count files
+        $row->count_images = count($images);
 
-            // count files
-            $query->count_images = count($images);
+        // images
+        $row->images = $images;
 
-            // images
-            $query->images = $images;
-        } else {
-            foreach ($query as $row) {
-                $images = Image::get([
-                    'type' => 'album',
-                    'source_id' => $row->id,
-                    'all' => true
-                ]);
-
-                // count files
-                $row->count_images = count($images);
-
-                // images
-                $row->images = $images;
-            }
-        }
-
-        return $query;
+        return $row;
     }
 
     /**

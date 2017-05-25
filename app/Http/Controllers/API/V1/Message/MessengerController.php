@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\API\V1\Message;
 
-use App\Models\Message;
 use App\Http\Controllers\Controller;
+use App\Models\Message;
 
 class MessengerController extends Controller
 {

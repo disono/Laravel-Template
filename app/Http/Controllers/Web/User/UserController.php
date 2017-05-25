@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Web\User;
 
-use App\Models\User;
 use App\Http\Controllers\Controller;
+use App\Models\User;
 
 class UserController extends Controller
 {

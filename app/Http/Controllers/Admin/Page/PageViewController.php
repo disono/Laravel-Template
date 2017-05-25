@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Admin\Page;
 
-use App\Models\PageView;
 use App\Http\Controllers\Controller;
+use App\Models\PageView;
 
 class PageViewController extends Controller
 {

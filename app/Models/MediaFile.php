@@ -8,12 +8,13 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Facades\DB;
-
-class AuthorizationRole extends AppModel
+class MediaFile extends AppModel
 {
     protected static $writable_columns = [
-        'role_id', 'authorization_id'
+        'user_id', 'source_id',
+        'title', 'description',
+        'filename',
+        'type', 'category'
     ];
 
     public function __construct(array $attributes = [])
@@ -34,7 +35,6 @@ class AuthorizationRole extends AppModel
         if (!$id) {
             return null;
         }
-
         return self::get([
             'single' => true,
             $column => $id
@@ -51,18 +51,7 @@ class AuthorizationRole extends AppModel
     {
         $table_name = (new self)->getTable();
         $select[] = $table_name . '.*';
-        $select[] = DB::raw('authorizations.name as authorization_name, authorizations.identifier as authorization_identifier, ' .
-            'authorizations.description as authorization_description');
-
-        $select[] = DB::raw('roles.name as role_name, roles.slug as role_slug, roles.description as role_description');
-
-        $query = self::select($select)
-            ->join('authorizations', $table_name . '.authorization_id', '=', 'authorizations.id')
-            ->join('roles', $table_name . '.role_id', '=', 'roles.id');
-
-        if (isset($params['identifier'])) {
-            $query->where('authorizations.identifier', $params['identifier']);
-        }
+        $query = self::select($select);
 
         // where equal
         $query = self::_whereEqual($query, $params, self::$writable_columns, $table_name);
@@ -71,12 +60,9 @@ class AuthorizationRole extends AppModel
         $query = self::_excInc($query, $params, self::$writable_columns, $table_name);
 
         // search
-        $query = self::_search($query, $params, self::$writable_columns, $table_name, [
-            'authorizations.name', 'authorizations.identifier', 'authorizations.description', 'roles.name', 'roles.slug',
-            'roles.description'
-        ]);
+        $query = self::_search($query, $params, self::$writable_columns, $table_name);
 
-        $query->orderBy($table_name . '.created_at', 'DESC');
+        $query->orderBy('created_at', 'DESC');
 
         if (isset($params['object'])) {
             return $query;
@@ -106,6 +92,25 @@ class AuthorizationRole extends AppModel
     }
 
     /**
+     * Add formatting to data
+     *
+     * @param $row
+     * @return mixed
+     */
+    public static function _dataFormatting($row)
+    {
+        // image path
+        $row->path = url('private/any/' . $row->filename);
+
+        // uploader full name
+        $user = User::find($row->user_id);
+
+        $row->full_name = ($user) ? $user->first_name . ' ' . $user->last_name : 'n/a';
+
+        return $row;
+    }
+
+    /**
      * Store new data
      *
      * @param array $inputs
@@ -120,9 +125,24 @@ class AuthorizationRole extends AppModel
                 $store[$key] = $value;
             }
         }
-
         $store['created_at'] = sql_date();
+
         return (int)self::insertGetId($store);
+    }
+
+    /**
+     * Delete source
+     *
+     * @param $source_id
+     * @param $type
+     */
+    public static function destroySource($source_id, $type)
+    {
+        $image = self::where('source_id', $source_id)->where('type', $type)->get();
+
+        foreach ($image as $row) {
+            self::remove($row->id);
+        }
     }
 
     /**
@@ -134,57 +154,45 @@ class AuthorizationRole extends AppModel
      */
     public static function remove($id)
     {
+        $image = self::find($id);
+        if ($image) {
+            self::_deleteFile($image->filename);
+        }
+
         return (bool)self::destroy($id);
     }
 
     /**
-     * Update data
+     * Multiple delete
      *
-     * @param $id
-     * @param array $inputs
-     * @param null $column_name
+     * @param $source_id
+     * @param $type
      * @return bool
      */
-    public static function edit($id, $inputs = [], $column_name = null)
+    public static function batchRemove($source_id, $type)
     {
-        $update = [];
-        $query = null;
+        $success = true;
+        $images = self::getAll([
+            'source_id' => $source_id,
+            'type' => $type
+        ]);
 
-        if (!$column_name) {
-            $column_name = 'id';
-        }
-
-        if ($id && !is_array($column_name)) {
-            $query = AuthorizationRole::where($column_name, $id);
-        } else {
-            $i = 0;
-
-            foreach ($column_name as $key => $value) {
-                if (!in_array($key, self::$writable_columns)) {
-                    return false;
-                }
-
-                if (!$i) {
-                    $query = AuthorizationRole::where($key, $value);
-                } else {
-                    if ($query) {
-                        $query->where($key, $value);
-                    }
-                }
-
-                $i++;
+        foreach ($images as $row) {
+            if (!self::remove($row->id)) {
+                $success = false;
             }
         }
 
-        foreach ($inputs as $key => $value) {
-            if (in_array($key, self::$writable_columns)) {
-                $update[$key] = $value;
-            }
-        }
+        return $success;
+    }
 
-        // store to activity logs
-        ActivityLog::store($id, self::$writable_columns, $query->first(), $inputs, (new self)->getTable());
-
-        return (bool)$query->update($update);
+    /**
+     * Delete image
+     *
+     * @param $file
+     */
+    private static function _deleteFile($file)
+    {
+        delete_file('private/img/' . $file);
     }
 }

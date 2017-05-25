@@ -12,7 +12,8 @@ if (!function_exists('request_options')) {
      *
      * @return string
      */
-    function list_defined_functions() {
+    function list_defined_functions()
+    {
         $func = get_defined_functions();
 
         $view = '';

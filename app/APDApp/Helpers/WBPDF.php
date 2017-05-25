@@ -4,11 +4,11 @@
  * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
  * License: Apache 2.0
  */
+
 namespace App\APDApp\Helpers;
 
-use Dompdf\Css\Style;
-use FPDI;
 use Barryvdh\DomPDF\Facade as PDF;
+use FPDI;
 
 class WBPDF
 {

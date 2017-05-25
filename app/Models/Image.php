@@ -5,12 +5,11 @@
  * Copyright 2016 Webmons Development Studio.
  * License: Apache 2.0
  */
+
 namespace App\Models;
 
 class Image extends AppModel
 {
-    private static $params;
-
     protected static $writable_columns = [
         'user_id', 'source_id',
         'title', 'description',
