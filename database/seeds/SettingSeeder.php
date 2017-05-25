@@ -18,6 +18,10 @@ class SettingSeeder extends Seeder
             ['Keywords', 'keywords', 'webmons, project template, boiler plate', 'default'],
             ['CSS Version', 'css_version', '1.0', 'default'],
 
+            ['Facebook Page', 'social_fb', '', 'default'],
+            ['Twitter Page', 'social_twitter', '', 'default'],
+            ['Instagram Page', 'social_ig', '', 'default'],
+
             ['Subscriber Form', 'subscriber_form', 'enabled', 'default'],
             ['Auth Facebook', 'auth_social_facebook', 'enabled', 'default'],
         ];
