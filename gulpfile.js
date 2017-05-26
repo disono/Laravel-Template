@@ -83,9 +83,9 @@ if (type === 'local') {
 }
 
 function _copyData(mix) {
-    mix.copy('../../../bower_modules/font-awesome/fonts', 'public/assets/fonts');
-    mix.copy('../../../bower_modules/bootstrap/fonts', 'public/assets/fonts');
+    mix.copy('bower_modules/font-awesome/fonts', 'public/assets/fonts');
+    mix.copy('bower_modules/bootstrap/fonts', 'public/assets/fonts');
 
     // this is optional
-    mix.copy('../../../bower_modules/leaflet/dist/images', 'public/assets/css/images');
+    mix.copy('bower_modules/leaflet/dist/images', 'public/assets/css/images');
 }

@@ -443,11 +443,11 @@ class Page extends AppModel
         }
 
         if (!isset($update['is_email_to_subscriber'])) {
-            $store['is_email_to_subscriber'] = 0;
+            $update['is_email_to_subscriber'] = 0;
         }
 
         if (!isset($update['draft'])) {
-            $store['draft'] = 0;
+            $update['draft'] = 0;
         }
 
         // store to activity logs

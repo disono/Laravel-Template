@@ -110,6 +110,7 @@ var WBInitializeApp = function () {
 
     // sub menu
     jQ('.dropdown-submenu a.submenu').off().on("click", function (e) {
+        jQ('.dropdown-submenu a.submenu').next('ul').hide();
         jQ(this).next('ul').toggle();
         e.stopPropagation();
         e.preventDefault();
