@@ -4,15 +4,6 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-
-    <style type="text/css" rel="stylesheet" media="all">
-        /* Media Queries */
-        @media only screen and (max-width: 500px) {
-            .button {
-                width: 100% !important;
-            }
-        }
-    </style>
 </head>
 
 <?php
@@ -67,7 +58,7 @@ $style = [
     <tr>
         <td style="{{ $style['email-wrapper'] }}" align="center">
             <table width="100%" cellpadding="0" cellspacing="0">
-                <!-- Logo -->
+                {{-- Logo/Header --}}
                 <tr>
                     <td style="{{ $style['email-masthead'] }}">
                         <a style="{{ $fontFamily }} {{ $style['email-masthead_name'] }}" href="{{ url('/') }}"
@@ -77,27 +68,17 @@ $style = [
                     </td>
                 </tr>
 
-                <!-- Email Body -->
+                {{-- Email Body --}}
                 <tr>
                     <td style="{{ $style['email-body'] }}" width="100%">
                         <table style="{{ $style['email-body_inner'] }}" align="center" width="570" cellpadding="0"
                                cellspacing="0">
                             <tr>
                                 <td style="{{ $fontFamily }} {{ $style['email-body_cell'] }}">
-                                    <!-- Greeting -->
-                                    Hello {{$full_name}}!
+                                    {{-- content --}}
+                                    @yield('content')
 
-                                    <p><strong>New's and blog subscription</strong></p>
-
-                                    <!-- Pages -->
-                                    @foreach ($pages as $row)
-                                        <h4>[<a href="{{url($row->slug)}}">{{$row->name}}</a>]</h4>
-                                        <p style="{{ $style['paragraph'] }}">
-                                            {!! $row->mini_content !!}
-                                        </p>
-                                    @endforeach
-
-                                    <!-- Salutation -->
+                                    {{-- Salutation --}}
                                     <p style="{{ $style['paragraph'] }}">
                                         Regards,<br>{{ app_header('title') }}
                                     </p>
@@ -107,7 +88,7 @@ $style = [
                     </td>
                 </tr>
 
-                <!-- Footer -->
+                {{-- Footer --}}
                 <tr>
                     <td>
                         <table style="{{ $style['email-footer'] }}" align="center" width="570" cellpadding="0"

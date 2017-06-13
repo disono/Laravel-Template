@@ -36,7 +36,11 @@ var WBSocket = (function () {
 
             // on disconnect
             this.socket.on('disconnect', function () {
-                console.log('SocketIO Disconnected!');
+                console.error('SocketIO Disconnected!');
+
+                // reconnect if disconnected
+                WBSocket.connect(connectCallback, eventCallback, disconnectCallback);
+
                 disconnectCallback();
             });
         },

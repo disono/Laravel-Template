@@ -109,7 +109,7 @@ class Subscriber extends AppModel
             foreach ($subscribers as $row) {
                 try {
                     // send email for password reset
-                    Mail::send('vendor.notifications.subscriber', [
+                    Mail::send('emails.subscriber', [
                         'full_name' => $row->full_name,
                         'pages' => $pages
                     ], function ($m) use ($row) {
