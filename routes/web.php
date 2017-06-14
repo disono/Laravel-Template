@@ -127,6 +127,7 @@ Route::group(['middleware' => 'auth'], function () {
 
         // page views
         Route::get('admin/page/view', 'Admin\Page\PageViewController@index')->name('admin-page-view');
+        Route::get('admin/page/chart', 'Admin\Page\PageViewController@chart')->name('admin-page-chart');
 
         // event
         Route::get('admin/events', 'Admin\Page\EventController@index')->name('admin-events');

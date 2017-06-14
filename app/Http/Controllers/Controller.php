@@ -15,6 +15,7 @@ class Controller extends BaseController
     protected $content = [];
     protected $title = null;
 
+    // admin and guest
     protected $view_type = 'guest';
     protected $view = null;
 

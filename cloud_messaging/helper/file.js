@@ -1,5 +1,4 @@
 var fs = require('fs');
-
 var _logFile = __dirname + '/../storage/files/log.txt';
 
 function _log(message) {

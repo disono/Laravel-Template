@@ -15,9 +15,8 @@ module.exports = {
                 return;
             }
 
-            console.log('Message: ' + JSON.stringify(data));
-
             // check if all required fields is available
+            console.log('Message: ' + JSON.stringify(data));
             if (!data.to_id || !data.from_id || isNaN(data.to_id) || isNaN(data.from_id) || !data.message || !data.type) {
                 return;
             }
@@ -33,9 +32,9 @@ module.exports = {
             if (!data) {
                 return;
             }
-            console.log('Message Broadcast Group: ' + JSON.stringify(data));
 
             // check if all required fields is available
+            console.log('Message Broadcast Group: ' + JSON.stringify(data));
             if (!data.from_id || isNaN(data.from_id) || !data.group_id || isNaN(data.group_id) || !data.message || !data.type) {
                 return;
             }

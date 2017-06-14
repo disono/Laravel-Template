@@ -37,7 +37,6 @@ module.exports = {
 
             // show request paths
             console.log(JSON.stringify(req.query));
-
             if (req.query.all) {
                 delete req.query.all;
 
@@ -58,7 +57,6 @@ module.exports = {
         params.app.get('/user/all', function (req, res) {
             // show request paths
             console.log(JSON.stringify(req.query));
-
             SESSION.all(req.query, function (results) {
                 res.json(results);
             });

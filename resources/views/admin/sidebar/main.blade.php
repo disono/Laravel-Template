@@ -5,6 +5,11 @@
 --}}
 <div id="sidebar-wrapper" class="nav-side-menu">
     <ul class="sidebar-nav">
+        {{-- dashboard --}}
+        <li>
+            <a href="{{url('dashboard')}}"><i class="fa fa-dashboard" aria-hidden="true"></i> Dashboard</a>
+        </li>
+
         {{-- user --}}
         <li data-toggle="collapse" data-target="#sidebar-users" class="collapsed">
             <a href="#"><i class="fa fa-user" aria-hidden="true"></i> Users</a>

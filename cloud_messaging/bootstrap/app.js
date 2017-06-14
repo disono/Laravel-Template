@@ -10,7 +10,6 @@ var expressValidator = require('express-validator');
 
 // application routing
 var routes = require('../routes/web.js');
-
 // session
 var SESSION = require('../models/mongo/session.js');
 

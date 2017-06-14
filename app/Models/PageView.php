@@ -8,6 +8,7 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class PageView extends AppModel
@@ -33,6 +34,14 @@ class PageView extends AppModel
     {
         $table_name = (new self)->getTable();
         $select[] = $table_name . '.*';
+
+        // month name
+        $select[] = DB::raw('(DATE_FORMAT(' . $table_name . '.created_at, "%M")) AS month_name');
+        // day name (01, 02, 10 etc.)
+        $select[] = DB::raw('(DATE_FORMAT(' . $table_name . '.created_at, "%e")) AS day_name');
+        // year name four digits 2017
+        $select[] = DB::raw('(DATE_FORMAT(' . $table_name . '.created_at, "%Y")) AS year_name');
+
         $query = self::select($select);
 
         // where equal
@@ -44,7 +53,39 @@ class PageView extends AppModel
         // search
         $query = self::_search($query, $params, self::$writable_columns, $table_name);
 
-        $query->orderBy('created_at', 'DESC');
+        // search year
+        // 2017
+        if (isset($params['search_year'])) {
+            $query->where(DB::raw('DATE_FORMAT(' . $table_name . '.created_at, "%Y")'), $params['search_year']);
+        }
+
+        // search month
+        // January
+        if (isset($params['search_month'])) {
+            $query->where(DB::raw('DATE_FORMAT(' . $table_name . '.created_at, "%M")'), $params['search_month']);
+        }
+
+        // search day
+        // 01
+        if (isset($params['search_day'])) {
+            $query->where(DB::raw('DATE_FORMAT(' . $table_name . '.created_at, "%e")'), $params['search_day']);
+        }
+
+        if (isset($params['order_by_month'])) {
+            // order by month and group by
+            $query->groupBy(DB::raw('DATE_FORMAT(' . $table_name . '.created_at, "%M")'));
+            $query->orderBy(DB::raw('DATE_FORMAT(' . $table_name . '.created_at, "%m")'), 'DESC');
+        } else if (isset($params['order_by_day'])) {
+            // order by day and group by
+            $query->groupBy(DB::raw('DATE_FORMAT(' . $table_name . '.created_at, "%e")'));
+            $query->orderBy(DB::raw('DATE_FORMAT(' . $table_name . '.created_at, "%e")'), 'DESC');
+        } else if (isset($params['order_by_year'])) {
+            // order by year and group by
+            $query->groupBy(DB::raw('DATE_FORMAT(' . $table_name . '.created_at, "%Y")'));
+            $query->orderBy(DB::raw('DATE_FORMAT(' . $table_name . '.created_at, "%Y")'), 'DESC');
+        } else {
+            $query->orderBy($table_name . '.created_at', 'DESC');
+        }
 
         if (isset($params['object'])) {
             return $query;

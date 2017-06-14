@@ -8,23 +8,21 @@
 // session
 var SESSION = require('../../models/mongo/session.js');
 
-var allClients = [];
-
 module.exports = {
     constructor: function (params) {
         var _socket_id = params.socket.id;
         console.log('Connection Establish: ' + params.socket.id);
-        allClients.push(_socket_id);
-        console.log(allClients);
 
         /**
          * every user must send this type of connection
          */
         params.socket.on('register_session', function (data) {
-            if (!data) { return; }
-            console.log('Registered Socket ID: ' + params.socket.id + ' Identifier ID: ' + data.id);
+            if (!data) {
+                return;
+            }
 
             // all fields is required before storing
+            console.log('Registered Socket ID: ' + params.socket.id + ' Identifier ID: ' + data.id);
             if (!data.id || !data.role || !data.secret_key || !data.token_key || !data.lat || !data.lng) {
                 return;
             }
@@ -43,9 +41,12 @@ module.exports = {
          * destroy session using token key
          */
         params.socket.on('destroy_session', function (data) {
-            if (!data) { return; }
+            if (!data) {
+                return;
+            }
 
             // destroy session
+            console.log('Session Destroy: ' + JSON.stringify(data));
             SESSION.destroy_session(data.token_key, function () {
                 console.log('Destroy Session using token_key: ' + data.token_key);
             });
@@ -59,13 +60,9 @@ module.exports = {
             // params.socket.id
 
             console.log('Disconnected: ' + _socket_id);
-
             SESSION.delete(_socket_id, function () {
                 console.log('Deleted Session using socket id: ' + _socket_id);
             });
-
-            var i = allClients.indexOf(_socket_id);
-            allClients.splice(i, 1);
         });
     }
 };

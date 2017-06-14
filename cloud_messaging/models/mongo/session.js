@@ -313,7 +313,7 @@ module.exports = {
 
                     if (jsonResult.hasOwnProperty(p)) {
                         // check if this key is present on update values
-                        if (p != 'secret_key' || p != 'id' || p != 'token_key' || p != 'socket_id') {
+                        if (p !== 'secret_key' || p !== 'id' || p !== 'token_key' || p !== 'socket_id') {
                             query[p] = data[p];
                         }
                     }
@@ -347,7 +347,9 @@ module.exports = {
      * @param callback
      */
     delete: function (socket_id, callback) {
-        if (!socket_id) { return; }
+        if (!socket_id) {
+            return;
+        }
         console.log('Socket ID to delete: ' + socket_id);
 
         SESSION.remove({socket_id: socket_id}, function (err) {
@@ -367,7 +369,9 @@ module.exports = {
      * @param callback
      */
     destroy_session: function (token_key, callback) {
-        if (!token_key) { return; }
+        if (!token_key) {
+            return;
+        }
 
         SESSION.remove({token_key: token_key}, function (err) {
             if (err) {

@@ -25,7 +25,6 @@
     "awesome-bootstrap-checkbox": "^0.3.7",
     "ekko-lightbox": "^5.1.1",
     "bootstrap-select": "^1.12.2",
-    "chart.js": "^2.5.0",
     "awesome-rating": "^1.0.0",
     "leaflet": "^1.0.3",
     "leaflet-search": "^2.7.2",
@@ -33,7 +32,8 @@
     "socket.io-client": "^1.7.2",
     "moment": "^2.18.1",
     "eventEmitter": "^5.1.0",
-    "pickadate": "^3.5.6"
+    "pickadate": "^3.5.6",
+    "chart.js": "^2.6.0"
   },
   "resolutions": {
     "jquery": "^3.2.1",
