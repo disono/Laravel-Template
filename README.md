@@ -16,6 +16,7 @@ is a starting blank template for Laravel Projects
 * **Free PDF Document Importer:** [https://www.setasign.com/products/fpdi/about](https://www.setasign.com/products/fpdi/about)
 * **DOMPDF Wrapper for Laravel 5:** [https://github.com/barryvdh/laravel-dompdf](https://github.com/barryvdh/laravel-dompdf)
 * **CORS Middleware for Laravel 5:** [https://github.com/barryvdh/laravel-cors](https://github.com/barryvdh/laravel-cors)
+* **No CAPTCHA reCAPTCHA:** [https://github.com/anhskohbo/no-captcha](https://github.com/anhskohbo/no-captcha)
 
 # JavaScript Libraries
 * **jQuery:** [https://jquery.com](https://jquery.com)

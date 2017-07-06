@@ -194,6 +194,7 @@ return [
         Barryvdh\DomPDF\ServiceProvider::class,
         Appstract\Opcache\OpcacheServiceProvider::class,
         Barryvdh\Cors\ServiceProvider::class,
+        Anhskohbo\NoCaptcha\NoCaptchaServiceProvider::class,
 
     ],
 

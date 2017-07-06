@@ -18,7 +18,8 @@
 
                         @if(app_settings('auth_social_facebook')->value == 'enabled')
                             <p><a href="{{url('auth/social/facebook')}}"
-                                  class="btn btn-facebook btn-block btn-lg"><i class="fa fa-facebook" aria-hidden="true"></i>
+                                  class="btn btn-facebook btn-block btn-lg"><i class="fa fa-facebook"
+                                                                               aria-hidden="true"></i>
                                     Register
                                     using Facebook</a></p>
                         @endif
