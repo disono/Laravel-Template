@@ -13,36 +13,35 @@
             <div class="col-xs-12 col-md-12">
                 <h3>Messages</h3>
 
-                <div class="app-container">
-                    @if(count($message))
-                        <table class="table table-hover">
-                            <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>From</th>
-                                <th>To</th>
-                                <th>Message</th>
-                                <th></th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            @foreach($message as $row)
-                                <tr>
-                                    <td>{{$row->id}}</td>
-                                    <td>{{$row->from_full_name}}</td>
-                                    <td>{{$row->to_full_name}}</td>
-                                    <td>{{$row->limit_message}}</td>
-                                    <td><a href="{{url('admin/message/show/' . $row->id)}}">View</a></td>
-                                </tr>
-                            @endforeach
-                            </tbody>
-                        </table>
+                @if(count($message))
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>From</th>
+                            <th>To</th>
+                            <th>Message</th>
+                            <th></th>
+                        </tr>
+                        </thead>
 
-                        {{$message->appends($request->all())->render()}}
-                    @else
-                        <h1 class="text-center">No messages.</h1>
-                    @endif
-                </div>
+                        <tbody class="app-container">
+                        @foreach($message as $row)
+                            <tr>
+                                <td>{{$row->id}}</td>
+                                <td>{{$row->from_full_name}}</td>
+                                <td>{{$row->to_full_name}}</td>
+                                <td>{{$row->limit_message}}</td>
+                                <td><a href="{{url('admin/message/show/' . $row->id)}}">View</a></td>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+
+                    {{$message->appends($request->all())->render()}}
+                @else
+                    <h1 class="text-center">No messages.</h1>
+                @endif
             </div>
         </div>
     </div>

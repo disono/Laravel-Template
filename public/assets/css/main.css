@@ -17,6 +17,10 @@ body {
     margin: 16px 0;
 }
 
+.row-con {
+    margin-bottom: 6px !important;
+}
+
 .form-group-no-margin {
     margin: 0 !important;
 }

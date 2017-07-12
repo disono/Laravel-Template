@@ -127,5 +127,5 @@
 
 @include('vendor.loaders', ['scripts' => [
     'https://cdnjs.cloudflare.com/ajax/libs/tinymce/4.5.2/tinymce.min.js',
-    'assets/js/lib/tiny-mce-init.js'
+    asset('assets/js/lib/tiny-mce-init.js')
 ]])

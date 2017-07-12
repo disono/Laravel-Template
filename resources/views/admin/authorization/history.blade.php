@@ -13,32 +13,31 @@
             <div class="col-xs-12 col-md-12">
                 <h3 class="page-header">Authorization Histories</h3>
 
-                <div class="app-container">
-                    @if(count($authorization_histories))
-                        <table class="table table-hover">
-                            <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Type</th>
-                                <th>Date/Time</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            @foreach($authorization_histories as $row)
-                                <tr>
-                                    <td>{{$row->full_name}}</td>
-                                    <td>{{$row->type}}</td>
-                                    <td>{{$row->created_at}}</td>
-                                </tr>
-                            @endforeach
-                            </tbody>
-                        </table>
+                @if(count($authorization_histories))
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Type</th>
+                            <th>Date/Time</th>
+                        </tr>
+                        </thead>
 
-                        {{$authorization_histories->appends($request->all())->render()}}
-                    @else
-                        <h1 class="text-center">No Authorization History.</h1>
-                    @endif
-                </div>
+                        <tbody class="app-container">
+                        @foreach($authorization_histories as $row)
+                            <tr>
+                                <td>{{$row->full_name}}</td>
+                                <td>{{$row->type}}</td>
+                                <td>{{$row->created_at}}</td>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+
+                    {{$authorization_histories->appends($request->all())->render()}}
+                @else
+                    <h1 class="text-center">No Authorization History.</h1>
+                @endif
             </div>
         </div>
     </div>

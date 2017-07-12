@@ -16,50 +16,51 @@
                 {{-- search options --}}
                 <div class="app-container">
                     <form action="" method="get" role="form" class="form-inline">
-                        <div class="form-group">
-                            <input type="text" class="form-control" name="search" id="search"
-                                   value="{{$request->get('search')}}" placeholder="Keyword">
-                        </div>
+                        <div class="row row-con">
+                            <div class="col-sm-12 col-md-3 form-group">
+                                <input type="text" class="form-control" name="search" id="search"
+                                       value="{{$request->get('search')}}" placeholder="Keyword">
+                            </div>
 
-                        <div class="form-group">
-                            <button type="submit" class="btn btn-primary">Search</button>
+                            <div class="col-sm-12 col-md-3 form-group">
+                                <button type="submit" class="btn btn-primary">Search</button>
+                            </div>
                         </div>
                     </form>
                 </div>
 
-                <div class="app-container">
-                    @if(count($subscriber))
-                        <p>You have {{$subscriber_object->count()}} subscriber.</p>
+                @if(count($subscriber))
+                    <p>You have {{$subscriber_object->count()}} subscriber.</p>
 
-                        <table class="table table-hover">
-                            <thead>
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Created At</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+
+                        <tbody class="app-container">
+                        @foreach($subscriber as $row)
                             <tr>
-                                <th>#</th>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Created At</th>
-                                <th>Action</th>
+                                <td>{{$row->id}}</td>
+                                <td>{{$row->full_name}}</td>
+                                <td>{{$row->email}}</td>
+                                <td>{{$row->created_at}}</td>
+                                <td><a href="{{url('admin/subscriber/destroy/' . $row->id)}}"
+                                       class="delete-data">Delete</a></td>
                             </tr>
-                            </thead>
-                            <tbody>
-                            @foreach($subscriber as $row)
-                                <tr>
-                                    <td>{{$row->id}}</td>
-                                    <td>{{$row->full_name}}</td>
-                                    <td>{{$row->email}}</td>
-                                    <td>{{$row->created_at}}</td>
-                                    <td><a href="{{url('admin/subscriber/destroy/' . $row->id)}}"
-                                           class="delete-data">Delete</a></td>
-                                </tr>
-                            @endforeach
-                            </tbody>
-                        </table>
+                        @endforeach
+                        </tbody>
+                    </table>
 
-                        {{$subscriber->appends($request->all())->render()}}
-                    @else
-                        <h1 class="text-center">No subscriber.</h1>
-                    @endif
-                </div>
+                    {{$subscriber->appends($request->all())->render()}}
+                @else
+                    <h1 class="text-center">No subscriber.</h1>
+                @endif
             </div>
         </div>
     </div>

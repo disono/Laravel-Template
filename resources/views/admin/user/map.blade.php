@@ -32,5 +32,5 @@
 @endsection
 
 @include('vendor.loaders', ['scripts' => [
-    'assets/js/admin/user_locator.js'
+    asset('assets/js/admin/user_locator.js')
 ]])

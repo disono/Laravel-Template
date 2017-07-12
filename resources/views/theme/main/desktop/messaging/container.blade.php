@@ -26,6 +26,6 @@
 @endsection
 
 @include('vendor.loaders', ['scripts' => [
-    'assets/js/message.js'
+    asset('assets/js/message.js')
 ]])
 

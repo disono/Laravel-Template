@@ -79,18 +79,18 @@
     @include('vendor.loaders', ['scripts' => [
         'https://maps.googleapis.com/maps/api/js?key=' . env('GOOGLE_API_KEY') . '&libraries=places',
 
-        'assets/js/vendor.js',
-        'assets/js/lib/helper.js',
-        'assets/js/lib/socket.js',
-        'assets/js/main.js',
-        'assets/js/app.js'
+        asset('assets/js/vendor.js'),
+        asset('assets/js/lib/helper.js'),
+        asset('assets/js/lib/socket.js'),
+        asset('assets/js/main.js'),
+        asset('assets/js/app.js')
     ], 'after_load' => true])
 @else
     @include('vendor.loaders', ['scripts' => [
         'https://maps.googleapis.com/maps/api/js?key=' . env('GOOGLE_API_KEY') . '&libraries=places',
 
-        'assets/js/vendor.js',
-        'assets/js/app.js'
+        asset('assets/js/vendor.js'),
+        asset('assets/js/app.js')
     ], 'after_load' => true])
 @endif
 

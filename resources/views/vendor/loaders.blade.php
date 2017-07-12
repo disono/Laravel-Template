@@ -3,7 +3,7 @@
     <?php js_view_loader($scripts) ?>
 @elseif(isset($js_run))
     @foreach(js_view_runner() as $script_load)
-        <script src="{!! asset($script_load) . url_ext() !!}"></script>
+        <script src="{{$script_load . url_ext()}}"></script>
     @endforeach
 
     <script>

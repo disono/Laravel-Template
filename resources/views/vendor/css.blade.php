@@ -2,20 +2,20 @@
 @if(!isset($load_admin_styles))
     @foreach([
         'https://fonts.googleapis.com/css?family=Lato:400,700',
-        'assets/css/vendor.css',
-        'assets/css/main.css'
+        asset('assets/css/vendor.css') . url_ext(),
+        asset('assets/css/main.css') . url_ext()
     ] as $href)
-        <link rel="stylesheet" type="text/css" href="{!!asset($href) . url_ext()!!}">
+        <link rel="stylesheet" type="text/css" href="{{$href}}">
     @endforeach
 @endif
 
 {{-- Admin Styles --}}
 @if(isset($load_admin_styles))
     @foreach([
-        'assets/css/vendor.css',
-        'assets/css/admin.css',
-        'assets/css/main.css'
+        asset('assets/css/vendor.css') . url_ext(),
+        asset('assets/css/admin.css') . url_ext(),
+        asset('assets/css/main.css') . url_ext()
     ] as $href)
-        <link rel="stylesheet" type="text/css" href="{!!asset($href) . url_ext()!!}">
+        <link rel="stylesheet" type="text/css" href="{{$href}}">
     @endforeach
 @endif
