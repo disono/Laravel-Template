@@ -55,6 +55,21 @@ if (!function_exists('exclude_slug')) {
     }
 }
 
+if (!function_exists('include_pages')) {
+    /**
+     * List of pages based on includes
+     *
+     * @param array $includes
+     * @return string
+     */
+    function include_pages($includes = [])
+    {
+        return \App\Models\Page::getAll([
+            'include' => ['slug' => $includes]
+        ]);
+    }
+}
+
 /*
  * --------------------------------------------------------------------------
  * WBHttp method
