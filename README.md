@@ -203,7 +203,7 @@ dpf_blade
 ```
 
 # Credits
-Laravel: [http://laravel.com](http://laravel.com) current version 5.4 (Latest Version)
+Laravel: [http://laravel.com](http://laravel.com) current version 5.5 (Latest Version)
 
 # License
 Laravel Project Template is licensed under the Apache License (ASL) license. For more information, see the LICENSE file in this repository.
