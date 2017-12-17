@@ -1,4 +1,4 @@
-# Laravel Project Template with POS version
+# Laravel Project Template
 is a starting blank template for Laravel Projects
 
 # 3rd party Libraries
