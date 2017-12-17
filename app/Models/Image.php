@@ -1,15 +1,16 @@
 <?php
 /**
- * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
- * Copyright 2016 Webmons Development Studio.
- * License: Apache 2.0
+ * @author Archie, Disono (webmonsph@gmail.com)
+ * @git https://github.com/disono/Laravel-Template
+ * @copyright Webmons Development Studio. (webmons.com), 2016-2017
+ * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
 namespace App\Models;
 
 class Image extends AppModel
 {
+    protected static $table_name = 'images';
     protected static $writable_columns = [
         'user_id', 'source_id',
         'title', 'description',
@@ -34,7 +35,7 @@ class Image extends AppModel
         if (!$id) {
             return null;
         }
-        return self::get([
+        return self::fetch([
             'single' => true,
             $column => $id
         ]);
@@ -46,7 +47,7 @@ class Image extends AppModel
      * @param array $params
      * @return null
      */
-    public static function get($params = [])
+    public static function fetch($params = [])
     {
         $table_name = (new self)->getTable();
         $select[] = $table_name . '.*';
@@ -87,7 +88,7 @@ class Image extends AppModel
     public static function getAll($params = [])
     {
         $params['all'] = true;
-        return self::get($params);
+        return self::fetch($params);
     }
 
     /**

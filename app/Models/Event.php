@@ -1,15 +1,16 @@
 <?php
 /**
- * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
- * Copyright 2016 Webmons Development Studio.
- * License: Apache 2.0
+ * @author Archie, Disono (webmonsph@gmail.com)
+ * @git https://github.com/disono/Laravel-Template
+ * @copyright Webmons Development Studio. (webmons.com), 2016-2017
+ * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
 namespace App\Models;
 
 class Event extends AppModel
 {
+    protected static $table_name = 'events';
     protected static $writable_columns = [
         'user_id', 'name', 'slug', 'content', 'template',
         'start_date', 'start_time', 'end_date', 'end_time',
@@ -28,7 +29,7 @@ class Event extends AppModel
      * @param array $params
      * @return null
      */
-    public static function get($params = [])
+    public static function fetch($params = [])
     {
         $table_name = (new self)->getTable();
         $select[] = $table_name . '.*';
@@ -68,35 +69,7 @@ class Event extends AppModel
     public static function getAll($params = [])
     {
         $params['all'] = true;
-        return self::get($params);
-    }
-
-    /**
-     * Check for values
-     *
-     * @param $values
-     * @param $value
-     * @param $key
-     * @return mixed
-     */
-    private static function _values($values, $value, $key)
-    {
-        if (!is_numeric($value)) {
-            if ($key == 'start_date') {
-                $values[$key] = sql_date($value, true);
-            } else if ($key == 'start_time') {
-                $values[$key] = sql_time($value);
-            } else if ($key == 'end_date') {
-                $values[$key] = sql_date($value, true);
-            } else if ($key == 'end_time') {
-                $values[$key] = sql_time($value);
-            } else {
-                $values[$key] = $value;
-            }
-        } else {
-            $values[$key] = $value;
-        }
-        return $values;
+        return self::fetch($params);
     }
 
     /**
@@ -111,7 +84,7 @@ class Event extends AppModel
         if (!$id) {
             return null;
         }
-        return self::get([
+        return self::fetch([
             'single' => true,
             $column => $id
         ]);
@@ -143,46 +116,6 @@ class Event extends AppModel
         }
 
         return $id;
-    }
-
-    /**
-     * Upload image
-     *
-     * @param $id
-     * @param $inputs
-     */
-    private static function _uploadImage($id, $inputs)
-    {
-        if (isset($inputs['image']) && $id) {
-            if ($inputs['image']) {
-                try {
-                    $event = self::single($id);
-                    if ($event) {
-                        // delete all previous cover
-                        $images = Image::get([
-                            'type' => 'event',
-                            'source_id' => $event->id
-                        ]);
-
-                        // delete old cover
-                        foreach ($images as $row) {
-                            Image::remove($row->id);
-                        }
-
-                        // upload new cover
-                        upload_image($inputs['image'], [
-                            'user_id' => $event->user_id,
-                            'source_id' => $event->id,
-                            'title' => $event->name,
-                            'type' => 'event',
-                            'crop_auto' => true
-                        ]);
-                    }
-                } catch (\Exception $e) {
-                    error_logger('AdminEventStore:Class' . $e->getMessage());
-                }
-            }
-        }
     }
 
     /**
@@ -282,8 +215,77 @@ class Event extends AppModel
         }
 
         // store to activity logs
-        ActivityLog::store($id, self::$writable_columns, $query->first(), $inputs, (new self)->getTable());
+        ActivityLog::log($id, self::$writable_columns, $query->first(), $inputs, (new self)->getTable());
 
         return (bool)$query->update($update);
+    }
+
+    /**
+     * Check for values
+     *
+     * @param $values
+     * @param $value
+     * @param $key
+     * @return mixed
+     */
+    private static function _values($values, $value, $key)
+    {
+        if (!is_numeric($value)) {
+            if ($key == 'start_date' && $value) {
+                $values[$key] = sql_date($value, true);
+            } else if ($key == 'start_time' && $value) {
+                $values[$key] = sql_time($value);
+            } else if ($key == 'end_date' && $value) {
+                $values[$key] = sql_date($value, true);
+            } else if ($key == 'end_time' && $value) {
+                $values[$key] = sql_time($value);
+            } else {
+                $values[$key] = $value;
+            }
+        } else {
+            $values[$key] = $value;
+        }
+
+        return $values;
+    }
+
+    /**
+     * Upload image
+     *
+     * @param $id
+     * @param $inputs
+     */
+    private static function _uploadImage($id, $inputs)
+    {
+        if (isset($inputs['image']) && $id) {
+            if ($inputs['image']) {
+                try {
+                    $event = self::single($id);
+                    if ($event) {
+                        // delete all previous cover
+                        $images = Image::fetch([
+                            'type' => 'event',
+                            'source_id' => $event->id
+                        ]);
+
+                        // delete old cover
+                        foreach ($images as $row) {
+                            Image::remove($row->id);
+                        }
+
+                        // upload new cover
+                        upload_image($inputs['image'], [
+                            'user_id' => $event->user_id,
+                            'source_id' => $event->id,
+                            'title' => $event->name,
+                            'type' => 'event',
+                            'crop_auto' => true
+                        ]);
+                    }
+                } catch (\Exception $e) {
+                    error_logger('AdminEventStore:Class' . $e->getMessage());
+                }
+            }
+        }
     }
 }

@@ -1,1 +1,0 @@
-START php artisan migrate:refresh --seed

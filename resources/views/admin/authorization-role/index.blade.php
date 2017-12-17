@@ -1,6 +1,6 @@
 {{--
  * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
+ * Website: https://github.com/disono/Laravel-Template
  * Copyright 2016 Webmons Development Studio.
  * License: Apache 2.0
 --}}
@@ -11,7 +11,7 @@
 @section('content')
     <div class="container-fluid">
         <div class="row">
-            <div class="col-xs-12 col-md-12">
+            <div class="col-sm-12 col-md-12">
                 <h3 class="page-header">Assign Authorization Roles</h3>
 
                 <div class="app-container">
@@ -67,7 +67,7 @@
                     </table>
 
                     <div class="row">
-                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <div class="col-sm-12 col-sm-12 col-md-12 col-lg-12">
                             <button class="btn btn-primary pull-right">Save Changes</button>
                         </div>
                     </div>

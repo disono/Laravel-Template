@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Http\Controllers\Controller;
 use Closure;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken as BaseVerifier;
 use Illuminate\Http\Response;
@@ -24,7 +25,6 @@ class VerifyCsrfToken extends BaseVerifier
      * @param  \Closure $next
      * @return mixed
      *
-     * @throws \Illuminate\Session\TokenMismatchException
      */
     public function handle($request, Closure $next)
     {
@@ -41,6 +41,9 @@ class VerifyCsrfToken extends BaseVerifier
             return failed_json_response('Invalid form token please refresh your browser.', 400);
         }
 
-        return new Response(view('errors.token_error'));
+        $_controller = new Controller();
+        $_controller->_js();
+        $_controller->_seo();
+        return new Response(view('errors.token_error', $_controller->content));
     }
 }

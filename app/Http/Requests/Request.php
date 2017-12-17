@@ -1,9 +1,16 @@
 <?php
+/**
+ * @author Archie, Disono (webmonsph@gmail.com)
+ * @git https://github.com/disono/Laravel-Template
+ * @copyright Webmons Development Studio. (webmons.com), 2016-2017
+ * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
+ */
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Http\Response;
+use Illuminate\Validation\ValidationException;
 
 abstract class Request extends FormRequest
 {
@@ -18,15 +25,39 @@ abstract class Request extends FormRequest
     }
 
     /**
-     * Get all errors if validation failed
+     * The input keys that should not be flashed on redirect.
      *
-     * @param array $errors
-     * @return \Illuminate\Http\RedirectResponse
+     * @var array
+     */
+    protected $dontFlash = [
+        'password',
+        'password_confirmation'
+    ];
+
+    /**
+     * Handle a failed validation attempt.
+     *
+     * @param Validator|\Illuminate\Contracts\Validation\Validator $validator
+     * @return void
+     * @throws ValidationException
+     */
+    protected function failedValidation(Validator $validator)
+    {
+        throw new ValidationException($validator, $this->response(
+            $this->formatErrors($validator)
+        ));
+    }
+
+    /**
+     * Get the proper failed validation response for the request.
+     *
+     * @param  array $errors
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function response(array $errors)
     {
         if ($this->expectsJson()) {
-            return failed_json_response($errors);
+            return failed_json_response($errors, 422);
         }
 
         return $this->redirector->to($this->getRedirectUrl())
@@ -35,16 +66,13 @@ abstract class Request extends FormRequest
     }
 
     /**
-     * Invalid credentials
+     * Format the errors from the given Validator instance.
      *
-     * @return Response
+     * @param  \Illuminate\Contracts\Validation\Validator $validator
+     * @return array
      */
-    public function forbiddenResponse()
+    protected function formatErrors(Validator $validator)
     {
-        if ($this->expectsJson()) {
-            return failed_json_response(wb_messages('MSG_ACCESS'), 401);
-        }
-
-        return new Response('Forbidden', 403);
+        return $validator->getMessageBag()->toArray();
     }
 }

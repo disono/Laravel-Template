@@ -1,7 +1,8 @@
 {{--
- * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
- * License: Apache 2.0
+ * @author Archie, Disono (webmonsph@gmail.com)
+ * @git https://github.com/disono/Laravel-Template
+ * @copyright Webmons Development Studio. (webmons.com), 2016-2017
+ * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
 --}}
 @extends('admin.layout.master')
 
@@ -10,7 +11,7 @@
 @section('content')
     <div class="container-fluid">
         <div class="row">
-            <div class="col-xs-12 col-md-6 col-xs-offset-0 col-md-offset-3">
+            <div class="col-sm-12 col-md-6 col-xs-offset-0 col-md-offset-3">
                 <div class="app-container">
                     <h3 class="page-header">Edit Authorization</h3>
 
@@ -18,17 +19,17 @@
                         {{csrf_field()}}
                         <input type="hidden" value="{{$authorization->id}}" name="id">
 
-                        <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
+                        <div class="form-group{{ $errors->has('name') ? ' is-invalid' : '' }}">
                             <label for="name">Name*</label>
                             <input type="text" class="form-control" name="name" id="name"
                                    value="{{old('name', $authorization->name)}}" placeholder="Name">
 
                             @if ($errors->has('name'))
-                                <span class="help-block">{{ $errors->first('name') }}</span>
+                                <div class="invalid-feedback">{{ $errors->first('name') }}</div>
                             @endif
                         </div>
 
-                        <div class="form-group{{ $errors->has('identifier') ? ' has-error' : '' }}">
+                        <div class="form-group{{ $errors->has('identifier') ? ' is-invalid' : '' }}">
                             <label for="identifier">Identifier/Access Route*</label>
                             <select name="identifier" id="identifier" class="form-control">
                                 <option value="">Select Identifier</option>
@@ -38,21 +39,22 @@
                             </select>
 
                             @if ($errors->has('identifier'))
-                                <span class="help-block">{{ $errors->first('identifier') }}</span>
+                                <div class="invalid-feedback">{{ $errors->first('identifier') }}</div>
                             @endif
                         </div>
 
-                        <div class="form-group{{ $errors->has('description') ? ' has-error' : '' }}">
+                        <div class="form-group{{ $errors->has('description') ? ' is-invalid' : '' }}">
                             <label for="description">Description</label>
                             <textarea name="description" id="description" class="form-control" rows="4"
                                       placeholder="Description">{{old('description', $authorization->description)}}</textarea>
 
                             @if ($errors->has('description'))
-                                <span class="help-block">{{ $errors->first('description') }}</span>
+                                <div class="invalid-feedback">{{ $errors->first('description') }}</div>
                             @endif
                         </div>
 
-                        <button type="submit" class="btn btn-primary"><i class="fa fa-floppy-o"></i> Save Changes</button>
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-floppy-o"></i> Save Changes
+                        </button>
                     </form>
                 </div>
             </div>

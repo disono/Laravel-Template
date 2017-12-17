@@ -1,9 +1,9 @@
 <?php
 /**
- * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
- * Copyright 2016 Webmons Development Studio.
- * License: Apache 2.0
+ * @author Archie, Disono (webmonsph@gmail.com)
+ * @git https://github.com/disono/Laravel-Template
+ * @copyright Webmons Development Studio. (webmons.com), 2016-2017
+ * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
 namespace App\Http\Controllers\Web\User;
@@ -16,6 +16,12 @@ use App\Models\User;
 
 class SettingsController extends Controller
 {
+    public function __construct()
+    {
+        $this->view = 'user.';
+        parent::__construct();
+    }
+
     /**
      * Get user settings
      *
@@ -23,32 +29,26 @@ class SettingsController extends Controller
      */
     public function getIndex()
     {
-        $user = me();
-
-        $content['user'] = User::single($user->id);
-
-        $content['countries'] = Country::all();
-        $content['title'] = app_title('General Account Settings');
-
-        return theme('user.settings', $content);
+        $this->title = 'General Account Settings';
+        $this->content['user'] = me();
+        $this->content['countries'] = Country::all();
+        return $this->response('settings');
     }
 
     /**
      * Update settings
      *
      * @param UserUpdateSettings $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @return bool
      */
     public function postUpdate(UserUpdateSettings $request)
     {
-        $user = me();
-
         // update user
         $inputs = $request->all();
         $inputs['image'] = $request->file('image');
-        User::edit($user->id, $inputs);
+        User::edit(me()->id, $inputs);
 
-        return redirect()->back();
+        return $this->redirectResponse();
     }
 
     /**
@@ -58,28 +58,22 @@ class SettingsController extends Controller
      */
     public function security()
     {
-        $user = me();
-
-        $content['user'] = User::single($user->id);
-        $content['title'] = app_title('Security');
-
-        return theme('user.security', $content);
+        $this->title = 'Security';
+        $this->content['user'] = User::single(me()->id);
+        return $this->response('security');
     }
 
     /**
      * Update user security settings
      *
      * @param UserUpdateSecurity $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @return bool
      */
     public function updateSecurity(UserUpdateSecurity $request)
     {
-        $user = me();
-
         // update user
         $inputs = $request->all();
-        User::edit($user->id, $inputs);
-
-        return redirect()->back();
+        User::edit(me()->id, $inputs);
+        return $this->redirectResponse();
     }
 }

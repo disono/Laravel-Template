@@ -1,9 +1,9 @@
 <?php
 /**
- * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
- * Copyright 2016 Webmons Development Studio.
- * License: Apache 2.0
+ * @author Archie, Disono (webmonsph@gmail.com)
+ * @git https://github.com/disono/Laravel-Template
+ * @copyright Webmons Development Studio. (webmons.com), 2016-2017
+ * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
 namespace App\Extend;
@@ -12,7 +12,6 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Input;
 use Illuminate\Validation\Validator;
 
 class Validation extends Validator
@@ -265,7 +264,7 @@ class Validation extends Validator
         } else if (isset($parameters[1])) {
             $user_id = (int)$parameters[1];
         } else {
-            $user_id = (int)Input::get("user_id");
+            $user_id = (int)request("user_id");
         }
 
         if (!isset($parameters[0])) {

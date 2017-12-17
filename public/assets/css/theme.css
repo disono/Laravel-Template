@@ -1,0 +1,125 @@
+/**
+ * Author: Archie, Disono (webmonsph@gmail.com)
+ * Website: www.webmons.com
+ * Copyright 2016 Webmons Development Studio.
+ * License: Apache 2.0
+ */
+
+body {
+    margin-top: 68px !important;
+}
+
+/*
+----------------------------------------------------------
+others or helpers
+----------------------------------------------------------
+*/
+.top-header {
+    margin-top: 72px !important;;
+}
+
+.top-footer {
+    margin-top: 32px !important;
+    margin-bottom: 32px !important;
+}
+
+.bottom-footer {
+    margin-bottom: 72px !important;
+}
+
+.text-center {
+    text-align: center !important;
+}
+
+/*
+----------------------------------------------------------
+TinyMCE custom UI
+----------------------------------------------------------
+*/
+.nicescroll-cursors {
+    width: 8px !important;
+    border: none !important;
+    border-radius: 0 !important;
+    background-color: #337AB7 !important;
+}
+
+.mce-ico.mce-i-fa {
+    display: inline-block;
+    font: normal normal normal 14px/1 FontAwesome;
+    font-size: inherit;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.mce-content-body {
+    padding: 8px !important;
+    margin: 0 !important;
+}
+
+/*
+----------------------------------------------------------
+toast custom UI
+----------------------------------------------------------
+*/
+.toast {
+    box-shadow: none !important;
+}
+
+/*
+----------------------------------------------------------
+Pick a date custom UI
+----------------------------------------------------------
+*/
+.picker__list {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.picker__box {
+    box-shadow: none !important;
+    border-radius: 0 !important;
+}
+
+.picker__select--year {
+    padding: 3px !important;
+}
+
+.picker__select--month {
+    padding: 3px !important;
+}
+
+/*
+----------------------------------------------------------
+Bootstrap 4 custom UI override
+----------------------------------------------------------
+*/
+
+/* buttons */
+.btn-facebook {
+    background-color: #4267B2 !important;
+    color: #fff !important;
+}
+
+/* drop-down menu */
+.dropdown-submenu {
+    position: relative;
+}
+
+.dropdown-submenu a::after {
+    transform: rotate(-90deg);
+    position: absolute;
+    right: 6px;
+    top: .8em;
+}
+
+.dropdown-submenu .dropdown-menu {
+    top: 0;
+    left: 100%;
+    margin-left: .1rem;
+    margin-right: .1rem;
+}
+
+.jumbotron-sm {
+    padding: 1.5em !important;
+}

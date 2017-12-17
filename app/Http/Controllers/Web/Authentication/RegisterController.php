@@ -1,18 +1,12 @@
 <?php
 /**
- * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
- * Copyright 2016 Webmons Development Studio.
- * License: Apache 2.0
+ * @author Archie, Disono (webmonsph@gmail.com)
+ * @git https://github.com/disono/Laravel-Template
+ * @copyright Webmons Development Studio. (webmons.com), 2016-2017
+ * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
 namespace App\Http\Controllers\Web\Authentication;
-
-/**
- * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
- * License: Apache 2.0
- */
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Web\Auth\Register;
@@ -38,28 +32,26 @@ class RegisterController extends Controller
     public function __construct()
     {
         parent::__construct();
-        $this->middleware('guest', ['except' => [
-            'resendVerification', 'verifyEmail'
-        ]]);
     }
 
     /**
      * Show the application registration form.
      *
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Contracts\View\Factory|\Illuminate\Http\JsonResponse|\Illuminate\View\View
      */
-    public function registerView()
+    public function registerAction()
     {
-        return $this->showRegistrationForm();
+        $this->view = 'auth.';
+        return $this->response('register');
     }
 
     /**
      * Handle a registration request for the application.
      *
      * @param Register $request
-     * @return \Illuminate\Http\Response
+     * @return bool
      */
-    public function process(Register $request)
+    public function processAction(Register $request)
     {
         $creation = $this->create($request->all());
 
@@ -67,7 +59,7 @@ class RegisterController extends Controller
             Auth::loginUsingId($creation->id, true);
 
             if ($request->all()) {
-                return success_json_response(null, null, null, [
+                return success_json_response([
                     'redirect' => $this->redirectPath()
                 ]);
             }
@@ -77,42 +69,7 @@ class RegisterController extends Controller
             }
         }
 
-        return redirect($this->redirectPath());
-    }
-
-    /**
-     * Create a new user instance after a valid registration.
-     *
-     * @param  array $data
-     * @return User
-     */
-    protected function create(array $data)
-    {
-        $create = User::create([
-            'first_name' => ucfirst($data['first_name']),
-            'last_name' => ucfirst($data['last_name']),
-            'password' => bcrypt($data['password']),
-            'email' => $data['email'],
-            'role' => 'client',
-            'enabled' => 1
-        ]);
-
-        if ($create) {
-            Slug::store([
-                'source_id' => $create->id,
-                'source_type' => 'user',
-                'name' => $data['username']
-            ]);
-
-            try {
-                // send email for email verification
-                Notification::send($create, new RegisterNotification($create));
-            } catch (\Swift_SwiftException $e) {
-                error_logger('Mail Notification Registration Failed: ' . $e->getMessage());
-            }
-        }
-
-        return $create;
+        return $this->redirectResponse($this->redirectPath());
     }
 
     /**
@@ -121,7 +78,7 @@ class RegisterController extends Controller
      * @param Request $request
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function verifyEmail(Request $request)
+    public function verifyEmailAction(Request $request)
     {
         // email verifications
         $verification = EmailVerification::where('token', $request->get('token'))
@@ -154,18 +111,52 @@ class RegisterController extends Controller
 
         // login user
         Auth::loginUsingId($user->id);
-
-        return view('auth.registration_successful');
+        return $this->response('auth.registration_successful');
     }
 
     /**
      * Resend email registration verification
      */
-    public function resendVerification()
+    public function resendVerificationAction()
     {
         $auth = Auth::user();
         Notification::send($auth, new RegisterNotification($auth));
 
-        return redirect()->back();
+        return $this->redirectResponse();
+    }
+
+    /**
+     * Create a new user instance after a valid registration.
+     *
+     * @param  array $data
+     * @return User
+     */
+    protected function create(array $data)
+    {
+        $create = User::create([
+            'first_name' => ucfirst($data['first_name']),
+            'last_name' => ucfirst($data['last_name']),
+            'password' => bcrypt($data['password']),
+            'email' => $data['email'],
+            'role' => 'client',
+            'enabled' => 1
+        ]);
+
+        if ($create) {
+            Slug::store([
+                'source_id' => $create->id,
+                'source_type' => 'user',
+                'name' => $data['username']
+            ]);
+
+            try {
+                // send email for email verification
+                Notification::send($create, new RegisterNotification($create));
+            } catch (\Exception $e) {
+                error_logger('Mail Notification Registration Failed: ' . $e->getMessage());
+            }
+        }
+
+        return $create;
     }
 }

@@ -10,9 +10,10 @@ return [
     | This value is the name of your application. This value is used when the
     | framework needs to place the application's name in a notification or
     | any other location as required by the application or its packages.
+    |
     */
 
-    'name' => 'Laravel',
+    'name' => env('APP_NAME', 'Laravel'),
 
     /*
     |--------------------------------------------------------------------------
@@ -164,11 +165,6 @@ return [
         Illuminate\View\ViewServiceProvider::class,
 
         /*
-         * Package Service Providers...
-         */
-        Laravel\Tinker\TinkerServiceProvider::class,
-
-        /*
          * Application Service Providers...
          *
          * App\Providers\BroadcastServiceProvider::class,
@@ -187,14 +183,13 @@ return [
         Jenssegers\Agent\AgentServiceProvider::class,
         Mews\Purifier\PurifierServiceProvider::class,
         SimpleSoftwareIO\QrCode\QrCodeServiceProvider::class,
-        GrahamCampbell\HTMLMin\HTMLMinServiceProvider::class,
+        HTMLMin\HTMLMin\HTMLMinServiceProvider::class,
         Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class,
         LaravelFCM\FCMServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
         Barryvdh\DomPDF\ServiceProvider::class,
         Appstract\Opcache\OpcacheServiceProvider::class,
         Barryvdh\Cors\ServiceProvider::class,
-        Anhskohbo\NoCaptcha\NoCaptchaServiceProvider::class,
 
     ],
 
@@ -253,7 +248,7 @@ return [
         'Agent' => Jenssegers\Agent\Facades\Agent::class,
         'Purifier' => Mews\Purifier\Facades\Purifier::class,
         'QrCode' => SimpleSoftwareIO\QrCode\Facades\QrCode::class,
-        'HTMLMin' => GrahamCampbell\HTMLMin\Facades\HTMLMin::class,
+        'HTMLMin' => HTMLMin\HTMLMin\Facades\HTMLMin::class,
         'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
         'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
         'FCM' => LaravelFCM\Facades\FCM::class,

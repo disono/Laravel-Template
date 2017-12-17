@@ -1,4 +1,10 @@
 <?php
+/**
+ * @author Archie, Disono (webmonsph@gmail.com)
+ * @git https://github.com/disono/Laravel-Template
+ * @copyright Webmons Development Studio. (webmons.com), 2016-2017
+ * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
+ */
 
 namespace App\Http\Controllers\Web\Message;
 
@@ -21,7 +27,6 @@ class MessageController extends Controller
     public function index()
     {
         $this->response_type = 'web';
-
         return $this->response('messaging.container');
     }
 
@@ -32,14 +37,11 @@ class MessageController extends Controller
      */
     public function inbox()
     {
-        $me = me();
-
-        $this->content = Message::get([
-            'to_id' => $me->id,
-            'from_id' => $me->id,
+        $this->content = Message::fetch([
+            'to_id' => $this->me->id,
+            'from_id' => $this->me->id,
             'group_by' => true
         ]);
-
         return $this->response();
     }
 
@@ -52,10 +54,9 @@ class MessageController extends Controller
     public function reading($from_id)
     {
         $this->response_type = 'web';
-        $me = me();
 
-        $messages = Message::get([
-            'to_id' => $me->id,
+        $messages = Message::fetch([
+            'to_id' => $this->me->id,
             'from_id' => $from_id,
             'reading' => true
         ]);;
@@ -78,8 +79,7 @@ class MessageController extends Controller
     public function group($group_id)
     {
         $me = me();
-
-        $this->content = Message::get([
+        $this->content = Message::fetch([
             'group_id' => $group_id,
             'from_id' => $me->id
         ]);
@@ -99,7 +99,7 @@ class MessageController extends Controller
             'message' => $this->request->get('message'),
             'file' => $this->request->file('msg_file'),
             'to_id' => $to_id,
-            'from_id' => me()->id
+            'from_id' => $this->me->id
         ]));
 
         if ($content) {

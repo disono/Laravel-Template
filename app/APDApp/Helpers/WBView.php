@@ -1,19 +1,18 @@
 <?php
 /**
- * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
- * License: Apache 2.0
+ * @author Archie, Disono (webmonsph@gmail.com)
+ * @git https://github.com/disono/Laravel-Template
+ * @copyright Webmons Development Studio. (webmons.com), 2016-2017
+ * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
 namespace App\APDApp\Helpers;
 
-use GrahamCampbell\HTMLMin\Facades\HTMLMin;
+use HTMLMin\HTMLMin\Facades\HTMLMin;
 use Jenssegers\Agent\Agent;
 
 class WBView
 {
-    private static $js = 'wb_javascript_loader';
-
     /**
      * Theme
      *
@@ -40,8 +39,9 @@ class WBView
     public static function current_theme()
     {
         $agent = new Agent();
+        $theme_name = app_settings('theme')->value;
 
-        return 'theme.main.' .
+        return 'theme.' . $theme_name . '.' .
             ((($agent->isMobile() === 1 || $agent->isTablet() === 1) && env('VIEW_MOBILE') === true) ? 'mobile.' : 'desktop.');
     }
 
@@ -68,21 +68,23 @@ class WBView
      */
     public static function js_view_loader($js_list = [])
     {
-        $wb_js = self::$js;
-
-        if (!session()->exists($wb_js)) {
-            session()->put($wb_js, json_encode($js_list));
+        if (!count($GLOBALS['wb_scripts_loaders'])) {
+            $GLOBALS['wb_scripts_loaders'] = $js_list;
         } else {
-            $javascript = json_decode(session()->get($wb_js));
+            $javascript = $GLOBALS['wb_scripts_loaders'];
 
-            // delete the old data scripts
-            session()->forget($wb_js);
+            // remove duplicate js
+            $key = 0;
+            foreach ($js_list as $js) {
+                if (in_array($js, $javascript)) {
+                    unset($js_list[$key]);
+                }
 
-            // let's combine the javascript
-            $scripts_list = (is_array($javascript)) ? array_merge($js_list, $javascript) : $js_list;
+                $key++;
+            }
 
-            // let's add a new data
-            session()->put($wb_js, json_encode($scripts_list));
+            $GLOBALS['wb_scripts_loaders'] = [];
+            $GLOBALS['wb_scripts_loaders'] = (is_array($javascript)) ? array_merge($javascript, $js_list) : $js_list;
         }
     }
 
@@ -93,13 +95,11 @@ class WBView
      */
     public static function js_view_runner()
     {
-        $wb_js = self::$js;
-
-        if (!session()->exists($wb_js)) {
+        if (!count($GLOBALS['wb_scripts_loaders'])) {
             return [];
         } else {
-            $js = json_decode(session()->get($wb_js));
-            session()->forget($wb_js);
+            $js = $GLOBALS['wb_scripts_loaders'];
+            $GLOBALS['wb_scripts_loaders'] = [];
 
             return $js;
         }

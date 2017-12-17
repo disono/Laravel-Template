@@ -1,12 +1,14 @@
 <?php
 /**
- * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
- * License: Apache 2.0
+ * @author Archie, Disono (webmonsph@gmail.com)
+ * @git https://github.com/disono/Laravel-Template
+ * @copyright Webmons Development Studio. (webmons.com), 2016-2017
+ * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
 namespace App\APDApp\Helpers;
 
+use App\Models\Image as ModelImage;
 use Illuminate\Support\Facades\Log;
 use Intervention\Image\Facades\Image;
 
@@ -92,7 +94,7 @@ class WBFile
             if ($old_file && $uploaded) {
                 if (is_numeric($old_file) && $old_file > 0) {
                     // get the old image to delete
-                    $query_image = \App\Models\Image::find($old_file);
+                    $query_image = ModelImage::find($old_file);
 
                     if ($query_image) {
                         $is_deleted = delete_file($destinationPath . '/' . $query_image->filename);
@@ -148,7 +150,7 @@ class WBFile
         $image = null;
         $path = null;
         if (is_numeric($source)) {
-            $image = \App\Models\Image::find($source);
+            $image = ModelImage::find($source);
         }
 
         $filename = null;
@@ -188,14 +190,14 @@ class WBFile
      * Create base64 image (Local file only)
      *
      * @param $filename
-     * @param $filetype
+     * @param $fileType
      * @return null|string
      */
-    public static function encodeBASE64Image($filename, $filetype = 'png')
+    public static function encodeBASE64Image($filename, $fileType = 'png')
     {
         if ($filename) {
-            $imgbinary = fread(fopen($filename, "r"), filesize($filename));
-            return 'data:image/' . $filetype . ';base64,' . base64_encode($imgbinary);
+            $imgBinary = fread(fopen($filename, "r"), filesize($filename));
+            return 'data:image/' . $fileType . ';base64,' . base64_encode($imgBinary);
         }
 
         return null;
@@ -278,7 +280,7 @@ class WBFile
         }
 
         // insert image to database
-        return \App\Models\Image::insertGetId([
+        return ModelImage::insertGetId([
             'user_id' => ((isset($image_options['user_id'])) ? $image_options['user_id'] : 0),
             'source_id' => ((isset($image_options['source_id'])) ? $image_options['source_id'] : 0),
 

@@ -1,9 +1,9 @@
 <?php
 /**
- * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
- * Copyright 2016 Webmons Development Studio.
- * License: Apache 2.0
+ * @author Archie, Disono (webmonsph@gmail.com)
+ * @git https://github.com/disono/Laravel-Template
+ * @copyright Webmons Development Studio. (webmons.com), 2016-2017
+ * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
 namespace App\Models;
@@ -45,7 +45,7 @@ class User extends Authenticatable
      * @param array $params
      * @return null
      */
-    public static function get($params = [])
+    public static function fetch($params = [])
     {
         $table_name = (new self)->getTable();
         $select[] = $table_name . '.*';
@@ -99,7 +99,7 @@ class User extends Authenticatable
     public static function getAll($params = [])
     {
         $params['all'] = true;
-        return self::get($params);
+        return self::fetch($params);
     }
 
     /**
@@ -114,7 +114,7 @@ class User extends Authenticatable
         if (!$id) {
             return null;
         }
-        return self::get([
+        return self::fetch([
             'single' => true,
             $column => $id
         ]);
@@ -220,7 +220,7 @@ class User extends Authenticatable
 
         // username
         if (isset($inputs['username'])) {
-            $slug = Slug::get([
+            $slug = Slug::fetch([
                 'source_id' => $id,
                 'source_type' => 'user',
                 'single' => true
@@ -234,7 +234,7 @@ class User extends Authenticatable
         }
 
         // store to activity logs
-        ActivityLog::store($id, self::$writable_columns, $query->first(), $inputs, (new self)->getTable());
+        ActivityLog::log($id, self::$writable_columns, $query->first(), $inputs, (new self)->getTable());
 
         return (bool)$query->update($update);
     }

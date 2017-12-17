@@ -1,15 +1,14 @@
 <?php
 /**
- * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
- * License: Apache 2.0
- * Created at: 2016-01-30 02:06 PM
+ * @author Archie, Disono (webmonsph@gmail.com)
+ * @git https://github.com/disono/Laravel-Template
+ * @copyright Webmons Development Studio. (webmons.com), 2016-2017
+ * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
 namespace App\APDApp\Helpers;
 
 use App\Models\User;
-use Illuminate\Support\Facades\URL;
 
 class WBUrl
 {
@@ -46,7 +45,7 @@ class WBUrl
      */
     public static function profileUrl($id)
     {
-        $user = User::find($id);
+        $user = User::single($id);
 
         if ($user) {
             return url('profile/' . self::urlTitle($user->username));
@@ -96,11 +95,12 @@ class WBUrl
      * Is current url active
      *
      * @param null $url
+     * @param string $class
      * @return string
      */
-    public static function activeUrl($url = null)
+    public static function activeUrl($url = null, $class = 'active')
     {
-        return ((URL::current() == url('/') . '/' . $url) || (URL::current() == url('/') && $url == null)) ? 'active' : '';
+        return (request()->is($url . '/*') || request()->is($url)) ? $class : '';
     }
 
     /**

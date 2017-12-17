@@ -1,9 +1,9 @@
 <?php
 /**
- * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
- * Copyright 2016 Webmons Development Studio.
- * License: Apache 2.0
+ * @author Archie, Disono (webmonsph@gmail.com)
+ * @git https://github.com/disono/Laravel-Template
+ * @copyright Webmons Development Studio. (webmons.com), 2016-2017
+ * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
 namespace App\Http\Controllers\Admin\Application\Image;
@@ -14,6 +14,13 @@ use App\Models\ImageAlbum;
 
 class ImageAlbumUploadController extends Controller
 {
+    public function __construct()
+    {
+        $this->view = 'album-file.';
+        $this->view_type = 'admin';
+        parent::__construct();
+    }
+
     /**
      * List of photos
      *
@@ -22,21 +29,21 @@ class ImageAlbumUploadController extends Controller
      */
     public function create($album_id)
     {
-        $content['title'] = app_title('Edit Role');
         $data = ImageAlbum::single($album_id);
         if (!$data) {
             abort(404);
         }
-        $content['album'] = $data;
 
-        return admin_view('album-file.create', $content);
+        $this->title = app_title('Edit Role');
+        $this->content['album'] = $data;
+        return $this->response('create');
     }
 
     /**
      * Upload photos to album
      *
      * @param Requests\Admin\AlbumUpload $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @return bool
      */
     public function store(Requests\Admin\AlbumUpload $request)
     {
@@ -48,6 +55,6 @@ class ImageAlbumUploadController extends Controller
             'type' => 'album'
         ]);
 
-        return redirect()->back();
+        return $this->redirectResponse();
     }
 }

@@ -1,9 +1,9 @@
 <?php
 /**
- * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
- * Copyright 2016 Webmons Development Studio.
- * License: Apache 2.0
+ * @author Archie, Disono (webmonsph@gmail.com)
+ * @git https://github.com/disono/Laravel-Template
+ * @copyright Webmons Development Studio. (webmons.com), 2016-2017
+ * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
 namespace App\Http\Controllers\Web\User;
@@ -12,6 +12,12 @@ use App\Http\Controllers\Controller;
 
 class DashboardController extends Controller
 {
+    public function __construct()
+    {
+        $this->view = 'user.';
+        parent::__construct();
+    }
+
     /**
      * Admin dashboard
      *
@@ -19,13 +25,14 @@ class DashboardController extends Controller
      */
     public function getIndex()
     {
-        $content['title'] = app_title('Dashboard');
         $user = me();
-
+        $this->title = 'Dashboard';
         if ($user->role != 'client') {
-            return admin_view('user.dashboard', $content);
+            $this->view_type = 'admin';
+            return $this->response('dashboard');
         } else {
-            return theme('user.dashboard', $content);
+            $this->view_type = 'user';
+            return $this->response('dashboard');
         }
     }
 }

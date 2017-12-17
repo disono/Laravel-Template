@@ -1,7 +1,8 @@
 {{--
- * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
- * License: Apache 2.0
+ * @author Archie, Disono (webmonsph@gmail.com)
+ * @git https://github.com/disono/Laravel-Template
+ * @copyright Webmons Development Studio. (webmons.com), 2016-2017
+ * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
 --}}
 @extends('admin.layout.master')
 
@@ -10,45 +11,48 @@
 @section('content')
     <div class="container-fluid">
         <div class="row">
-            <div class="col-xs-12 col-md-6 col-xs-offset-0 col-md-offset-3">
-                <div class="app-container">
-                    <h3 class="page-header">Create Album</h3>
+            <div class="col-12">
+                <h3>Create Album</h3>
 
-                    <form action="{{url('admin/album/store')}}" method="post" role="form">
-                        {{csrf_field()}}
+                <form action="{{url('admin/album/store')}}" method="post" role="form">
+                    {{csrf_field()}}
 
-                        <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
-                            <label for="name">Name*</label>
-                            <input type="text" class="form-control" name="name" id="name" placeholder="Name">
+                    <div class="form-group">
+                        <label for="name">Name*</label>
+                        <input type="text" class="form-control{{ $errors->has('name') ? ' is-invalid' : '' }}"
+                               name="name" id="name" placeholder="Name">
 
-                            @if ($errors->has('name'))
-                                <span class="help-block">{{ $errors->first('name') }}</span>
-                            @endif
-                        </div>
+                        @if ($errors->has('name'))
+                            <div class="invalid-feedback">{{ $errors->first('name') }}</div>
+                        @endif
+                    </div>
 
-                        <div class="form-group{{ $errors->has('slug') ? ' has-error' : '' }}">
-                            <label for="slug">Slug* (Slugs make the URL more user-friendly)</label>
-                            <input type="text" class="form-control" name="slug" id="slug"
-                                   placeholder="Slug">
+                    <div class="form-group">
+                        <label for="slug">Slug* (Slugs make the URL more user-friendly)</label>
+                        <input type="text" class="form-control{{ $errors->has('slug') ? ' is-invalid' : '' }}"
+                               name="slug" id="slug"
+                               placeholder="Slug">
 
-                            @if ($errors->has('slug'))
-                                <span class="help-block">{{ $errors->first('slug') }}</span>
-                            @endif
-                        </div>
+                        @if ($errors->has('slug'))
+                            <div class="invalid-feedback">{{ $errors->first('slug') }}</div>
+                        @endif
+                    </div>
 
-                        <div class="form-group{{ $errors->has('description') ? ' has-error' : '' }}">
-                            <label for="description">Description</label>
-                            <textarea name="description" id="description" class="form-control" rows="4"
-                                      placeholder="Description"></textarea>
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea name="description" id="description"
+                                  class="form-control{{ $errors->has('description') ? ' is-invalid' : '' }}" rows="4"
+                                  placeholder="Description"></textarea>
 
-                            @if ($errors->has('description'))
-                                <span class="help-block">{{ $errors->first('description') }}</span>
-                            @endif
-                        </div>
+                        @if ($errors->has('description'))
+                            <div class="invalid-feedback">{{ $errors->first('description') }}</div>
+                        @endif
+                    </div>
 
+                    <div class="form-group">
                         <button type="submit" class="btn btn-primary"><i class="fa fa-floppy-o"></i> Create</button>
-                    </form>
-                </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

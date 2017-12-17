@@ -1,9 +1,9 @@
 <?php
 /**
- * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
- * Copyright 2016 Webmons Development Studio.
- * License: Apache 2.0
+ * @author Archie, Disono (webmonsph@gmail.com)
+ * @git https://github.com/disono/Laravel-Template
+ * @copyright Webmons Development Studio. (webmons.com), 2016-2017
+ * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
 namespace App\Models;
@@ -12,9 +12,9 @@ use Illuminate\Support\Facades\DB;
 
 class Message extends AppModel
 {
-    private static $params;
+    protected static $table_name = 'messages';
+    protected static $params;
     private static $query_params;
-
     protected static $writable_columns = [
         'to_id', 'from_id', 'group_id', 'message', 'type', 'is_viewed'
     ];
@@ -48,7 +48,7 @@ class Message extends AppModel
             $required_params = $required_params + $params;
         }
 
-        return self::get($required_params);
+        return self::fetch($required_params);
     }
 
     /**
@@ -61,7 +61,7 @@ class Message extends AppModel
      * @param array $params
      * @return null
      */
-    public static function get($params = [])
+    public static function fetch($params = [])
     {
         $table_name = (new self)->getTable();
         $select[] = $table_name . '.*';
@@ -348,7 +348,7 @@ class Message extends AppModel
     public static function getAll($params = [])
     {
         $params['all'] = true;
-        return self::get($params);
+        return self::fetch($params);
     }
 
     /**

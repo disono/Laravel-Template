@@ -1,14 +1,17 @@
 <?php
 /**
- * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
- * Copyright 2016 Webmons Development Studio.
- * License: Apache 2.0
+ * @author Archie, Disono (webmonsph@gmail.com)
+ * @git https://github.com/disono/Laravel-Template
+ * @copyright Webmons Development Studio. (webmons.com), 2016-2017
+ * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
-include_once 'Vendor/dummy_data.php';
-include_once 'Vendor/methods.php';
+include_once 'Vendor/dummy.php';
 include_once 'Vendor/messages.php';
+include_once 'Vendor/methods.php';
+
+// global variables
+$GLOBALS['wb_scripts_loaders'] = [];
 
 /*
  * --------------------------------------------------------------------------
@@ -706,7 +709,7 @@ if (!function_exists('active_url')) {
      */
     function active_url($url)
     {
-        return App\APDApp\Helpers\WBUrl::activeUrl($url);
+        return App\APDApp\Helpers\WBUrl::activeUrl($url, $class = 'active');
     }
 }
 

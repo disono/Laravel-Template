@@ -1,10 +1,19 @@
 <?php
+/**
+ * @author Archie, Disono (webmonsph@gmail.com)
+ * @git https://github.com/disono/Laravel-Template
+ * @copyright Webmons Development Studio. (webmons.com), 2016-2017
+ * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
+ */
 
 namespace App\Http\Controllers\API\V1\Message;
 
 use App\Http\Controllers\Controller;
 use App\Models\Message;
 
+/**
+ * @property string response_type
+ */
 class MessengerController extends Controller
 {
     public function __construct()
@@ -20,7 +29,7 @@ class MessengerController extends Controller
      */
     public function inbox()
     {
-        $this->content = Message::get([
+        $this->content = Message::fetch([
             'to_id' => authenticated_id(),
             'from_id' => authenticated_id(),
             'group_by' => true
@@ -37,7 +46,7 @@ class MessengerController extends Controller
      */
     public function reading($from_id)
     {
-        $this->content = Message::get([
+        $this->content = Message::fetch([
             'to_id' => authenticated_id(),
             'from_id' => $from_id,
             'reading' => true
@@ -54,7 +63,7 @@ class MessengerController extends Controller
      */
     public function group($group_id)
     {
-        $this->content = Message::get([
+        $this->content = Message::fetch([
             'group_id' => $group_id,
             'from_id' => authenticated_id()
         ]);

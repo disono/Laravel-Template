@@ -1,9 +1,9 @@
 <?php
 /**
- * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
- * Copyright 2016 Webmons Development Studio.
- * License: Apache 2.0
+ * @author Archie, Disono (webmonsph@gmail.com)
+ * @git https://github.com/disono/Laravel-Template
+ * @copyright Webmons Development Studio. (webmons.com), 2016-2017
+ * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
 namespace App\Models;
@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 
 class PageCategory extends AppModel
 {
+    protected static $table_name = 'page_categories';
     protected static $writable_columns = [
         'parent_id', 'name', 'description',
         'is_link', 'external_link'
@@ -47,7 +48,7 @@ class PageCategory extends AppModel
             return null;
         }
 
-        return self::get([
+        return self::fetch([
             'single' => true,
             $column => $id
         ]);
@@ -59,7 +60,7 @@ class PageCategory extends AppModel
      * @param array $params
      * @return null
      */
-    public static function get($params = [])
+    public static function fetch($params = [])
     {
         $table_name = (new self)->getTable();
         $select[] = $table_name . '.*';
@@ -113,7 +114,7 @@ class PageCategory extends AppModel
     public static function getAll($params = [])
     {
         $params['all'] = true;
-        return self::get($params);
+        return self::fetch($params);
     }
 
     /**
@@ -125,7 +126,7 @@ class PageCategory extends AppModel
     public static function getTree($params = [])
     {
         $params['all'] = true;
-        $query = self::get($params);
+        $query = self::fetch($params);
 
         $categories = [];
         foreach ($query as $category) {
@@ -229,7 +230,7 @@ class PageCategory extends AppModel
         if (isset($params['exclude'])) {
             $query = array_merge($query, $params['exclude']);
         }
-        $count_cat = count(self::get($query));
+        $count_cat = count(self::fetch($query));
 
         $query = [];
         $num = 0;
@@ -272,6 +273,39 @@ class PageCategory extends AppModel
     }
 
     /**
+     * Category menu
+     *
+     * @param $include
+     * @return string
+     */
+    public static function categoryMenu($include)
+    {
+        $view = '';
+        foreach ($include as $id) {
+            $top_menu = self::single($id);
+
+            if ($top_menu) {
+
+                if ($top_menu->is_link) {
+                    $view .= '<li class="nav-item"><a class="nav-link" href="' . (($top_menu->external_link) ? $top_menu->external_link :
+                            url('pages?category_slug=' . $top_menu->slug)) . '">' . $top_menu->name . '</a></li>';
+                } else {
+                    $view .= '<li class="nav-item dropdown">';
+
+                    // top menu
+                    $view .= '<a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' .
+                        $top_menu->name . '</a>';
+
+                    // sub-menu
+                    $view .= self::subMenu($top_menu->id);
+                    $view .= '</li>';
+                }
+            }
+        }
+        return $view;
+    }
+
+    /**
      * Get the sub-menu for top category indicated (id)
      *
      * @param $id
@@ -285,64 +319,39 @@ class PageCategory extends AppModel
 
         if ($top_menu) {
             // pages
-            $pages_top = Page::get([
+            $pages_top = Page::fetch([
                 'page_category_id' => $top_menu->id,
                 'all' => true
             ]);
             foreach ($pages_top as $page) {
-                $view .= '<li><a tabindex="-1" href="' . $page->url . '">' . $page->name . '</a></li>';
+                $view .= '<li><a class="dropdown-item" href="' . $page->url . '">' . $page->name . '</a></li>';
             }
 
             // sub-menu (page category)
-            $subs = self::get([
+            $subs = self::fetch([
                 'parent_id' => $top_menu->id,
                 'all' => true
             ]);
             foreach ($subs as $cat) {
                 $view .= '<li class="dropdown-submenu">';
+                $view .= '<ul class="dropdown-menu">';
+
                 if ($cat->is_link) {
-                    $view .= '<a href="' . (($cat->external_link) ? $cat->external_link :
-                            url('pages?category_slug=' . $cat->slug)) . '">' . $cat->name . '</a>';
+                    $view .= '<li><a class="dropdown-item" href="' . (($cat->external_link) ? $cat->external_link :
+                            url('pages?category_slug=' . $cat->slug)) . '">' . $cat->name . '</a></li>';
                 } else {
-                    $view .= '<a class="submenu" tabindex="-1" href="#">' . $cat->name . ' <span class="caret-right"></span></a>';
+                    $view .= '<li class="dropdown-submenu">';
+                    $view .= '<a class="dropdown-item dropdown-toggle" href="#">' . $cat->name . ' <span class="caret-right"></span></a>';
                     $view .= self::subMenu($cat->id);
+                    $view .= '</li>';
                 }
+
+                $view .= '</ul>';
                 $view .= '</li>';
             }
         }
 
         return ($view != '') ? '<ul class="dropdown-menu">' . $view . '</ul>' : '';
-    }
-
-    /**
-     * Category menu
-     *
-     * @param $include
-     * @return string
-     */
-    public static function categoryMenu($include)
-    {
-        $view = '';
-        foreach ($include as $id) {
-            $top_menu = self::single($id);
-
-            if ($top_menu) {
-                $view .= '<li class="dropdown">';
-                if ($top_menu->is_link) {
-                    $view .= '<a href="' . (($top_menu->external_link) ? $top_menu->external_link :
-                            url('pages?category_slug=' . $top_menu->slug)) . '">' . $top_menu->name . '</a>';
-                } else {
-                    $view .= '<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" ' .
-                        'aria-expanded="false">' . $top_menu->name . ' <span class="caret"></span></a>';
-                }
-
-                // sub-menu
-                $view .= self::subMenu($top_menu->id);
-                $view .= '</li>';
-            }
-        }
-
-        return $view;
     }
 
     /**
@@ -457,7 +466,7 @@ class PageCategory extends AppModel
         // update slug
         if ($id && isset($inputs['slug'])) {
             if ($inputs['slug']) {
-                $slug = Slug::get([
+                $slug = Slug::fetch([
                     'source_id' => $id,
                     'source_type' => 'page_category',
                     'single' => true
@@ -480,7 +489,7 @@ class PageCategory extends AppModel
         }
 
         // store to activity logs
-        ActivityLog::store($id, self::$writable_columns, $query->first(), $inputs, (new self)->getTable());
+        ActivityLog::log($id, self::$writable_columns, $query->first(), $inputs, (new self)->getTable());
 
         return (bool)$query->update($update);
     }

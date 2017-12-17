@@ -5,59 +5,69 @@
     "license": "MIT",
     "type": "project",
     "require": {
-        "php": ">=5.6.4",
-        "appstract/laravel-opcache": "^1.1",
-        "barryvdh/laravel-cors": "^0.9.2",
-        "barryvdh/laravel-dompdf": "^0.7.1",
+        "php": ">=7.0.0",
+        "appstract/laravel-opcache": "^1.2",
+        "barryvdh/laravel-cors": "^0.9.3",
+        "barryvdh/laravel-dompdf": "^0.8.1",
         "brozot/laravel-fcm": "^1.2",
-        "graham-campbell/htmlmin": "^4.3",
-        "intervention/image": "^2.3",
-        "jenssegers/agent": "^2.3",
-        "laravel/framework": "5.4.*",
+        "fideloper/proxy": "~3.3",
+        "htmlmin/htmlmin": "^5.0",
+        "intervention/image": "^2.4",
+        "jenssegers/agent": "^2.5",
+        "laravel/framework": "5.5.*",
         "laravel/socialite": "^3.0",
         "laravel/tinker": "~1.0",
         "maatwebsite/excel": "^2.1",
         "mews/purifier": "^2.0",
         "setasign/fpdi-tcpdf": "^1.6",
-        "simplesoftwareio/simple-qrcode": "^1.4",
-        "tymon/jwt-auth": "^0.5.9",
-        "wisembly/elephant.io": "^3.2"
+        "simplesoftwareio/simple-qrcode": "^1.5",
+        "tymon/jwt-auth": "^0.5.12",
+        "wisembly/elephant.io": "^3.3"
     },
     "require-dev": {
+        "filp/whoops": "~2.0",
         "fzaninotto/faker": "~1.4",
         "mockery/mockery": "0.9.*",
-        "phpunit/phpunit": "~5.0"
+        "phpunit/phpunit": "~6.0"
     },
     "autoload": {
         "classmap": [
-            "database"
+            "database/seeds",
+            "database/factories"
         ],
         "psr-4": {
-            "App\\": "app/",
-            "Tests\\": "tests/"
+            "App\\": "app/"
         },
         "files": [
             "app/APDApp/functions.php"
         ]
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "dont-discover": [
+            ]
+        }
+    },
     "scripts": {
         "post-root-package-install": [
-            "php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
         ],
         "post-create-project-cmd": [
-            "php artisan key:generate"
+            "@php artisan key:generate"
         ],
-        "post-install-cmd": [
-            "Illuminate\\Foundation\\ComposerScripts::postInstall",
-            "php artisan optimize"
-        ],
-        "post-update-cmd": [
-            "Illuminate\\Foundation\\ComposerScripts::postUpdate",
-            "php artisan optimize"
+        "post-autoload-dump": [
+            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php artisan package:discover"
         ]
     },
     "config": {
         "preferred-install": "dist",
-        "sort-packages": true
+        "sort-packages": true,
+        "optimize-autoloader": true
     }
 }

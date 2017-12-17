@@ -1,9 +1,9 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: archi
- * Date: 2/4/2017
- * Time: 12:48 PM
+ * @author Archie, Disono (webmonsph@gmail.com)
+ * @git https://github.com/disono/Laravel-Template
+ * @copyright Webmons Development Studio. (webmons.com), 2016-2017
+ * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
 namespace App\Models;
@@ -15,6 +15,217 @@ use Illuminate\Support\Facades\Schema;
 class AppModel extends Model
 {
     public static $query_object = null;
+    protected static $writable_columns = [];
+    protected static $table_name = null;
+    protected static $params = [];
+
+    /**
+     * Get single data
+     *
+     * @param $id
+     * @param string $column
+     * @return null
+     */
+    public static function single($id, $column = 'id')
+    {
+        if (!$id) {
+            return null;
+        }
+
+        return static::fetch([
+            'single' => true,
+            $column => $id
+        ]);
+    }
+
+    /**
+     * Get data
+     *
+     * @param array $params
+     * @return null
+     */
+    public static function fetch($params = [])
+    {
+        $table_name = static::$table_name;
+        static::$params = $params;
+
+        $select[] = $table_name . '.*';
+        $select = static::getSelects($select);
+
+        // custom select
+        $query = DB::table($table_name)->select($select);
+
+        // where equal
+        $query = static::_whereEqual($query, $params, static::$writable_columns, $table_name);
+
+        // exclude and include
+        $query = static::_excInc($query, $params, static::$writable_columns, $table_name);
+
+        // search
+        $query = static::_search($query, $params, static::$writable_columns, $table_name);
+
+        // custom filter
+        $query = static::getFilters($query);
+
+        $query->orderBy('created_at', 'DESC');
+
+        return static::_readyFormatting($params, $query);
+    }
+
+    /**
+     * Custom selects
+     *
+     * @param array $select
+     * @return array
+     */
+    public static function getSelects($select = [])
+    {
+        return $select;
+    }
+
+    /**
+     * Custom filters
+     *
+     * @param $query
+     * @return mixed
+     */
+    public static function getFilters($query)
+    {
+        return $query;
+    }
+
+    /**
+     * Get all data no pagination
+     *
+     * @param array $params
+     * @return null
+     */
+    public static function getAll($params = [])
+    {
+        $params['all'] = true;
+        return static::fetch($params);
+    }
+
+    /**
+     * Store new data
+     *
+     * @param array $inputs
+     * @return bool
+     */
+    public static function store($inputs = [])
+    {
+        $store = [];
+
+        foreach ($inputs as $key => $value) {
+            if (in_array($key, static::$writable_columns)) {
+                $store[$key] = $value;
+            }
+        }
+
+        $store['created_at'] = sql_date();
+        return (int)self::insertGetId($store);
+    }
+
+    /**
+     * Delete data
+     *
+     * @param $id
+     * @return bool
+     * @throws \Exception
+     */
+    public static function remove($id)
+    {
+        $q = self::find($id);
+
+        // check if exists or tried to delete the users authorization
+        if (!$q) {
+            return false;
+        }
+
+        if (!static::actionRemove($q)) {
+            return false;
+        }
+
+        return (bool)self::destroy($id);
+    }
+
+    /**
+     * Custom action remove
+     *
+     * @return bool
+     */
+    public static function actionRemove($q)
+    {
+        return true;
+    }
+
+    /**
+     * Update data
+     *
+     * @param $id
+     * @param array $inputs
+     * @param null $column_name
+     * @return bool
+     */
+    public static function edit($id, $inputs = [], $column_name = null)
+    {
+        $update = [];
+        $query = null;
+        $table_name = static::$table_name;
+
+        if (!$column_name) {
+            $column_name = 'id';
+        }
+
+        if ($id && !is_array($column_name)) {
+            $query = DB::table($table_name)->where($column_name, $id);
+        } else {
+            $i = 0;
+            foreach ($column_name as $key => $value) {
+                if (!in_array($key, static::$writable_columns)) {
+                    return false;
+                }
+
+                if (!$i) {
+                    $query = DB::table($table_name)->where($key, $value);
+                } else {
+                    if ($query) {
+                        $query->where($key, $value);
+                    }
+                }
+                $i++;
+            }
+        }
+
+        foreach ($inputs as $key => $value) {
+            if (in_array($key, static::$writable_columns)) {
+                $update[$key] = $value;
+            }
+        }
+
+        // store to activity logs
+        ActivityLog::logger($id, static::$writable_columns, $query->first(), $inputs, $table_name);
+
+        // other custom action
+        if (!static::actionEdit($table_name, $query->first(), $inputs)) {
+            return false;
+        }
+
+        return (bool)$query->update($update);
+    }
+
+    /**
+     * Custom method for editing
+     *
+     * @param $table_name
+     * @param $query
+     * @param $inputs
+     * @return bool
+     */
+    public static function actionEdit($table_name, $query, $inputs)
+    {
+        return true;
+    }
 
     /**
      * Exclude and Include
@@ -210,14 +421,16 @@ class AppModel extends Model
         if (isset($params['date_range_from']) && isset($params['date_range_to'])) {
             $date_name = (isset($params['date_range_name'])) ? $params['date_range_name'] : $table_name . 'created_at';
 
-            $query->whereBetween(DB::raw('DATE(' . $date_name . ')'), [sql_date($params['date_range_from'], true), sql_date($params['date_range_to'], true)]);
+            $query->whereBetween(DB::raw('DATE(' . $date_name . ')'), [sql_date($params['date_range_from'], true),
+                sql_date($params['date_range_to'], true)]);
         }
 
         // fetch the current data today
         // if $fetch_today is boolean get the data today unless specify the date
         if (isset($params['fetch_today'])) {
             $data_name_today = (isset($params['fetch_today_name'])) ? $params['fetch_today_name'] : $table_name . 'created_at';
-            $current_date = ($params['fetch_today'] === true || is_numeric($params['fetch_today'])) ? 'CURDATE()' : sql_date($params['fetch_today'], true);
+            $current_date = ($params['fetch_today'] === true || is_numeric($params['fetch_today'])) ? 'CURDATE()' :
+                sql_date($params['fetch_today'], true);
 
             $query->whereRaw('DATE(' . $data_name_today . ') = ' . $current_date);
         }
@@ -243,6 +456,30 @@ class AppModel extends Model
         }
 
         return $inputs;
+    }
+
+    /**
+     * Ready for formatting data
+     *
+     * @param $params
+     * @param $query
+     * @return mixed
+     */
+    public static function _readyFormatting($params = [], $query)
+    {
+        if (isset($params['object'])) {
+            return $query;
+        } else {
+            if (isset($params['single'])) {
+                return static::_format($query->first(), $params);
+            } else if (isset($params['all'])) {
+                return static::_format($query->get(), $params);
+            } else {
+                $query = paginate($query);
+
+                return static::_format($query, $params);
+            }
+        }
     }
 
     /**

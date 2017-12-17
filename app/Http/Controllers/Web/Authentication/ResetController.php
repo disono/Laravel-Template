@@ -1,9 +1,9 @@
 <?php
 /**
- * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
- * Copyright 2016 Webmons Development Studio.
- * License: Apache 2.0
+ * @author Archie, Disono (webmonsph@gmail.com)
+ * @git https://github.com/disono/Laravel-Template
+ * @copyright Webmons Development Studio. (webmons.com), 2016-2017
+ * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
 namespace App\Http\Controllers\Web\Authentication;
@@ -34,16 +34,17 @@ class ResetController extends Controller
     {
         parent::__construct();
         $this->middleware('guest');
+        $this->view = 'auth.passwords.';
     }
 
     /**
      * Display the form to request a password reset link.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\JsonResponse|\Illuminate\View\View
      */
-    public function getRecover()
+    public function getRecoverAction()
     {
-        return $this->showLinkRequestForm();
+        return $this->response('email');
     }
 
     /**
@@ -52,7 +53,7 @@ class ResetController extends Controller
      * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function postRecover(Request $request)
+    public function postRecoverAction(Request $request)
     {
         config(['mail.from' => [
             'address' => env('MAIL_FROM_ADDRESS', ''),

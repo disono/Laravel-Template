@@ -1,21 +1,34 @@
 <?php
 /**
- * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
- * Copyright 2016 Webmons Development Studio.
- * License: Apache 2.0
+ * @author Archie, Disono (webmonsph@gmail.com)
+ * @git https://github.com/disono/Laravel-Template
+ * @copyright Webmons Development Studio. (webmons.com), 2016-2017
+ * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
 namespace App\Http\Controllers\API\V1\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\FcmToken;
+use App\Models\Setting;
 use App\Models\User;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UserController extends Controller
 {
+    /**
+     * List of users
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function index()
+    {
+        return success_json_response(User::get(request_options([
+            'search', 'role'
+        ])));
+    }
+
     /**
      * Get user information
      *
@@ -24,7 +37,17 @@ class UserController extends Controller
      */
     public function getShow($id)
     {
-        return success_json_response(User::single($id));
+        $user = User::single($id);
+        if (!$user) {
+            return failed_json_response(exception_messages('USER_NOT_FOUND'));
+        }
+
+        // if user is syncing add the application settings
+        if (authenticated_id() == $id) {
+            $user->application_settings = Setting::getAll();
+        }
+
+        return success_json_response($user);
     }
 
     /**

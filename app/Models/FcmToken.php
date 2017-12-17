@@ -1,15 +1,17 @@
 <?php
 /**
- * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
- * Copyright 2016 Webmons Development Studio.
- * License: Apache 2.0
+ * @author Archie, Disono (webmonsph@gmail.com)
+ * @git https://github.com/disono/Laravel-Template
+ * @copyright Webmons Development Studio. (webmons.com), 2016-2017
+ * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
 namespace App\Models;
 
 class FcmToken extends AppModel
 {
+    protected static $table_name = 'fcm_tokens';
+
     /**
      * Get users tokens
      *
@@ -17,7 +19,7 @@ class FcmToken extends AppModel
      *
      * @return null
      */
-    public static function get($user_id)
+    public static function fetch($user_id)
     {
         $tokens = [];
         $data = self::where('user_id', $user_id)->get();
@@ -38,7 +40,7 @@ class FcmToken extends AppModel
     public static function getAll($params = [])
     {
         $params['all'] = true;
-        return self::get($params);
+        return self::fetch($params);
     }
 
     /**
@@ -81,9 +83,10 @@ class FcmToken extends AppModel
      * Delete token
      *
      * @param $token
+     * @return bool
      */
     public static function remove($token)
     {
-        self::where('token', $token)->delete();
+        return (bool)self::where('token', $token)->delete();
     }
 }

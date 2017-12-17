@@ -1,9 +1,9 @@
 <?php
 /**
- * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
- * Copyright 2016 Webmons Development Studio.
- * License: Apache 2.0
+ * @author Archie, Disono (webmonsph@gmail.com)
+ * @git https://github.com/disono/Laravel-Template
+ * @copyright Webmons Development Studio. (webmons.com), 2016-2017
+ * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
 namespace App\Http\Controllers\Admin\Application\Image;
@@ -13,8 +13,19 @@ use App\Http\Requests;
 use App\Models\ImageAlbum;
 use Illuminate\Http\Request;
 
+/**
+ * @property string view
+ * @property string view_type
+ */
 class ImageAlbumController extends Controller
 {
+    public function __construct()
+    {
+        $this->view = 'album.';
+        $this->view_type = 'admin';
+        parent::__construct();
+    }
+
     /**
      * List data
      *
@@ -23,11 +34,10 @@ class ImageAlbumController extends Controller
      */
     public function index(Request $request)
     {
-        $content['title'] = app_title('Albums');
-        $content['albums'] = ImageAlbum::get();
-        $content['request'] = $request;
-
-        return admin_view('album.index', $content);
+        $this->title = 'Albums';
+        $this->content['albums'] = ImageAlbum::fetch();
+        $this->content['request'] = $request;
+        return $this->response('index');
     }
 
     /**
@@ -37,8 +47,8 @@ class ImageAlbumController extends Controller
      */
     public function create()
     {
-        $content['title'] = app_title('Create Album');
-        return admin_view('album.create', $content);
+        $this->title = 'Create Albums';
+        return $this->response('create');
     }
 
     /**
@@ -50,8 +60,7 @@ class ImageAlbumController extends Controller
     public function store(Requests\Admin\AlbumStore $request)
     {
         $id = ImageAlbum::store($request->all());
-
-        return redirect('admin/album/upload/create/' . $id);
+        return $this->redirectResponse('admin/album/upload/create/' . $id);
     }
 
     /**
@@ -62,14 +71,14 @@ class ImageAlbumController extends Controller
      */
     public function edit($id)
     {
-        $content['title'] = app_title('Edit Album');
         $data = ImageAlbum::single($id);
         if (!$data) {
             abort(404);
         }
-        $content['album'] = $data;
 
-        return admin_view('album.edit', $content);
+        $this->title = 'Edit Album';
+        $this->content['album'] = $data;
+        return $this->response('edit');
     }
 
     /**
@@ -81,8 +90,7 @@ class ImageAlbumController extends Controller
     public function update(Requests\Admin\AlbumUpdate $request)
     {
         ImageAlbum::edit($request->get('id'), $request->all());
-
-        return redirect('admin/albums');
+        return $this->redirectResponse('admin/albums');
     }
 
     /**
@@ -90,11 +98,11 @@ class ImageAlbumController extends Controller
      *
      * @param $id
      * @return mixed
+     * @throws \Exception
      */
     public function destroy($id)
     {
         ImageAlbum::remove($id);
-
         return success_json_response('Successfully deleted album.');
     }
 }

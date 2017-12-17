@@ -1,20 +1,15 @@
-<div class="modal fade modal-delete" tabindex="-1" role="dialog" aria-labelledby="modalDelLabel" aria-hidden="true">
-    <div class="modal-dialog modal-sm">
-        <div class="modal-content">
-            <div class="modal-body">
-                <h4>Are you sure to delete this item? <small class="text-danger">This cannot be undone.</small></h4>
+<div class="modal-header">
+    <h5 class="modal-title">Delete Item?</h5>
+    <button type="button" class="close dialogDismiss" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
 
-                <div class="text-right">
-                    <div class="btn-group" role="group" aria-label="...">
-                        <button type="button" class="btn btn-default"
-                                data-dismiss="modal"><i class="fa fa-times"></i> Cancel
-                        </button>
-                        <button type="button" class="btn btn-default"
-                                id="delYes"><i class="fa fa-trash-o"></i> Yes
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+<div class="modal-body">
+    Deleting a item will permanently remove it from our database.
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-default dialogDismiss">No, Keep Item</button>
+    <button type="button" class="btn btn-danger dialogConfirm">Yes, Delete Item</button>
 </div>

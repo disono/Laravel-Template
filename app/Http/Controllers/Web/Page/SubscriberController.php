@@ -1,4 +1,10 @@
 <?php
+/**
+ * @author Archie, Disono (webmonsph@gmail.com)
+ * @git https://github.com/disono/Laravel-Template
+ * @copyright Webmons Development Studio. (webmons.com), 2016-2017
+ * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
+ */
 
 namespace App\Http\Controllers\Web\Page;
 
@@ -12,16 +18,16 @@ class SubscriberController extends Controller
      * Subscribe
      *
      * @param SubscriberStore $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @return bool
      */
-    public function store(SubscriberStore $request)
+    public function storeAction(SubscriberStore $request)
     {
         if (app_settings('subscriber_form')->value == 'enabled') {
-            Subscriber::store($request->only([
+            $this->content = Subscriber::store($request->only([
                 'email', 'first_name', 'last_name'
             ]));
         }
 
-        return redirect()->back();
+        return $this->redirectResponse();
     }
 }

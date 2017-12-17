@@ -1,9 +1,9 @@
 <?php
 /**
- * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
- * Copyright 2016 Webmons Development Studio.
- * License: Apache 2.0
+ * @author Archie, Disono (webmonsph@gmail.com)
+ * @git https://github.com/disono/Laravel-Template
+ * @copyright Webmons Development Studio. (webmons.com), 2016-2017
+ * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
 namespace App\Http\Controllers\Web\Page;
@@ -26,7 +26,7 @@ class PageController extends Controller
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function getHome()
+    public function homeAction()
     {
         PageView::store();
         return $this->response('home');
@@ -37,7 +37,7 @@ class PageController extends Controller
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index()
+    public function indexAction()
     {
         $options = [];
 
@@ -52,7 +52,7 @@ class PageController extends Controller
         }
 
         // list of pages
-        $this->content['pages'] = Page::get(request_options([
+        $this->content['pages'] = Page::fetch(request_options([
             'search', 'category_slug', 'search_month', 'search_year'
         ], $options));
         return $this->response('index');
@@ -65,7 +65,7 @@ class PageController extends Controller
      * @param null $slug
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function getShow($function, $slug = null)
+    public function showAction($function, $slug = null)
     {
         $template = 'show';
         $page = null;
@@ -73,15 +73,20 @@ class PageController extends Controller
         if (!$slug) {
             $page = Page::single($function, 'slug');
         } else {
-            $page = Page::get([
+            $page = Page::fetch([
                 'category_slug' => $function,
                 'slug' => $slug,
                 'single' => true
             ]);
         }
 
+        // page not found
         if (!$page) {
-            abort(404);
+            if (request()->ajax()) {
+                return failed_json_response('Page not found.');
+            } else {
+                abort(404);
+            }
         }
 
         // custom template
@@ -89,10 +94,9 @@ class PageController extends Controller
             $template = 'templates.' . $page->template;
         }
 
+        // page details
         $this->title = $page->name;
         $this->content['page'] = $page;
-
-        // SEO
         $this->content['page_description'] = str_limit(strip_tags($page->description), 155);
 
         PageView::store();
@@ -105,8 +109,8 @@ class PageController extends Controller
      * @param $file
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response|\Symfony\Component\HttpFoundation\StreamedResponse
      */
-    public function streamVideo($file)
+    public function streamVideoAction($file)
     {
-        return video_stream('assets/video/' . $file);
+        return video_stream('private/' . $file);
     }
 }

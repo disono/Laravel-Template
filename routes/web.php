@@ -12,41 +12,44 @@
 */
 
 // home
-Route::get('/', 'Web\Page\PageController@getHome')->name('web-page-home');
+Route::get('/', 'Web\Page\PageController@homeAction')->name('web_page_home');
 
 // login
-Route::get('login', 'Web\Authentication\LoginController@loginView')->name('web-auth-login');
-Route::post('login', 'Web\Authentication\LoginController@process')->name('web-auth-login-process');
-Route::get('logout', 'Web\Authentication\LoginController@logoutProcess')->name('web-auth-logout');
+Route::get('login', 'Web\Authentication\LoginController@loginAction')->name('login');
+Route::post('login', 'Web\Authentication\LoginController@processAction')->name('login_process');
+Route::get('logout', 'Web\Authentication\LoginController@logoutAction')->name('logout');
 
 // social login facebook
-Route::get('auth/social/facebook', 'Web\Authentication\Social\FacebookController@facebook')->name('web-auth-facebook');
-Route::get('auth/social/facebook/callback', 'Web\Authentication\Social\FacebookController@facebookCallback')->name('web-auth-facebook-callback');
+Route::get('auth/social/facebook', 'Web\Authentication\Social\FacebookController@facebookAction')->name('web_auth_facebook');
+Route::get('auth/social/facebook/callback', 'Web\Authentication\Social\FacebookController@facebookCallbackAction')->name('web_auth_facebook_callback');
 
 // register
-Route::get('register', 'Web\Authentication\RegisterController@registerView')->name('web-auth-register');
-Route::post('register', 'Web\Authentication\RegisterController@process')->name('web-auth-register-process');
+Route::get('register', 'Web\Authentication\RegisterController@registerAction')->name('web_auth_register');
+Route::post('register', 'Web\Authentication\RegisterController@processAction')->name('web_auth_register_process');
 
 // email verify
-Route::get('email/verify', 'Web\Authentication\RegisterController@verifyEmail')->name('web-email-verify');
+Route::get('email/verify', 'Web\Authentication\RegisterController@verifyEmailAction')->name('web_email_verify');
 
 // password reset
-Route::get('password/recover', 'Web\Authentication\ResetController@getRecover')->name('web-auth-password-get-recover');
-Route::post('password/recover', 'Web\Authentication\ResetController@postRecover')->name('web-auth-password-post-recover');
-Route::get('password/reset/{token}', 'Web\Authentication\RecoveryController@getReset')->name('password.reset');
-Route::post('password/reset', 'Web\Authentication\RecoveryController@postReset')->name('web-auth-password-post-reset');
+Route::get('password/recover', 'Web\Authentication\ResetController@getRecoverAction')->name('web_auth_password_recover_view');
+Route::post('password/recover', 'Web\Authentication\ResetController@postRecoverAction')->name('web_auth_password_recover_process');
+Route::get('password/reset/{token}', 'Web\Authentication\RecoveryController@getResetAction')->name('password.reset');
+Route::post('password/reset', 'Web\Authentication\RecoveryController@postResetAction')->name('web_auth_password_reset');
 
 // event
-Route::get('event/{slug}', 'Web\Event\EventController@show')->name('web-event');
+Route::get('event/{slug}', 'Web\Event\EventController@showAction')->name('web_event');
 
 // subscriber
-Route::post('subscriber/store', 'Web\Page\SubscriberController@store')->name('web-subscriber-store');
+Route::post('subscriber/store', 'Web\Page\SubscriberController@storeAction')->name('web_subscriber_store');
 
 // video stream
-Route::get('stream/video/{file}', 'Web\Page\PageController@streamVideo')->name('web-page-stream-video');
+Route::get('stream/video/{file}', 'Web\Page\PageController@streamVideoAction')->name('web_page_stream_video');
 
 // pages
-Route::get('pages', 'Web\Page\PageController@index')->name('web-page');
+Route::get('pages', 'Web\Page\PageController@indexAction')->name('web_page');
+
+// custom views for AJAX calls
+Route::get('views', 'Web\ViewTemplatesController@show')->name('web-views');
 
 /*
  * ---------------------------------------------------------------------------------------------------------------------
@@ -61,7 +64,7 @@ Route::group(['middleware' => 'auth'], function () {
      */
 
     // email verify
-    Route::get('email/resend/verification', 'Web\Authentication\RegisterController@resendVerification')->name('web-email-resent-verification');
+    Route::get('email/resend/verification', 'Web\Authentication\RegisterController@resendVerificationAction')->name('web_email_resent_verification');
 
     // user
     Route::get('user', 'Web\User\UserController@index')->name('web-user-index');
@@ -71,9 +74,10 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('user/security', 'Web\User\SettingsController@security')->name('web-user-security');
     Route::post('user/update/security', 'Web\User\SettingsController@updateSecurity')->name('web-user-update-security');
 
-    // images
+    // media
     Route::get('media-files', 'Web\File\MediaFileController@index')->name('web-media-file');
-    Route::post('media-file/upload', 'Web\File\MediaFileController@upload')->name('web-media-file-upload');
+    Route::post('media-file/store', 'Web\File\MediaFileController@store')->name('web-media-file-store');
+    Route::delete('media-file/destroy/{id}', 'Web\File\MediaFileController@destroy')->name('web-media-file-destroy');
 
     // messaging
     Route::get('messenger', 'Web\Message\MessageController@index')->name('web-message');
@@ -98,7 +102,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('admin/user/login/{id}', 'Admin\UserController@login')->name('admin-user-login');
         Route::get('admin/user/password/edit/{id}', 'Admin\UserController@passwordEdit')->name('admin-user-password-edit');
         Route::post('admin/user/password/update', 'Admin\UserController@passwordUpdate')->name('admin-user-password-update');
-        Route::post('admin/user/destroy/{id}', 'Admin\UserController@destroy')->name('admin-user-destroy');
+        Route::delete('admin/user/destroy/{id}', 'Admin\UserController@destroy')->name('admin-user-destroy');
         Route::get('admin/user/map', 'Admin\UserController@map')->name('admin-user-map');
 
         // page category
@@ -107,7 +111,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('admin/page-category/store', 'Admin\Page\PageCategoryController@store')->name('admin-page-category-store');
         Route::get('admin/page-category/edit/{id}', 'Admin\Page\PageCategoryController@edit')->name('admin-page-category-edit');
         Route::post('admin/page-category/update', 'Admin\Page\PageCategoryController@update')->name('admin-page-category-update');
-        Route::post('admin/page-category/destroy/{id}', 'Admin\Page\PageCategoryController@destroy')->name('admin-page-category-destroy');
+        Route::delete('admin/page-category/destroy/{id}', 'Admin\Page\PageCategoryController@destroy')->name('admin-page-category-destroy');
 
         // page
         Route::get('admin/pages', 'Admin\Page\PageController@index')->name('admin-pages');
@@ -115,11 +119,11 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('admin/page/store', 'Admin\Page\PageController@store')->name('admin-page-store');
         Route::get('admin/page/edit/{id}', 'Admin\Page\PageController@edit')->name('admin-page-edit');
         Route::post('admin/page/update', 'Admin\Page\PageController@update')->name('admin-page-update');
-        Route::post('admin/page/destroy/{id}', 'Admin\Page\PageController@destroy')->name('admin-page-destroy');
+        Route::delete('admin/page/destroy/{id}', 'Admin\Page\PageController@destroy')->name('admin-page-destroy');
 
         // subscriber
         Route::get('admin/subscriber', 'Admin\Page\SubscriberController@index')->name('admin-subscriber');
-        Route::post('admin/subscriber/destroy/{id}', 'Admin\Page\SubscriberController@destroy')->name('admin-subscriber-destroy');
+        Route::delete('admin/subscriber/destroy/{id}', 'Admin\Page\SubscriberController@destroy')->name('admin-subscriber-destroy');
 
         // message
         Route::get('admin/message', 'Admin\MessageController@index')->name('admin-message');
@@ -135,11 +139,11 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('admin/event/store', 'Admin\Page\EventController@store')->name('admin-event-store');
         Route::get('admin/event/edit/{id}', 'Admin\Page\EventController@edit')->name('admin-event-edit');
         Route::post('admin/event/update', 'Admin\Page\EventController@update')->name('admin-event-update');
-        Route::post('admin/event/destroy/{id}', 'Admin\Page\EventController@destroy')->name('admin-event-destroy');
+        Route::delete('admin/event/destroy/{id}', 'Admin\Page\EventController@destroy')->name('admin-event-destroy');
 
         // images
         Route::get('admin/images', 'Admin\Application\Image\ImageController@index')->name('admin-images');
-        Route::post('admin/image/destroy/{id}', 'Admin\Application\Image\ImageController@destroy')->name('admin-image-destroy');
+        Route::delete('admin/image/destroy/{id}', 'Admin\Application\Image\ImageController@destroy')->name('admin-image-destroy');
 
         // image album
         Route::get('admin/albums', 'Admin\Application\Image\ImageAlbumController@index')->name('admin-albums');
@@ -147,7 +151,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('admin/album/store', 'Admin\Application\Image\ImageAlbumController@store')->name('admin-album-store');
         Route::get('admin/album/edit/{id}', 'Admin\Application\Image\ImageAlbumController@edit')->name('admin-album-edit');
         Route::post('admin/album/update', 'Admin\Application\Image\ImageAlbumController@update')->name('admin-album-update');
-        Route::post('admin/album/destroy/{id}', 'Admin\Application\Image\ImageAlbumController@destroy')->name('admin-album-destroy');
+        Route::delete('admin/album/destroy/{id}', 'Admin\Application\Image\ImageAlbumController@destroy')->name('admin-album-destroy');
 
         // image album (uploads)
         Route::get('admin/album/upload/create/{album_id}', 'Admin\Application\Image\ImageAlbumUploadController@create')->name('admin-album-upload-create');
@@ -160,7 +164,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('admin/authorization/store', 'Admin\Application\Settings\AuthorizationController@store')->name('admin-authorization-store');
         Route::get('admin/authorization/edit/{id}', 'Admin\Application\Settings\AuthorizationController@edit')->name('admin-authorization-edit');
         Route::post('admin/authorization/update', 'Admin\Application\Settings\AuthorizationController@update')->name('admin-authorization-update');
-        Route::post('admin/authorization/destroy/{id}', 'Admin\Application\Settings\AuthorizationController@destroy')->name('admin-authorization-destroy');
+        Route::delete('admin/authorization/destroy/{id}', 'Admin\Application\Settings\AuthorizationController@destroy')->name('admin-authorization-destroy');
         Route::get('admin/authorization/reset', 'Admin\Application\Settings\AuthorizationController@reset')->name('admin-authorization-reset');
 
         // role
@@ -169,12 +173,12 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('admin/role/store', 'Admin\Application\Settings\RoleController@store')->name('admin-role-store');
         Route::get('admin/role/edit/{id}', 'Admin\Application\Settings\RoleController@edit')->name('admin-role-edit');
         Route::post('admin/role/update', 'Admin\Application\Settings\RoleController@update')->name('admin-role-update');
-        Route::post('admin/role/destroy/{id}', 'Admin\Application\Settings\RoleController@destroy')->name('admin-role-destroy');
+        Route::delete('admin/role/destroy/{id}', 'Admin\Application\Settings\RoleController@destroy')->name('admin-role-destroy');
 
         // authorization roles
         Route::get('admin/authorization-roles/{role_id}', 'Admin\Application\Settings\AuthorizationRoleController@index')->name('admin-authorization-roles');
         Route::post('admin/authorization-role/store', 'Admin\Application\Settings\AuthorizationRoleController@store')->name('admin-authorization-roles-store');
-        Route::post('admin/authorization-role/destroy/{id}', 'Admin\Application\Settings\AuthorizationRoleController@destroy')->name('admin-authorization-role-destroy');
+        Route::delete('admin/authorization-role/destroy/{id}', 'Admin\Application\Settings\AuthorizationRoleController@destroy')->name('admin-authorization-role-destroy');
 
         // settings
         Route::get('admin/settings', 'Admin\Application\Settings\SettingsController@index')->name('admin-settings');
@@ -193,6 +197,6 @@ Route::get('dev', function () {
 Route::get('user/{username}', 'Web\User\ProfileController@show')->name('web-user-profile-show');
 
 // page
-Route::get('{slug}', 'Web\Page\PageController@getShow')->name('web-page-show');
+Route::get('{slug}', 'Web\Page\PageController@showAction')->name('web-page-show');
 // page with page category and page slug
-Route::get('{type}/{slug}', 'Web\Page\PageController@getShow')->name('web-page-show-type');
+Route::get('{type}/{slug}', 'Web\Page\PageController@showAction')->name('web-page-show-type');

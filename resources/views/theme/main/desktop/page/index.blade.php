@@ -1,12 +1,12 @@
 {{--
  * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
+ * Website: https://github.com/disono/Laravel-Template
  * License: Apache 2.0
 --}}
 @extends(current_theme() . 'layout.master')
 
 @section('content')
-    <div class="container has-header">
+    <div class="container top-header">
         {{-- category name for page if applicable --}}
         @if(isset($category))
             <h4>{{$category->name}}</h4>
@@ -14,7 +14,7 @@
 
         {{-- list of pages/blogs etc --}}
         <div class="row">
-            <div class="col-xs-12 col-md-9">
+            <div class="col-sm-12 col-md-9">
                 @if(count($pages))
                     @foreach($pages as $row)
                         <div class="panel panel-default">
@@ -35,7 +35,7 @@
             </div>
 
             {{-- sidebar (latest/archive) --}}
-            <div class="col-xs-12 col-md-3">
+            <div class="col-sm-12 col-md-3">
                 @include(current_theme() . 'page.sidebar')
             </div>
         </div>

@@ -1,9 +1,9 @@
 <?php
 /**
- * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
- * Copyright 2016 Webmons Development Studio.
- * License: Apache 2.0
+ * @author Archie, Disono (webmonsph@gmail.com)
+ * @git https://github.com/disono/Laravel-Template
+ * @copyright Webmons Development Studio. (webmons.com), 2016-2017
+ * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
 namespace App\Http\Controllers\Admin;
@@ -33,20 +33,16 @@ class UserController extends Controller
      */
     public function index()
     {
-        $data = User::get(request_options([
-            'id', 'search', 'country_id', 'enabled', 'email_confirmed', 'is_activated', 'date_from', 'date_to', 'role'
-        ]));
+        $data = User::fetch(request_options('id|search|country_id|enabled|email_confirmed|is_activated|date_from|date_to|role'));
 
         if ($this->request->ajax()) {
             $this->content = $data;
         } else {
             $this->title = 'Users';
-
             $this->content['countries'] = Country::all();
             $this->content['role'] = Role::all();
             $this->content['users'] = $data;
         }
-
         return $this->response('index');
     }
 
@@ -59,7 +55,6 @@ class UserController extends Controller
     {
         $this->title = 'Locator';
         $this->content['role'] = Role::all();
-
         return $this->response('map');
     }
 
@@ -71,11 +66,8 @@ class UserController extends Controller
     public function create()
     {
         $this->title = 'Create User';
-        $this->view .= 'create';
-
         $this->content['roles'] = Role::all();
-
-        return $this->response();
+        return $this->response('create');
     }
 
     /**
@@ -133,12 +125,12 @@ class UserController extends Controller
                 'name' => $data['username']
             ]);
         } else {
-            return redirect()->withErrors([
+            return $this->redirectResponse()->withErrors([
                 'username' => 'Please select different username.'
             ]);
         }
 
-        return redirect('admin/users');
+        return $this->redirectResponse('admin/users');
     }
 
     /**
@@ -149,16 +141,14 @@ class UserController extends Controller
      */
     public function edit($id)
     {
-        $this->title = 'Edit User';
-
         $data = User::single($id);
         if (!$data) {
             abort(404);
         }
 
+        $this->title = 'Edit User';
         $this->content['user'] = $data;
         $this->content['roles'] = Role::all();
-
         return $this->response('edit');
     }
 
@@ -227,21 +217,20 @@ class UserController extends Controller
         }
 
         User::where('id', $request->get('id'))->update($inputs);
-        return redirect('admin/users');
+        return $this->redirectResponse('admin/users');
     }
 
     /**
      * Login user
      *
      * @param $id
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     * @return bool
      */
     public function login($id)
     {
         auth()->logout();
         auth()->loginUsingId($id);
-
-        return redirect('/');
+        return $this->redirectResponse('/');
     }
 
     /**
@@ -252,13 +241,12 @@ class UserController extends Controller
      */
     public function passwordEdit($id)
     {
-        $this->title = 'Reset Password';
         $this->content['user'] = User::single($id);
-
         if (!$this->content['user']) {
             abort(404);
         }
 
+        $this->title = 'Reset Password';
         return $this->response('password_edit');
     }
 
@@ -284,7 +272,7 @@ class UserController extends Controller
             ]));
         }
 
-        return redirect('admin/users');
+        return $this->redirectResponse('admin/users');
     }
 
     /**
@@ -298,7 +286,6 @@ class UserController extends Controller
     {
         $user->new_password = $request->get('password');
         $user->sent_to = $request->get('email');
-
         return $user;
     }
 
@@ -306,7 +293,7 @@ class UserController extends Controller
      * Confirm
      *
      * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @return bool
      */
     public function confirm(Request $request)
     {
@@ -339,7 +326,7 @@ class UserController extends Controller
             $user->save();
         }
 
-        return redirect()->back();
+        return $this->redirectResponse();
     }
 
     /**
@@ -347,6 +334,7 @@ class UserController extends Controller
      *
      * @param $id
      * @return mixed
+     * @throws \Exception
      */
     public function destroy($id)
     {

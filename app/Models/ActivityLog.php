@@ -1,9 +1,9 @@
 <?php
 /**
- * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
- * Copyright 2016 Webmons Development Studio.
- * License: Apache 2.0
+ * @author Archie, Disono (webmonsph@gmail.com)
+ * @git https://github.com/disono/Laravel-Template
+ * @copyright Webmons Development Studio. (webmons.com), 2016-2017
+ * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
 namespace App\Models;
@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 
 class ActivityLog extends AppModel
 {
+    protected static $table_name = 'activity_logs';
     private static $full_name;
     private static $username;
 
@@ -35,7 +36,7 @@ class ActivityLog extends AppModel
      * @param array $params
      * @return \Illuminate\Pagination\LengthAwarePaginator|null
      */
-    public static function get($source_id, $source_type, $params = [])
+    public static function logs($source_id, $source_type, $params = [])
     {
         $table_name = (new self)->getTable();
         $select[] = $table_name . '.*';
@@ -155,7 +156,7 @@ class ActivityLog extends AppModel
      * @param null $reason
      * @return bool
      */
-    public static function store($id, $writable_columns = [], $data = [], $inputs = [], $source_type, $reason = null)
+    public static function log($id, $writable_columns = [], $data = [], $inputs = [], $source_type, $reason = null)
     {
         try {
             if (!$data) {

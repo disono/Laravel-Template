@@ -1,9 +1,9 @@
 <?php
 /**
- * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
- * Copyright 2016 Webmons Development Studio.
- * License: Apache 2.0
+ * @author Archie, Disono (webmonsph@gmail.com)
+ * @git https://github.com/disono/Laravel-Template
+ * @copyright Webmons Development Studio. (webmons.com), 2016-2017
+ * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
 namespace App\APDApp\Helpers;
@@ -61,7 +61,7 @@ class WBConfig
      */
     public static function perPage()
     {
-        return 10;
+        return (int)self::settings('pagination')->value;
     }
 
     /**
@@ -74,9 +74,9 @@ class WBConfig
     {
         // file-size is on kilobytes
         if ($type == 'image') {
-            return 3000;
+            return (int)self::settings('file_size_limit_image')->value;
         } else {
-            return 3000;
+            return (int)self::settings('file_size_limit')->value;
         }
     }
 
@@ -103,7 +103,7 @@ class WBConfig
      */
     public static function minAge()
     {
-        return 13;
+        return (int)self::settings('minimum_age_for_registration')->value;
     }
 
     /**
@@ -113,6 +113,6 @@ class WBConfig
      */
     public static function maxAge()
     {
-        return 60;
+        return (int)self::settings('maximum_age_for_registration')->value;
     }
 }

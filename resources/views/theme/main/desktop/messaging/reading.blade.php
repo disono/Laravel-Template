@@ -1,16 +1,20 @@
 {{--
  * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
+ * Website: https://github.com/disono/Laravel-Template
  * License: Apache 2.0
 --}}
+
+{{-- load more messages --}}
 <p class="text-center"><a href="#" id="btn_reading_load">Load More...</a></p>
 
+{{-- list of messages --}}
 <div style="height: 520px !important; overflow: auto !important;" id="reading_container"></div>
 
-<br>
-<div class="panel-footer" id="footer_message">
+{{-- form for sending messages --}}
+<div class="panel-footer mt-3" id="footer_message">
     <div class="input-group">
-        <input id="btn_chat_text_input" type="text" class="form-control input-sm" placeholder="Type your message here..."/>
+        <input id="btn_chat_text_input" type="text" class="form-control input-sm"
+               placeholder="Type your message here..."/>
         <input type="file" style="display: none;" id="file_upload_message">
 
         <span class="input-group-btn">

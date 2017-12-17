@@ -1,17 +1,20 @@
 <?php
 /**
- * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
- * Copyright 2016 Webmons Development Studio.
- * License: Apache 2.0
+ * @author Archie, Disono (webmonsph@gmail.com)
+ * @git https://github.com/disono/Laravel-Template
+ * @copyright Webmons Development Studio. (webmons.com), 2016-2017
+ * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
 namespace App\Http\Controllers\Web\Authentication;
 
 use App\Http\Controllers\Controller;
 use App\Models\AuthHistory;
+use App\Models\User;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class LoginController extends Controller
 {
@@ -41,21 +44,24 @@ class LoginController extends Controller
     public function __construct()
     {
         parent::__construct();
+        $this->view = 'auth.';
     }
 
     /**
      * Show the application's login form.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\Factory
      */
-    public function loginView()
+    public function loginAction()
     {
         $previous_url = request()->session()->previousUrl();
-        if (!str_contains($previous_url, "/login") && !str_contains($previous_url, "/register") && !str_contains($previous_url, "/password/recover")) {
+        if (!str_contains($previous_url, "/login") &&
+            !str_contains($previous_url, "/register") &&
+            !str_contains($previous_url, "/password/recover")) {
             request()->session()->put($this->previous_url_key, $previous_url);
         }
 
-        return view('auth.login');
+        return $this->response('login');
     }
 
     /**
@@ -64,7 +70,7 @@ class LoginController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function process(Request $request)
+    public function processAction(Request $request)
     {
         // redirect to previous url
         $previous_url = session($this->previous_url_key, $this->redirectTo);
@@ -88,9 +94,7 @@ class LoginController extends Controller
         }
 
         // authenticate
-        if (auth()->attempt(['email' => $request->get('email'), 'password' => $request->get('password'),
-            'email_confirmed' => 1, 'enabled' => 1])
-        ) {
+        if ($this->_authenticate($request)) {
             return $this->_authenticated($request);
         } else {
             $error = 'Invalid username or password.';
@@ -105,10 +109,70 @@ class LoginController extends Controller
     }
 
     /**
+     * Log the user out of the application.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function logoutAction(Request $request)
+    {
+        try {
+            // logout history
+            AuthHistory::store([
+                'user_id' => auth()->user()->id,
+                'ip' => get_ip_address(),
+                'platform' => get_user_agent(),
+                'type' => 'logout'
+            ]);
+        } catch (\Exception $e) {
+            error_logger('AuthHistory: ' . $e->getMessage());
+        }
+
+        return $this->logout($request);
+    }
+
+    /**
+     * Authenticate using username or email
+     *
+     * @param $request
+     * @return bool
+     */
+    private function _authenticate($request)
+    {
+        // authenticate using email
+        if (auth()->attempt(['email' => $request->get('email'), 'password' => $request->get('password'),
+            'email_confirmed' => 1, 'enabled' => 1])) {
+            return true;
+        }
+
+        // authenticate using username
+        $_user = User::where(DB::raw($this->_username()), $request->get('email'))
+            ->where('email_confirmed', 1)
+            ->where('enabled', 1)
+            ->first();
+        if ($_user && Hash::check($request->get('password'), $_user->password)) {
+            auth()->loginUsingId($_user->id);
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Username query string
+     *
+     * @return string
+     */
+    private function _username()
+    {
+        return '(SELECT name FROM slugs WHERE source_id = users.id AND source_type = "user")';
+    }
+
+    /**
      * Authenticated user
      *
      * @param $request
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     * @return bool
      */
     private function _authenticated($request)
     {
@@ -130,12 +194,12 @@ class LoginController extends Controller
         }
 
         if ($this->request->ajax()) {
-            return success_json_response(null, null, null, [
+            return success_json_response([
                 'redirect' => $this->redirectPath()
             ]);
         }
 
-        return redirect($this->redirectPath());
+        return $this->redirectResponse($this->redirectPath());
     }
 
     /**
@@ -152,32 +216,9 @@ class LoginController extends Controller
                 $this->username() => $error
             ], 422, false);
         } else {
-            return redirect()->back()->withErrors([
+            return $this->redirectResponse()->withErrors([
                 $this->username() => $error,
             ]);
         }
-    }
-
-    /**
-     * Log the user out of the application.
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\Response
-     */
-    public function logoutProcess(Request $request)
-    {
-        try {
-            // logout history
-            AuthHistory::store([
-                'user_id' => auth()->user()->id,
-                'ip' => get_ip_address(),
-                'platform' => get_user_agent(),
-                'type' => 'logout'
-            ]);
-        } catch (\Exception $e) {
-            error_logger('AuthHistory: ' . $e->getMessage());
-        }
-
-        return $this->logout($request);
     }
 }

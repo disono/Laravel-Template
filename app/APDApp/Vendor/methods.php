@@ -1,12 +1,12 @@
 <?php
 /**
- * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
- * Copyright 2016 Webmons Development Studio.
- * License: Apache 2.0
+ * @author Archie, Disono (webmonsph@gmail.com)
+ * @git https://github.com/disono/Laravel-Template
+ * @copyright Webmons Development Studio. (webmons.com), 2016-2017
+ * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
-if (!function_exists('request_options')) {
+if (!function_exists('list_defined_functions')) {
     /**
      * list all user defined functions
      *
@@ -221,7 +221,8 @@ if (!function_exists('authenticated_id')) {
      */
     function authenticated_id()
     {
-        return (request()->header('authenticated_id')) ? request()->header('authenticated_id') : request('authenticated_id', 0);
+        $id = (auth()->check()) ? auth()->user()->id : 0;
+        return (int)(request()->header('authenticated_id')) ? request()->header('authenticated_id') : request('authenticated_id', $id);
     }
 }
 
@@ -268,6 +269,11 @@ if (!function_exists('request_options')) {
     {
         $values = [];
         $request = request();
+
+        // if inputs is strings
+        if (is_string($inputs)) {
+            $inputs = explode('|', $inputs);
+        }
 
         if ($inputs) {
             foreach ($inputs as $key) {

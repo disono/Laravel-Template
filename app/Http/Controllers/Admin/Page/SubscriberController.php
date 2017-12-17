@@ -1,4 +1,10 @@
 <?php
+/**
+ * @author Archie, Disono (webmonsph@gmail.com)
+ * @git https://github.com/disono/Laravel-Template
+ * @copyright Webmons Development Studio. (webmons.com), 2016-2017
+ * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
+ */
 
 namespace App\Http\Controllers\Admin\Page;
 
@@ -22,12 +28,10 @@ class SubscriberController extends Controller
     public function index()
     {
         $this->title = 'Subscribers';
-        $this->content['subscriber'] = Subscriber::get(request_options([
+        $this->content['subscriber'] = Subscriber::fetch(request_options([
             'search'
         ]));
-
         $this->content['subscriber_object'] = Subscriber::getAll(['object' => true]);
-
         return $this->response('subscriber');
     }
 
@@ -36,6 +40,7 @@ class SubscriberController extends Controller
      *
      * @param $id
      * @return mixed
+     * @throws \Exception
      */
     public function destroy($id)
     {

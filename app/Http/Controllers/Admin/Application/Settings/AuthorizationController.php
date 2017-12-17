@@ -1,9 +1,9 @@
 <?php
 /**
- * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
- * Copyright 2016 Webmons Development Studio.
- * License: Apache 2.0
+ * @author Archie, Disono (webmonsph@gmail.com)
+ * @git https://github.com/disono/Laravel-Template
+ * @copyright Webmons Development Studio. (webmons.com), 2016-2017
+ * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
 namespace App\Http\Controllers\Admin\Application\Settings;
@@ -19,6 +19,13 @@ use Illuminate\Support\Facades\Route;
 
 class AuthorizationController extends Controller
 {
+    public function __construct()
+    {
+        $this->view = 'authorization.';
+        $this->view_type = 'admin';
+        parent::__construct();
+    }
+
     /**
      * List off data
      *
@@ -27,11 +34,10 @@ class AuthorizationController extends Controller
      */
     public function index(Request $request)
     {
-        $content['title'] = app_title('Authorization');
-        $content['authorizations'] = Authorization::get();
-        $content['request'] = $request;
-
-        return admin_view('authorization.index', $content);
+        $this->title = 'Authorization';
+        $this->content['authorizations'] = Authorization::fetch();
+        $this->content['request'] = $request;
+        return $this->response('index');
     }
 
     /**
@@ -48,11 +54,10 @@ class AuthorizationController extends Controller
             $options['user_id'] = $request->get('user_id');
         }
 
-        $content['title'] = app_title('Authorization Histories');
-        $content['authorization_histories'] = AuthHistory::get($options);
-        $content['request'] = $request;
-
-        return admin_view('authorization.history', $content);
+        $this->title = 'Authorization Histories';
+        $this->content['authorization_histories'] = AuthHistory::fetch($options);
+        $this->content['request'] = $request;
+        return $this->response('history');
     }
 
     /**
@@ -62,10 +67,9 @@ class AuthorizationController extends Controller
      */
     public function create()
     {
-        $content['title'] = app_title('Create Authorization');
-        $content['route_names'] = access_routes();
-
-        return admin_view('authorization.create', $content);
+        $this->title = 'Create Authorization';
+        $this->content['route_names'] = access_routes();
+        return $this->response('create');
     }
 
     /**
@@ -77,8 +81,7 @@ class AuthorizationController extends Controller
     public function store(Requests\Admin\AuthorizationStore $request)
     {
         Authorization::store($request->all());
-
-        return redirect('admin/authorizations');
+        return $this->redirectResponse('admin/authorizations');
     }
 
     /**
@@ -89,16 +92,15 @@ class AuthorizationController extends Controller
      */
     public function edit($id)
     {
-        $content['title'] = app_title('Edit Authorization');
-        $content['route_names'] = access_routes();
-
         $data = Authorization::single($id);
         if (!$data) {
             abort(404);
         }
 
-        $content['authorization'] = $data;
-        return admin_view('authorization.edit', $content);
+        $this->title = 'Edit Authorization';
+        $this->content['route_names'] = access_routes();
+        $this->content['authorization'] = $data;
+        return $this->response('edit');
     }
 
     /**
@@ -116,7 +118,7 @@ class AuthorizationController extends Controller
     /**
      * Reset all authorization
      *
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     * @return bool
      */
     public function reset()
     {
@@ -153,7 +155,7 @@ class AuthorizationController extends Controller
             }
         }
 
-        return redirect('admin/authorizations');
+        return $this->redirectResponse('admin/authorizations');
     }
 
     /**
@@ -161,6 +163,7 @@ class AuthorizationController extends Controller
      *
      * @param $id
      * @return mixed
+     * @throws \Exception
      */
     public function destroy($id)
     {
@@ -170,6 +173,6 @@ class AuthorizationController extends Controller
             return success_json_response('Successfully deleted authorization.');
         }
 
-        return redirect()->back();
+        return $this->redirectResponse();
     }
 }

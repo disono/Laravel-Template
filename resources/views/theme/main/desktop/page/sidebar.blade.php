@@ -1,6 +1,6 @@
 {{--
  * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
+ * Website: https://github.com/disono/Laravel-Template
  * License: Apache 2.0
 --}}
 
@@ -10,7 +10,7 @@
 
     <ul class="list-group">
         {{-- formatting for category for page page|blog --}}
-        @foreach(\App\Models\Page::latest('page') as $page_latest)
+        @foreach(\App\Models\Page::latestPost('page') as $page_latest)
             <li class="list-group-item"><a
                         href="{{$page_latest->url}}">{{$page_latest->name}}</a></li>
         @endforeach

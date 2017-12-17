@@ -1,9 +1,9 @@
 <?php
 /**
- * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
- * Copyright 2016 Webmons Development Studio.
- * License: Apache 2.0
+ * @author Archie, Disono (webmonsph@gmail.com)
+ * @git https://github.com/disono/Laravel-Template
+ * @copyright Webmons Development Studio. (webmons.com), 2016-2017
+ * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
 namespace App\Http\Controllers\Admin\Page;
@@ -15,6 +15,13 @@ use Illuminate\Http\Request;
 
 class PageCategoryController extends Controller
 {
+    public function __construct()
+    {
+        $this->view = 'page-category.';
+        $this->view_type = 'admin';
+        parent::__construct();
+    }
+
     /**
      * List data
      *
@@ -23,11 +30,9 @@ class PageCategoryController extends Controller
      */
     public function index(Request $request)
     {
-        $content['title'] = app_title('Page Categories');
-        $content['page_categories'] = PageCategory::get();
-        $content['request'] = $request;
-
-        return admin_view('page-category.index', $content);
+        $this->title = 'Page Categories';
+        $this->content['page_categories'] = PageCategory::fetch();
+        return $this->response('index');
     }
 
     /**
@@ -37,8 +42,8 @@ class PageCategoryController extends Controller
      */
     public function create()
     {
-        $content['title'] = app_title('Create PageCategory');
-        return admin_view('page-category.create', $content);
+        $this->title = 'Create PageCategory';
+        return $this->response('create');
     }
 
     /**
@@ -50,8 +55,7 @@ class PageCategoryController extends Controller
     public function store(Requests\Admin\PageCategoryStore $request)
     {
         PageCategory::store($request->all());
-
-        return redirect('admin/page-categories');
+        return $this->redirectResponse('admin/page-categories');
     }
 
     /**
@@ -62,14 +66,14 @@ class PageCategoryController extends Controller
      */
     public function edit($id)
     {
-        $content['title'] = app_title('Edit Page Category');
         $data = PageCategory::single($id);
         if (!$data) {
             abort(404);
         }
-        $content['page_category'] = $data;
 
-        return admin_view('page-category.edit', $content);
+        $this->title = 'Edit Page Category';
+        $this->content['page_category'] = $data;
+        return $this->response('edit');
     }
 
     /**
@@ -81,8 +85,7 @@ class PageCategoryController extends Controller
     public function update(Requests\Admin\PageCategoryUpdate $request)
     {
         PageCategory::edit($request->get('id'), $request->all());
-
-        return redirect('admin/page-categories');
+        return $this->redirectResponse('admin/page-categories');
     }
 
     /**
@@ -90,6 +93,7 @@ class PageCategoryController extends Controller
      *
      * @param $id
      * @return mixed
+     * @throws \Exception
      */
     public function destroy($id)
     {

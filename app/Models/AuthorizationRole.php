@@ -1,9 +1,9 @@
 <?php
 /**
- * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
- * Copyright 2016 Webmons Development Studio.
- * License: Apache 2.0
+ * @author Archie, Disono (webmonsph@gmail.com)
+ * @git https://github.com/disono/Laravel-Template
+ * @copyright Webmons Development Studio. (webmons.com), 2016-2017
+ * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
 namespace App\Models;
@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 
 class AuthorizationRole extends AppModel
 {
+    protected static $table_name = 'authorization_roles';
     protected static $writable_columns = [
         'role_id', 'authorization_id'
     ];
@@ -35,7 +36,7 @@ class AuthorizationRole extends AppModel
             return null;
         }
 
-        return self::get([
+        return self::fetch([
             'single' => true,
             $column => $id
         ]);
@@ -47,7 +48,7 @@ class AuthorizationRole extends AppModel
      * @param array $params
      * @return null
      */
-    public static function get($params = [])
+    public static function fetch($params = [])
     {
         $table_name = (new self)->getTable();
         $select[] = $table_name . '.*';
@@ -102,7 +103,7 @@ class AuthorizationRole extends AppModel
     public static function getAll($params = [])
     {
         $params['all'] = true;
-        return self::get($params);
+        return self::fetch($params);
     }
 
     /**
@@ -183,7 +184,7 @@ class AuthorizationRole extends AppModel
         }
 
         // store to activity logs
-        ActivityLog::store($id, self::$writable_columns, $query->first(), $inputs, (new self)->getTable());
+        ActivityLog::log($id, self::$writable_columns, $query->first(), $inputs, (new self)->getTable());
 
         return (bool)$query->update($update);
     }

@@ -1,6 +1,6 @@
 {{--
  * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
+ * Website: https://github.com/disono/Laravel-Template
  * License: Apache 2.0
 --}}
 @extends('admin.layout.master')
@@ -10,82 +10,84 @@
 @section('content')
     <div class="container-fluid">
         <div class="row">
-            <div class="col-xs-12 col-md-6 col-xs-offset-0 col-md-offset-3">
-                <div class="app-container">
-                    <h3 class="page-header">Create Page Category</h3>
+            <div class="col-12">
+                <h3>Create Page Category</h3>
 
-                    <form action="{{url('admin/page-category/store')}}" method="post" role="form">
-                        {{csrf_field()}}
+                <form action="{{url('admin/page-category/store')}}" method="post" role="form">
+                    {{csrf_field()}}
 
-                        <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
-                            <label for="name">Name*</label>
-                            <input type="text" class="form-control" name="name" id="name" placeholder="Name">
+                    <div class="form-group">
+                        <label for="name">Name*</label>
+                        <input type="text" class="form-control{{ $errors->has('name') ? ' is-invalid' : '' }}"
+                               name="name" id="name" placeholder="Name" value="{{old('name')}}">
 
-                            @if ($errors->has('name'))
-                                <span class="help-block">{{ $errors->first('name') }}</span>
-                            @endif
-                        </div>
+                        @if ($errors->has('name'))
+                            <div class="invalid-feedback">{{ $errors->first('name') }}</div>
+                        @endif
+                    </div>
 
-                        <div class="form-group{{ $errors->has('slug') ? ' has-error' : '' }}">
-                            <label for="slug">Slug* (Slugs make the URL more user-friendly)</label>
-                            <input type="text" class="form-control" name="slug" id="slug"
-                                   placeholder="Slug">
+                    <div class="form-group">
+                        <label for="slug">Slug* (Slugs make the URL more user-friendly)</label>
+                        <input type="text" class="form-control{{ $errors->has('slug') ? ' is-invalid' : '' }}"
+                               name="slug" id="slug"
+                               placeholder="Slug" value="{{old('slug')}}">
 
-                            @if ($errors->has('slug'))
-                                <span class="help-block">{{ $errors->first('slug') }}</span>
-                            @endif
-                        </div>
+                        @if ($errors->has('slug'))
+                            <div class="invalid-feedback">{{ $errors->first('slug') }}</div>
+                        @endif
+                    </div>
 
-                        <div class="form-group{{ $errors->has('description') ? ' has-error' : '' }}">
-                            <label for="description">Description</label>
-                            <textarea name="description" id="description" class="form-control" rows="4"
-                                      placeholder="Description"></textarea>
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea name="description" id="description"
+                                  class="form-control{{ $errors->has('description') ? ' is-invalid' : '' }}" rows="4"
+                                  placeholder="Description">{{old('description')}}</textarea>
 
-                            @if ($errors->has('description'))
-                                <span class="help-block">{{ $errors->first('description') }}</span>
-                            @endif
-                        </div>
+                        @if ($errors->has('description'))
+                            <div class="invalid-feedback">{{ $errors->first('description') }}</div>
+                        @endif
+                    </div>
 
-                        <div class="form-group{{ $errors->has('parent_id') ? ' has-error' : '' }}">
-                            <label for="parent_id">Parent Category</label>
-                            <select name="parent_id" id="parent_id" class="form-control">
-                                <option value="">Select parent category</option>
-                                @foreach(\App\Models\PageCategory::nestedToTabs() as $row)
-                                    <option value="{{$row->id}}" {{is_selected(old('parent_id'), $row->id)}}>{{$row->name}}</option>
-                                @endforeach
-                            </select>
+                    <div class="form-group">
+                        <label for="parent_id">Parent Category</label>
+                        <select name="parent_id" id="parent_id"
+                                class="form-control{{ $errors->has('parent_id') ? ' is-invalid' : '' }}">
+                            <option value="">Select parent category</option>
+                            @foreach(\App\Models\PageCategory::nestedToTabs() as $row)
+                                <option value="{{$row->id}}" {{is_selected(old('parent_id'), $row->id)}}>{{$row->name}}</option>
+                            @endforeach
+                        </select>
 
-                            @if ($errors->has('parent_id'))
-                                <span class="help-block">{{ $errors->first('parent_id') }}</span>
-                            @endif
-                        </div>
+                        @if ($errors->has('parent_id'))
+                            <div class="invalid-feedback">{{ $errors->first('parent_id') }}</div>
+                        @endif
+                    </div>
 
-                        <div class="form-group {{ $errors->has('is_link') ? ' has-error' : '' }}">
-                            <div class="checkbox">
-                                <input type="checkbox" id="is_link" name="is_link"
-                                       value="1">
-                                <label for="is_link">
-                                    Link
-                                </label>
-                            </div>
+                    <div class="form-check">
+                        <label class="form-check-label">
+                            <input class="form-check-input{{ $errors->has('is_link') ? ' is-invalid' : '' }}"
+                                   type="checkbox" value="1" name="is_link">
+                            Link
+                        </label>
 
-                            @if ($errors->has('is_link'))
-                                <span class="help-block">{{ $errors->first('is_link') }}</span>
-                            @endif
-                        </div>
+                        @if ($errors->has('is_link'))
+                            <div class="invalid-feedback">{{ $errors->first('is_link') }}</div>
+                        @endif
+                    </div>
 
-                        <div class="form-group{{ $errors->has('external_link') ? ' has-error' : '' }}">
-                            <label for="external_link">External Link</label>
-                            <input type="text" class="form-control" name="external_link" id="external_link" placeholder="External Link">
+                    <div class="form-group">
+                        <label for="external_link">External Link</label>
+                        <input type="text" class="form-control{{ $errors->has('external_link') ? ' is-invalid' : '' }}"
+                               name="external_link" id="external_link" placeholder="External Link"
+                               value="{{old('external_link')}}">
 
-                            @if ($errors->has('external_link'))
-                                <span class="help-block">{{ $errors->first('external_link') }}</span>
-                            @endif
-                        </div>
+                        @if ($errors->has('external_link'))
+                            <div class="invalid-feedback">{{ $errors->first('external_link') }}</div>
+                        @endif
+                    </div>
 
-                        <button type="submit" class="btn btn-primary"><i class="fa fa-floppy-o"></i> Create</button>
-                    </form>
-                </div>
+                    <button type="submit" class="btn btn-primary"><i class="fa fa-floppy-o"></i> Create</button>
+                </form>
             </div>
         </div>
     </div>

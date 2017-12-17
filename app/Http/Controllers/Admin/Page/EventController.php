@@ -1,9 +1,9 @@
 <?php
 /**
- * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
- * Copyright 2016 Webmons Development Studio.
- * License: Apache 2.0
+ * @author Archie, Disono (webmonsph@gmail.com)
+ * @git https://github.com/disono/Laravel-Template
+ * @copyright Webmons Development Studio. (webmons.com), 2016-2017
+ * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
 namespace App\Http\Controllers\Admin\Page;
@@ -15,6 +15,13 @@ use Illuminate\Http\Request;
 
 class EventController extends Controller
 {
+    public function __construct()
+    {
+        $this->view = 'event.';
+        $this->view_type = 'admin';
+        parent::__construct();
+    }
+
     /**
      * List data
      *
@@ -23,16 +30,9 @@ class EventController extends Controller
      */
     public function index(Request $request)
     {
-        $content['title'] = app_title('Events');
-
-        $options = [];
-        if ($request->get('search')) {
-            $options['search'] = $request->get('search');
-        }
-
-        $content['events'] = Event::get($options);
-        $content['request'] = $request;
-        return admin_view('event.index', $content);
+        $this->title = 'Events';
+        $this->content['events'] = Event::fetch(request_options('search'));
+        return $this->response('index');
     }
 
     /**
@@ -42,9 +42,8 @@ class EventController extends Controller
      */
     public function create()
     {
-        $content['title'] = app_title('Create Event');
-
-        return admin_view('event.create', $content);
+        $this->title = 'Create Event';
+        return $this->response('create');
     }
 
     /**
@@ -59,8 +58,7 @@ class EventController extends Controller
         $inputs['image'] = $request->file('image');
         $inputs['user_id'] = auth()->user()->id;
         Event::store($inputs);
-
-        return redirect('admin/events');
+        return $this->redirectResponse('admin/events');
     }
 
     /**
@@ -71,14 +69,14 @@ class EventController extends Controller
      */
     public function edit($id)
     {
-        $content['title'] = app_title('Edit Event');
         $data = Event::single($id);
         if (!$data) {
             abort(404);
         }
-        $content['event'] = $data;
 
-        return admin_view('event.edit', $content);
+        $this->title = 'Edit Event';
+        $this->content['event'] = $data;
+        return $this->response('edit');
     }
 
     /**
@@ -92,8 +90,7 @@ class EventController extends Controller
         $inputs = $request->all();
         $inputs['image'] = $request->file('image');
         Event::edit($request->get('id'), $inputs);
-
-        return redirect('admin/events');
+        return $this->redirectResponse('admin/events');
     }
 
     /**
@@ -101,6 +98,7 @@ class EventController extends Controller
      *
      * @param $id
      * @return mixed
+     * @throws \Exception
      */
     public function destroy($id)
     {
@@ -110,6 +108,6 @@ class EventController extends Controller
             return success_json_response('Successfully deleted event.');
         }
 
-        return redirect()->back();
+        return $this->redirectResponse();
     }
 }

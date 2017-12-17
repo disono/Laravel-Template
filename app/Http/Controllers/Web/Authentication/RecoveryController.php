@@ -1,9 +1,9 @@
 <?php
 /**
- * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
- * Copyright 2016 Webmons Development Studio.
- * License: Apache 2.0
+ * @author Archie, Disono (webmonsph@gmail.com)
+ * @git https://github.com/disono/Laravel-Template
+ * @copyright Webmons Development Studio. (webmons.com), 2016-2017
+ * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
 namespace App\Http\Controllers\Web\Authentication;
@@ -17,6 +17,11 @@ class RecoveryController extends Controller
     use ResetsPasswords;
     public $redirectTo = "/dashboard";
 
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
     /**
      * Display the password reset view for the given token.
      *
@@ -26,9 +31,25 @@ class RecoveryController extends Controller
      * @param  string|null $token
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function getReset(Request $request, $token = null)
+    public function getResetAction(Request $request, $token = null)
     {
         return $this->showResetForm($request, $token);
+    }
+
+    /**
+     * Display the password reset view for the given token.
+     *
+     * If no token is present, display the link request form.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @param  string|null $token
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function showResetForm(Request $request, $token = null)
+    {
+        $this->view = 'auth.passwords.';
+        return $this->response('reset')
+            ->with(['token' => $token, 'email' => $request->email]);
     }
 
     /**
@@ -37,7 +58,7 @@ class RecoveryController extends Controller
      * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function postReset(Request $request)
+    public function postResetAction(Request $request)
     {
         return $this->reset($request);
     }

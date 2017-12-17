@@ -1,4 +1,10 @@
 <?php
+/**
+ * @author Archie, Disono (webmonsph@gmail.com)
+ * @git https://github.com/disono/Laravel-Template
+ * @copyright Webmons Development Studio. (webmons.com), 2016-2017
+ * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
+ */
 
 namespace App\Http\Controllers\Admin;
 
@@ -22,8 +28,7 @@ class MessageController extends Controller
     public function index()
     {
         $this->title = 'Messages';
-        $this->content['message'] = Message::get();
-
+        $this->content['message'] = Message::fetch();
         return $this->response('index');
     }
 
@@ -37,7 +42,6 @@ class MessageController extends Controller
     {
         $this->title = 'Reading Message';
         $this->content['message'] = Message::single($id);
-
         return $this->response('show');
     }
 }

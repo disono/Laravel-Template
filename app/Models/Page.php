@@ -1,9 +1,9 @@
 <?php
 /**
- * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
- * Copyright 2016 Webmons Development Studio.
- * License: Apache 2.0
+ * @author Archie, Disono (webmonsph@gmail.com)
+ * @git https://github.com/disono/Laravel-Template
+ * @copyright Webmons Development Studio. (webmons.com), 2016-2017
+ * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
 namespace App\Models;
@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 
 class Page extends AppModel
 {
+    protected static $table_name = 'pages';
     protected static $writable_columns = [
         'page_category_id',
         'user_id', 'name',
@@ -31,7 +32,7 @@ class Page extends AppModel
      * @param array $params
      * @return null
      */
-    public static function get($params = [])
+    public static function fetch($params = [])
     {
         $table_name = (new self)->getTable();
         $select[] = $table_name . '.*';
@@ -135,7 +136,7 @@ class Page extends AppModel
     public static function getAll($params = [])
     {
         $params['all'] = true;
-        return self::get($params);
+        return self::fetch($params);
     }
 
     /**
@@ -146,14 +147,14 @@ class Page extends AppModel
      * @return null
      * @internal param array $params
      */
-    public static function latest($category = null, $limit = 5)
+    public static function latestPost($category = null, $limit = 5)
     {
         $params['object'] = true;
         if ($category) {
             $params['category_slug_inc'] = $category;
         }
 
-        return self::_format(self::get($params)->limit($limit)->get());
+        return self::_format(self::fetch($params)->limit($limit)->get());
     }
 
     /**
@@ -164,7 +165,7 @@ class Page extends AppModel
      */
     public static function archive($params = [])
     {
-        $years = self::get(array_merge([
+        $years = self::fetch(array_merge([
             'order_by_year' => true,
             'all' => true
         ], $params));
@@ -173,7 +174,7 @@ class Page extends AppModel
         foreach ($years as $yr) {
             $ar[] = [
                 'top' => $yr,
-                'sub' => self::get([
+                'sub' => self::fetch([
                     'search_year' => $yr->year_name,
                     'order_by_month' => true,
                     'all' => true
@@ -197,7 +198,7 @@ class Page extends AppModel
             return null;
         }
 
-        return self::get([
+        return self::fetch([
             'single' => true,
             $column => $id
         ]);
@@ -347,7 +348,7 @@ class Page extends AppModel
 
                     if ($page) {
                         // delete all previous cover
-                        $images = Image::get([
+                        $images = Image::fetch([
                             'type' => 'page',
                             'source_id' => $page->id
                         ]);
@@ -420,7 +421,7 @@ class Page extends AppModel
         // update slug
         if ($id && isset($inputs['slug'])) {
             if ($inputs['slug']) {
-                $slug = Slug::get([
+                $slug = Slug::fetch([
                     'source_id' => $id,
                     'source_type' => 'page',
                     'single' => true
@@ -451,7 +452,7 @@ class Page extends AppModel
         }
 
         // store to activity logs
-        ActivityLog::store($id, self::$writable_columns, $query->first(), $inputs, (new self)->getTable());
+        ActivityLog::log($id, self::$writable_columns, $query->first(), $inputs, (new self)->getTable());
 
         return (bool)$query->update($update);
     }

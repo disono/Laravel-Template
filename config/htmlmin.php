@@ -4,6 +4,7 @@
  * This file is part of Laravel HTMLMin.
  *
  * (c) Graham Campbell <graham@alt-three.com>
+ * (c) Raza Mehdi <srmk@outlook.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -45,5 +46,25 @@ return [
     */
 
     'force' => true,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Ignore Blade Files
+    |--------------------------------------------------------------------------
+    |
+    | Here you can specify paths, which you don't want to minify.
+    |
+    */
+
+    'ignore' => [
+        'resources/views/emails',
+        'resources/views/html',
+        'resources/views/notifications',
+        'resources/views/markdown',
+        'resources/views/vendor/emails',
+        'resources/views/vendor/html',
+        'resources/views/vendor/notifications',
+        'resources/views/vendor/markdown',
+    ],
 
 ];

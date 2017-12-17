@@ -15,6 +15,7 @@
     </style>
 </head>
 
+{{-- styles --}}
 <?php
 
 $style = [
@@ -58,9 +59,10 @@ $style = [
     'button--red' => 'background-color: #dc4d2f;',
     'button--blue' => 'background-color: #3869D4;',
 ];
-?>
 
-<?php $fontFamily = 'font-family: Arial, \'Helvetica Neue\', Helvetica, sans-serif;'; ?>
+$fontFamily = 'font-family: Arial, \'Helvetica Neue\', Helvetica, sans-serif;';
+
+?>
 
 <body style="{{ $style['body'] }}">
 <table width="100%" cellpadding="0" cellspacing="0">

@@ -1,9 +1,9 @@
 <?php
 /**
- * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
- * Copyright 2016 Webmons Development Studio.
- * License: Apache 2.0
+ * @author Archie, Disono (webmonsph@gmail.com)
+ * @git https://github.com/disono/Laravel-Template
+ * @copyright Webmons Development Studio. (webmons.com), 2016-2017
+ * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
 namespace App\Http\Controllers\Admin\Application\Settings;
@@ -16,6 +16,13 @@ use Illuminate\Http\Request;
 
 class AuthorizationRoleController extends Controller
 {
+    public function __construct()
+    {
+        $this->view = 'authorization-role.';
+        $this->view_type = 'admin';
+        parent::__construct();
+    }
+
     /**
      * List data
      *
@@ -25,23 +32,20 @@ class AuthorizationRoleController extends Controller
      */
     public function index(Request $request, $role_id)
     {
-        $content['title'] = app_title('Authorization');
-
-        $content['authorization'] = Authorization::get([
-            'all' => true,
-            'search' => $request->get('search')
-        ]);
-
-        $authorization_roles = AuthorizationRole::get([
+        $authorization_roles = AuthorizationRole::fetch([
             'role_id' => $role_id,
             'all' => true
         ]);
-        $content['authorization_roles'] = db_filter_id($authorization_roles, 'authorization_id');
 
-        $content['request'] = $request;
-        $content['role_id'] = $role_id;
-
-        return admin_view('authorization-role.index', $content);
+        $this->title = 'Authorization';
+        $this->content['authorization'] = Authorization::fetch([
+            'all' => true,
+            'search' => $request->get('search')
+        ]);
+        $this->content['authorization_roles'] = db_filter_id($authorization_roles, 'authorization_id');
+        $this->content['request'] = $request;
+        $this->content['role_id'] = $role_id;
+        return $this->response('index');
     }
 
     /**
@@ -67,7 +71,7 @@ class AuthorizationRoleController extends Controller
 
         // filter unchecked id
         $found = [];
-        $authorization_filtered_id = db_filter_id(Authorization::get([
+        $authorization_filtered_id = db_filter_id(Authorization::fetch([
             'role_id' => $role_id,
             'all' => true
         ]), 'id');
@@ -82,7 +86,7 @@ class AuthorizationRoleController extends Controller
             AuthorizationRole::where('authorization_id', $authorization)->where('role_id', $role_id)->delete();
         }
 
-        return redirect()->back()->withInput($request->all());
+        return $this->redirectResponse()->withInput($request->all());
     }
 
     /**
@@ -90,6 +94,7 @@ class AuthorizationRoleController extends Controller
      *
      * @param $id
      * @return mixed
+     * @throws \Exception
      */
     public function destroy($id)
     {

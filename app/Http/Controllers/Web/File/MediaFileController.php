@@ -1,124 +1,70 @@
 <?php
+/**
+ * @author Archie, Disono (webmonsph@gmail.com)
+ * @git https://github.com/disono/Laravel-Template
+ * @copyright Webmons Development Studio. (webmons.com), 2016-2017
+ * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
+ */
 
 namespace App\Http\Controllers\Web\File;
 
 use App\Http\Controllers\Controller;
-use App\Models\Image;
+use App\Http\Requests\Web\Media\MediaFileStore;
 use App\Models\MediaFile;
 
 class MediaFileController extends Controller
 {
     public function __construct()
     {
-        $this->response_type = 'json';
         parent::__construct();
+        $this->response_type = 'json';
     }
 
     /**
-     * List of images
+     * List files
+     *
+     * @return bool|\Illuminate\Contracts\View\Factory|\Illuminate\Http\JsonResponse|\Illuminate\View\View
      */
     public function index()
     {
-        if ($this->get('request_type') == 'images') {
-            $this->content = $this->_uploadedImages();
-        } else if ($this->get('request_type') == 'files') {
-            $this->content = $this->_mediaFiles();
+        $options = [];
+        if (!$this->me) {
+            return $this->failed_response('Unable to list files.', 403);
         }
 
+        if ($this->me->role != 'admin') {
+            $options['user_id'] = $this->me->id;
+        }
+
+        $this->content = MediaFile::fetch(request_options('search|file_type|file_ext', $options));
         return $this->response();
     }
 
     /**
-     * Upload image
+     * Upload new file
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @param MediaFileStore $request
+     * @return bool|\Illuminate\Contracts\View\Factory|\Illuminate\Http\JsonResponse|\Illuminate\View\View
      */
-    public function upload()
+    public function store(MediaFileStore $request)
     {
-        if ($this->get('request_type') == 'images') {
-            $this->_upload_image();
-        } else if ($this->get('request_type') == 'files') {
-            $this->_upload_file();
-        }
-
-        return $this->index();
+        $inputs = $request->all();
+        $inputs['user_id'] = authenticated_id();
+        $inputs['file'] = $request->file('file');
+        $this->content = MediaFile::single(MediaFile::store($inputs));
+        return $this->response();
     }
 
     /**
-     * Upload image
+     * Delete file
+     *
+     * @param $id
+     * @return bool|\Illuminate\Contracts\View\Factory|\Illuminate\Http\JsonResponse|\Illuminate\View\View
+     * @throws \Exception
      */
-    private function _upload_image()
+    public function destroy($id)
     {
-        $me = me();
-        upload_image($this->request->file('image'), [
-            'user_id' => $me->id,
-            'title' => $me->full_name,
-            'type' => 'any',
-            'crop_auto' => true
-        ]);
-    }
-
-    /**
-     * Upload image
-     */
-    private function _upload_file()
-    {
-        $me = me();
-        $file = $this->request->file('file');
-        $filename = upload_any_file($file);
-
-        if ($filename && $file) {
-            $ext = $file->getClientOriginalExtension();
-
-            $category = 'others';
-            if (in_array($ext, ['mp4'])) {
-                $category = 'video';
-            } else if (in_array($ext, ['doc', 'docx', 'pdf'])) {
-                $category = 'document';
-            } else if (in_array($ext, ['zip'])) {
-                $category = 'zip';
-            }
-
-            MediaFile::store([
-                'user_id' => $me->id,
-                'title' => $this->get('title'),
-                'description' => $this->get('description'),
-                'filename' => $filename,
-                'type' => $ext,
-                'category' => $category
-            ]);
-        }
-    }
-
-    /**
-     * Images list
-     */
-    private function _uploadedImages()
-    {
-        $me = me();
-        $options = [];
-        if ($me->role != 'admin') {
-            $options['user_id'] = $me->id;
-        }
-
-        return Image::get(request_options([
-            'type', 'search'
-        ], $options));
-    }
-
-    /**
-     * Files list (video, document, zip)
-     */
-    private function _mediaFiles()
-    {
-        $me = me();
-        $options = [];
-        if ($me->role != 'admin') {
-            $options['user_id'] = $me->id;
-        }
-
-        return MediaFile::get(request_options([
-            'type', 'category', 'search'
-        ], $options));
+        $this->content = MediaFile::remove($id);
+        return $this->response();
     }
 }

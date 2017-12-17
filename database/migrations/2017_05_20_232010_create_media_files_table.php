@@ -16,16 +16,16 @@ class CreateMediaFilesTable extends Migration
         Schema::create('media_files', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id')->default(0);
+
             $table->string('source_id', 100)->default(0);
+            $table->string('source_type', 100)->default(0);
 
             $table->string('title', 100)->nullable();
             $table->text('description')->nullable();
 
-            $table->string('filename', 100);
-            $table->string('type', 32)->nullable();
-
-            // video, document, zip, others
-            $table->string('category', 32)->nullable();
+            $table->string('file_name', 100);
+            $table->string('file_type', 32)->nullable();
+            $table->string('file_ext', 32)->nullable();
 
             $table->timestamps();
         });

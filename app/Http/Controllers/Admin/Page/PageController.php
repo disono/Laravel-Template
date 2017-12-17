@@ -1,9 +1,9 @@
 <?php
 /**
- * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
- * Copyright 2016 Webmons Development Studio.
- * License: Apache 2.0
+ * @author Archie, Disono (webmonsph@gmail.com)
+ * @git https://github.com/disono/Laravel-Template
+ * @copyright Webmons Development Studio. (webmons.com), 2016-2017
+ * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
 namespace App\Http\Controllers\Admin\Page;
@@ -12,34 +12,27 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests;
 use App\Models\Page;
 use App\Models\PageCategory;
-use Illuminate\Http\Request;
 
 class PageController extends Controller
 {
+    public function __construct()
+    {
+        $this->view = 'page.';
+        $this->view_type = 'admin';
+        parent::__construct();
+    }
+
     /**
      * List data
      *
-     * @param Request $request
      * @return mixed
      */
-    public function index(Request $request)
+    public function index()
     {
-        $content['title'] = app_title('Pages');
-
-        $options = [];
-        if ($request->get('page_category_id')) {
-            $options['page_category_id'] = $request->get('page_category_id');
-        }
-
-        if ($request->get('search')) {
-            $options['search'] = $request->get('search');
-        }
-
-        $content['pages'] = Page::get($options);
-        $content['page_categories'] = PageCategory::all();
-        $content['request'] = $request;
-
-        return admin_view('page.index', $content);
+        $this->title = 'Pages';
+        $this->content['pages'] = Page::fetch(request_options('page_category_id|search'));
+        $this->content['page_categories'] = PageCategory::all();
+        return $this->response('index');
     }
 
     /**
@@ -49,10 +42,9 @@ class PageController extends Controller
      */
     public function create()
     {
-        $content['title'] = app_title('Create Page');
-        $content['page_categories'] = PageCategory::all();
-
-        return admin_view('page.create', $content);
+        $this->title = 'Create Page';
+        $this->content['page_categories'] = PageCategory::all();
+        return $this->response('create');
     }
 
     /**
@@ -66,9 +58,7 @@ class PageController extends Controller
         $inputs = $request->all();
         $inputs['image'] = $request->file('image');
         $inputs['user_id'] = auth()->user()->id;
-        Page::store($inputs);
-
-        return redirect('admin/pages');
+        return $this->redirectResponse('admin/page/edit/' . Page::store($inputs));
     }
 
     /**
@@ -79,15 +69,15 @@ class PageController extends Controller
      */
     public function edit($id)
     {
-        $content['title'] = app_title('Edit Page');
         $data = Page::single($id);
         if (!$data) {
             abort(404);
         }
-        $content['page'] = $data;
-        $content['page_categories'] = PageCategory::all();
 
-        return admin_view('page.edit', $content);
+        $this->title = 'Edit Page';
+        $this->content['page'] = $data;
+        $this->content['page_categories'] = PageCategory::all();
+        return $this->response('edit');
     }
 
     /**
@@ -101,8 +91,7 @@ class PageController extends Controller
         $inputs = $request->all();
         $inputs['image'] = $request->file('image');
         Page::edit($request->get('id'), $inputs);
-
-        return redirect('admin/pages');
+        return $this->redirectResponse('admin/pages');
     }
 
     /**
@@ -110,6 +99,7 @@ class PageController extends Controller
      *
      * @param $id
      * @return mixed
+     * @throws \Exception
      */
     public function destroy($id)
     {
@@ -119,6 +109,6 @@ class PageController extends Controller
             return success_json_response('Successfully deleted page.');
         }
 
-        return redirect()->back();
+        return $this->redirectResponse();
     }
 }

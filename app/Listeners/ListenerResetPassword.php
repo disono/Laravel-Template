@@ -1,4 +1,10 @@
 <?php
+/**
+ * @author Archie, Disono (webmonsph@gmail.com)
+ * @git https://github.com/disono/Laravel-Template
+ * @copyright Webmons Development Studio. (webmons.com), 2016-2017
+ * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
+ */
 
 namespace App\Listeners;
 
@@ -27,7 +33,7 @@ class ListenerResetPassword
 
         try {
             // send email for password reset
-            Mail::send('auth.emails.password_update', ['user' => $user], function ($m) use ($user) {
+            Mail::send(current_theme() . 'auth.emails.password_update', ['user' => $user], function ($m) use ($user) {
                 $m->from(env('MAIL_FROM_ADDRESS'), 'Password reset from ' . app_header('title'));
                 $m->to($user->sent_to, $user->first_name . ' ' . $user->last_name)->subject('Password reset confirmation!');
             });

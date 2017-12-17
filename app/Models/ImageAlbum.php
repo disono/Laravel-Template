@@ -1,15 +1,16 @@
 <?php
 /**
- * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
- * Copyright 2016 Webmons Development Studio.
- * License: Apache 2.0
+ * @author Archie, Disono (webmonsph@gmail.com)
+ * @git https://github.com/disono/Laravel-Template
+ * @copyright Webmons Development Studio. (webmons.com), 2016-2017
+ * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
 namespace App\Models;
 
 class ImageAlbum extends AppModel
 {
+    protected static $table_name = 'image_albums';
     protected static $writable_columns = [
         'name', 'slug', 'description'
     ];
@@ -33,7 +34,7 @@ class ImageAlbum extends AppModel
             return null;
         }
 
-        return self::get([
+        return self::fetch([
             'single' => true,
             $column => $id
         ]);
@@ -86,7 +87,7 @@ class ImageAlbum extends AppModel
     public static function getAll($params = [])
     {
         $params['all'] = true;
-        return self::get($params);
+        return self::fetch($params);
     }
 
     /**
@@ -97,7 +98,7 @@ class ImageAlbum extends AppModel
      */
     public static function _dataFormatting($row)
     {
-        $images = Image::get([
+        $images = Image::fetch([
             'type' => 'album',
             'source_id' => $row->id,
             'all' => true
@@ -187,7 +188,7 @@ class ImageAlbum extends AppModel
         }
 
         // store to activity logs
-        ActivityLog::store($id, self::$writable_columns, $query->first(), $inputs, (new self)->getTable());
+        ActivityLog::log($id, self::$writable_columns, $query->first(), $inputs, (new self)->getTable());
 
         return (bool)$query->update($update);
     }

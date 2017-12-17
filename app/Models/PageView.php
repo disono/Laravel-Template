@@ -1,9 +1,9 @@
 <?php
 /**
- * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
- * Copyright 2016 Webmons Development Studio.
- * License: Apache 2.0
+ * @author Archie, Disono (webmonsph@gmail.com)
+ * @git https://github.com/disono/Laravel-Template
+ * @copyright Webmons Development Studio. (webmons.com), 2016-2017
+ * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
 namespace App\Models;
@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Schema;
 
 class PageView extends AppModel
 {
+    protected static $table_name = 'page_views';
     protected static $writable_columns = [
         'user_id', 'http_referrer', 'current_url',
         'ip_address', 'browser', 'type', 'source_id'
@@ -111,7 +112,7 @@ class PageView extends AppModel
     public static function getAll($params = [])
     {
         $params['all'] = true;
-        return self::get($params);
+        return self::fetch($params);
     }
 
     /**

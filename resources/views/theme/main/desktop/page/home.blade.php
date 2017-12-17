@@ -1,16 +1,12 @@
 {{--
  * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
+ * Website: https://github.com/disono/Laravel-Template
  * License: Apache 2.0
 --}}
 @extends(current_theme() . 'layout.master')
 
 @section('content')
-    <div class="container-fluid has-header">
-        <div class="row">
-            <div class="col-xs-12 col-md-12">
-                <h1 class="text-center">Home Page</h1>
-            </div>
-        </div>
+    <div class="container top-header">
+        <h1 class="text-center">Home Page</h1>
     </div>
 @endsection

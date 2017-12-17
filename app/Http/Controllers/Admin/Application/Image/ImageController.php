@@ -1,32 +1,35 @@
 <?php
 /**
- * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
- * Copyright 2016 Webmons Development Studio.
- * License: Apache 2.0
+ * @author Archie, Disono (webmonsph@gmail.com)
+ * @git https://github.com/disono/Laravel-Template
+ * @copyright Webmons Development Studio. (webmons.com), 2016-2017
+ * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
 namespace App\Http\Controllers\Admin\Application\Image;
 
 use App\Http\Controllers\Controller;
 use App\Models\Image;
-use Illuminate\Http\Request;
 
 class ImageController extends Controller
 {
+    public function __construct()
+    {
+        $this->view = 'image.';
+        $this->view_type = 'admin';
+        parent::__construct();
+    }
+
     /**
      * List of data
      *
-     * @param Request $request
      * @return mixed
      */
-    public function index(Request $request)
+    public function index()
     {
-        $content['title'] = app_title('Settings');
-        $content['images'] = Image::get();
-        $content['request'] = $request;
-
-        return admin_view('image.index', $content);
+        $this->title = app_title('Settings');
+        $this->content['images'] = Image::fetch();
+        return $this->response('index');
     }
 
     /**
@@ -34,6 +37,7 @@ class ImageController extends Controller
      *
      * @param $id
      * @return mixed
+     * @throws \Exception
      */
     public function destroy($id)
     {
@@ -43,6 +47,6 @@ class ImageController extends Controller
             return success_json_response('Successfully deleted image.');
         }
 
-        return redirect()->back();
+        return $this->redirectResponse();
     }
 }

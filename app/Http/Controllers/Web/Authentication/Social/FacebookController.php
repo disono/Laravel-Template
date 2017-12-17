@@ -1,9 +1,9 @@
 <?php
 /**
- * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
- * Copyright 2016 Webmons Development Studio.
- * License: Apache 2.0
+ * @author Archie, Disono (webmonsph@gmail.com)
+ * @git https://github.com/disono/Laravel-Template
+ * @copyright Webmons Development Studio. (webmons.com), 2016-2017
+ * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
 namespace App\Http\Controllers\Web\Authentication\Social;
@@ -24,7 +24,7 @@ class FacebookController extends Controller
     public function __construct()
     {
         $this->middleware('guest', ['except' => [
-            'facebook', 'facebookCallback'
+            'facebookAction', 'facebookCallbackAction'
         ]]);
 
         // check if facebook auth is enabled
@@ -38,7 +38,7 @@ class FacebookController extends Controller
      *
      * @return mixed
      */
-    public function facebook()
+    public function facebookAction()
     {
         return Socialite::driver('facebook')->fields([
             'name', 'first_name', 'last_name', 'email', 'gender', 'birthday'
@@ -50,9 +50,9 @@ class FacebookController extends Controller
     /**
      * Facebook callback
      *
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     * @return bool
      */
-    public function facebookCallback()
+    public function facebookCallbackAction()
     {
         try {
             $user = Socialite::driver('facebook')->fields([
@@ -70,13 +70,12 @@ class FacebookController extends Controller
         // check for api authentication
         if (!$user_query) {
             return $this->_createUser($user);
-        } else {
-            // login the user
-            Auth::loginUsingId($user_query->user_id);
-            $this->_logAuthentication();
-
-            return redirect('dashboard');
         }
+
+        // login the user
+        Auth::loginUsingId($user_query->user_id);
+        $this->_logAuthentication();
+        return $this->redirectResponse('dashboard');
     }
 
     /**
@@ -140,9 +139,9 @@ class FacebookController extends Controller
             Auth::loginUsingId($create->id);
 
             $this->_logAuthentication();
-            return redirect('dashboard');
+            return $this->redirectResponse('dashboard');
         }
 
-        return redirect('login');
+        return $this->redirectResponse('login');
     }
 }

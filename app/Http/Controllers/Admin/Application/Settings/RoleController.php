@@ -1,9 +1,9 @@
 <?php
 /**
- * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: https://github.com/disono/Laravel-Template & http://www.webmons.com
- * Copyright 2016 Webmons Development Studio.
- * License: Apache 2.0
+ * @author Archie, Disono (webmonsph@gmail.com)
+ * @git https://github.com/disono/Laravel-Template
+ * @copyright Webmons Development Studio. (webmons.com), 2016-2017
+ * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
 namespace App\Http\Controllers\Admin\Application\Settings;
@@ -15,6 +15,13 @@ use Illuminate\Http\Request;
 
 class RoleController extends Controller
 {
+    public function __construct()
+    {
+        $this->view = 'role.';
+        $this->view_type = 'admin';
+        parent::__construct();
+    }
+
     /**
      * List data
      *
@@ -23,11 +30,10 @@ class RoleController extends Controller
      */
     public function index(Request $request)
     {
-        $content['title'] = app_title('Roles');
-        $content['roles'] = Role::get();
-        $content['request'] = $request;
-
-        return admin_view('role.index', $content);
+        $this->title = 'Roles';
+        $this->content['roles'] = Role::fetch();
+        $this->content['request'] = $request;
+        return $this->response('index');
     }
 
     /**
@@ -37,8 +43,8 @@ class RoleController extends Controller
      */
     public function create()
     {
-        $content['title'] = app_title('Create Role');
-        return admin_view('role.create', $content);
+        $this->title = 'Create Role';
+        return $this->response('create');
     }
 
     /**
@@ -50,8 +56,7 @@ class RoleController extends Controller
     public function store(Requests\Admin\RoleStore $request)
     {
         Role::store($request->all());
-
-        return redirect('admin/roles');
+        return $this->redirectResponse('admin/roles');
     }
 
     /**
@@ -62,14 +67,14 @@ class RoleController extends Controller
      */
     public function edit($id)
     {
-        $content['title'] = app_title('Edit Role');
         $data = Role::single($id);
         if (!$data) {
             abort(404);
         }
-        $content['role'] = $data;
 
-        return admin_view('role.edit', $content);
+        $this->title = 'Edit Role';
+        $this->content['role'] = $data;
+        return $this->response('edit');
     }
 
     /**
@@ -81,8 +86,7 @@ class RoleController extends Controller
     public function update(Requests\Admin\RoleUpdate $request)
     {
         Role::edit($request->get('id'), $request->all());
-
-        return redirect('admin/roles');
+        return $this->redirectResponse('admin/roles');
     }
 
     /**
@@ -90,6 +94,7 @@ class RoleController extends Controller
      *
      * @param $id
      * @return mixed
+     * @throws \Exception
      */
     public function destroy($id)
     {
