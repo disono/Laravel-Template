@@ -42,8 +42,8 @@ is a starting blank template for Laravel Projects
 1.) Update your .local.env, .laradock.env and .production.env
 
 2.) Provide some Laravel permissions
-    sudo chmod -R 755 storage bootstrap/cache
-    sudo chmod -R 755 storage storage
+    sudo chmod -R 755 storage bootstrap/
+    sudo chmod -R 755 storage storage/
 
 4.) composer install
 5.) php artisan migrate:refresh --seed
@@ -51,20 +51,11 @@ is a starting blank template for Laravel Projects
 6.) npm install --no-bin-links
 
 7.) update all css and javascript
-    bower install
-    bower update
-    
     // run all Mix tasks and minify output...
-    // details @ https://laravel.com/docs/5.4/mix
+    // details @ https://laravel.com/docs/5.5/mix
     npm run production
 
-    // deprecated for Laravel 5.3 below
-    gulp --production
-
-8.) uncomment the JWT initializer on ./routes/api.php
-    init_token_key();
-
-9.) for real-time message (Windows)
+8.) for real-time message (Windows)
     1. cd cloud_messaging
     2. npm install
     3. run.bat
@@ -77,70 +68,11 @@ is a starting blank template for Laravel Projects
     4. node index.js
     5. update your _socket_uri @ /public/assets/js/lib/socket.js
 
-10.) Facebook auth follow this guide https://github.com/laravel/socialite
+9.) Facebook auth follow this guide https://github.com/laravel/socialite
 
-11.) Configure OPcache, useful commands (https://github.com/appstract/laravel-opcache)
+10.) Configure OPcache, useful commands (https://github.com/appstract/laravel-opcache)
     - Make sure your APP_URL is set correctly in .env.
     - Learn more about OPcache (https://medium.com/appstract/make-your-laravel-app-fly-with-php-opcache-9948db2a5f93)
-```
-
-# Global Pay Integration
-```sh
-*** Please login to the Merchant Administration System URL: https://migs.mastercard.com.au/ma/HSBC for the confirmation of testing results above. 
-
-*** Operator
-Merchant ID: TEST073001811006
-Operator ID: webmons / Administrator
-Password: QVGxzJ9wAb&b / PRIMARY2
-
-*** Test Accounts
-1. Successful Transaction [Summary response code = '0']
-    Perform at least 2 sample transactions using each of the testing card numbers (Date of Expiry 05/17 & CVV 123):
-    
-    Visa 4005 5500 0000 0001
-    MasterCard 5123 4567 8901 2346
-    
-    Amount: 10.00
-    Recommended Message: “Transaction successful. Reference Number: xxxxxxxxxx…”
-
-2. Insufficient Fund Transaction [Summary response code = '5']
-    Perform at least 2 sample transactions using each of the testing card numbers (Date of Expiry 05/17 & CVV 123):
-    
-    Visa 4005 5500 0000 0001
-    MasterCard 5123 4567 8901 2346
-    
-    Amount: 10.51
-    Recommended Message: “Transaction rejected, please contact your bank… (Reference Number: xxxxxxxxxx)”
-
-3. Transaction with Unknown Error returned [Summary response code = ' 1 ']
-    Perform at least 2 sample transactions using each of the testing card numbers (Date of Expiry 05/17 & CVV 123):
-    Visa 4005 5500 0000 0001
-    MasterCard 5123 4567 8901 2346
-    
-    Amount: 10.10
-    Recommended Message: “Transaction unsuccessful, please try again... (Reference Number: xxxxxxxxxx)”
-
-To  facilitate you in developing your Shop & Buy Application to connect to our Payment Gateway, the following materials are attached for your perusal:
-    1) MIGS Virtual Payment Client Guide Rev 2.0.1 & Website Requirement
-        This guide provides information for business analysts and programmers on
-            - transaction flow
-            - the details required to integrate merchant Shop-and-Buy application with the Payment Client software
-
-*** Below is a little guide to help you to get the Access Code and Secure Hash.
-1) Login to the new Merchant Administration website
-2) Go to Admin -> Operators
-3) Create a new Operator
-4) Ensure that you enable the 'Modify the merchant configuration'
-5) Press the 'submit' button
-6) Logout and log back on using the new Operator
-7) Go to Admin -> Configuration Details
-8) You will see the "Access Code" & "Secure Hash" that you can use it for sending the transaction orders for testing.
-
-*** Merchant Details
-Merchant Name: NATURALLYPLUS-IPG
-Merchant No.: TEST073001811006
-Currency: PHP
-Remarks: 2.5-Party VPC with Verified by Visa & MasterCard SecureCode
 ```
 
 # Laradock
@@ -162,47 +94,8 @@ Let's see how easy it is to install NGINX, PHP, Composer, MySQL and Redis. Then 
 ```sh
 1. CMS (Content Management System)
 2. Events
-3. E-commerce (Payment Types, Cart, Orders, Products/Items, Point of Sale (Coming Soon), Inventory and Mobile API Support)
-4. Mobile API
-5. Shopping Cart
-6. PDF support
-```
-
-# Bug
-```sh
-Bug on DOMPDF Wrapper for Laravel 5 on (PHP 7+) Style.php, issue: https://github.com/dompdf/dompdf/issues/1272
-dirty fixed:
-    vendor/dompdf/dompdf/src/Css/Style.php
-    
-    Method Name: get_computed_border_radius($w, $h)
-    $rTL = (float)$this->__get("border_top_left_radius");
-    $rTR = (float)$this->__get("border_top_right_radius");
-    $rBL = (float)$this->__get("border_bottom_left_radius");
-    $rBR = (float)$this->__get("border_bottom_right_radius");
-    
-vendor/dompdf/dompdf/src/FrameDecorator/Page.php
-    Method: check_page_break, 494
-    $max_y = 0;
-    if (is_numeric($margin_height)) {
-        $max_y = $frame->get_position("y") + $margin_height;
-    }
-
-vendor/dompdf/dompdf/src/FrameReflower/TableCell.php
-    Method: reflow, 104
-    $cell_height = 0;
-    if (is_numeric($height)) {
-        $cell_height = $height / count($cells["rows"]);
-    }
-
-vendor/dompdf/dompdf/src/Renderer/Inline.php
-    Method: render, 112
-    $w = 0;
-    if (is_numeric($child_w)) {
-        if (is_null($w))
-            $w = $child_w;
-        else
-            $w += $child_w;
-    }
+3. Mobile API
+4. PDF support
 ```
 
 # Javascript methods
