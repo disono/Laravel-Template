@@ -8,7 +8,6 @@
 
 namespace App\Http\Middleware;
 
-use App\Http\Controllers\Controller;
 use Closure;
 use Illuminate\Http\Response;
 
@@ -42,10 +41,7 @@ class VerifyPhone
                     return failed_json_response('Your phone number is not verified, please check your phone for validation code to verify your phone number.', 400);
                 }
 
-                $_controller = new Controller();
-                $_controller->_js();
-                $_controller->_seo();
-                return new Response(view('auth.verify_phone', $_controller->content));
+                return new Response(view('auth.verify_phone'));
             }
         }
 

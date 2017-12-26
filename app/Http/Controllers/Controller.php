@@ -58,9 +58,6 @@ class Controller extends BaseController
             $this->view .= $view;
         }
 
-        $this->_js();
-        $this->_seo();
-
         return $this->_view();
     }
 
@@ -145,71 +142,6 @@ class Controller extends BaseController
     protected function file($key)
     {
         return $this->request->file($key);
-    }
-
-    /**
-     * Load JS
-     */
-    public function _js()
-    {
-        $map_api = 'https://maps.googleapis.com/maps/api/js?key=' . env('GOOGLE_API_KEY') . '&libraries=places';
-
-        if (env('APP_ENV') == 'local') {
-            $_js = ($this->view_type == 'admin') ? [
-                $map_api,
-                asset('assets/js/vendor.js'),
-                asset('assets/js/vendor/libraries.js'),
-                asset('assets/js/vendor/helper.js'),
-                asset('assets/js/vendor/socket.js'),
-                asset('assets/js/admin.js'),
-                asset('assets/js/application.js')
-            ] : [
-                $map_api,
-                asset('assets/js/vendor.js'),
-                asset('assets/js/vendor/libraries.js'),
-                asset('assets/js/vendor/helper.js'),
-                asset('assets/js/vendor/socket.js'),
-                asset('assets/js/application.js')
-            ];
-        } else {
-            $_js = ($this->view_type == 'admin') ? [
-                $map_api,
-                asset('assets/js/vendor.js')
-            ] : [
-                $map_api,
-                asset('assets/js/vendor.js')
-            ];
-        }
-
-        js_view_loader($_js);
-    }
-
-    /**
-     * SEO
-     */
-    public function _seo()
-    {
-        $this->_setContent([
-            'page_description' => app_header('description'),
-            'page_keywords' => app_header('keywords'),
-            'page_author' => app_header('author')
-        ]);
-    }
-
-    /**
-     * Set default values for content
-     *
-     * @param $contents
-     */
-    private function _setContent($contents)
-    {
-        if (!is_array($this->content)) {
-            return;
-        }
-
-        foreach ($contents as $key => $value) {
-            $this->content[$key] = (isset($this->content[$key])) ? $this->content[$key] : $value;
-        }
     }
 
     /**

@@ -8,7 +8,6 @@
 
 namespace App\Http\Middleware;
 
-use App\Http\Controllers\Controller;
 use Closure;
 use Illuminate\Http\Response;
 
@@ -46,10 +45,7 @@ class VerifyEmail
                     return failed_json_response('Your email is not verified, please check your email for validation URL to verify your email.', 400);
                 }
 
-                $_controller = new Controller();
-                $_controller->_js();
-                $_controller->_seo();
-                return new Response(theme('auth.verify_email', $_controller->content));
+                return new Response(theme('auth.verify_email'));
             }
         }
 

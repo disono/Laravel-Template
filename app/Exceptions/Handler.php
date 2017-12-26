@@ -2,24 +2,18 @@
 
 namespace App\Exceptions;
 
-use App\Http\Controllers\Controller;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Response;
 use Illuminate\Session\TokenMismatchException;
 use Illuminate\Validation\ValidationException;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Handler extends ExceptionHandler
 {
-    private $_content = [];
-
     /**
      * A list of the exception types that should not be reported.
      *
@@ -62,58 +56,12 @@ class Handler extends ExceptionHandler
      * Render an exception into an HTTP response.
      *
      * @param  \Illuminate\Http\Request $request
-     * @param  \Exception $e
+     * @param  \Exception $exception
      * @return \Illuminate\Http\Response
      */
-    public function render($request, Exception $e)
+    public function render($request, Exception $exception)
     {
-        $_controller = new Controller();
-        $_controller->_js();
-        $_controller->_seo();
-        $this->_content = $_controller->content;
-
-        $e = $this->prepareException($e);
-        if ($e instanceof HttpResponseException) {
-            return $e->getResponse();
-        } elseif ($e instanceof AuthenticationException) {
-            // authenticated user
-            return $this->unauthenticated($request, $e);
-        } elseif ($e instanceof ValidationException) {
-            // form errors
-            return $this->convertValidationExceptionToResponse($e, $request);
-        }
-
-        $this->_content['errors'] = $e->getMessage() . ', ' . $e->getLine();
-        if ($this->isHttpException($e)) {
-            $status = $e->getStatusCode();
-            return $this->_viewSelector($status, $status);
-        }
-
-        try {
-            $this->_content['error_message'] = $this->_content['errors'];
-            return $this->_viewSelector('error', 500);
-        } catch (\Exception $e) {
-            return $this->_viewSelector('error', 500);
-        }
-    }
-
-    /**
-     * Prepare exception for rendering.
-     *
-     * @param  \Exception $e
-     * @return \Exception
-     */
-    protected function prepareException(Exception $e)
-    {
-        if ($e instanceof ModelNotFoundException) {
-            $e = new NotFoundHttpException($e->getMessage(), $e);
-        } elseif ($e instanceof AuthorizationException) {
-            $e = new AccessDeniedHttpException($e->getMessage(), $e);
-        } elseif ($e instanceof TokenMismatchException) {
-            $e = new HttpException(419, $e->getMessage(), $e);
-        }
-
-        return $e;
+        return parent::render($request, $exception);
     }
 
     /**
@@ -130,24 +78,5 @@ class Handler extends ExceptionHandler
         }
 
         return redirect()->guest(route('login'));
-    }
-
-    private function _viewSelector($view, $code = 404)
-    {
-        if (request()->ajax()) {
-            return $this->_jsonResponse($code);
-        } else {
-            return $this->_viewResponse($view, $code);
-        }
-    }
-
-    private function _jsonResponse($code = 404)
-    {
-        return failed_json_response($this->_content['errors'], $code);
-    }
-
-    private function _viewResponse($view, $code = 404)
-    {
-        return response()->view('errors.' . $view, $this->_content, $code);
     }
 }
