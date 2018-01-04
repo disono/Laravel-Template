@@ -234,6 +234,24 @@ var _appMethods = {
         var _config = {};
         if (typeof config !== 'undefined') {
             _config = config;
+            _config.headers = _appConfig().httpHeaders();
+        } else {
+            _config = {
+                headers: _appConfig().httpHeaders()
+            };
+        }
+
+        return axios.post(uri, data, _config)
+            .then(function (response) {
+                _debugging('HTTP Post Response: ' + JSON.stringify(response.data));
+                return response.data;
+            });
+    },
+
+    httpUpload: function (uri, data, config) {
+        var _config = {};
+        if (typeof config !== 'undefined') {
+            _config = config;
             _config.headers = _appConfig().httpUploadHeaders();
         } else {
             _config = {
