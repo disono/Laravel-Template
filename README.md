@@ -19,27 +19,20 @@ is a starting blank template for Laravel Projects
 
 # JavaScript Libraries
 * **jQuery:** [https://jquery.com](https://jquery.com)
+* **VueJS:** [https://vuejs.org](https://vuejs.org)
 * **Animate.css:** [http://daneden.github.io/animate.css](http://daneden.github.io/animate.css)
-* **Awesome Bootstrap Checkbox:** [https://github.com/flatlogic/awesome-bootstrap-checkbox](https://github.com/flatlogic/awesome-bootstrap-checkbox)
 * **Bootstrap:** [http://getbootstrap.com](http://getbootstrap.com)
-* **Bootstrap Select:** [http://silviomoreto.github.io/bootstrap-select](http://silviomoreto.github.io/bootstrap-select)
 * **Font Awesome:** [https://fortawesome.github.io/Font-Awesome](https://fortawesome.github.io/Font-Awesome)
-* **Ionicons:** [http://ionicons.com](http://ionicons.com)
-* **Jquery Form:** [http://jquery.malsup.com/form](http://jquery.malsup.com/form)
 * **MomentJS:** [http://momentjs.com](http://momentjs.com)
 * **Pickadate:** [http://amsul.ca/pickadate.js](http://amsul.ca/pickadate.js)
-* **Seiyria Bootstrap Slider:** [https://github.com/seiyria/bootstrap-slider](https://github.com/seiyria/bootstrap-slider)
 * **Toastr:** [https://github.com/CodeSeven/toastr](https://github.com/CodeSeven/toastr)
-* **Html5 QrCode:** [https://github.com/dwa012/html5-qrcode](https://github.com/dwa012/html5-qrcode)
 * **Chart.js:** [http://www.chartjs.org](http://www.chartjs.org)
-* **Angular:** [https://angularjs.org](https://angularjs.org)
 * **Sweetalert:** [http://t4t5.github.io/sweetalert](http://t4t5.github.io/sweetalert)
 * **loadCSS:** [https://github.com/filamentgroup/loadCSS](https://github.com/filamentgroup/loadCSS)
-* **Bootstrap 3 Lightbox:** [https://github.com/ashleydw/lightbox](https://github.com/ashleydw/lightbox)
 
 # How to install
 ```sh
-1.) Update your .local.env, .laradock.env and .production.env
+1.) Create .env content must be (local, production and laradock), Update your .local.env, .laradock.env and .production.env
 
 2.) Provide some Laravel permissions
     sudo chmod -R 755 storage bootstrap/
