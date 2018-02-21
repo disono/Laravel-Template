@@ -13,6 +13,41 @@ include_once 'Vendor/methods.php';
 // global variables
 $GLOBALS['wb_scripts_loaders'] = [];
 
+// settings
+// ViewVariables.php (Middleware) will initialize the db and settings
+$GLOBALS['_set_app_settings'] = [];
+$GLOBALS['_all_app_settings'] = [];
+$GLOBALS['_me'] = null;
+
+function _init_app_settings()
+{
+    $_set_app_settings = $GLOBALS['_all_app_settings'] = \App\Models\Setting::getAll();
+    $_clean = [];
+
+    foreach ($_set_app_settings as $row) {
+        $_clean[$row->key] = $row;
+    }
+
+    $GLOBALS['_set_app_settings'] = $_clean;
+    $GLOBALS['_me'] = me();
+}
+
+function __settings($key)
+{
+    if (isset($GLOBALS['_set_app_settings'][$key])) {
+        return $GLOBALS['_set_app_settings'][$key];
+    }
+
+    return (object)[
+        'name' => null, 'key' => null, 'value' => null, 'formatted_value' => null, 'created_at' => null
+    ];
+}
+
+function __me()
+{
+    return $GLOBALS['_me'];
+}
+
 /*
  * --------------------------------------------------------------------------
  * Add only method here

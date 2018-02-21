@@ -48,8 +48,9 @@ class RecoveryController extends Controller
     public function showResetForm(Request $request, $token = null)
     {
         $this->view = 'auth.passwords.';
-        return $this->response('reset')
-            ->with(['token' => $token, 'email' => $request->email]);
+        $this->content['token'] = $token;
+        $this->content['email'] = $request->get('email');
+        return $this->response('reset');
     }
 
     /**

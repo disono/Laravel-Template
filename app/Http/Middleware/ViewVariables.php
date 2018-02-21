@@ -17,6 +17,7 @@ class ViewVariables
      */
     public function handle($request, Closure $next)
     {
+        _init_app_settings();
         $this->_setViewVariables();
         $this->_setJS($request);
 
