@@ -10,7 +10,6 @@ namespace App\APDApp\Helpers;
 
 use App\Models\SlugExclude;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
 
 class WBDatabase
 {
@@ -44,15 +43,7 @@ class WBDatabase
             $pagination_num = config_per_page();
         }
 
-        $total_rows = count($collections->get());
-        $current_page = Paginator::resolveCurrentPage();
-
-        $collections->skip(
-            $pagination_num * ($current_page - 1)
-        )->take($pagination_num);
-
-        return new LengthAwarePaginator($collections->get(), $total_rows, $pagination_num,
-            Paginator::resolveCurrentPage(), array('path' => Paginator::resolveCurrentPath()));
+        return $collections->paginate($pagination_num);
     }
 
     /**
