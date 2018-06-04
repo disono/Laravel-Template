@@ -1,39 +1,20 @@
 /**
- * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: https://github.com/disono/Laravel-Template
- * License: Apache 2.0
- *
- * VueJS 2.0
+ * @author      Archie, Disono (webmonsph@gmail.com)
+ * @link        https://github.com/disono/Laravel-Template
+ * @lincense    https://github.com/disono/Laravel-Template/blob/master/LICENSE
+ * @copyright   Webmons Development Studio
  */
 
-var _appConfig = function () {
-    return {
-        httpHeaders: function () {
-            return {
-                'X-Requested-With': 'XMLHttpRequest',
-                'X-CSRF-Token': jQ('meta[name="_token"]').attr('content')
-            };
-        },
-        httpUploadHeaders: function () {
-            return {
-                'Content-Type': 'multipart/form-data',
-                'X-Requested-With': 'XMLHttpRequest',
-                'X-CSRF-Token': jQ('meta[name="_token"]').attr('content')
-            };
-        }
-    };
-};
-
-var _mounted = function () {
+var VueMounted = function () {
     jQ(document).ready(function () {
         // initialize libraries
         WBLibraries();
     });
 };
 
-var _appData = {};
+var VueAppData = {};
 
-var _appMethods = {
+var VueAppMethods = {
     /**
      * Go to a page
      *
@@ -51,7 +32,6 @@ var _appMethods = {
      */
     onDialogDelete: function (path, callback) {
         var thisApp = this;
-
         thisApp.dialogs('delete', null, function (r) {
             thisApp.httpDelete(path)
                 .then(function (response) {
@@ -77,9 +57,14 @@ var _appMethods = {
      */
     onDeleteResource: function (e, id) {
         this.onDialogDelete(e.currentTarget.getAttribute('href'), function (response) {
-            // refresh the page Optional
             if (typeof id !== 'undefined') {
+                var parentTBody = jQ(id).parent();
                 jQ(id).remove();
+
+                if (parentTBody.children().length === 0) {
+                    // refresh the page
+                    location.reload();
+                }
             }
         });
     },
@@ -101,14 +86,14 @@ var _appMethods = {
             data: null,
             buttons: function () {
                 // dismiss
-                jQ('.dialogDismiss').on('click', function (e) {
+                jQ('.dialogDismiss').off().on('click', function (e) {
                     e.preventDefault();
                     thisApp.dialogRemoveContainer(_dialogContainer);
                     callbackDismiss(views.data);
                 });
 
                 // confirm
-                jQ('.dialogConfirm').on('click', function (e) {
+                jQ('.dialogConfirm').off().on('click', function (e) {
                     e.preventDefault();
                     thisApp.dialogRemoveContainer(_dialogContainer);
                     callbackConfirm(views.data);
@@ -118,15 +103,15 @@ var _appMethods = {
 
         // callbacks
         callbackConfirm = (typeof callbackConfirm === 'function') ? callbackConfirm : function () {
-            _debugging('Confirm Button Dialogs')
+            debugging('Confirm Button Dialogs');
         };
         callbackDismiss = (typeof callbackDismiss === 'function') ? callbackDismiss : function () {
-            _debugging('Dismiss Button Dialogs')
+            debugging('Dismiss Button Dialogs');
         };
 
         // views
-        jQ('#WBMainApp').append(
-            '<div class="modal text-center" data-backdrop="static" data-keyboard="false" id="' + _dialogContainer +
+        jQ('#WBApp').append(
+            '<div class="modal" data-backdrop="static" data-keyboard="false" id="' + _dialogContainer +
             '" tabindex="-1" role="dialog" aria-hidden="true" style="z-index: 100000 !important;">' +
             '<div class="modal-dialog modal-lg" role="document">' +
             '<div class="modal-content" id="content_' + _dialogContainer + '">' +
@@ -140,21 +125,21 @@ var _appMethods = {
         jQ('#' + _dialogContainer).modal('toggle');
 
         // resource
-        thisApp.httpGet('/views', {
-            type: type
-        }).then(function (response) {
-            jQ('#content_' + _dialogContainer).html(response);
+        thisApp.httpGet('/view/' + type)
+            .then(function (response) {
+                jQ('#content_' + _dialogContainer).html(response);
 
-            if (viewCallback) {
-                viewCallback(views);
-                return;
-            }
+                if (viewCallback) {
+                    viewCallback(views);
+                    return;
+                }
 
-            views.buttons();
-        }).catch(function (error) {
-            thisApp.dialogRemoveContainer(_dialogContainer);
-            callbackDismiss();
-        });
+                views.buttons();
+            })
+            .catch(function (error) {
+                thisApp.dialogRemoveContainer(_dialogContainer);
+                callbackDismiss();
+            });
     },
 
     /**
@@ -167,34 +152,45 @@ var _appMethods = {
         jQ('#' + _dialogContainer).remove();
     },
 
+    /**
+     * Form upload
+     *
+     * @param e
+     */
     onFormUpload: function (e) {
-        var thisApp = this;
-        var formAction = jQ(e.target);
-        if (thisApp.formValidation(formAction) === true) {
-            thisApp.httpPost(formAction.attr('action'), new FormData(e.target))
-                .then(function (response) {
-                    thisApp.processFormResponse(formAction, response);
-                })
-                .catch(function (error) {
-                    thisApp.processFormResponse(formAction, error.response.data);
-                });
-        }
+        this.onUpload(e, null, null);
     },
 
+    /**
+     * Form post
+     *
+     * @param e
+     */
     onFormPost: function (e) {
         var thisApp = this;
         var formAction = jQ(e.target);
         if (thisApp.formValidation(formAction) === true) {
+            thisApp.formDisable();
+
             thisApp.httpPost(formAction.attr('action'), new FormData(e.target))
                 .then(function (response) {
+                    thisApp.formEnable();
                     thisApp.processFormResponse(formAction, response);
                 })
                 .catch(function (error) {
-                    thisApp.processFormResponse(formAction, error);
+                    thisApp.formEnable();
+                    if (typeof error.response !== 'undefined') {
+                        thisApp.processFormResponse(formAction, error.response.data);
+                    }
                 });
         }
     },
 
+    /**
+     * Form get
+     *
+     * @param e
+     */
     onFormGet: function (e) {
         var thisApp = this;
         var formAction = jQ(e.target);
@@ -204,110 +200,194 @@ var _appMethods = {
                     thisApp.processFormResponse(formAction, response);
                 })
                 .catch(function (error) {
-                    thisApp.processFormResponse(formAction, error);
+                    if (typeof error.response !== 'undefined') {
+                        thisApp.processFormResponse(formAction, error.response.data);
+                    }
                 });
         }
     },
 
+    /**
+     * On Upload process
+     *
+     * @param e
+     * @param callbackSuccess
+     * @param callbackFailed
+     */
+    onUpload: function (e, callbackSuccess, callbackFailed) {
+        var thisApp = this;
+        var formAction = jQ(e.target);
+        if (thisApp.formValidation(formAction) === true) {
+            thisApp.formDisable();
+
+            thisApp.httpUpload(formAction.attr('action'), new FormData(e.target))
+                .then(function (response) {
+                    thisApp.formEnable();
+                    thisApp.processFormResponse(formAction, response);
+
+                    if (callbackSuccess !== null) {
+                        callbackSuccess(response);
+                    }
+                })
+                .catch(function (error) {
+                    thisApp.formEnable();
+                    var _error = null;
+                    if (typeof error.response !== 'undefined') {
+                        _error = error.response.data;
+                        thisApp.processFormResponse(formAction, error.response.data);
+                    }
+
+                    if (callbackFailed !== null) {
+                        callbackFailed(_error);
+                    }
+                });
+        }
+    },
+
+    /**
+     * HTTP request GET
+     *
+     * @param uri
+     * @param params
+     * @param config
+     * @returns {*}
+     */
     httpGet: function (uri, params, config) {
         var _config = {};
         params = (typeof params !== 'undefined') ? params : null;
         if (typeof config !== 'undefined') {
             _config = config;
             _config.params = params;
-            _config.headers = _appConfig().httpHeaders();
+            _config.headers = WBAppConfig().httpHeaders();
         } else {
             _config = {
                 params: params,
-                headers: _appConfig().httpHeaders()
+                headers: WBAppConfig().httpHeaders()
             };
         }
 
         return axios.get(uri, _config)
             .then(function (response) {
-                _debugging('HTTP Get Response: ' + JSON.stringify(response.data));
+                debugging('HTTP Get Response: ' + JSON.stringify(response.data));
                 return response.data;
             });
     },
 
+    /**
+     * HTTP request POST
+     *
+     * @param uri
+     * @param data
+     * @param config
+     * @returns {Promise<T>}
+     */
     httpPost: function (uri, data, config) {
         var _config = {};
         if (typeof config !== 'undefined') {
             _config = config;
-            _config.headers = _appConfig().httpHeaders();
+            _config.headers = WBAppConfig().httpHeaders();
         } else {
             _config = {
-                headers: _appConfig().httpHeaders()
+                headers: WBAppConfig().httpHeaders()
             };
         }
 
         return axios.post(uri, data, _config)
             .then(function (response) {
-                _debugging('HTTP Post Response: ' + JSON.stringify(response.data));
+                debugging('HTTP Post Response: ' + JSON.stringify(response.data));
                 return response.data;
             });
     },
 
+    /**
+     * HTTP request Upload
+     *
+     * @param uri
+     * @param data
+     * @param config
+     * @returns {Promise<T>}
+     */
     httpUpload: function (uri, data, config) {
         var _config = {};
         if (typeof config !== 'undefined') {
             _config = config;
-            _config.headers = _appConfig().httpUploadHeaders();
+            _config.headers = WBAppConfig().httpUploadHeaders();
         } else {
             _config = {
-                headers: _appConfig().httpUploadHeaders()
+                headers: WBAppConfig().httpUploadHeaders()
             };
         }
 
         return axios.post(uri, data, _config)
             .then(function (response) {
-                _debugging('HTTP Post Response: ' + JSON.stringify(response.data));
+                debugging('HTTP Upload Response: ' + JSON.stringify(response.data));
                 return response.data;
             });
     },
 
+    /**
+     * HTTP request PUT
+     *
+     * @param uri
+     * @param data
+     * @param config
+     * @returns {Promise<T>}
+     */
     httpPut: function (uri, data, config) {
         var _config = {};
         if (typeof config !== 'undefined') {
             _config = config;
-            _config.headers = _appConfig().httpUploadHeaders();
+            _config.headers = WBAppConfig().httpUploadHeaders();
         } else {
             _config = {
-                headers: _appConfig().httpUploadHeaders()
+                headers: WBAppConfig().httpUploadHeaders()
             };
         }
 
         return axios.put(uri, data, _config)
             .then(function (response) {
-                _debugging('HTTP Put Response: ' + JSON.stringify(response.data));
+                debugging('HTTP Put Response: ' + JSON.stringify(response.data));
                 return response.data;
             });
     },
 
+    /**
+     * HTTP request DELETE
+     *
+     * @param uri
+     * @param params
+     * @param config
+     * @returns {*}
+     */
     httpDelete: function (uri, params, config) {
         var _config = {};
         params = (typeof params !== 'undefined') ? params : null;
         if (typeof config !== 'undefined') {
             _config = config;
             _config.params = params;
-            _config.headers = _appConfig().httpHeaders();
+            _config.headers = WBAppConfig().httpHeaders();
         } else {
             _config = {
                 params: params,
-                headers: _appConfig().httpHeaders()
+                headers: WBAppConfig().httpHeaders()
             };
         }
 
         return axios.delete(uri, _config)
             .then(function (response) {
-                _debugging('HTTP Delete Response: ' + JSON.stringify(response.data));
+                debugging('HTTP Delete Response: ' + JSON.stringify(response.data));
                 return response.data;
             });
     },
 
+    /**
+     * Process FORM response
+     *
+     * @param formAction
+     * @param response
+     */
     processFormResponse: function (formAction, response) {
         var thisApp = this;
-        _debugging(JSON.stringify(response));
         if (response.success === true) {
             // data
             if (typeof response.data !== 'undefined') {
@@ -315,19 +395,37 @@ var _appMethods = {
                 if (typeof response.data.redirect !== 'undefined') {
                     thisApp.redirect(response.data.redirect);
                 }
+
+                if (typeof response.data === 'string') {
+                    jQ.snackbar({content: response.data});
+                }
             }
         } else if (response.success === false && typeof response.errors !== 'undefined') {
             if (typeof response.errors === 'object') {
                 jQ.each(response.errors, function (name, error) {
+                    debugging(error);
                     thisApp.formValid(formAction.find('[name=' + name + ']'), error);
                 });
             } else {
-                toastr.error(response.errors);
+                if (typeof response.errors === 'string') {
+                    jQ.snackbar({content: response.errors});
+                }
             }
         }
     },
 
+    /**
+     * Validate form
+     *
+     * @param formAction
+     * @param options
+     * @returns {*}
+     */
     formValidation: function (formAction, options) {
+        if (typeof tinymce !== 'undefined') {
+            tinymce.triggerSave();
+        }
+
         options = (typeof options !== 'undefined') ? options : {};
         var inputData = {};
         var inputRules = {};
@@ -360,8 +458,14 @@ var _appMethods = {
         return validated;
     },
 
+    /**
+     * Is form valid
+     *
+     * @param input
+     * @param validation_message
+     */
     formValid: function (input, validation_message) {
-        input.nextAll().remove();
+        input.next().not('.custom-file-input').not('.custom-file-label').not('.custom-control-label').not('form-text').not('.picker').remove();
 
         if (validation_message) {
             input.removeClass('is-valid');
@@ -370,14 +474,27 @@ var _appMethods = {
         } else {
             input.removeClass('is-invalid');
         }
+    },
+
+    formDisable: function () {
+        jQ('form').find('input, textarea, button, select').prop('readonly', true);
+    },
+
+    formEnable: function () {
+        // do not enable if attributes of input is data-disabled="yes"
+        jQ('form').find('input, textarea, button, select')
+            .not('[data-disabled="yes"]')
+            .not('.date-picker')
+            .not('.time-picker')
+            .not('.date-picker-limit')
+            .not('.date-picker-current')
+            .prop("readonly", false);
     }
 };
 
-var WBVueApp = new Vue({
-    el: '#WBMainApp',
-    mounted: _mounted,
-
-    data: _appData,
-
-    methods: _appMethods
+new Vue({
+    el: '#WBApp',
+    mounted: VueMounted,
+    data: VueAppData,
+    methods: VueAppMethods
 });

@@ -11,39 +11,46 @@ class SettingSeeder extends Seeder
      */
     public function run()
     {
-        $settings = [
-            ['Application Name', 'title', 'Webmons', 'default', null],
-            ['Description', 'description', 'Project Template', 'default', null],
-            ['Author', 'author', 'Archie Disono', 'default', null],
-            ['Keywords', 'keywords', 'webmons, project template, boiler plate', 'default', null],
-            ['CSS Version', 'css_version', '1.0', 'default', null],
-
-            ['File size limit', 'file_size_limit', '3000', 'default', null],
-            ['File size limit(image)', 'file_size_limit_image', '3000', 'default', null],
-            ['File size limit(default)', 'file_size_limit', '3000', 'default', null],
-            ['Minimum age for registration', 'minimum_age_for_registration', '13', 'default', null],
-            ['Maximum age for registration', 'maximum_age_for_registration', '120', 'default', null],
-            ['Items per page(pagination)', 'pagination', '12', 'default', null],
-            ['Theme', 'theme', 'main', 'default', null],
-
-            ['Facebook Page', 'social_fb', '', 'default', null],
-            ['Twitter Page', 'social_twitter', '', 'default', null],
-            ['Instagram Page', 'social_ig', '', 'default', null],
-
-            ['Subscriber Form', 'subscriber_form', 'enabled', 'default', 'select'],
-            ['Auth Facebook', 'auth_social_facebook', 'enabled', 'default', 'select'],
-        ];
-
-        foreach ($settings as $key => $value) {
+        foreach ($this->_settings() as $value) {
             DB::table('settings')->insert([
                 'name' => ucfirst($value[0]),
                 'key' => $value[1],
                 'value' => $value[2],
 
-                'input_type' => $value[4],
-                'type' => $value[3],
-                'created_at' => sql_date()
+                'input_type' => $value[3],
+                'input_value' => $value[4],
+                'created_at' => sqlDate()
             ]);
         }
+    }
+
+    private function _settings()
+    {
+        return [
+            ['Application Name', 'title', 'Webmons Development Studio', 'text', null],
+            ['Description', 'description', 'Project Template', 'textarea', null],
+            ['Author', 'author', 'Archie Disono', 'text', null],
+            ['Keywords', 'keywords', 'webmons, project template, boiler plate', 'textarea', null],
+            ['Theme Version', 'themeVersion', '1.0', 'text', null],
+            ['Theme Name', 'theme', 'master', 'text', null],
+
+            ['File size limit(image)', 'fileSizeLimitImage', '3000', 'text', null],
+            ['File size limit(default)', 'fileSizeLimit', '3000', 'text', null],
+            ['Minimum age for registration', 'minimumAgeForRegistration', '13', 'text', null],
+            ['Maximum age for registration', 'maximumAgeForRegistration', '120', 'text', null],
+            ['Items per page(pagination)', 'pagination', '12', 'text', null],
+
+            ['Facebook Page', 'socialFacebook', '#', 'text', null],
+            ['Twitter Page', 'socialTwitter', '#', 'text', null],
+            ['IG Page', 'socialIG', '#', 'text', null],
+
+            ['Subscriber Form', 'subscriberForm', 'enabled', 'select', 'enabled,disabled'],
+
+            ['Auth Facebook', 'authSocialFacebook', 'enabled', 'select', 'enabled,disabled'],
+
+            ['Email Verification', 'user_email_verification', 'enabled', 'select', 'enabled,disabled'],
+            ['Phone Verification', 'user_phone_verification', 'disabled', 'select', 'enabled,disabled'],
+            ['Account Enabled', 'user_account_enabled', 'enabled', 'select', 'enabled,disabled'],
+        ];
     }
 }

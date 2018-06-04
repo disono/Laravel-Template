@@ -1,25 +1,13 @@
 /**
- * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: www.webmons.com
- * Copyright 2016 Webmons Development Studio.
- * License: Apache 2.0
- *
- * JavaScript helpers
+ * @author      Archie, Disono (webmonsph@gmail.com)
+ * @link        https://github.com/disono/Laravel-Template
+ * @lincense    https://github.com/disono/Laravel-Template/blob/master/LICENSE
+ * @copyright   Webmons Development Studio
  */
 
-// jquery no conflict
-var jQ = jQuery.noConflict();
-
-var _debugging = function (m) {
-    console.log(m);
-};
-
-var _WBConfigs = {
-    domain: null,
-
-    // http://your-domain:3000/
-    socket: null
-};
+function debugging(message) {
+    console.log('Debugging: ' + message);
+}
 
 /**
  * Geo location
@@ -36,10 +24,6 @@ var WBGeo = (function () {
 
                 navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
             }
-        },
-
-        showPosition: function (position) {
-
         },
 
         showError: function (error) {

@@ -1,114 +1,86 @@
 <?php
 /**
- * @author Archie, Disono (webmonsph@gmail.com)
- * @git https://github.com/disono/Laravel-Template
- * @copyright Webmons Development Studio. (webmons.com), 2016-2017
- * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
+ * @author          Archie, Disono (webmonsph@gmail.com)
+ * @link            https://github.com/disono/Laravel-Template
+ * @copyright       Webmons Development Studio. (webmons.com), 2016-2018
+ * @license         Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
 namespace App\Http\Controllers\Admin\Page;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests;
+use App\Http\Requests\Admin\Page\PageStore;
+use App\Http\Requests\Admin\Page\PageUpdate;
 use App\Models\Page;
 use App\Models\PageCategory;
 
 class PageController extends Controller
 {
+    protected $viewType = 'admin';
+
     public function __construct()
     {
-        $this->view = 'page.';
-        $this->view_type = 'admin';
         parent::__construct();
+        $this->theme = 'page';
     }
 
-    /**
-     * List data
-     *
-     * @return mixed
-     */
-    public function index()
+    public function indexAction()
     {
-        $this->title = 'Pages';
-        $this->content['pages'] = Page::fetch(request_options('page_category_id|search'));
-        $this->content['page_categories'] = PageCategory::all();
-        return $this->response('index');
+        $this->setHeader('title', 'Pages');
+        return $this->view('index', [
+            'pages' => Page::fetch(requestValues('search|page_category_id')),
+            'categories' => PageCategory::fetchAll()
+        ]);
     }
 
-    /**
-     * Create new data
-     *
-     * @return mixed
-     */
-    public function create()
+    public function createAction()
     {
-        $this->title = 'Create Page';
-        $this->content['page_categories'] = PageCategory::all();
-        return $this->response('create');
+        $this->setHeader('title', 'Create a New Page');
+        return $this->view('create', [
+            'categories' => PageCategory::fetchAll()
+        ]);
     }
 
-    /**
-     * Store new data
-     *
-     * @param Requests\Admin\PageStore $request
-     * @return mixed
-     */
-    public function store(Requests\Admin\PageStore $request)
+    public function storeAction(PageStore $request)
     {
-        $inputs = $request->all();
-        $inputs['image'] = $request->file('image');
-        $inputs['user_id'] = auth()->user()->id;
-        return $this->redirectResponse('admin/page/edit/' . Page::store($inputs));
+        $page = Page::store($this->_formInputs($request));
+        if (!$page) {
+            return $this->json(['name' => 'Failed to crate a new page.'], 422, false);
+        }
+
+        return $this->json(['redirect' => '/admin/page/edit/' . $page->id]);
     }
 
-    /**
-     * Edit data
-     *
-     * @param $id
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     */
-    public function edit($id)
+    public function editAction($id)
     {
-        $data = Page::single($id);
-        if (!$data) {
+        $this->setHeader('title', 'Editing Page');
+        $this->content['page'] = Page::single($id);
+        if (!$this->content['page']) {
             abort(404);
         }
 
-        $this->title = 'Edit Page';
-        $this->content['page'] = $data;
-        $this->content['page_categories'] = PageCategory::all();
-        return $this->response('edit');
+        $this->content['categories'] = PageCategory::fetchAll();
+        return $this->view('edit');
     }
 
-    /**
-     * Update data
-     *
-     * @param Requests\Admin\PageUpdate $request
-     * @return mixed
-     */
-    public function update(Requests\Admin\PageUpdate $request)
+    public function updateAction(PageUpdate $request)
     {
-        $inputs = $request->all();
-        $inputs['image'] = $request->file('image');
-        Page::edit($request->get('id'), $inputs);
-        return $this->redirectResponse('admin/pages');
+        Page::edit($request->get('id'), $this->_formInputs($request));
+        return $this->json('Page is successfully updated.');
     }
 
-    /**
-     * Delete data
-     *
-     * @param $id
-     * @return mixed
-     * @throws \Exception
-     */
-    public function destroy($id)
+    public function destroyAction($id)
     {
         Page::remove($id);
+        return $this->json('Page is successfully deleted.');
+    }
 
-        if (request()->ajax()) {
-            return success_json_response('Successfully deleted page.');
-        }
+    private function _formInputs($request)
+    {
+        $inputs = $request->all();
+        $inputs['user_id'] = __me()->id;
+        $inputs['cover_photo'] = $request->file('cover_photo');
 
-        return $this->redirectResponse();
+        return $inputs;
     }
 }

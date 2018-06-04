@@ -1,92 +1,93 @@
 {{--
- * Author: Archie, Disono (webmonsph@gmail.com)
- * Website: https://github.com/disono/Laravel-Template
- * License: Apache 2.0
+ * @author      Archie, Disono (webmonsph@gmail.com)
+ * @link        https://github.com/disono/Laravel-Template
+ * @lincense    https://github.com/disono/Laravel-Template/blob/master/LICENSE
+ * @copyright   Webmons Development Studio
 --}}
-@extends('admin.layout.master')
 
-@section('title', $title)
+@extends('admin.layouts.master')
 
 @section('content')
-    <div class="container-fluid">
+    <div class="container">
         <div class="row">
-            <div class="col-12">
-                <h3>Pages
-                    <a href="{{url('admin/page/create')}}" class="btn btn-primary pull-right">Create New Page</a>
-                </h3>
+            <div class="col">
+                <h1 class="header">{{ $view_title }}</h1>
 
-                {{-- search options --}}
-                <form action="" method="get" class="mt-3">
-                    <div class="form-row">
-                        <div class="col">
-                            <input type="text" class="form-control" name="search" id="search"
-                                   value="{{$request->get('search')}}" placeholder="Keyword">
+                @include('admin.page.menu')
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col mt-3">
+                <form method="get" action="{{ route('admin.page.index') }}">
+                    <div class="row">
+                        <div class="col-md-3 col-sm-12">
+                            <input type="text" class="form-control" placeholder="Search"
+                                   name="search" value="{{ request('search') }}">
                         </div>
 
-                        <div class="col">
-                            <select class="form-control" name="page_category_id">
-                                <option value="">Category</option>
-                                @foreach($page_categories as $row)
-                                    <option value="{{$row->id}}" {{ ($request->get('page_category_id') == $row->id) ? 'selected' : '' }}>
-                                        {{$row->name}}
-                                    </option>
+                        <div class="col-md-3 col-sm-12">
+                            <select class="custom-select" name="page_category_id">
+                                <option value="">Select Category</option>
+                                @foreach($categories as $category)
+                                    <option value="{{ $category->id }}" {{ frmIsSelected('page_category_id', $category->id) }}>{{ $category->name }}</option>
                                 @endforeach
                             </select>
                         </div>
 
-                        <div class="col">
-                            <button type="submit" class="btn btn-primary btn-block">Search</button>
+                        <div class="col-md-3 col-sm-12">
+                            <button class="btn btn-primary">Search</button>
                         </div>
                     </div>
                 </form>
+            </div>
+        </div>
 
-                <div class="row mt-3">
-                    <div class="col-12">
-                        @if(count($pages))
-                            <table class="table table-hover">
-                                <thead class="thead-dark">
-                                <tr>
-                                    <th>#</th>
-                                    <th>Name</th>
-                                    <th>Category</th>
-                                    <th>Action</th>
-                                </tr>
-                                </thead>
+        <div class="row">
+            <div class="col">
+                <table class="table mt-3">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
 
-                                <tbody>
-                                @foreach($pages as $row)
-                                    <tr id="parent_tr_{{$row->id}}">
-                                        <td>{{$row->id}}</td>
-                                        <td>{{$row->name}}</td>
-                                        <td>{{$row->category_name}}</td>
-                                        <td>
-                                            <div class="dropdown">
-                                                <button class="btn btn-secondary dropdown-toggle" type="button"
-                                                        id="dropDownMenuButton" data-toggle="dropdown"
-                                                        aria-haspopup="true"
-                                                        aria-expanded="false">
-                                                    Action
-                                                </button>
-                                                <div class="dropdown-menu" aria-labelledby="dropDownMenuButton">
-                                                    <a class="dropdown-item"
-                                                       href="{{url('admin/page/edit/' . $row->id)}}">Edit</a>
-                                                    <a class="dropdown-item"
-                                                       href="{{url('admin/page/destroy/' . $row->id)}}"
-                                                       v-on:click.prevent="onDeleteResource($event, '#parent_tr_{{$row->id}}')">Delete</a>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                                </tbody>
-                            </table>
+                    <tbody>
+                    @foreach($pages as $row)
+                        <tr id="parent_tr_{{$row->id}}">
+                            <td>{{ $row->id }}</td>
+                            <td>{{ $row->name }}</td>
+                            <td>
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-light dropdown-toggle"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i class="fas fa-cog"></i>
+                                    </button>
 
-                            {{$pages->appends($request->all())->render()}}
-                        @else
-                            <h1 class="text-center">No pages.</h1>
-                        @endif
-                    </div>
-                </div>
+                                    <div class="dropdown-menu">
+                                        <a class="dropdown-item"
+                                           href="{{ url('admin/page/edit/' . $row->id) }}">Edit</a>
+
+                                        <div class="dropdown-divider"></div>
+
+                                        <a class="dropdown-item"
+                                           href="{{ url('admin/page/destroy/' . $row->id) }}"
+                                           v-on:click.prevent="onDeleteResource($event, '#parent_tr_{{$row->id}}')">Delete</a>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    @endforeach
+                    </tbody>
+                </table>
+
+                @if(!count($pages))
+                    <h3 class="text-center"><i class="far fa-frown"></i> No Pages Created.</h3>
+                @endif
+
+                {{$pages->appends($request->all())->render()}}
             </div>
         </div>
     </div>

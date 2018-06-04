@@ -1,9 +1,9 @@
 <?php
 /**
- * @author Archie, Disono (webmonsph@gmail.com)
- * @git https://github.com/disono/Laravel-Template
- * @copyright Webmons Development Studio. (webmons.com), 2016-2017
- * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
+ * @author          Archie, Disono (webmonsph@gmail.com)
+ * @link            https://github.com/disono/Laravel-Template
+ * @copyright       Webmons Development Studio. (webmons.com), 2016-2018
+ * @license         Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
 namespace App\Extend;
@@ -110,7 +110,7 @@ class Validation extends Validator
      */
     protected function validateCurrentPassword($attribute, $value, $parameters)
     {
-        $user = (auth()->check()) ? User::find(Auth::user()->id) : User::find(authenticated_id());
+        $user = (__me()) ? User::find(__me()->id) : User::find(authID());
 
         if (!$user) {
             return false;
@@ -230,8 +230,8 @@ class Validation extends Validator
 
         // check if min age is not valid
         if (isset($parameters[0])) {
-            if (count_years($value) < $parameters[0]) {
-                $this->_custom_messages['birthday'] = 'The :attribute is not allowed age to register.';
+            if (countYears($value) < $parameters[0]) {
+                $this->_custom_messages['birthday'] = 'The :attribute is not allowed age.';
                 $this->setCustomMessages($this->_custom_messages);
                 return false;
             }
@@ -239,8 +239,8 @@ class Validation extends Validator
 
         // check if max age is not valid
         if (isset($parameters[1])) {
-            if (count_years($value) > $parameters[0]) {
-                $this->_custom_messages['birthday'] = 'The :attribute is too old to register.';
+            if (countYears($value) > $parameters[0]) {
+                $this->_custom_messages['birthday'] = 'The :attribute is too old.';
                 $this->setCustomMessages($this->_custom_messages);
                 return false;
             }
@@ -264,7 +264,7 @@ class Validation extends Validator
         } else if (isset($parameters[1])) {
             $user_id = (int)$parameters[1];
         } else {
-            $user_id = (int)request("user_id");
+            $user_id = (int)authID();
         }
 
         if (!isset($parameters[0])) {

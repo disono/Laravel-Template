@@ -7,22 +7,19 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Illuminate\Http\Response;
 use Illuminate\Session\TokenMismatchException;
 use Illuminate\Validation\ValidationException;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class Handler extends ExceptionHandler
 {
     /**
-     * A list of the exception types that should not be reported.
+     * A list of the exception types that are not reported.
      *
      * @var array
      */
     protected $dontReport = [
         AuthenticationException::class,
         AuthorizationException::class,
-        HttpException::class,
         ModelNotFoundException::class,
         TokenMismatchException::class,
         ValidationException::class,
@@ -61,6 +58,16 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
+        if ($this->isHttpException($exception)) {
+            $statusCode = $exception->getStatusCode();
+
+            if ($request->expectsJson()) {
+                return failedJSONResponse('HTTP response code ' . $statusCode, $statusCode);
+            }
+
+            return theme("errors.{$statusCode}", [], $statusCode);
+        }
+
         return parent::render($request, $exception);
     }
 
@@ -74,9 +81,9 @@ class Handler extends ExceptionHandler
     protected function unauthenticated($request, AuthenticationException $exception)
     {
         if ($request->expectsJson()) {
-            return failed_json_response(exception_messages('MSG_ACCESS'), 401);
+            return failedJSONResponse(exceptionMessages('AUTH_DENIED_ACCESS'), 401);
         }
 
-        return redirect()->guest(route('login'));
+        return redirect()->guest(route('auth.login'));
     }
 }

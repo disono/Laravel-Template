@@ -4,6 +4,12 @@ use Illuminate\Database\Seeder;
 
 class PageCategorySeeder extends Seeder
 {
+    private $categories = [
+        ['Pages', 'pages'],
+        ['Blog', 'blog'],
+        ['News', 'news']
+    ];
+
     /**
      * Run the database seeds.
      *
@@ -11,21 +17,11 @@ class PageCategorySeeder extends Seeder
      */
     public function run()
     {
-        $slugs = [
-            'blog',
-            'page'
-        ];
-
-        foreach ($slugs as $q) {
-            $id = DB::table('page_categories')->insertGetId([
-                'name' => ucfirst($q),
-                'created_at' => sql_date()
-            ]);
-            DB::table('slugs')->insertGetId([
-                'source_id' => $id,
-                'source_type' => 'page_category',
-                'name' => $q,
-                'created_at' => sql_date()
+        foreach ($this->categories as $category) {
+            DB::table('page_categories')->insert([
+                'name' => $category[0],
+                'slug' => $category[1],
+                'created_at' => sqlDate()
             ]);
         }
     }

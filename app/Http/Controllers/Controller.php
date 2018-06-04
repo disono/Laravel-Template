@@ -1,9 +1,9 @@
 <?php
 /**
- * @author Archie, Disono (webmonsph@gmail.com)
- * @git https://github.com/disono/Laravel-Template
- * @copyright Webmons Development Studio. (webmons.com), 2016-2017
- * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
+ * @author          Archie, Disono (webmonsph@gmail.com)
+ * @link            https://github.com/disono/Laravel-Template
+ * @copyright       Webmons Development Studio. (webmons.com), 2016-2018
+ * @license         Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
 namespace App\Http\Controllers;
@@ -17,48 +17,78 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    protected $request;
-    public $content = [];
-    protected $title = null;
+    protected $content = [];
+    protected $request = null;
+    protected $theme = null;
     protected $me = null;
-
-    // admin and guest
-    protected $view_type = 'guest';
-    protected $view = null;
-
-    // type of response default is web/view
-    // json if ajax/mobile api
-    protected $response_type = 'web';
+    protected $viewType = 'guest';
 
     public function __construct()
     {
-        $this->request = request();
         $this->middleware(function ($request, $next) {
-            $this->me = me();
+            $this->request = request();
+            $this->me = __me();
 
             return $next($request);
         });
     }
 
     /**
-     * Response
+     * Default theme
      *
-     * @param null $view
-     * @return bool|\Illuminate\Contracts\View\Factory|\Illuminate\Http\JsonResponse|\Illuminate\View\View
+     * @param $path
+     * @param array $data
+     * @param int $response
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
      */
-    protected function response($view = null)
+    protected function view($path, $data = [], $response = 200)
     {
-        $json = $this->jsonResponse($view);
-        if ($json !== null) {
-            return $json;
+        // override the data for content
+        $data = (count($this->content) > 0) ? $this->content : $data;
+
+        if ($this->request->ajax() || $this->viewType === 'json') {
+            if ($response == 200) {
+                return successJSONResponse($data);
+            }
+
+            return failedJSONResponse($data, $response);
         }
 
-        // view
-        if ($view) {
-            $this->view .= $view;
+        $data['request'] = $this->request;
+
+        if ($this->viewType === 'admin') {
+            if ($this->theme) {
+                return adminTheme($this->theme . '.' . $path, $data, $response);
+            }
+
+            return adminTheme($path, $data, $response);
+        } else {
+            if ($this->theme) {
+                return theme($this->theme . '.' . $path, $data, $response);
+            }
+
+            return theme($path, $data, $response);
+        }
+    }
+
+    /**
+     * JSON response
+     *
+     * @param $data
+     * @param int $response
+     * @param bool $default_message
+     * @return \Illuminate\Http\JsonResponse
+     */
+    protected function json($data, $response = 200, $default_message = true)
+    {
+        // override the data for content
+        $data = (count($this->content) > 0) ? $this->content : $data;
+
+        if ($response == 200) {
+            return successJSONResponse($data);
         }
 
-        return $this->_view();
+        return failedJSONResponse($data, $response, $default_message);
     }
 
     /**
@@ -67,13 +97,8 @@ class Controller extends BaseController
      * @param null $uri
      * @return bool
      */
-    protected function redirectResponse($uri = null)
+    protected function redirect($uri = null)
     {
-        $json = $this->jsonResponse();
-        if ($json !== null) {
-            return $json;
-        }
-
         if ($uri === null) {
             return redirect()->back();
         } else {
@@ -82,108 +107,46 @@ class Controller extends BaseController
     }
 
     /**
-     * JSON response
-     *
-     * @param null $data
-     * @return bool
-     */
-    protected function jsonResponse($data = null)
-    {
-        if (request()->ajax() || $this->response_type == 'json') {
-            if (!in_array('ob_gzhandler', ob_list_handlers())) {
-                ob_start('ob_gzhandler');
-            } else {
-                ob_start();
-            }
-
-            if ($data && !$this->_hasContent()) {
-                $this->content = $data;
-            }
-
-            return success_json_response($this->content);
-        }
-
-        return null;
-    }
-
-    /**
-     * Failed response
-     *
-     * @param $message
-     * @param int $view
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\JsonResponse|\Illuminate\View\View
-     */
-    protected function failed_response($message, $view = 404)
-    {
-        if ((request()->ajax() || $this->response_type == 'json') && $this->response_type != 'no_ajax') {
-            return failed_json_response(($message === false) ? exception_messages('UNKNOWN') : $message);
-        }
-
-        return view('errors.' . $view, ['message' => $message]);
-    }
-
-    /**
-     * Get the value from GET and POST request
+     * Set headers
      *
      * @param $key
-     * @return mixed
+     * @param $value
      */
-    protected function get($key)
+    protected function setHeader($key, $value)
     {
-        return $this->request->get($key);
+        $view = view();
+
+        switch ($key) {
+            case 'title':
+                $view->share('page_title', ucfirst($value) . ' - ' . __settings('title')->value);
+                $view->share('view_title', ucfirst($value));
+                break;
+            case 'description':
+                $view->share('page_description', $value);
+                break;
+            case 'keywords':
+                $view->share('page_keywords', $value);
+                break;
+            case 'author':
+                $view->share('page_author', $value);
+                break;
+        }
     }
 
     /**
-     * Get the file from request
+     * Response errors
      *
-     * @param $key
-     * @return array|\Illuminate\Http\UploadedFile|null
+     * @param $code
+     * @param null $message
+     * @return \Illuminate\Http\JsonResponse|void
      */
-    protected function file($key)
+    protected function error($code, $message = null)
     {
-        return $this->request->file($key);
-    }
-
-    /**
-     * Has content
-     *
-     * @return bool
-     */
-    private function _hasContent()
-    {
-        if ($this->content == null) {
-            return false;
+        if ($this->request->ajax() || $this->viewType === 'json') {
+            $message = ($message) ? $message : $code . ' response code.';
+            return failedJSONResponse($message, $code);
         }
 
-        if (is_array($this->content)) {
-            if (!count($this->content)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * View
-     *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     */
-    private function _view()
-    {
-        $this->content['request'] = request();
-        $this->content['title'] = ($this->title) ? app_title($this->title) : app_settings('title')->value;
-
-        if (!$this->view) {
-            abort(404);
-        }
-
-        if ($this->view_type == 'admin') {
-            return admin_view($this->view, $this->content);
-        } else if ($this->view_type == 'guest') {
-            return theme($this->view, $this->content);
-        } else {
-            return view($this->view, $this->content);
-        }
+        abort($code);
     }
 }

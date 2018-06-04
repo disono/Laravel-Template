@@ -1,0 +1,35 @@
+<?php
+/**
+ * @author          Archie, Disono (webmonsph@gmail.com)
+ * @link            https://github.com/disono/Laravel-Template
+ * @copyright       Webmons Development Studio. (webmons.com), 2016-2018
+ * @license         Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
+ */
+
+namespace App\Http\Requests\Admin\Page;
+
+use App\Http\Requests\Admin\AdminRequest;
+
+class PageUpdate extends AdminRequest
+{
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array
+     */
+    public function rules()
+    {
+        return [
+            'id' => 'required|integer|exists:pages,id',
+            'page_category_id' => 'required|exists:page_categories,id',
+            'name' => 'required|max:100',
+            'content' => 'required|max:100000',
+            'slug' => 'required|alpha_dash|unique:pages,slug,' . request('id'),
+            'template' => 'max:100',
+            'is_draft' => 'in:0,1',
+            'is_email_to_subscriber' => 'in:0,1',
+            'post_at' => 'date',
+            'expired_at' => 'date',
+        ];
+    }
+}

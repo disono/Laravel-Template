@@ -1,174 +1,107 @@
 <?php
 /**
- * @author Archie, Disono (webmonsph@gmail.com)
- * @git https://github.com/disono/Laravel-Template
- * @copyright Webmons Development Studio. (webmons.com), 2016-2017
- * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
+ * @author          Archie, Disono (webmonsph@gmail.com)
+ * @link            https://github.com/disono/Laravel-Template
+ * @copyright       Webmons Development Studio. (webmons.com), 2016-2018
+ * @license         Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
 namespace App\Models;
 
-class Setting extends AppModel
+use App\Models\Vendor\BaseModel;
+
+class Setting extends BaseModel
 {
-    protected static $table_name = 'settings';
-    protected static $writable_columns = [
-        'name', 'key', 'value'
+    // input_type: text, select, checkbox
+
+    protected static $tableName = 'settings';
+    protected static $writableColumns = [
+        'name', 'key', 'value', 'description', 'input_type', 'input_value', 'attributes', 'is_disabled'
     ];
+
+    protected static $inputBooleans = ['is_disabled'];
 
     public function __construct(array $attributes = [])
     {
-        $this->fillable(self::$writable_columns);
+        $this->fillable(self::$writableColumns);
         parent::__construct($attributes);
     }
 
-    /**
-     * Get single data
-     *
-     * @param $id
-     * @param string $column
-     * @return null
-     */
-    public static function single($id, $column = 'id')
+    public static function listColumns()
     {
-        if (!$id) {
-            return null;
-        }
-
-        return self::fetch([
-            'single' => true,
-            $column => $id
-        ]);
+        return self::$writableColumns;
     }
 
     /**
-     * Get data
+     * Custom formatting for storing
      *
-     * @param array $params
-     * @return null
+     * @param $tableName
+     * @param $inputs
+     * @return mixed
      */
-    public static function get($params = [])
+    public static function formatStore($tableName, $inputs)
     {
-        $table_name = (new self)->getTable();
-        $select[] = $table_name . '.*';
-        $query = self::select($select);
+        return self::formatInputs($inputs);
+    }
 
-        // where equal
-        $query = self::_whereEqual($query, $params, self::$writable_columns, $table_name);
+    /**
+     * Custom formatting for editing
+     *
+     * @param $tableName
+     * @param $inputs
+     * @return mixed
+     */
+    public static function formatEdit($tableName, $inputs)
+    {
+        return self::formatInputs($inputs);
+    }
 
-        // exclude and include
-        $query = self::_excInc($query, $params, self::$writable_columns, $table_name);
-
-        // search
-        $query = self::_search($query, $params, self::$writable_columns, $table_name);
-
-        $query->orderBy('id', 'ASC');
-
-        if (isset($params['object'])) {
-            return $query;
-        } else {
-            if (isset($params['single'])) {
-                return self::_format($query->first(), $params);
-            } else if (isset($params['all'])) {
-                return self::_format($query->get(), $params);
+    /**
+     * Add formatting to data
+     *
+     * @param $row
+     * @return mixed
+     */
+    protected static function dataFormatting($row)
+    {
+        $row->original_value = $row->value;
+        if ($row->input_type == 'checkbox') {
+            if ($row->value) {
+                $row->value = explode(',', $row->value);
             } else {
-                $query = paginate($query);
-
-                return self::_format($query, $params);
-            }
-        }
-    }
-
-    /**
-     * Get all data no pagination
-     *
-     * @param array $params
-     * @return null
-     */
-    public static function getAll($params = [])
-    {
-        $params['all'] = true;
-        return self::fetch($params);
-    }
-
-    /**
-     * Store new data
-     *
-     * @param array $inputs
-     * @return bool
-     */
-    public static function store($inputs = [])
-    {
-        $store = [];
-
-        foreach ($inputs as $key => $value) {
-            if (in_array($key, self::$writable_columns)) {
-                $store[$key] = $value;
+                $row->value = [];
             }
         }
 
-        $store['created_at'] = sql_date();
-        return (int)self::insertGetId($store);
-    }
-
-    /**
-     * Delete data
-     *
-     * @param $id
-     * @return bool
-     * @throws \Exception
-     */
-    public static function remove($id)
-    {
-        return (bool)self::destroy($id);
-    }
-
-    /**
-     * Update data
-     *
-     * @param $id
-     * @param array $inputs
-     * @param null $column_name
-     * @return bool
-     */
-    public static function edit($id, $inputs = [], $column_name = null)
-    {
-        $update = [];
-        $query = null;
-
-        if (!$column_name) {
-            $column_name = 'id';
-        }
-
-        if ($id && !is_array($column_name)) {
-            $query = self::where($column_name, $id);
-        } else {
-            $i = 0;
-            foreach ($column_name as $key => $value) {
-                if (!in_array($key, self::$writable_columns)) {
-                    return false;
-                }
-
-                if (!$i) {
-                    $query = self::where($key, $value);
-                } else {
-                    if ($query) {
-                        $query->where($key, $value);
-                    }
-                }
-
-                $i++;
+        $row->original_input_value = $row->input_value;
+        if (in_array($row->input_type, ['select', 'checkbox'])) {
+            if ($row->input_value) {
+                $row->input_value = explode(',', $row->input_value);
+            } else {
+                $row->input_value = [];
             }
         }
 
-        foreach ($inputs as $key => $value) {
-            if (in_array($key, self::$writable_columns)) {
-                $update[$key] = $value;
+        return $row;
+    }
+
+    /**
+     * Format inputs before saving
+     *
+     * @param $inputs
+     * @return mixed
+     */
+    private static function formatInputs($inputs)
+    {
+        $inputs['input_type'] = $inputs['input_type'] ?? 'text';
+        $inputs['input_value'] = $inputs['input_value'] ?? null;
+
+        if ($inputs['input_value']) {
+            if (in_array($inputs['input_type'], ['select', 'checkbox'])) {
+                $inputs['input_value'] = implode(',', $inputs['input_value']);
             }
         }
 
-        // store to activity logs
-        ActivityLog::log($id, self::$writable_columns, $query->first(), $inputs, (new self)->getTable());
-
-        return (bool)$query->update($update);
+        return $inputs;
     }
 }

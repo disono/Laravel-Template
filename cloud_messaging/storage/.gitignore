@@ -1,4 +1,0 @@
-/database/*
-
-# exception to the rule
-!database/.gitkeep

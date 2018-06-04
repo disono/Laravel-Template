@@ -1,14 +1,14 @@
 <?php
 /**
- * @author Archie, Disono (webmonsph@gmail.com)
- * @git https://github.com/disono/Laravel-Template
- * @copyright Webmons Development Studio. (webmons.com), 2016-2017
- * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
+ * @author          Archie, Disono (webmonsph@gmail.com)
+ * @link            https://github.com/disono/Laravel-Template
+ * @copyright       Webmons Development Studio. (webmons.com), 2016-2018
+ * @license         Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
 namespace App\Notifications;
 
-use App\Models\EmailVerification;
+use App\Models\Verification;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
@@ -20,26 +20,37 @@ class RegisterNotification extends Notification
 
     /**
      * Create a new notification instance.
-     * @param $data
+     *
+     * @param $user
      */
-    public function __construct($data)
+    public function __construct($user)
     {
         // get user
-        $this->user = $data;
+        $this->user = $user;
 
         // url
-        $token = rand_token();
-        $this->user->link = url('email/verify?token=' . $token . '&email=' . $this->user->email);
+        $token = isset($user->verification_code) ? $user->verification_code : str_random(64);
+        $this->user->link = url('verify/email?token=' . $token . '&email=' . $this->user->email);
 
-        // clean all verification before saving new
-        EmailVerification::where('email', $this->user->email)->delete();
+        // do we need to renew the verification code
+        $renew = true;
+        if (isset($user->renew_code)) {
+            $renew = $user->renew_code;
+        }
 
-        // create token
-        EmailVerification::create([
-            'token' => $token,
-            'email' => $this->user->email,
-            'expired_at' => expired_at(1440)
-        ]);
+        if ($renew) {
+            // clean all verification before saving new
+            Verification::where('value', $this->user->email)->where('type', 'email')->delete();
+
+            // create token
+            Verification::create([
+                'user_id' => $this->user->id,
+                'token' => $token,
+                'value' => $this->user->email,
+                'type' => 'email',
+                'expired_at' => expiredAt(1440)
+            ]);
+        }
     }
 
     /**
@@ -66,7 +77,8 @@ class RegisterNotification extends Notification
             ->line('This is your registration link to verify your email.')
             ->action('Click to verify', $this->user->link)
             ->line('Thank you for using our application!')
-            ->subject('Verify Your New Account');
+            ->subject('Verify Your New Account')
+            ->view('vendor.mail.layout');
     }
 
     /**

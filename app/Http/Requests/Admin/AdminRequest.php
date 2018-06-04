@@ -1,16 +1,15 @@
 <?php
 /**
- * @author Archie, Disono (webmonsph@gmail.com)
- * @git https://github.com/disono/Laravel-Template
- * @copyright Webmons Development Studio. (webmons.com), 2016-2017
- * @license Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
+ * @author          Archie, Disono (webmonsph@gmail.com)
+ * @link            https://github.com/disono/Laravel-Template
+ * @copyright       Webmons Development Studio. (webmons.com), 2016-2018
+ * @license         Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
 namespace App\Http\Requests\Admin;
+use App\Http\Requests\BaseRequest;
 
-use App\Http\Requests\Request;
-
-class AdminRequest extends Request
+class AdminRequest extends BaseRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -19,6 +18,16 @@ class AdminRequest extends Request
      */
     public function authorize()
     {
-        return auth()->check();
+        if (!__me()) {
+            return false;
+        }
+
+        if (__me()->role === 'client') {
+            return false;
+        }
+
+        return true;
     }
 }
+
+

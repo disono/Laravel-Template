@@ -4,12 +4,6 @@ use Illuminate\Database\Seeder;
 
 class RoleSeeder extends Seeder
 {
-    private $roles = [
-        ['Administrator (Super user)', 'admin'],
-        ['Employee', 'employee'],
-        ['Client / Customer', 'client']
-    ];
-
     /**
      * Run the database seeds.
      *
@@ -17,40 +11,44 @@ class RoleSeeder extends Seeder
      */
     public function run()
     {
-        foreach ($this->roles as $key => $value) {
+        $this->_addRoles();
+        $this->_addAuthRoles();
+    }
+
+    private function _addRoles()
+    {
+        foreach ($this->_roles() as $role) {
             DB::table('roles')->insert([
-                'name' => ucfirst($value[0]),
-                'slug' => $value[1],
-                'created_at' => sql_date()
+                'name' => ucfirst($role[0]),
+                'slug' => $role[1],
+                'created_at' => sqlDate()
             ]);
         }
+    }
 
-        $roles = App\Models\Role::all();
-        foreach ($roles as $row) {
-            $id = DB::table('users')->insertGetId([
-                'first_name' => random_first_names(),
-                'last_name' => random_last_names(),
+    private function _roles()
+    {
+        return [
+            ['Administrator (Super user)', 'admin'],
+            ['Employee', 'employee'],
+            ['Client / Customer', 'client']
+        ];
+    }
 
-                'birthday' => sql_date('January 1 1995', true),
+    private function _addAuthRoles()
+    {
+        foreach (\App\Models\Role::fetchAll(['exclude' => ['id' => [3]]]) as $row) {
+            foreach (Route::getRoutes() as $value) {
+                $name = $value->getName();
 
-                'email' => $row->slug . '@gmail.com',
-                'password' => bcrypt('password'),
-                'phone' => rand_numbers(7),
-
-                'enabled' => 1,
-                'email_confirmed' => 1,
-
-                'role' => $row->slug,
-                'created_at' => sql_date()
-            ]);
-
-            // username
-            DB::table('slugs')->insertGetId([
-                'source_id' => $id,
-                'source_type' => 'user',
-                'name' => $row->slug . str_random(2),
-                'created_at' => sql_date()
-            ]);
+                if ($name) {
+                    DB::table('authorization_roles')->insert([
+                        'route' => $name,
+                        'role_id' => $row->id,
+                        'created_at' => sqlDate()
+                    ]);
+                }
+            }
         }
     }
 }
