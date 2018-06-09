@@ -70,6 +70,35 @@ class ResetController extends Controller
     }
 
     /**
+     * Check token if valid
+     *
+     * @param $token
+     * @param null $email
+     * @return mixed
+     */
+    private function _checkToken($token, $email = null)
+    {
+        $reset = PasswordReset::where('token', $token);
+        if ($email) {
+            $reset->where('email', $email);
+        }
+
+        $reset = $reset->first();
+
+        // is token exists
+        if (!$reset) {
+            return false;
+        }
+
+        // if more than 1 hr token is expired
+        if (countHours($reset->created_at, sqlDate()) >= 1) {
+            return false;
+        }
+
+        return $reset;
+    }
+
+    /**
      * Change password process
      *
      * @param RecoverPassword $request
@@ -124,34 +153,5 @@ class ResetController extends Controller
                 'type' => 'login'
             ]);
         }
-    }
-
-    /**
-     * Check token if valid
-     *
-     * @param $token
-     * @param null $email
-     * @return mixed
-     */
-    private function _checkToken($token, $email = null)
-    {
-        $reset = PasswordReset::where('token', $token);
-        if ($email) {
-            $reset->where('email', $email);
-        }
-
-        $reset = $reset->first();
-
-        // is token exists
-        if (!$reset) {
-            return false;
-        }
-
-        // if more than 1 hr token is expired
-        if (countHours($reset->created_at, sqlDate()) >= 1) {
-            return false;
-        }
-
-        return $reset;
     }
 }

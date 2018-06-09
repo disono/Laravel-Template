@@ -28,22 +28,16 @@ class BaseModel extends Model
     protected static $inputCrypt = [];
 
     /**
-     * Get single data
+     * Get all data no pagination
      *
-     * @param $id
-     * @param string $column
+     * @param array $params
      * @return null
      */
-    public static function single($id, $column = 'id')
+    public static function fetchAll($params = [])
     {
-        if (!$id) {
-            return null;
-        }
-
-        return static::fetch([
-            'single' => true,
-            $column => $id
-        ]);
+        $params['all'] = true;
+        static::$params = $params;
+        return static::fetch($params);
     }
 
     /**
@@ -76,207 +70,6 @@ class BaseModel extends Model
 
         // add formatting
         return static::readyFormatting($query);
-    }
-
-    /**
-     * Get all data no pagination
-     *
-     * @param array $params
-     * @return null
-     */
-    public static function fetchAll($params = [])
-    {
-        $params['all'] = true;
-        static::$params = $params;
-        return static::fetch($params);
-    }
-
-    /**
-     * Store new data
-     *
-     * @param array $inputs
-     * @param bool $checkDefaults
-     * @return bool
-     */
-    public static function store($inputs = [], $checkDefaults = true)
-    {
-        $store = [];
-        foreach ($inputs as $key => $value) {
-            if (in_array($key, static::$writableColumns)) {
-                $value = ($value === '' || $value === null) ? null : $value;
-                $store[$key] = $value;
-            }
-        }
-
-        // add defaults
-        if ($checkDefaults === true) {
-            $store = self::defaultInputs($store);
-        }
-
-        // other custom action
-        if (!static::actionStore(static::$tableName, $inputs)) {
-            return null;
-        }
-
-        // formatting before saving
-        $store = self::formatStore(static::$tableName, $store);
-
-        $store['created_at'] = sqlDate();
-        $save = static::single(self::insertGetId($store));
-
-        // process files
-        if ($save) {
-            foreach (static::$files as $file) {
-                if (isset($inputs[$file])) {
-                    fileUpload($inputs[$file], 'private', static::$imageOptions,
-                        null, null, static::$tableName, $save->id);
-                }
-            }
-        }
-
-        return $save;
-    }
-
-    /**
-     * Update data
-     *
-     * @param $id
-     * @param array $inputs
-     * @param null $columnName
-     * @param bool $checkDefaults
-     * @return bool
-     */
-    public static function edit($id, $inputs = [], $columnName = null, $checkDefaults = true)
-    {
-        $update = [];
-        $query = self::rawFetch($id, $columnName);
-
-        // clean inputs
-        foreach ($inputs as $key => $value) {
-            if (in_array($key, static::$writableColumns)) {
-                $value = ($value === '' || $value === null) ? null : $value;
-                $update[$key] = $value;
-            }
-        }
-
-        // add defaults
-        if ($checkDefaults === true) {
-            $update = self::defaultInputs($update, $query->first());
-        }
-
-        // other custom action
-        if (!static::actionEdit(static::$tableName, $query->first(), $inputs)) {
-            return false;
-        }
-
-        // formatting before saving
-        $update = self::formatEdit(static::$tableName, $update);
-
-        // process files
-        foreach (static::$files as $file) {
-            if (isset($inputs[$file])) {
-                fileUpload($inputs[$file], 'private', static::$imageOptions,
-                    null, null, static::$tableName, $id);
-            }
-        }
-
-        $update['updated_at'] = sqlDate();
-        return (bool)$query->update($update);
-    }
-
-    /**
-     * Delete data
-     *
-     * @param $id
-     * @param null $columnName
-     *
-     * @return integer
-     */
-    public static function remove($id, $columnName = null)
-    {
-        // check if exists or tried to delete the users authorization
-        $_r = self::rawFetch($id, $columnName)->first();
-        if (!$_r) {
-            return false;
-        }
-
-        if (!static::actionRemove($_r)) {
-            return false;
-        }
-
-        // remove
-        $save = self::rawFetch($id, $columnName)->delete();
-
-        // delete and remove all files based on table name and id
-        if ($save) {
-            foreach (File::fetch(['table_name' => static::$tableName, 'table_id' => $id]) as $file) {
-                if (fileDestroy('private/' . $file->file_name)) {
-                    File::remove($file->id);
-                }
-            }
-        }
-
-        return $save;
-    }
-
-    /**
-     * Custom method for storing
-     *
-     * @param $tableName
-     * @param $inputs
-     * @return bool
-     */
-    public static function actionStore($tableName, $inputs)
-    {
-        return true;
-    }
-
-    /**
-     * Custom formatting for storing
-     *
-     * @param $tableName
-     * @param $inputs
-     * @return mixed
-     */
-    public static function formatStore($tableName, $inputs)
-    {
-        return $inputs;
-    }
-
-    /**
-     * Custom method for editing
-     *
-     * @param $tableName
-     * @param $query
-     * @param $inputs
-     * @return bool
-     */
-    public static function actionEdit($tableName, $query, $inputs)
-    {
-        return true;
-    }
-
-    /**
-     * Custom formatting for editing
-     *
-     * @param $tableName
-     * @param $inputs
-     * @return mixed
-     */
-    public static function formatEdit($tableName, $inputs)
-    {
-        return $inputs;
-    }
-
-    /**
-     * Custom action remove
-     *
-     * @param $query
-     * @return bool
-     */
-    public static function actionRemove($query)
-    {
-        return true;
     }
 
     /**
@@ -319,115 +112,6 @@ class BaseModel extends Model
     protected static function rawQuerySelectList()
     {
         return [];
-    }
-
-    /**
-     * Default inputs
-     *
-     * @param array $inputs
-     * @param array $defaults
-     * @return array
-     */
-    protected static function defaultInputs($inputs = [], $defaults = [])
-    {
-        // clean dates
-        foreach (static::$inputDates as $key) {
-            if (isset($inputs[$key])) {
-                if ($inputs[$key] !== null && $inputs[$key] !== '') {
-                    $inputs[$key] = sqlDate($inputs[$key], true);
-                } else {
-                    unset($inputs[$key]);
-                }
-            }
-        }
-
-        // clean dates with time
-        foreach (static::$inputDateTimes as $key) {
-            if (isset($inputs[$key])) {
-                if ($inputs[$key] !== null && $inputs[$key] !== '') {
-                    $inputs[$key] = sqlDate($inputs[$key]);
-                } else {
-                    unset($inputs[$key]);
-                }
-            }
-        }
-
-        // clean integers with zero
-        foreach (static::$inputIntegers as $key) {
-            if (isset($inputs[$key])) {
-                if ($inputs[$key] !== null && $inputs[$key] !== '' && is_numeric($inputs[$key])) {
-                    $inputs[$key] = (int)$inputs[$key];
-                } else {
-                    $inputs[$key] = 0;
-                }
-            } else {
-                $inputs[$key] = 0;
-            }
-        }
-
-        // clean boolean
-        foreach (static::$inputBooleans as $key) {
-            if (isset($inputs[$key])) {
-                $inputs[$key] = ($inputs[$key] == 1) ? 1 : 0;
-            } else {
-                $inputs[$key] = 0;
-            }
-        }
-
-        // BCrypt
-        foreach (static::$inputCrypt as $key) {
-            if (isset($inputs[$key])) {
-                if ($inputs[$key] !== null && $inputs[$key] !== '') {
-                    $inputs[$key] = bcrypt($inputs[$key]);
-                } else {
-                    unset($inputs[$key]);
-                }
-            } else {
-                unset($inputs[$key]);
-            }
-        }
-
-        return $inputs;
-    }
-
-    /**
-     * Raw fetch
-     *
-     * @param $id
-     * @param null $columnName
-     * @return bool|\Illuminate\Database\Query\Builder|null
-     */
-    public static function rawFetch($id, $columnName = null)
-    {
-        $query = null;
-
-        if (!$columnName) {
-            $columnName = 'id';
-        }
-
-        // filters for editing
-        if ($id && !is_array($columnName)) {
-            $query = DB::table(static::$tableName)->where($columnName, $id);
-        } else {
-            $i = 0;
-            foreach ($columnName as $key => $value) {
-                if (!in_array($key, static::$writableColumns)) {
-                    return false;
-                }
-
-                if (!$i) {
-                    $query = DB::table(static::$tableName)->where($key, $value);
-                } else {
-                    if ($query) {
-                        $query->where($key, $value);
-                    }
-                }
-
-                $i++;
-            }
-        }
-
-        return $query;
     }
 
     /**
@@ -511,6 +195,17 @@ class BaseModel extends Model
     }
 
     /**
+     * Get parameters
+     *
+     * @param $key
+     * @return mixed|null
+     */
+    protected static function requestParams($key)
+    {
+        return static::$params[$key] ?? null;
+    }
+
+    /**
      * Raw where for including and excluding
      *
      * @param $query
@@ -551,6 +246,34 @@ class BaseModel extends Model
         }
 
         return $query;
+    }
+
+    /**
+     * Extract data
+     * string e.g. column_name:value1,value2|column_name:value1,value2
+     *
+     * @param $data
+     * @return array|string
+     */
+    protected static function extractIncExcData($data)
+    {
+        // if string e.g. column_name:value1,value2|column_name:value1,value2
+        if (is_string($data)) {
+            $divider = explode('|', $data);
+
+            $clean = [];
+            foreach ($divider as $extract) {
+                $column = explode(':', $extract);
+
+                if (count($column) == 2) {
+                    $clean[$column[0]] = explode(',', $column[1]);
+                }
+            }
+
+            $data = $clean;
+        }
+
+        return $data;
     }
 
     /**
@@ -611,14 +334,26 @@ class BaseModel extends Model
     }
 
     /**
-     * Get parameters
+     * Search
      *
-     * @param $key
-     * @return mixed|null
+     * @param $index
+     * @param $query
+     * @param $column_name
+     * @param $search
+     * @return mixed
      */
-    protected static function requestParams($key)
+    protected static function searchQuery($index, $query, $column_name, $search)
     {
-        return static::$params[$key] ?? null;
+        // check values to search must not be empty
+        if ($search != '' && $search != null) {
+            if (!$index) {
+                $query->where($column_name, 'LIKE', '%' . $search . '%');
+            } else {
+                $query->orWhere($column_name, 'LIKE', '%' . $search . '%');
+            }
+        }
+
+        return $query;
     }
 
     /**
@@ -688,22 +423,244 @@ class BaseModel extends Model
     }
 
     /**
-     * Search
+     * Store new data
      *
-     * @param $index
-     * @param $query
-     * @param $column_name
-     * @param $search
+     * @param array $inputs
+     * @param bool $checkDefaults
+     * @return bool
+     */
+    public static function store($inputs = [], $checkDefaults = true)
+    {
+        $store = [];
+        foreach ($inputs as $key => $value) {
+            if (in_array($key, static::$writableColumns)) {
+                $value = ($value === '' || $value === null) ? null : $value;
+                $store[$key] = $value;
+            }
+        }
+
+        // add defaults
+        if ($checkDefaults === true) {
+            $store = self::defaultInputs($store);
+        }
+
+        // other custom action
+        if (!static::actionStore(static::$tableName, $inputs)) {
+            return null;
+        }
+
+        // formatting before saving
+        $store = self::formatStore(static::$tableName, $store);
+
+        $store['created_at'] = sqlDate();
+        $save = static::single(self::insertGetId($store));
+
+        // process files
+        if ($save) {
+            foreach (static::$files as $file) {
+                if (isset($inputs[$file])) {
+                    fileUpload($inputs[$file], 'private', static::$imageOptions,
+                        null, null, static::$tableName, $save->id);
+                }
+            }
+        }
+
+        return $save;
+    }
+
+    /**
+     * Default inputs
+     *
+     * @param array $inputs
+     * @param array $defaults
+     * @return array
+     */
+    protected static function defaultInputs($inputs = [], $defaults = [])
+    {
+        // clean dates
+        foreach (static::$inputDates as $key) {
+            if (isset($inputs[$key])) {
+                if ($inputs[$key] !== null && $inputs[$key] !== '') {
+                    $inputs[$key] = sqlDate($inputs[$key], true);
+                } else {
+                    unset($inputs[$key]);
+                }
+            }
+        }
+
+        // clean dates with time
+        foreach (static::$inputDateTimes as $key) {
+            if (isset($inputs[$key])) {
+                if ($inputs[$key] !== null && $inputs[$key] !== '') {
+                    $inputs[$key] = sqlDate($inputs[$key]);
+                } else {
+                    unset($inputs[$key]);
+                }
+            }
+        }
+
+        // clean integers with zero
+        foreach (static::$inputIntegers as $key) {
+            if (isset($inputs[$key])) {
+                if ($inputs[$key] !== null && $inputs[$key] !== '' && is_numeric($inputs[$key])) {
+                    $inputs[$key] = (int)$inputs[$key];
+                } else {
+                    $inputs[$key] = 0;
+                }
+            } else {
+                $inputs[$key] = 0;
+            }
+        }
+
+        // clean boolean
+        foreach (static::$inputBooleans as $key) {
+            if (isset($inputs[$key])) {
+                $inputs[$key] = ($inputs[$key] == 1) ? 1 : 0;
+            } else {
+                $inputs[$key] = 0;
+            }
+        }
+
+        // BCrypt
+        foreach (static::$inputCrypt as $key) {
+            if (isset($inputs[$key])) {
+                if ($inputs[$key] !== null && $inputs[$key] !== '') {
+                    $inputs[$key] = bcrypt($inputs[$key]);
+                } else {
+                    unset($inputs[$key]);
+                }
+            } else {
+                unset($inputs[$key]);
+            }
+        }
+
+        return $inputs;
+    }
+
+    /**
+     * Custom method for storing
+     *
+     * @param $tableName
+     * @param $inputs
+     * @return bool
+     */
+    public static function actionStore($tableName, $inputs)
+    {
+        return true;
+    }
+
+    /**
+     * Custom formatting for storing
+     *
+     * @param $tableName
+     * @param $inputs
      * @return mixed
      */
-    protected static function searchQuery($index, $query, $column_name, $search)
+    public static function formatStore($tableName, $inputs)
     {
-        // check values to search must not be empty
-        if ($search != '' && $search != null) {
-            if (!$index) {
-                $query->where($column_name, 'LIKE', '%' . $search . '%');
-            } else {
-                $query->orWhere($column_name, 'LIKE', '%' . $search . '%');
+        return $inputs;
+    }
+
+    /**
+     * Get single data
+     *
+     * @param $id
+     * @param string $column
+     * @return null
+     */
+    public static function single($id, $column = 'id')
+    {
+        if (!$id) {
+            return null;
+        }
+
+        return static::fetch([
+            'single' => true,
+            $column => $id
+        ]);
+    }
+
+    /**
+     * Update data
+     *
+     * @param $id
+     * @param array $inputs
+     * @param null $columnName
+     * @param bool $checkDefaults
+     * @return bool
+     */
+    public static function edit($id, $inputs = [], $columnName = null, $checkDefaults = true)
+    {
+        $update = [];
+        $query = self::rawFetch($id, $columnName);
+
+        // clean inputs
+        foreach ($inputs as $key => $value) {
+            if (in_array($key, static::$writableColumns)) {
+                $value = ($value === '' || $value === null) ? null : $value;
+                $update[$key] = $value;
+            }
+        }
+
+        // add defaults
+        if ($checkDefaults === true) {
+            $update = self::defaultInputs($update, $query->first());
+        }
+
+        // other custom action
+        if (!static::actionEdit(static::$tableName, $query->first(), $inputs)) {
+            return false;
+        }
+
+        // formatting before saving
+        $update = self::formatEdit(static::$tableName, $update);
+
+        // process files
+        foreach (static::$files as $file) {
+            if (isset($inputs[$file])) {
+                fileUpload($inputs[$file], 'private', static::$imageOptions,
+                    null, null, static::$tableName, $id);
+            }
+        }
+
+        $update['updated_at'] = sqlDate();
+        return (bool)$query->update($update);
+    }
+
+    /**
+     * Raw fetch
+     *
+     * @param $id
+     * @param null $columnName
+     * @return bool|\Illuminate\Database\Query\Builder|null
+     */
+    public static function rawFetch($id, $columnName = null)
+    {
+        $query = null;
+
+        if (!$columnName) {
+            $columnName = 'id';
+        }
+
+        // filters for editing
+        if ($id && !is_array($columnName)) {
+            $query = DB::table(static::$tableName)->where($columnName, $id);
+        } else {
+            $i = 0;
+            foreach ($columnName as $key => $value) {
+                if (!in_array($key, static::$writableColumns)) {
+                    return false;
+                }
+
+                if (!$i) {
+                    $query = DB::table(static::$tableName)->where($key, $value);
+                } else {
+                    if ($query) {
+                        $query->where($key, $value);
+                    }
+                }
+
+                $i++;
             }
         }
 
@@ -711,30 +668,73 @@ class BaseModel extends Model
     }
 
     /**
-     * Extract data
-     * string e.g. column_name:value1,value2|column_name:value1,value2
+     * Custom method for editing
      *
-     * @param $data
-     * @return array|string
+     * @param $tableName
+     * @param $query
+     * @param $inputs
+     * @return bool
      */
-    protected static function extractIncExcData($data)
+    public static function actionEdit($tableName, $query, $inputs)
     {
-        // if string e.g. column_name:value1,value2|column_name:value1,value2
-        if (is_string($data)) {
-            $divider = explode('|', $data);
+        return true;
+    }
 
-            $clean = [];
-            foreach ($divider as $extract) {
-                $column = explode(':', $extract);
+    /**
+     * Custom formatting for editing
+     *
+     * @param $tableName
+     * @param $inputs
+     * @return mixed
+     */
+    public static function formatEdit($tableName, $inputs)
+    {
+        return $inputs;
+    }
 
-                if (count($column) == 2) {
-                    $clean[$column[0]] = explode(',', $column[1]);
-                }
-            }
-
-            $data = $clean;
+    /**
+     * Delete data
+     *
+     * @param $id
+     * @param null $columnName
+     *
+     * @return integer
+     */
+    public static function remove($id, $columnName = null)
+    {
+        // check if exists or tried to delete the users authorization
+        $_r = self::rawFetch($id, $columnName)->first();
+        if (!$_r) {
+            return false;
         }
 
-        return $data;
+        if (!static::actionRemove($_r)) {
+            return false;
+        }
+
+        // remove
+        $save = self::rawFetch($id, $columnName)->delete();
+
+        // delete and remove all files based on table name and id
+        if ($save) {
+            foreach (File::fetch(['table_name' => static::$tableName, 'table_id' => $id]) as $file) {
+                if (fileDestroy('private/' . $file->file_name)) {
+                    File::remove($file->id);
+                }
+            }
+        }
+
+        return $save;
+    }
+
+    /**
+     * Custom action remove
+     *
+     * @param $query
+     * @return bool
+     */
+    public static function actionRemove($query)
+    {
+        return true;
     }
 }

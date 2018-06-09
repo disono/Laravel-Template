@@ -32,16 +32,6 @@ class Page extends BaseModel
         parent::__construct($attributes);
     }
 
-    public function pageCategory()
-    {
-        return $this->belongsTo('App\Models\PageCategory');
-    }
-
-    public function user()
-    {
-        return $this->belongsTo('App\Models\User');
-    }
-
     /**
      * List of select
      *
@@ -86,5 +76,15 @@ class Page extends BaseModel
         $file = File::where('table_name', 'pages')->where('table_id', $page_id)->where('tag', 'cover_photo')
             ->orderBy('created_at', 'DESC')->first();
         return ($file) ? $file->file_name : null;
+    }
+
+    public function pageCategory()
+    {
+        return $this->belongsTo('App\Models\PageCategory');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo('App\Models\User');
     }
 }

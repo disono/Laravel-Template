@@ -11,10 +11,8 @@ namespace App\Http\Controllers\Module\Authentication;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Module\Auth\RegisterRequest;
 use App\Models\User;
-use App\Notifications\RegisterNotification;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Notification;
 
 class RegisterController extends Controller
 {
@@ -46,11 +44,9 @@ class RegisterController extends Controller
      */
     public function processAction(RegisterRequest $request)
     {
-        $id = $this->create($request->all());
-
-        if ($id) {
-            Auth::loginUsingId($id, true);
-
+        $user = User::register($request->all());
+        if ($user) {
+            Auth::loginUsingId($user->id, true);
             if ($request->ajax()) {
                 return successJSONResponse([
                     'redirect' => $this->redirectPath()
@@ -63,36 +59,5 @@ class RegisterController extends Controller
         }
 
         return $this->redirect($this->redirectPath());
-    }
-
-    /**
-     * Create a new user instance after a valid registration.
-     *
-     * @param  array $data
-     * @return User
-     */
-    protected function create(array $data)
-    {
-        // create new user
-        $user = User::create([
-            'first_name' => ucfirst($data['first_name']),
-            'last_name' => ucfirst($data['last_name']),
-
-            'username' => $data['username'],
-            'email' => $data['email'],
-            'password' => bcrypt($data['password']),
-
-            'role_id' => 3,
-            'is_account_enabled' => 1,
-            'is_account_activated' => 1
-        ]);
-
-        // send email
-        if ($user) {
-            // send email for email verification
-            Notification::send($user, new RegisterNotification($user));
-        }
-
-        return $user->id;
     }
 }

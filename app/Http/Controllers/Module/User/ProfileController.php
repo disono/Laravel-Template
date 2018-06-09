@@ -8,7 +8,6 @@
 
 namespace App\Http\Controllers\Module\User;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 class ProfileController extends Controller
@@ -16,5 +15,10 @@ class ProfileController extends Controller
     public function __construct()
     {
         parent::__construct();
+    }
+
+    public function showAction($username)
+    {
+
     }
 }

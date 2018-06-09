@@ -6,21 +6,13 @@
  * @license         Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
-namespace App\Http\Controllers\Module\Page;
+namespace App\Http\Controllers\API\V1\Authentication\Social;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\API\APIController;
 
-class DevelopmentController extends Controller
+class FacebookController extends APIController
 {
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
-     * Development view
-     */
-    public function applicationAction()
+    public function loginAction()
     {
 
     }

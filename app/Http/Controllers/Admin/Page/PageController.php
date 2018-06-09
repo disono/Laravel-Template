@@ -51,6 +51,15 @@ class PageController extends Controller
         return $this->json(['redirect' => '/admin/page/edit/' . $page->id]);
     }
 
+    private function _formInputs($request)
+    {
+        $inputs = $request->all();
+        $inputs['user_id'] = __me()->id;
+        $inputs['cover_photo'] = $request->file('cover_photo');
+
+        return $inputs;
+    }
+
     public function editAction($id)
     {
         $this->setHeader('title', 'Editing Page');
@@ -73,14 +82,5 @@ class PageController extends Controller
     {
         Page::remove($id);
         return $this->json('Page is successfully deleted.');
-    }
-
-    private function _formInputs($request)
-    {
-        $inputs = $request->all();
-        $inputs['user_id'] = __me()->id;
-        $inputs['cover_photo'] = $request->file('cover_photo');
-
-        return $inputs;
     }
 }

@@ -6,12 +6,14 @@
  * @license         Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
-namespace App\Http\Requests\Admin;
+namespace App\Http\Requests\API;
 
 use App\Http\Requests\BaseRequest;
 
-class AdminRequest extends BaseRequest
+class APIGuestRequest extends BaseRequest
 {
+    protected $isJSONResponse = true;
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -19,14 +21,6 @@ class AdminRequest extends BaseRequest
      */
     public function authorize()
     {
-        if (!__me()) {
-            return false;
-        }
-
-        if (__me()->role === 'client') {
-            return false;
-        }
-
         return true;
     }
 }

@@ -6,22 +6,16 @@
  * @license         Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
-namespace App\Http\Controllers\Module\Page;
+namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 
-class DevelopmentController extends Controller
+class APIController extends Controller
 {
+    protected $viewType = 'json';
+
     public function __construct()
     {
         parent::__construct();
-    }
-
-    /**
-     * Development view
-     */
-    public function applicationAction()
-    {
-
     }
 }

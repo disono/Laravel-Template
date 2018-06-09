@@ -55,6 +55,14 @@ class UserController extends Controller
         return $this->json(['redirect' => '/admin/user/edit/' . $user->id]);
     }
 
+    private function _formInputs($request)
+    {
+        $inputs = $request->all();
+        $inputs['profile_picture'] = $request->file('profile_picture');
+
+        return $inputs;
+    }
+
     public function editAction($id)
     {
         $user = User::single($id);
@@ -91,13 +99,5 @@ class UserController extends Controller
     {
         User::remove($id);
         return $this->json('User is successfully deleted.');
-    }
-
-    private function _formInputs($request)
-    {
-        $inputs = $request->all();
-        $inputs['profile_picture'] = $request->file('profile_picture');
-
-        return $inputs;
     }
 }

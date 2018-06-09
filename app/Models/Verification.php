@@ -23,11 +23,6 @@ class Verification extends BaseModel
         parent::__construct($attributes);
     }
 
-    public function user()
-    {
-        return $this->belongsTo('App\Models\User');
-    }
-
     public static function isExpired($type)
     {
         if (!__me()) {
@@ -47,5 +42,10 @@ class Verification extends BaseModel
         }
 
         return false;
+    }
+
+    public function user()
+    {
+        return $this->belongsTo('App\Models\User');
     }
 }

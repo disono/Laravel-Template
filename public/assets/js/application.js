@@ -477,7 +477,7 @@ var VueAppMethods = {
     },
 
     formDisable: function () {
-        jQ('form').find('input, textarea, button, select').prop('readonly', true);
+        jQ('form').find('input, textarea, button, select').not('.picker').prop('readonly', true);
     },
 
     formEnable: function () {

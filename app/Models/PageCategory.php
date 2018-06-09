@@ -27,11 +27,6 @@ class PageCategory extends BaseModel
         parent::__construct($attributes);
     }
 
-    public function page()
-    {
-        return $this->hasMany('App\Models\Page');
-    }
-
     /**
      * Custom method for editing
      *
@@ -73,90 +68,6 @@ class PageCategory extends BaseModel
         PageCategory::where('parent_id', $query->id)->delete();
 
         return true;
-    }
-
-    /**
-     * Category tree
-     *
-     * @param array $params
-     * @return mixed
-     */
-    public static function fetchTree($params = [])
-    {
-        $params['all'] = true;
-        $query = self::fetch($params);
-        $categories = [];
-
-        foreach ($query as $category) {
-            $categories[] = [
-                'id' => $category->id,
-                'name' => $category->name,
-                'description' => $category->description,
-                'parent_id' => $category->parent_id
-            ];
-        }
-
-        $map = array(
-            0 => array('sub_categories' => array())
-        );
-
-        foreach ($categories as &$category) {
-            $category['sub_categories'] = array();
-            $map[$category['id']] = &$category;
-        }
-
-        foreach ($categories as &$category) {
-            $map[$category['parent_id']]['sub_categories'][] = &$category;
-        }
-
-        return $map[0]['sub_categories'];
-    }
-
-    /**
-     * Add formatting
-     *
-     * @param array $array
-     * @param int $count
-     * @param bool $include_tab
-     * @param bool $strong
-     * @param string $_tab
-     * @return array
-     */
-    public static function print_ar($array = [], $count = 0, $include_tab = true, $strong = false, $_tab = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;")
-    {
-        $i = 0;
-        $tab = '';
-        while ($i != $count) {
-            $i++;
-            $tab .= $_tab;
-        }
-
-        foreach ($array as $key) {
-            $tab_primary = substr($tab, 0, -12);
-            if ($strong) {
-                if ($include_tab) {
-                    $key['name'] = $tab_primary . (($tab === '') ? '<strong>' . $key['name'] . '</strong>' : $key['name']);
-                } else {
-                    $key['name'] = (($tab === '') ? '<strong>' . $key['name'] . '</strong>' : $key['name']);
-                }
-            } else {
-                if ($include_tab) {
-                    $key['name'] = $tab_primary . (($tab === '') ? $key['name'] : $key['name']);
-                } else {
-                    $key['name'] = (($tab === '') ? $key['name'] : $key['name']);
-                }
-            }
-
-            $key['tab'] = $tab;
-            self::$list[] = (object)$key;
-            if (count($key['sub_categories']) > 0) {
-                $count++;
-                self::print_ar($key['sub_categories'], $count, $include_tab);
-                $count--;
-            }
-        }
-
-        return self::$list;
     }
 
     /**
@@ -222,5 +133,94 @@ class PageCategory extends BaseModel
         }
 
         return $query;
+    }
+
+    /**
+     * Add formatting
+     *
+     * @param array $array
+     * @param int $count
+     * @param bool $include_tab
+     * @param bool $strong
+     * @param string $_tab
+     * @return array
+     */
+    public static function print_ar($array = [], $count = 0, $include_tab = true, $strong = false, $_tab = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;")
+    {
+        $i = 0;
+        $tab = '';
+        while ($i != $count) {
+            $i++;
+            $tab .= $_tab;
+        }
+
+        foreach ($array as $key) {
+            $tab_primary = substr($tab, 0, -12);
+            if ($strong) {
+                if ($include_tab) {
+                    $key['name'] = $tab_primary . (($tab === '') ? '<strong>' . $key['name'] . '</strong>' : $key['name']);
+                } else {
+                    $key['name'] = (($tab === '') ? '<strong>' . $key['name'] . '</strong>' : $key['name']);
+                }
+            } else {
+                if ($include_tab) {
+                    $key['name'] = $tab_primary . (($tab === '') ? $key['name'] : $key['name']);
+                } else {
+                    $key['name'] = (($tab === '') ? $key['name'] : $key['name']);
+                }
+            }
+
+            $key['tab'] = $tab;
+            self::$list[] = (object)$key;
+            if (count($key['sub_categories']) > 0) {
+                $count++;
+                self::print_ar($key['sub_categories'], $count, $include_tab);
+                $count--;
+            }
+        }
+
+        return self::$list;
+    }
+
+    /**
+     * Category tree
+     *
+     * @param array $params
+     * @return mixed
+     */
+    public static function fetchTree($params = [])
+    {
+        $params['all'] = true;
+        $query = self::fetch($params);
+        $categories = [];
+
+        foreach ($query as $category) {
+            $categories[] = [
+                'id' => $category->id,
+                'name' => $category->name,
+                'description' => $category->description,
+                'parent_id' => $category->parent_id
+            ];
+        }
+
+        $map = array(
+            0 => array('sub_categories' => array())
+        );
+
+        foreach ($categories as &$category) {
+            $category['sub_categories'] = array();
+            $map[$category['id']] = &$category;
+        }
+
+        foreach ($categories as &$category) {
+            $map[$category['parent_id']]['sub_categories'][] = &$category;
+        }
+
+        return $map[0]['sub_categories'];
+    }
+
+    public function page()
+    {
+        return $this->hasMany('App\Models\Page');
     }
 }

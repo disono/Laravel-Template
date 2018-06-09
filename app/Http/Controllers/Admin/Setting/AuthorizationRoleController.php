@@ -36,6 +36,39 @@ class AuthorizationRoleController extends Controller
         return $this->view('edit', ['role' => $role, 'authorizations' => $authorizations, 'routes' => $this->_routesName()]);
     }
 
+    private function _routeNames($auth)
+    {
+        $names = [];
+
+        foreach ($auth as $a) {
+            $names[] = $a->route;
+        }
+
+        return $names;
+    }
+
+    private function _routesName($nameOnly = false)
+    {
+        $names = [];
+
+        foreach (Route::getRoutes()->getRoutes() as $route) {
+            $action = $route->getAction();
+
+            if (array_key_exists('as', $action)) {
+                if (strpos($action['as'], 'admin.') !== false) {
+                    $data = new \stdClass();
+                    $data->id = str_random(32);
+                    $data->name = ucwords(str_replace('.', ' ', str_replace('admin.', '', $action['as'])));
+                    $data->value = $action['as'];
+
+                    $names[] = ($nameOnly) ? $action['as'] : $data;
+                }
+            }
+        }
+
+        return $names;
+    }
+
     public function updateAction()
     {
         $route_names = $this->request->get('route_name');
@@ -65,38 +98,5 @@ class AuthorizationRoleController extends Controller
         AuthorizationRole::insert($_insertNames);
 
         return $this->json('Save successfully.');
-    }
-
-    private function _routesName($nameOnly = false)
-    {
-        $names = [];
-
-        foreach (Route::getRoutes()->getRoutes() as $route) {
-            $action = $route->getAction();
-
-            if (array_key_exists('as', $action)) {
-                if (strpos($action['as'], 'admin.') !== false) {
-                    $data = new \stdClass();
-                    $data->id = str_random(32);
-                    $data->name = ucwords(str_replace('.', ' ', str_replace('admin.', '', $action['as'])));
-                    $data->value = $action['as'];
-
-                    $names[] = ($nameOnly) ? $action['as'] : $data;
-                }
-            }
-        }
-
-        return $names;
-    }
-
-    private function _routeNames($auth)
-    {
-        $names = [];
-
-        foreach ($auth as $a) {
-            $names[] = $a->route;
-        }
-
-        return $names;
     }
 }

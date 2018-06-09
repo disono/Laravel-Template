@@ -16,12 +16,19 @@ if (!function_exists('exceptionMessages')) {
     function exceptionMessages($key = null)
     {
         $_exceptionsMessages = [
+            'RAW' => '',
+            'INVALID_RAW' => 'Invalid',
             'UNKNOWN' => 'Unknown error occurred or invalid response.',
             'AUTH_DENIED_ACCESS' => 'You are not authorize to access this route.',
 
             'PAGE_NOT_FOUND' => '404 Page not found.',
             'METHOD_NOT_ALLOWED' => '402 HTTP Method not allowed.',
             'BAD_REQUEST' => '400 Bad Request, can not process your request or token expired.',
+
+            'TOKEN_NOT_FOUND' => 'Token or code is not found.',
+            'TOKEN_IS_EXPIRED' => 'Token is expired please resend another verification token. To resend another token please login.',
+
+            'USER_NOT_FOUND' => 'User is not found, profile not exists.'
         ];
 
         if ($key) {
@@ -33,5 +40,22 @@ if (!function_exists('exceptionMessages')) {
         }
 
         return $_exceptionsMessages;
+    }
+}
+
+if (!function_exists('throwError')) {
+    /**
+     * Throw exception with messages
+     *
+     * @param null $index
+     * @param null $custom_message
+     * @throws Exception
+     */
+    function throwError($index = null, $custom_message = null)
+    {
+        $custom_message = ($custom_message) ? ' ' . $custom_message : '';
+        $message = exceptionMessages($index) . $custom_message;
+
+        throw new \Exception($message);
     }
 }

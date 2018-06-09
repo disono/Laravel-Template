@@ -26,11 +26,6 @@ class File extends BaseModel
         parent::__construct($attributes);
     }
 
-    public function user()
-    {
-        return $this->belongsTo('App\Models\User');
-    }
-
     /**
      * Delete data
      *
@@ -80,5 +75,10 @@ class File extends BaseModel
         $row->path = url('private/' . $row->file_name);
 
         return $row;
+    }
+
+    public function user()
+    {
+        return $this->belongsTo('App\Models\User');
     }
 }

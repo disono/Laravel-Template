@@ -23,6 +23,17 @@ class VideoStream
     }
 
     /**
+     * Start streaming video content
+     */
+    function start()
+    {
+        $this->open();
+        $this->setHeader();
+        $this->stream();
+        $this->end();
+    }
+
+    /**
      * Open stream
      */
     private function open()
@@ -91,15 +102,6 @@ class VideoStream
     }
 
     /**
-     * close curretly opened stream
-     */
-    private function end()
-    {
-        fclose($this->stream);
-        exit;
-    }
-
-    /**
      * perform the streaming of calculated range
      */
     private function stream()
@@ -119,13 +121,11 @@ class VideoStream
     }
 
     /**
-     * Start streaming video content
+     * close curretly opened stream
      */
-    function start()
+    private function end()
     {
-        $this->open();
-        $this->setHeader();
-        $this->stream();
-        $this->end();
+        fclose($this->stream);
+        exit;
     }
 }

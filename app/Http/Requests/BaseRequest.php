@@ -14,6 +14,17 @@ use Illuminate\Validation\ValidationException;
 
 class BaseRequest extends FormRequest
 {
+    protected $isJSONResponse = false;
+    /**
+     * The input keys that should not be flashed on redirect.
+     *
+     * @var array
+     */
+    protected $dontFlash = [
+        'password',
+        'password_confirmation'
+    ];
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -33,16 +44,6 @@ class BaseRequest extends FormRequest
     {
         return [];
     }
-
-    /**
-     * The input keys that should not be flashed on redirect.
-     *
-     * @var array
-     */
-    protected $dontFlash = [
-        'password',
-        'password_confirmation'
-    ];
 
     /**
      * Handle a failed validation attempt.
@@ -66,7 +67,7 @@ class BaseRequest extends FormRequest
      */
     public function response(array $errors)
     {
-        if ($this->expectsJson()) {
+        if ($this->expectsJson() || $this->isJSONResponse === true) {
             return failedJSONResponse($errors, 422);
         }
 

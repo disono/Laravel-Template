@@ -87,13 +87,23 @@ class LoginController extends Controller
     }
 
     /**
-     * Log the user out of the application.
+     * Authentication error
      *
-     * @return \Illuminate\Http\Response
+     * @param $request
+     * @param $error
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function logoutAction()
+    private function _authenticationError($request, $error)
     {
-        return $this->logout($this->request);
+        if ($request->ajax()) {
+            return failedJSONResponse([
+                'username' => $error
+            ], 422, false);
+        } else {
+            return $this->redirect()->withErrors([
+                'username' => $error,
+            ]);
+        }
     }
 
     /**
@@ -105,18 +115,29 @@ class LoginController extends Controller
     private function _authenticate($request)
     {
         // authenticate using email
-        if (auth()->attempt(['email' => $request->get('username'), 'password' => $request->get('password'),
-            'is_email_verified' => 1, 'is_account_enabled' => 1], $request->filled('remember'))) {
+        if (auth()->attempt($this->_requestInputs($request), $request->filled('remember'))) {
             return true;
         }
 
         // authenticate using username
-        if (auth()->attempt(['username' => $request->get('username'), 'password' => $request->get('password'),
-            'is_email_verified' => 1, 'is_account_enabled' => 1], $request->filled('remember'))) {
+        if (auth()->attempt($this->_requestInputs($request, 'username'), $request->filled('remember'))) {
             return true;
         }
 
         return false;
+    }
+
+    /**
+     * Default request inputs for login
+     *
+     * @param $request
+     * @param string $type
+     * @return array
+     */
+    private function _requestInputs($request, $type = 'email')
+    {
+        return [$type => $request->get('username'), 'password' => $request->get('password'),
+            'is_email_verified' => 1, 'is_account_enabled' => 1];
     }
 
     /**
@@ -160,22 +181,12 @@ class LoginController extends Controller
     }
 
     /**
-     * Authentication error
+     * Log the user out of the application.
      *
-     * @param $request
-     * @param $error
-     * @return \Illuminate\Http\RedirectResponse
+     * @return \Illuminate\Http\Response
      */
-    private function _authenticationError($request, $error)
+    public function logoutAction()
     {
-        if ($request->ajax()) {
-            return failedJSONResponse([
-                'username' => $error
-            ], 422, false);
-        } else {
-            return $this->redirect()->withErrors([
-                'username' => $error,
-            ]);
-        }
+        return $this->logout($this->request);
     }
 }

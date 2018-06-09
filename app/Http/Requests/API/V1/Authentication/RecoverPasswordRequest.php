@@ -6,25 +6,21 @@
  * @license         Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
-namespace App\Http\Requests\Module;
+namespace App\Http\Requests\API\V1\Authentication;
 
-use App\Http\Requests\BaseRequest;
+use App\Http\Requests\API\APIGuestRequest;
 
-class ModuleRequest extends BaseRequest
+class RecoverPasswordRequest extends APIGuestRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * Get the validation rules that apply to the request.
      *
-     * @return bool
+     * @return array
      */
-    public function authorize()
+    public function rules()
     {
-        if (!__me()) {
-            return false;
-        }
-
-        return true;
+        return [
+            'email' => 'required|email|exists:users,email'
+        ];
     }
 }
-
-

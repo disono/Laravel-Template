@@ -32,7 +32,7 @@ Route::post('verify/phone', 'Module\Authentication\VerifyController@processPhone
 
 // resend verification
 Route::get('verify/resend/{type}', 'Module\Authentication\VerifyController@resendVerificationViewAction')->name('auth.verify.resend.view');
-Route::post('verify/resend/{type}', 'Module\Authentication\VerifyController@resendVerificationStoreAction')->name('auth.verify.resend');
+Route::post('verify/resend/{type}', 'Module\Authentication\VerifyController@resendVerificationProcessAction')->name('auth.verify.resend');
 
 // profile
 Route::get('u/{username}', 'Module\User\ProfileController@showAction')->name('user.show');

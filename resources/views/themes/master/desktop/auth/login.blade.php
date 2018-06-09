@@ -53,8 +53,10 @@
                         </div>
 
                         <div class="form-group">
-                            <input type="checkbox" name="remember" id="remember"/>
-                            <label for="remember">Remember Me</label>
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="remember" name="remember">
+                                <label class="custom-control-label" for="remember">Remember Me</label>
+                            </div>
                         </div>
 
                         <div class="form-group">

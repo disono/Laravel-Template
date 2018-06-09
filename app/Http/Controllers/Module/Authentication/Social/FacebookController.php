@@ -84,23 +84,6 @@ class FacebookController extends Controller
     }
 
     /**
-     * Log the authentication
-     */
-    private function _logAuthentication()
-    {
-        // authentication history
-        if (__me()) {
-            $userAgent = userAgent();
-            AuthenticationHistory::store([
-                'user_id' => __me()->id,
-                'ip' => ipAddress(),
-                'platform' => $userAgent->platform . ', ' . $userAgent->browserName,
-                'type' => 'login'
-            ]);
-        }
-    }
-
-    /**
      * Social auth does not require email verification
      *
      * @param $user
@@ -176,6 +159,23 @@ class FacebookController extends Controller
                 'table_name' => 'users',
                 'table_id' => __me()->id,
                 'tag' => 'profile'
+            ]);
+        }
+    }
+
+    /**
+     * Log the authentication
+     */
+    private function _logAuthentication()
+    {
+        // authentication history
+        if (__me()) {
+            $userAgent = userAgent();
+            AuthenticationHistory::store([
+                'user_id' => __me()->id,
+                'ip' => ipAddress(),
+                'platform' => $userAgent->platform . ', ' . $userAgent->browserName,
+                'type' => 'login'
             ]);
         }
     }

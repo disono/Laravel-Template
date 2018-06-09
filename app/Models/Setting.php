@@ -57,6 +57,29 @@ class Setting extends BaseModel
     }
 
     /**
+     * Fetch only the key value pair for settings
+     *
+     * @return array
+     */
+    public static function keyValuePair()
+    {
+        $values = [];
+
+        foreach (self::fetchAll() as $row) {
+            if (!$row->is_disabled) {
+                $values[$row->key] = [
+                    'name' => $row->name,
+                    'value' => $row->value,
+                    'description' => $row->description,
+                    'input_type' => $row->input_type
+                ];
+            }
+        }
+
+        return $values;
+    }
+
+    /**
      * Add formatting to data
      *
      * @param $row
