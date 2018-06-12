@@ -46,6 +46,7 @@ class SettingSeeder extends Seeder
 
             ['Subscriber Form', 'subscriberForm', 'enabled', 'select', 'enabled,disabled'],
 
+            ['Enable User Registration', 'authUserRegistration', 'enabled', 'select', 'enabled,disabled'],
             ['Auth Facebook', 'authSocialFacebook', 'enabled', 'select', 'enabled,disabled'],
 
             ['Email Verification', 'user_email_verification', 'enabled', 'select', 'enabled,disabled'],

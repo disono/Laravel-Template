@@ -41,6 +41,61 @@ class User extends BaseUser
         parent::__construct($attributes);
     }
 
+    public function role()
+    {
+        return $this->belongsTo('App\Models\Role');
+    }
+
+    public function country()
+    {
+        return $this->belongsTo('App\Models\Country');
+    }
+
+    public function city()
+    {
+        return $this->belongsTo('App\Models\City');
+    }
+
+    public function authenticationHistory()
+    {
+        return $this->hasMany('App\Models\AuthenticationHistory');
+    }
+
+    public function page()
+    {
+        return $this->hasMany('App\Models\Page');
+    }
+
+    public function socialAuthentication()
+    {
+        return $this->hasMany('App\Models\SocialAuthentication');
+    }
+
+    public function token()
+    {
+        return $this->hasMany('App\Models\Token');
+    }
+
+    public function address()
+    {
+        return $this->hasMany('App\Models\UserAddress');
+    }
+
+    public function phone()
+    {
+        return $this->hasMany('App\Models\UserPhone');
+    }
+
+    public function verification()
+    {
+        return $this->hasMany('App\Models\Verification');
+    }
+
+    public function file()
+    {
+        return $this->hasMany('App\Models\File');
+    }
+
     /**
      * Remove all boolean to update
      */
@@ -57,11 +112,11 @@ class User extends BaseUser
      */
     public static function actionRemove($query)
     {
-        $user = $query->first();
-        if (!$user) {
+        if (!$query) {
             return false;
         }
 
+        $user = $query;
         Page::where('user_id', $user->id)->delete();
         Token::where('user_id', $user->id)->delete();
         UserAddress::where('user_id', $user->id)->delete();
@@ -318,60 +373,5 @@ class User extends BaseUser
         foreach ($_hidden->hidden as $item) {
             unset($row->$item);
         }
-    }
-
-    public function role()
-    {
-        return $this->belongsTo('App\Models\Role');
-    }
-
-    public function country()
-    {
-        return $this->belongsTo('App\Models\Country');
-    }
-
-    public function city()
-    {
-        return $this->belongsTo('App\Models\City');
-    }
-
-    public function authenticationHistory()
-    {
-        return $this->hasMany('App\Models\AuthenticationHistory');
-    }
-
-    public function page()
-    {
-        return $this->hasMany('App\Models\Page');
-    }
-
-    public function socialAuthentication()
-    {
-        return $this->hasMany('App\Models\SocialAuthentication');
-    }
-
-    public function token()
-    {
-        return $this->hasMany('App\Models\Token');
-    }
-
-    public function address()
-    {
-        return $this->hasMany('App\Models\UserAddress');
-    }
-
-    public function phone()
-    {
-        return $this->hasMany('App\Models\UserPhone');
-    }
-
-    public function verification()
-    {
-        return $this->hasMany('App\Models\Verification');
-    }
-
-    public function file()
-    {
-        return $this->hasMany('App\Models\File');
     }
 }

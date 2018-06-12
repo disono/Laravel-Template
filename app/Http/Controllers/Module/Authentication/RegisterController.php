@@ -33,6 +33,10 @@ class RegisterController extends Controller
      */
     public function showAction()
     {
+        if (__settings('authUserRegistration')->value != 'enabled') {
+            abort(404);
+        }
+
         return $this->view('auth.register');
     }
 
@@ -44,6 +48,10 @@ class RegisterController extends Controller
      */
     public function processAction(RegisterRequest $request)
     {
+        if (__settings('authUserRegistration')->value != 'enabled') {
+            abort(404);
+        }
+
         $user = User::register($request->all());
         if ($user) {
             Auth::loginUsingId($user->id, true);

@@ -42,6 +42,11 @@ class FacebookController extends Controller
      */
     public function facebookAction()
     {
+        if (__settings('authSocialFacebook')->value != 'enabled' ||
+            __settings('authUserRegistration')->value != 'enabled') {
+            abort(404);
+        }
+
         return Socialite::driver('facebook')->fields([
             'name', 'first_name', 'last_name', 'email', 'gender', 'birthday'
         ])->scopes([

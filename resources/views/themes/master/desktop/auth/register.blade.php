@@ -17,7 +17,7 @@
 
                     @if(__settings('authSocialFacebook')->value == 'enabled')
                         <a href="{{ route('auth.facebook') }}" class="btn btn-block">
-                            <i class="fa fa-facebook" aria-hidden="true"></i>
+                            <i class="fab fa-facebook-square fa-lg"></i>
                             Register using Facebook
                         </a>
                     @endif

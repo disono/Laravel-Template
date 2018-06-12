@@ -13,11 +13,12 @@ if (!function_exists('frmIsSelected')) {
      * @param $inputName
      * @param $value
      * @param null $default
+     * @param string $success
      * @return null|string
      */
-    function frmIsSelected($inputName, $value, $default = null)
+    function frmIsSelected($inputName, $value, $default = null, $success = 'selected')
     {
-        return (request($inputName) == $value || old($inputName, $default) == $value) ? 'selected' : null;
+        return (request($inputName) == $value || old($inputName, $default) == $value) ? $success : null;
     }
 }
 
@@ -28,23 +29,24 @@ if (!function_exists('frmIsChecked')) {
      * @param $inputName
      * @param $value
      * @param null $default
+     * @param string $success
      * @return null|string
      */
-    function frmIsChecked($inputName, $value, $default = null)
+    function frmIsChecked($inputName, $value, $default = null, $success = 'checked')
     {
         if (request($inputName) == $value) {
-            return 'checked';
+            return $success;
         }
 
         if (is_array($default)) {
             foreach ($default as $val) {
                 if (old($inputName, $val) == $value) {
-                    return 'checked';
+                    return $success;
                 }
             }
         }
 
-        return (old($inputName, $default) == $value) ? 'checked' : null;
+        return (old($inputName, $default) == $value) ? $success : null;
     }
 }
 
