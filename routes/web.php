@@ -117,6 +117,11 @@ Route::group(['middleware' => ['auth', 'auth.checker']], function () {
         Route::get('admin/auth/role/{role_id}', 'Admin\Setting\AuthorizationRoleController@editAction')->name('admin.auth.role.edit');
         Route::post('admin/auth/role/update', 'Admin\Setting\AuthorizationRoleController@updateAction')->name('admin.auth.role.update');
 
+        // csv
+        Route::get('admin/csv/import', 'Admin\Application\CSVController@csvImportAction')->name('admin.csv.import');
+        Route::post('admin/csv/import/store', 'Admin\Application\CSVController@csvImportStoreAction')->name('admin.csv.import.store');
+        Route::get('admin/csv/export', 'Admin\Application\CSVController@csvExportAction')->name('admin.csv.export');
+
         // settings
         Route::get('admin/settings', 'Admin\Setting\SettingController@showAction')->name('admin.setting.show');
         Route::post('admin/setting/save', 'Admin\Setting\SettingController@saveSettings')->name('admin.setting.save');

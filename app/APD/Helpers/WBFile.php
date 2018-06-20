@@ -78,7 +78,7 @@ if (!function_exists('fileSave')) {
                 'description' => $description,
                 'table_name' => $tableName,
                 'table_id' => $tableId,
-                'tag' => (isset($imageOptions['tag'])) ? $imageOptions['tag'] : null
+                'tag' => hasImageTag($imageOptions)
             ]);
 
             if ($fileSave) {
@@ -91,6 +91,28 @@ if (!function_exists('fileSave')) {
         }
 
         return null;
+    }
+}
+
+if (!function_exists('hasImageTag')) {
+    /**
+     * Get the tag for image option
+     *
+     * @param $imageOptions
+     * @return mixed|null
+     */
+    function hasImageTag($imageOptions) {
+        $tag = $imageOptions['tag'] ?? null;
+
+        if (is_array($tag)) {
+            foreach ($tag as $key => $value) {
+                if (request()->hasFile($key)) {
+                    return $value;
+                }
+            }
+        }
+
+        return $tag;
     }
 }
 

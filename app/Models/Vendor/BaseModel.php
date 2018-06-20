@@ -28,6 +28,16 @@ class BaseModel extends Model
     protected static $inputCrypt = [];
 
     /**
+     * Get writable columns set
+     *
+     * @return array
+     */
+    public static function getColumns()
+    {
+        return static::$writableColumns;
+    }
+
+    /**
      * Get all data no pagination
      *
      * @param array $params
@@ -433,7 +443,7 @@ class BaseModel extends Model
     {
         $store = [];
         foreach ($inputs as $key => $value) {
-            if (in_array($key, static::$writableColumns)) {
+            if (in_array($key, static::$writableColumns) && $key !== 0 && $key !== null) {
                 $value = ($value === '' || $value === null) ? null : $value;
                 $store[$key] = $value;
             }
@@ -596,7 +606,7 @@ class BaseModel extends Model
 
         // clean inputs
         foreach ($inputs as $key => $value) {
-            if (in_array($key, static::$writableColumns)) {
+            if (in_array($key, static::$writableColumns) && $key !== 0 && $key !== null) {
                 $value = ($value === '' || $value === null) ? null : $value;
                 $update[$key] = $value;
             }
