@@ -33,6 +33,27 @@ class CSVBase
         return [];
     }
 
+    public function template($data = [])
+    {
+        $this->_setHeaders();
+
+        return Excel::create($this->filename, function ($excel) use ($data) {
+
+            foreach ($this->sheetNames as $sheetName) {
+                $excel->sheet($sheetName, function ($sheet) use ($data) {
+
+                    $sheet->setOrientation('landscape');
+
+                    // Header
+                    $rowIndex = 1;
+                    $sheet->row($rowIndex, $data);
+
+                });
+            }
+
+        })->export('xls');
+    }
+
     public function headings(): array
     {
         return [];
@@ -45,8 +66,7 @@ class CSVBase
 
     public function store($results = [])
     {
-        foreach ($results as $row)
-        {
+        foreach ($results as $row) {
             $this->insert($row);
         }
     }
@@ -103,7 +123,7 @@ class CSVBase
     {
         $this->_setHeaders();
 
-        Excel::load($filename, function($reader) {
+        Excel::load($filename, function ($reader) {
 
             $this->store($reader->all());
 

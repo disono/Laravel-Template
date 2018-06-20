@@ -121,6 +121,7 @@ Route::group(['middleware' => ['auth', 'auth.checker']], function () {
         Route::get('admin/csv/import', 'Admin\Application\CSVController@csvImportAction')->name('admin.csv.import');
         Route::post('admin/csv/import/store', 'Admin\Application\CSVController@csvImportStoreAction')->name('admin.csv.import.store');
         Route::get('admin/csv/export', 'Admin\Application\CSVController@csvExportAction')->name('admin.csv.export');
+        Route::get('admin/csv/template', 'Admin\Application\CSVController@csvTemplateAction')->name('admin.csv.template');
 
         // settings
         Route::get('admin/settings', 'Admin\Setting\SettingController@showAction')->name('admin.setting.show');

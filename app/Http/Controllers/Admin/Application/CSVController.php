@@ -22,6 +22,11 @@ class CSVController extends Controller
         $this->theme = 'application.csv';
     }
 
+    /**
+     * Import view
+     *
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
+     */
     public function csvImportAction()
     {
         $this->_isValidSource();
@@ -29,6 +34,12 @@ class CSVController extends Controller
         return $this->view('import', $this->_link());
     }
 
+    /**
+     * Import data
+     *
+     * @param CSVImport $request
+     * @return mixed
+     */
     public function csvImportStoreAction(CSVImport $request)
     {
         $this->_isValidSource();
@@ -41,10 +52,26 @@ class CSVController extends Controller
         return $this->redirect()->with('success', 'Successfully Uploaded the CSV file.');
     }
 
+    /**
+     * Export data
+     *
+     * @return bool
+     */
     public function csvExportAction()
     {
         $this->_isValidSource();
         return $this->_exporter();
+    }
+
+    /**
+     * Download template
+     *
+     * @return bool
+     */
+    public function csvTemplateAction()
+    {
+        $this->_isValidSource();
+        return $this->_templates();
     }
 
     private function _isValidSource()
@@ -71,6 +98,15 @@ class CSVController extends Controller
     {
         if ($this->request->get('source') === 'users') {
             return (new UserCSV($this->request->get('params')))->download('users');
+        }
+
+        return $this->redirect();
+    }
+
+    private function _templates()
+    {
+        if ($this->request->get('source') === 'users') {
+            return (new UserCSV($this->request->get('params')))->template();
         }
 
         return $this->redirect();

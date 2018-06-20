@@ -29,6 +29,11 @@ class UserCSV extends CSVBase
         parent::__construct();
     }
 
+    public function template($data = [])
+    {
+        return parent::template(User::getColumns());
+    }
+
     public function query()
     {
         return User::fetchAll($this->_params);
