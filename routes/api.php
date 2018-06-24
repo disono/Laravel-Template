@@ -8,7 +8,7 @@ Route::post('v1/auth/login', 'API\V1\Authentication\LoginController@loginAction'
 Route::get('v1/auth/logout/{id}', 'API\V1\Authentication\LoginController@logoutAction')->name('api.v1.auth.logout');
 
 // social login facebook
-Route::get('v1/auth/social/facebook', 'API\V1\Authentication\Social\FacebookController@loginAction')->name('api.v1.auth.facebook');
+Route::post('v1/auth/social/facebook', 'API\V1\Authentication\Social\FacebookController@loginAction')->name('api.v1.auth.facebook');
 
 // password reset
 Route::post('v1/auth/password/forgot', 'API\V1\Authentication\RecoverController@passwordAction')->name('api.v1.auth.recover.password');

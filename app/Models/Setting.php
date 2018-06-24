@@ -45,6 +45,26 @@ class Setting extends BaseModel
     }
 
     /**
+     * Format inputs before saving
+     *
+     * @param $inputs
+     * @return mixed
+     */
+    private static function formatInputs($inputs)
+    {
+        $inputs['input_type'] = $inputs['input_type'] ?? 'text';
+        $inputs['input_value'] = $inputs['input_value'] ?? null;
+
+        if ($inputs['input_value']) {
+            if (in_array($inputs['input_type'], ['select', 'checkbox'])) {
+                $inputs['input_value'] = implode(',', $inputs['input_value']);
+            }
+        }
+
+        return $inputs;
+    }
+
+    /**
      * Custom formatting for editing
      *
      * @param $tableName
@@ -106,25 +126,5 @@ class Setting extends BaseModel
         }
 
         return $row;
-    }
-
-    /**
-     * Format inputs before saving
-     *
-     * @param $inputs
-     * @return mixed
-     */
-    private static function formatInputs($inputs)
-    {
-        $inputs['input_type'] = $inputs['input_type'] ?? 'text';
-        $inputs['input_value'] = $inputs['input_value'] ?? null;
-
-        if ($inputs['input_value']) {
-            if (in_array($inputs['input_type'], ['select', 'checkbox'])) {
-                $inputs['input_value'] = implode(',', $inputs['input_value']);
-            }
-        }
-
-        return $inputs;
     }
 }

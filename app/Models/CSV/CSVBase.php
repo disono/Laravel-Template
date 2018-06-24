@@ -28,11 +28,6 @@ class CSVBase
         $this->_params = $params;
     }
 
-    public function query()
-    {
-        return [];
-    }
-
     public function template($data = [])
     {
         $this->_setHeaders();
@@ -54,26 +49,33 @@ class CSVBase
         })->export('xls');
     }
 
-    public function headings(): array
+    private function _setHeaders()
     {
-        return [];
-    }
-
-    public function insert($row)
-    {
-
-    }
-
-    public function store($results = [])
-    {
-        foreach ($results as $row) {
-            $this->insert($row);
+        if ($this->filename === null) {
+            $this->filename = time() . '.xls';
+        } else {
+            $this->filename = $this->filename . '_' . time() . '_' . str_random(8) . '.xls';
         }
-    }
 
-    public function map($row): array
-    {
-        return [];
+        if ($this->title === null) {
+            $this->title = time();
+        }
+
+        if ($this->author === null) {
+            $this->author = __settings('title')->value;
+        }
+
+        if ($this->company === null) {
+            $this->company = __settings('title')->value;
+        }
+
+        if ($this->description === null) {
+            $this->description = __settings('title')->value;
+        }
+
+        if (count($this->sheetNames) === 0) {
+            $this->sheetNames = [time() . '_' . str_random(4)];
+        }
     }
 
     public function download($filename = null)
@@ -119,6 +121,21 @@ class CSVBase
         })->export('xls');
     }
 
+    public function headings(): array
+    {
+        return [];
+    }
+
+    public function query()
+    {
+        return [];
+    }
+
+    public function map($row): array
+    {
+        return [];
+    }
+
     public function import($filename = null)
     {
         $this->_setHeaders();
@@ -130,32 +147,15 @@ class CSVBase
         });
     }
 
-    private function _setHeaders()
+    public function store($results = [])
     {
-        if ($this->filename === null) {
-            $this->filename = time() . '.xls';
-        } else {
-            $this->filename = $this->filename . '_' . time() . '_' . str_random(8) . '.xls';
+        foreach ($results as $row) {
+            $this->insert($row);
         }
+    }
 
-        if ($this->title === null) {
-            $this->title = time();
-        }
+    public function insert($row)
+    {
 
-        if ($this->author === null) {
-            $this->author = __settings('title')->value;
-        }
-
-        if ($this->company === null) {
-            $this->company = __settings('title')->value;
-        }
-
-        if ($this->description === null) {
-            $this->description = __settings('title')->value;
-        }
-
-        if (count($this->sheetNames) === 0) {
-            $this->sheetNames = [time() . '_' . str_random(4)];
-        }
     }
 }

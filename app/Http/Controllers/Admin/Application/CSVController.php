@@ -34,6 +34,28 @@ class CSVController extends Controller
         return $this->view('import', $this->_link());
     }
 
+    private function _isValidSource()
+    {
+        $sources = ['users', 'pages', 'page_categories'];
+        if (!in_array($this->request->get('source'), $sources)) {
+            abort(404);
+        }
+    }
+
+    private function _link()
+    {
+        return ['link' => $this->_linkCreator()];
+    }
+
+    private function _linkCreator()
+    {
+        if ($this->request->get('source') === 'users') {
+            return route('admin.user.index');
+        }
+
+        return null;
+    }
+
     /**
      * Import data
      *
@@ -52,6 +74,18 @@ class CSVController extends Controller
         return $this->redirect()->with('success', 'Successfully Uploaded the CSV file.');
     }
 
+    private function _processImport($request)
+    {
+        if ($request->get('source') === 'users') {
+            $this->_importer($this->request->file('csv')->getPathName());
+        }
+    }
+
+    private function _importer($file)
+    {
+        (new UserCSV())->import($file);
+    }
+
     /**
      * Export data
      *
@@ -61,6 +95,15 @@ class CSVController extends Controller
     {
         $this->_isValidSource();
         return $this->_exporter();
+    }
+
+    private function _exporter()
+    {
+        if ($this->request->get('source') === 'users') {
+            return (new UserCSV($this->request->get('params')))->download('users');
+        }
+
+        return $this->redirect();
     }
 
     /**
@@ -74,35 +117,6 @@ class CSVController extends Controller
         return $this->_templates();
     }
 
-    private function _isValidSource()
-    {
-        $sources = ['users', 'pages', 'page_categories'];
-        if (!in_array($this->request->get('source'), $sources)) {
-            abort(404);
-        }
-    }
-
-    private function _processImport($request)
-    {
-        if ($request->get('source') === 'users') {
-            $this->_importer($this->request->file('csv')->getPathName());
-        }
-    }
-
-    private function _importer($file)
-    {
-        (new UserCSV())->import($file);
-    }
-
-    private function _exporter()
-    {
-        if ($this->request->get('source') === 'users') {
-            return (new UserCSV($this->request->get('params')))->download('users');
-        }
-
-        return $this->redirect();
-    }
-
     private function _templates()
     {
         if ($this->request->get('source') === 'users') {
@@ -110,19 +124,5 @@ class CSVController extends Controller
         }
 
         return $this->redirect();
-    }
-
-    private function _link()
-    {
-        return ['link' => $this->_linkCreator()];
-    }
-
-    private function _linkCreator()
-    {
-        if ($this->request->get('source') === 'users') {
-            return route('admin.user.index');
-        }
-
-        return null;
     }
 }

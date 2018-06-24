@@ -16,12 +16,24 @@ use App\Models\User;
 class SettingController extends APIController
 {
     /**
+     * Sync user
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function syncAction()
+    {
+        return $this->json([
+            'profile' => User::single(authID())
+        ]);
+    }
+
+    /**
      * Update profile details
      *
      * @param AccountSettings $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function settingAction(AccountSettings $request)
+    public function settingsUpdateAction(AccountSettings $request)
     {
         $inputs = $request->only([
             'first_name', 'last_name', 'phone', 'gender', 'birthday', 'address', 'country_id', 'city_id'
@@ -31,7 +43,7 @@ class SettingController extends APIController
         User::clearBoolean();
         User::edit(__me()->id, $inputs);
 
-        return $this->json('Profile is successfully updated.');
+        return $this->json(User::single(__me()->id));
     }
 
     /**
@@ -40,11 +52,11 @@ class SettingController extends APIController
      * @param AccountSecurity $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function securityAction(AccountSecurity $request)
+    public function securityUpdateAction(AccountSecurity $request)
     {
         User::clearBoolean();
         User::edit(__me()->id, $request->only(['email', 'password']));
 
-        return $this->json('Profile is successfully updated.');
+        return $this->json(User::single(__me()->id));
     }
 }

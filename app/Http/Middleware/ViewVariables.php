@@ -22,6 +22,7 @@ class ViewVariables
     public function handle($request, Closure $next)
     {
         initialize_settings();
+        jwt_initialize_token_by_key();
         $this->_setViewVariables();
 
         return $next($request);

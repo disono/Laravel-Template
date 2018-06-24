@@ -26,8 +26,8 @@ class AccountSettings extends APIAuthRequest
 
             'address' => 'max:500',
             'phone' => 'between:7,22',
-            'gender' => 'required|in:Male,Female',
-            'birthday' => 'required|date|birthday:' . __settings('minimumAgeForRegistration')->value,
+            'gender' => 'in:Male,Female',
+            'birthday' => 'date|birthday:' . __settings('minimumAgeForRegistration')->value,
 
             'country_id' => 'integer|exists:countries,id',
             'city_id' => 'integer|exists:countries,id'

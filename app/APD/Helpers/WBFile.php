@@ -101,7 +101,8 @@ if (!function_exists('hasImageTag')) {
      * @param $imageOptions
      * @return mixed|null
      */
-    function hasImageTag($imageOptions) {
+    function hasImageTag($imageOptions)
+    {
         $tag = $imageOptions['tag'] ?? null;
 
         if (is_array($tag)) {

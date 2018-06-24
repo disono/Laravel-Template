@@ -114,12 +114,12 @@ if (!function_exists('jwt_initialize_token_by_key')) {
      */
     function jwt_initialize_token_by_key()
     {
-        if (!Schema::hasTable('authentication_tokens')) {
+        if (!Schema::hasTable('tokens')) {
             return;
         }
 
         // token
-        $token = \App\Models\Token::where('key', request('token_key'))->first();
+        $token = \App\Models\Token::where('key', request()->header('token_key'))->first();
         if (!$token) {
             return;
         }

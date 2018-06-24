@@ -41,61 +41,6 @@ class User extends BaseUser
         parent::__construct($attributes);
     }
 
-    public function role()
-    {
-        return $this->belongsTo('App\Models\Role');
-    }
-
-    public function country()
-    {
-        return $this->belongsTo('App\Models\Country');
-    }
-
-    public function city()
-    {
-        return $this->belongsTo('App\Models\City');
-    }
-
-    public function authenticationHistory()
-    {
-        return $this->hasMany('App\Models\AuthenticationHistory');
-    }
-
-    public function page()
-    {
-        return $this->hasMany('App\Models\Page');
-    }
-
-    public function socialAuthentication()
-    {
-        return $this->hasMany('App\Models\SocialAuthentication');
-    }
-
-    public function token()
-    {
-        return $this->hasMany('App\Models\Token');
-    }
-
-    public function address()
-    {
-        return $this->hasMany('App\Models\UserAddress');
-    }
-
-    public function phone()
-    {
-        return $this->hasMany('App\Models\UserPhone');
-    }
-
-    public function verification()
-    {
-        return $this->hasMany('App\Models\Verification');
-    }
-
-    public function file()
-    {
-        return $this->hasMany('App\Models\File');
-    }
-
     /**
      * Remove all boolean to update
      */
@@ -151,7 +96,7 @@ class User extends BaseUser
 
         self::_resendEmail($user);
 
-        return self::crateToken(self::single($user->id));
+        return self::single($user->id);
     }
 
     /**
@@ -177,6 +122,7 @@ class User extends BaseUser
             return null;
         }
 
+        $user->server_timestamp = sqlDate();
         $user->token = Token::store([
             'user_id' => $user->id,
             'token' => str_random(64),
@@ -342,7 +288,7 @@ class User extends BaseUser
     {
         $row->profile_picture = fetchImage(self::_profilePicture($row->id), 'assets/img/placeholders/profile_picture.png');
         $row->birthday = ($row->birthday) ? humanDate($row->birthday, true) : null;
-        $row->sever_time = sqlDate();
+        $row->server_timestamp = sqlDate();
 
         self::_unsetHidden($row);
 
@@ -373,5 +319,60 @@ class User extends BaseUser
         foreach ($_hidden->hidden as $item) {
             unset($row->$item);
         }
+    }
+
+    public function role()
+    {
+        return $this->belongsTo('App\Models\Role');
+    }
+
+    public function country()
+    {
+        return $this->belongsTo('App\Models\Country');
+    }
+
+    public function city()
+    {
+        return $this->belongsTo('App\Models\City');
+    }
+
+    public function authenticationHistory()
+    {
+        return $this->hasMany('App\Models\AuthenticationHistory');
+    }
+
+    public function page()
+    {
+        return $this->hasMany('App\Models\Page');
+    }
+
+    public function socialAuthentication()
+    {
+        return $this->hasMany('App\Models\SocialAuthentication');
+    }
+
+    public function token()
+    {
+        return $this->hasMany('App\Models\Token');
+    }
+
+    public function address()
+    {
+        return $this->hasMany('App\Models\UserAddress');
+    }
+
+    public function phone()
+    {
+        return $this->hasMany('App\Models\UserPhone');
+    }
+
+    public function verification()
+    {
+        return $this->hasMany('App\Models\Verification');
+    }
+
+    public function file()
+    {
+        return $this->hasMany('App\Models\File');
     }
 }
