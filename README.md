@@ -4,6 +4,7 @@ is a starting blank template for Laravel Projects
 # 3rd party Libraries
 ```sh
 composer require maatwebsite/excel:~2.1.0
+composer require facebook/graph-sdk
 ```
 
 # JavaScript Libraries
