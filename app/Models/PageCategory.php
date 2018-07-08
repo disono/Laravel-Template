@@ -35,7 +35,7 @@ class PageCategory extends BaseModel
      * @param $inputs
      * @return bool
      */
-    public static function actionEdit($tableName, $query, $inputs)
+    public static function actionEditBefore($tableName, $query, $inputs)
     {
         if (!$query) {
             return false;

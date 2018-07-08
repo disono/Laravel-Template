@@ -78,7 +78,7 @@ if (!function_exists('fileSave')) {
                 'description' => $description,
                 'table_name' => $tableName,
                 'table_id' => $tableId,
-                'tag' => hasImageTag($imageOptions)
+                'tag' => ($file->type === 'photo') ? hasImageTag($imageOptions) : null
             ]);
 
             if ($fileSave) {

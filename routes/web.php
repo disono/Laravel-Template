@@ -40,6 +40,9 @@ Route::get('u/{username}', 'Module\User\ProfileController@showAction')->name('us
 // views
 Route::get('view/{type}', 'Module\Application\ViewController@viewAction')->name('application.view');
 
+// video stream
+Route::get('stream/video/{file}', 'Module\Application\FileController@streamVideoAction')->name('module.file.video_stream');
+
 // development
 Route::get('dev', 'Module\Page\DevelopmentController@applicationAction')->name('development.application');
 

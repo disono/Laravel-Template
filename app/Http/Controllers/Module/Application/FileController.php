@@ -29,6 +29,11 @@ class FileController extends Controller
         return $this->json(File::fetch(requestValues('search|type', $default)));
     }
 
+    public function streamVideoAction($file)
+    {
+        return videoStream('private/' . $file);
+    }
+
     public function createAction(FileCreate $request)
     {
         $file = fileUpload($request->file('file_selected'), 'private', [],

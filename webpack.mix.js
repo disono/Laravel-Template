@@ -64,4 +64,4 @@ mix.copyDirectory('node_modules/tinymce/themes', 'public/assets/js/lib/tinymce/t
 mix.copyDirectory('node_modules/tinymce/skins', 'public/assets/js/lib/tinymce/skins');
 
 // ChartJS
-mix.copyDirectory('node_modules/chart.js/dist/chart.js', 'public/assets/js/lib/chart.js');
+mix.copyDirectory('node_modules/chart.js/dist/Chart.js', 'public/assets/js/lib/chart.js');
