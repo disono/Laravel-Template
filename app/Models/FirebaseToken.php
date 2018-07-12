@@ -10,11 +10,11 @@ namespace App\Models;
 
 use App\Models\Vendor\BaseModel;
 
-class Token extends BaseModel
+class FirebaseToken extends BaseModel
 {
-    protected static $tableName = 'tokens';
+    protected static $tableName = 'firebase_tokens';
     protected static $writableColumns = [
-        'user_id', 'token', 'key', 'secret', 'source', 'expired_at'
+        'token_id', 'fcm_token'
     ];
 
     public function __construct(array $attributes = [])
@@ -23,25 +23,8 @@ class Token extends BaseModel
         parent::__construct($attributes);
     }
 
-    public function user()
+    public function token()
     {
-        return $this->belongsTo('App\Models\User');
-    }
-
-    /**
-     * Remove any related data from user
-     *
-     * @param $query
-     * @return bool
-     */
-    public static function actionRemove($query)
-    {
-        if (!$query) {
-            return false;
-        }
-
-        FirebaseToken::where('token_id', $query->id)->delete();
-
-        return true;
+        return $this->belongsTo('App\Models\Token');
     }
 }

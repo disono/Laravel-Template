@@ -126,6 +126,14 @@ Route::group(['middleware' => ['auth', 'auth.checker']], function () {
         Route::get('admin/csv/export', 'Admin\Application\CSVController@csvExportAction')->name('admin.csv.export');
         Route::get('admin/csv/template', 'Admin\Application\CSVController@csvTemplateAction')->name('admin.csv.template');
 
+        // FCM Notifications
+        Route::get('admin/fcm-notifications', 'Admin\Notification\FCMController@indexAction')->name('admin.fcmNotification.index');
+        Route::get('admin/fcm-notification/create', 'Admin\Notification\FCMController@createAction')->name('admin.fcmNotification.create');
+        Route::post('admin/fcm-notification/store', 'Admin\Notification\FCMController@storeAction')->name('admin.fcmNotification.store');
+        Route::get('admin/fcm-notification/edit/{id}', 'Admin\Notification\FCMController@editAction')->name('admin.fcmNotification.edit');
+        Route::post('admin/fcm-notification/update', 'Admin\Notification\FCMController@updateAction')->name('admin.fcmNotification.update');
+        Route::delete('admin/fcm-notification/destroy/{id}', 'Admin\Notification\FCMController@destroyAction')->name('admin.fcmNotification.destroy');
+
         // settings
         Route::get('admin/settings', 'Admin\Setting\SettingController@showAction')->name('admin.setting.show');
         Route::post('admin/setting/save', 'Admin\Setting\SettingController@saveSettings')->name('admin.setting.save');

@@ -52,6 +52,9 @@ class SettingSeeder extends Seeder
             ['Email Verification', 'user_email_verification', 'enabled', 'select', 'enabled,disabled'],
             ['Phone Verification', 'user_phone_verification', 'disabled', 'select', 'enabled,disabled'],
             ['Account Enabled', 'user_account_enabled', 'enabled', 'select', 'enabled,disabled'],
+
+            ['FCM', 'fcm', 'disabled', 'select', 'enabled,disabled'],
+            ['FCM Topics', 'fcm_topics', 'news', 'checkbox', 'news,marketing'],
         ];
     }
 }

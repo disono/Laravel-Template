@@ -67,6 +67,6 @@ class LoginController extends APIController
      */
     public function logoutAction($id)
     {
-        return $this->json(Token::destroy($id));
+        return $this->json(Token::remove($id));
     }
 }

@@ -24,6 +24,11 @@
                 </a>
             </li>
             <li class="nav-item">
+                <a class="nav-link {{ isActiveMenu('admin.fcmNotification.index') }}" href="{{ route('admin.fcmNotification.index') }}">
+                    <i class="fas fa-file"></i> Notifications
+                </a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link {{ isActiveMenu('admin.file.index') }}" href="{{ route('admin.file.index') }}">
                     <i class="fas fa-upload"></i> Files
                 </a>

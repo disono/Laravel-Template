@@ -53,8 +53,11 @@ if (!function_exists('throwError')) {
      */
     function throwError($index = null, $custom_message = null)
     {
-        $custom_message = ($custom_message) ? ' ' . $custom_message : '';
-        $message = exceptionMessages($index) . $custom_message;
+        $message = $custom_message;
+        if ($index) {
+            $custom_message = ($custom_message) ? ' ' . $custom_message : '';
+            $message = exceptionMessages($index) . $custom_message;
+        }
 
         throw new \Exception($message);
     }

@@ -12,7 +12,13 @@ var VueMounted = function () {
     });
 };
 
-var VueAppData = {};
+var VueAppData = {
+    frmFCM: {
+        type: '',
+        topic_name: '',
+        token: ''
+    }
+};
 
 var VueAppMethods = {
     /**
@@ -489,6 +495,14 @@ var VueAppMethods = {
             .not('.date-picker-limit')
             .not('.date-picker-current')
             .prop("readonly", false);
+    }
+};
+
+VueAppMethods.frmFCMTokenOnChangeType = function () {
+    if (this.frmFCM.type == 'topic') {
+        this.frmFCM.topic_name = '';
+    } else if (this.frmFCM.type == 'token') {
+        this.frmFCM.token = '';
     }
 };
 

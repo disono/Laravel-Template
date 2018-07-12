@@ -11,6 +11,7 @@ namespace App\Http\Controllers\API\V1\User;
 use App\Http\Controllers\API\APIController;
 use App\Http\Requests\API\V1\User\AccountSecurity;
 use App\Http\Requests\API\V1\User\AccountSettings;
+use App\Models\Setting;
 use App\Models\User;
 
 class SettingController extends APIController
@@ -23,7 +24,8 @@ class SettingController extends APIController
     public function syncAction()
     {
         return $this->json([
-            'profile' => User::single(authID())
+            'profile' => User::single(authID()),
+            'setting' => Setting::keyValuePair()
         ]);
     }
 

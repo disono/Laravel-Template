@@ -627,6 +627,10 @@ class BaseModel extends Model
         $update = [];
         $query = self::rawFetch($id, $columnName);
 
+        if (!$query->first()) {
+            return false;
+        }
+
         // clean inputs
         foreach ($inputs as $key => $value) {
             if (in_array($key, static::$writableColumns) && $key !== 0 && $key !== null) {

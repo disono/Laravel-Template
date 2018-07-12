@@ -68,6 +68,7 @@ class User extends BaseUser
         UserPhone::where('user_id', $user->id)->delete();
         Verification::where('user_id', $user->id)->delete();
         AuthenticationHistory::where('user_id', $user->id)->delete();
+        FirebaseNotification::where('user_id', $user->id)->delete();
 
         return true;
     }
