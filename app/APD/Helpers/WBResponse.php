@@ -206,25 +206,30 @@ if (!function_exists('userAgent')) {
         }
 
         // finally get the correct version number
-        $known = array('Version', $ub, 'other');
-        $object->pattern = '#(?<browser>' . join('|', $known) .
-            ')[/ ]+(?<version>[0-9.|a-zA-Z.]*)#';
-        if (!preg_match_all($object->pattern, $object->u_agent, $matches)) {
-            // we have no matching number just continue
-        }
-
-        // see how many we have
-        $i = count($matches['browser']);
-        if ($i != 1) {
-            //we will have two since we are not using 'other' argument yet
-            //see if version is before or after the name
-            if (strripos($object->u_agent, "Version") < strripos($object->u_agent, $ub)) {
-                $object->version = $matches['version'][0];
-            } else {
-                $object->version = $matches['version'][1];
+        try {
+            $known = array('Version', $ub, 'other');
+            $object->pattern = '#(?<browser>' . join('|', $known) .
+                ')[/ ]+(?<version>[0-9.|a-zA-Z.]*)#';
+            if (!preg_match_all($object->pattern, $object->u_agent, $matches)) {
+                // we have no matching number just continue
             }
-        } else {
-            $object->version = $matches['version'][0];
+
+            // see how many we have
+            $i = count($matches['browser']);
+            if ($i != 1) {
+                //we will have two since we are not using 'other' argument yet
+                //see if version is before or after the name
+                if (strripos($object->u_agent, "Version") < strripos($object->u_agent, $ub)) {
+                    $object->version = $matches['version'][0];
+                } else {
+                    $object->version = $matches['version'][1];
+                }
+            } else {
+                $object->version = $matches['version'][0];
+            }
+        } catch (\Exception $e) {
+            $object->pattern = '';
+            $object->version = null;
         }
 
         // check if we have a number
