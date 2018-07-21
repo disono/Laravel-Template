@@ -26,6 +26,7 @@
         <link rel="stylesheet" href="{{ devAssets('assets/css/theme.css') }}"/>
     @endif
     <link rel="stylesheet" href="{{ devAssets('assets/css/admin.css') }}"/>
+    <link rel="stylesheet" href="{{ devAssets('assets/css/jro-admin.css') }}"/>
 
     {{-- Inlince CSS for VueJS --}}
     <style>
@@ -45,22 +46,18 @@
 </head>
 
 <body>
-{{-- header --}}
-@include('admin.layouts.header')
+<div id="loaderUpload">
+    <div id="spinnerUploadLoading"></div>
+    <h3>Please wait...</h3></div>
 
-<div class="container-fluid" id="WBApp" v-cloak>
-    <div class="row">
-        {{-- sidebar --}}
-        @include('admin.layouts.sidebar')
+<div class="sidebar-wrapper" id="WBApp" v-cloak>
+    {{-- sidebar --}}
+    @include('admin.layouts.sidebar')
 
-        {{-- content --}}
-        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
-            @yield('content')
-
-            {{-- footer --}}
-            @include('admin.layouts.footer')
-        </main>
-    </div>
+    {{-- content --}}
+    <main role="main" class="container-fluid content-panel">
+        @yield('content')
+    </main>
 </div>
 
 {{-- Google Map API --}}
@@ -69,6 +66,8 @@
 @endif
 
 <script src="{{ devAssets('assets/js/lib/chart.js') }}"></script>
+<script src="{{ devAssets('assets/js/lib/moment.min.js') }}"></script>
+<script src="{{ devAssets('assets/js/lib/feather.min.js') }}"></script>
 <script src="{{ devAssets('assets/js/vendor.js') }}"></script>
 @if(env('APP_ENV') == 'local')
     <script src="{{ devAssets('assets/js/vendor/config.js') }}"></script>

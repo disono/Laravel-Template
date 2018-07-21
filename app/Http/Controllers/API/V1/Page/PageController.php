@@ -10,6 +10,7 @@ namespace App\Http\Controllers\API\V1\Page;
 
 use App\Http\Controllers\API\APIController;
 use App\Models\Page;
+use App\Models\PageView;
 
 class PageController extends APIController
 {
@@ -49,6 +50,14 @@ class PageController extends APIController
             return $this->json(exceptionMessages('PAGE_NOT_FOUND'), 404);
         }
 
+        // save page view per device or user
+        $this->_savePageView($page);
+
         return $this->json($page);
+    }
+
+    private function _savePageView($page)
+    {
+        PageView::log($page);
     }
 }

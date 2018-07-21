@@ -8,6 +8,7 @@
 
 namespace App\Models\Vendor;
 
+use App\Models\ActivityLog;
 use App\Models\File;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -337,7 +338,7 @@ class BaseModel extends Model
         }
 
         $orderByColumn = static::$params['order_by_column'] ?? 'updated_at';
-        $orderByDirection = static::$params['order_by_direction'] ?? 'desc';
+        $orderByDirection = static::$params['order_by_direction'] ?? 'DESC';
         $query->orderBy($orderByColumn, $orderByDirection);
 
         return $query;
@@ -463,6 +464,7 @@ class BaseModel extends Model
         $store = self::formatStore(static::$tableName, $store);
 
         $store['created_at'] = sqlDate();
+        $store['updated_at'] = sqlDate();
         $save = static::single(self::insertGetId($store));
 
         // process files
@@ -544,22 +546,6 @@ class BaseModel extends Model
     }
 
     /**
-     * Process file uploads from store
-     *
-     * @param $inputs
-     * @param $save
-     */
-    public static function _processStoreFiles($inputs, $save)
-    {
-        foreach (static::$files as $file) {
-            if (isset($inputs[$file])) {
-                $save->_files = fileUpload($inputs[$file], 'private', static::$imageOptions,
-                    null, null, static::$tableName, $save->id);
-            }
-        }
-    }
-
-    /**
      * Custom method for storing
      *
      * @param $tableName
@@ -569,17 +555,6 @@ class BaseModel extends Model
     public static function actionStoreBefore($tableName, $inputs)
     {
         return true;
-    }
-
-    /**
-     * After successful save
-     *
-     * @param $query
-     * @param $inputs
-     */
-    public static function actionStoreAfter($query, $inputs)
-    {
-
     }
 
     /**
@@ -614,6 +589,33 @@ class BaseModel extends Model
     }
 
     /**
+     * Process file uploads from store
+     *
+     * @param $inputs
+     * @param $save
+     */
+    public static function _processStoreFiles($inputs, $save)
+    {
+        foreach (static::$files as $file) {
+            if (isset($inputs[$file])) {
+                $save->_files = fileUpload($inputs[$file], 'private', static::$imageOptions,
+                    null, null, static::$tableName, $save->id);
+            }
+        }
+    }
+
+    /**
+     * After successful save
+     *
+     * @param $query
+     * @param $inputs
+     */
+    public static function actionStoreAfter($query, $inputs)
+    {
+
+    }
+
+    /**
      * Update data
      *
      * @param $id
@@ -639,13 +641,15 @@ class BaseModel extends Model
             }
         }
 
+        $_data = $query->first();
+
         // add defaults
         if ($checkDefaults === true) {
-            $update = self::defaultInputs($update, $query->first());
+            $update = self::defaultInputs($update, $_data);
         }
 
         // other custom action
-        if (!static::actionEditBefore(static::$tableName, $query->first(), $inputs)) {
+        if (!static::actionEditBefore(static::$tableName, $_data, $inputs)) {
             return false;
         }
 
@@ -654,6 +658,9 @@ class BaseModel extends Model
 
         $update['updated_at'] = sqlDate();
         $_u = (bool)$query->update($update);
+
+        // save activity logs
+        ActivityLog::log($id, static::$writableColumns, $_data, $update, static::$tableName);
 
         // process files
         self::_processEditFiles($inputs, $update, static::single($query->first()->id));
@@ -702,6 +709,31 @@ class BaseModel extends Model
     }
 
     /**
+     * Custom method for editing
+     *
+     * @param $tableName
+     * @param $query
+     * @param $inputs
+     * @return bool
+     */
+    public static function actionEditBefore($tableName, $query, $inputs)
+    {
+        return true;
+    }
+
+    /**
+     * Custom formatting for editing
+     *
+     * @param $tableName
+     * @param $inputs
+     * @return mixed
+     */
+    public static function formatEdit($tableName, $inputs)
+    {
+        return $inputs;
+    }
+
+    /**
      * Process files for edit
      *
      * @param $inputs
@@ -726,19 +758,6 @@ class BaseModel extends Model
     }
 
     /**
-     * Custom method for editing
-     *
-     * @param $tableName
-     * @param $query
-     * @param $inputs
-     * @return bool
-     */
-    public static function actionEditBefore($tableName, $query, $inputs)
-    {
-        return true;
-    }
-
-    /**
      * After updating the data
      *
      * @param $query
@@ -747,18 +766,6 @@ class BaseModel extends Model
     public static function actionEditAfter($query, $inputs)
     {
 
-    }
-
-    /**
-     * Custom formatting for editing
-     *
-     * @param $tableName
-     * @param $inputs
-     * @return mixed
-     */
-    public static function formatEdit($tableName, $inputs)
-    {
-        return $inputs;
     }
 
     /**

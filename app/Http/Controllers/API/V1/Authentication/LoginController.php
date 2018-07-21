@@ -9,6 +9,7 @@
 namespace App\Http\Controllers\API\V1\Authentication;
 
 use App\Http\Controllers\API\APIController;
+use App\Models\AuthenticationHistory;
 use App\Models\Token;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -23,10 +24,12 @@ class LoginController extends APIController
     public function loginAction()
     {
         if (Auth::attempt($this->_requestInputs())) {
+            $this->_logAuthentication();
             return $this->json($this->_profile());
         }
 
         if (Auth::attempt($this->_requestInputs('username'))) {
+            $this->_logAuthentication();
             return $this->json($this->_profile('username'));
         }
 
@@ -49,6 +52,27 @@ class LoginController extends APIController
     }
 
     /**
+     * Log the authentication
+     * @param string $type
+     */
+    private function _logAuthentication($type = 'login')
+    {
+        try {
+            if (__me()) {
+                $userAgent = userAgent();
+                AuthenticationHistory::store([
+                    'user_id' => __me()->id,
+                    'ip' => ipAddress(),
+                    'platform' => $userAgent->platform . ', ' . $userAgent->browserName,
+                    'type' => $type
+                ]);
+            }
+        } catch (\Exception $e) {
+            logErrors('Logging Auth (API V1): ' . $e->getMessage());
+        }
+    }
+
+    /**
      * Fetch profile details
      *
      * @param string $username
@@ -67,6 +91,7 @@ class LoginController extends APIController
      */
     public function logoutAction($id)
     {
+        $this->_logAuthentication('logout');
         return $this->json(Token::remove($id));
     }
 }

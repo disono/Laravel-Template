@@ -11,4 +11,7 @@
 
     <a class="nav-link {{ isActiveMenu('admin.role.index') }}"
        href="{{ route('admin.role.index') }}"><i class="fas fa-key"></i> Authorizations</a>
+
+    <a class="nav-link {{ isActiveMenu('admin.activityLog.index') }}"
+       href="{{ route('admin.activityLog.index') }}"><i class="fas fa-list"></i> Activity Logs</a>
 </nav>

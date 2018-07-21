@@ -166,17 +166,22 @@ class LoginController extends Controller
 
     /**
      * Log the authentication
+     * @param string $type
      */
-    private function _logAuthentication()
+    private function _logAuthentication($type = 'login')
     {
-        if (__me()) {
-            $userAgent = userAgent();
-            AuthenticationHistory::store([
-                'user_id' => __me()->id,
-                'ip' => ipAddress(),
-                'platform' => $userAgent->platform . ', ' . $userAgent->browserName,
-                'type' => 'login'
-            ]);
+        try {
+            if (__me()) {
+                $userAgent = userAgent();
+                AuthenticationHistory::store([
+                    'user_id' => __me()->id,
+                    'ip' => ipAddress(),
+                    'platform' => $userAgent->platform . ', ' . $userAgent->browserName,
+                    'type' => $type
+                ]);
+            }
+        } catch (\Exception $e) {
+            logErrors('Logging Auth: ' . $e->getMessage());
         }
     }
 
@@ -187,6 +192,8 @@ class LoginController extends Controller
      */
     public function logoutAction()
     {
+        // login history
+        $this->_logAuthentication('logout');
         return $this->logout($this->request);
     }
 }

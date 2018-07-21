@@ -8,7 +8,8 @@
 <footer class="container mt-5 mb-5">
     <div class="row">
         <div class="col">
-            <span class="text-muted">Powered by <a href="https://webmons.com">Webmons Development Studio</a> &copy;</span>
+            <span class="text-muted">Powered by <a
+                        href="https://webmons.com">Webmons Development Studio</a> &copy;</span>
         </div>
     </div>
 </footer>

@@ -33,6 +33,23 @@ class Page extends BaseModel
     }
 
     /**
+     * Remove any related data from user
+     *
+     * @param $query
+     * @return bool
+     */
+    public static function actionRemove($query)
+    {
+        if (!$query) {
+            return false;
+        }
+
+        PageView::where('page_id', $query->id)->delete();
+
+        return true;
+    }
+
+    /**
      * List of select
      *
      * @return array

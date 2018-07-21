@@ -23,31 +23,6 @@ class FirebaseNotification extends BaseModel
         parent::__construct($attributes);
     }
 
-    public function user()
-    {
-        return $this->belongsTo('App\Models\User');
-    }
-
-    public function sendTo($token, $title, $body)
-    {
-        try {
-            FCMSend($token, $title, $body);
-            return true;
-        } catch (\Exception $e) {
-            return $e->getMessage();
-        }
-    }
-
-    public function topic($topic_name, $title, $body)
-    {
-        try {
-            FCMTopic($topic_name, $title, $body);
-            return true;
-        } catch (\Exception $e) {
-            return $e->getMessage();
-        }
-    }
-
     /**
      * After successful save
      *
@@ -85,6 +60,31 @@ class FirebaseNotification extends BaseModel
             }
         } catch (\Exception $e) {
             throwError($e->getMessage());
+        }
+    }
+
+    public function user()
+    {
+        return $this->belongsTo('App\Models\User');
+    }
+
+    public function sendTo($token, $title, $body)
+    {
+        try {
+            FCMSend($token, $title, $body);
+            return true;
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function topic($topic_name, $title, $body)
+    {
+        try {
+            FCMTopic($topic_name, $title, $body);
+            return true;
+        } catch (\Exception $e) {
+            return $e->getMessage();
         }
     }
 }

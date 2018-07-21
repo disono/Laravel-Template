@@ -12,12 +12,14 @@
         <div class="row">
             <div class="col">
                 <h1 class="header">{{ $view_title }}</h1>
+
+                @include('admin.page.menu')
             </div>
         </div>
 
         <div class="row">
             <div class="col mt-3">
-                <form method="get" action="{{ route('admin.file.index') }}">
+                <form method="get" action="{{ route('admin.pageView.index') }}">
                     <div class="row">
                         <div class="col-md-3 col-sm-12">
                             <input type="text" class="form-control" placeholder="Search"
@@ -38,46 +40,37 @@
                     <thead class="thead-dark">
                     <tr>
                         <th>#</th>
-                        <th>Filename</th>
-                        <th>Title</th>
-                        <th>Type</th>
+                        <th>Page</th>
+                        <th>Referrer</th>
+                        <th>URL</th>
+                        <th>IP</th>
+                        <th>OS/Platform</th>
+                        <th>Browser</th>
                         <th>Date</th>
-                        <th>Action</th>
                     </tr>
                     </thead>
 
                     <tbody>
-                    @foreach($files as $row)
+                    @foreach($page_views as $row)
                         <tr id="parent_tr_{{$row->id}}">
                             <td>{{ $row->id }}</td>
-                            <td><a href="{{ $row->path }}" target="_blank">{{ $row->file_name }}</a></td>
-                            <td>{{ $row->title }}</td>
-                            <td>{{ $row->type }}</td>
-                            <td>{{ humanDate($row->created_at) }}</td>
-                            <td>
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-light dropdown-toggle"
-                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <i class="fas fa-cog"></i>
-                                    </button>
-
-                                    <div class="dropdown-menu">
-                                        <a class="dropdown-item"
-                                           href="{{ url('admin/file/destroy/' . $row->id) }}"
-                                           v-on:click.prevent="onDeleteResource($event, '#parent_tr_{{$row->id}}')">Delete</a>
-                                    </div>
-                                </div>
-                            </td>
+                            <td>{{ $row->page_name }}</td>
+                            <td>{{ $row->http_referrer }}</td>
+                            <td>{{ $row->current_url }}</td>
+                            <td>{{ $row->ip_address }}</td>
+                            <td>{{ $row->platform }}</td>
+                            <td>{{ $row->browser }}</td>
+                            <th>{{ humanDate($row->created_at) }}</th>
                         </tr>
                     @endforeach
                     </tbody>
                 </table>
 
-                @if(!count($files))
-                    <h3 class="text-center"><i class="far fa-frown"></i> No Uploaded Files.</h3>
+                @if(!count($page_views))
+                    <h3 class="text-center"><i class="far fa-frown"></i> No Page Views Created.</h3>
                 @endif
 
-                {{$files->appends($request->all())->render()}}
+                {{$page_views->appends($request->all())->render()}}
             </div>
         </div>
     </div>

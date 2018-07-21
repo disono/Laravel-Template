@@ -44,16 +44,22 @@
 </head>
 
 <body>
-{{-- header --}}
-@include(currentTheme() . 'layouts.header')
+<div id="loaderUpload">
+    <div id="spinnerUploadLoading"></div>
+    <h3>Please wait...</h3></div>
 
-{{-- contents --}}
-<div id="WBApp" v-cloak style="margin-top: 22px;">
-    @yield('content')
+<div id="WBApp">
+    {{-- header --}}
+    @include(currentTheme() . 'layouts.header')
+
+    {{-- contents --}}
+    <div v-cloak style="margin-top: 22px;">
+        @yield('content')
+    </div>
+
+    {{-- footer --}}
+    @include(currentTheme() . 'layouts.footer')
 </div>
-
-{{-- footer --}}
-@include(currentTheme() . 'layouts.footer')
 
 @if(env('GOOGLE_API_KEY'))
     <script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_API_KEY') }}&libraries=places"></script>

@@ -57,10 +57,13 @@
                                     <label for="value">Default Value</label>
 
                                     <input id="value" type="text"
-                                           class="form-control{{ hasInputError($errors, 'value') }}" aria-describedby="valueHelp"
+                                           class="form-control{{ hasInputError($errors, 'value') }}"
+                                           aria-describedby="valueHelp"
                                            name="value" value="{{ old('value', $setting->original_value) }}">
 
-                                    <small id="valueHelp" class="form-text text-muted">Please follow this format for checkbox ONLY "value_1,value_2" add comma (,) between value without spaces.</small>
+                                    <small id="valueHelp" class="form-text text-muted">Please follow this format for
+                                        checkbox ONLY "value_1,value_2" add comma (,) between value without spaces.
+                                    </small>
                                     @if ($errors->has('value'))
                                         <div class="invalid-feedback">{{ $errors->first('value') }}</div>
                                     @endif
@@ -110,7 +113,10 @@
                                            name="input_value" aria-describedby="inputValueHelp"
                                            value="{{ old('input_value', $setting->original_input_value) }}">
 
-                                    <small id="inputValueHelp" class="form-text text-muted">Please follow this format for select and checkbox ONLY "value_1,value_2" add comma (,) between value without spaces.</small>
+                                    <small id="inputValueHelp" class="form-text text-muted">Please follow this format
+                                        for select and checkbox ONLY "value_1,value_2" add comma (,) between value
+                                        without spaces.
+                                    </small>
                                     @if ($errors->has('input_value'))
                                         <div class="invalid-feedback">{{ $errors->first('input_value') }}</div>
                                     @endif

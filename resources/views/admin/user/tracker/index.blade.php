@@ -12,12 +12,15 @@
         <div class="row">
             <div class="col">
                 <h1 class="header">{{ $view_title }}</h1>
+                <hr>
+
+                @include('admin.user.menu')
             </div>
         </div>
 
         <div class="row">
             <div class="col mt-3">
-                <form method="get" action="{{ route('admin.file.index') }}">
+                <form method="get" action="{{ route('admin.user.tracker.index') }}">
                     <div class="row">
                         <div class="col-md-3 col-sm-12">
                             <input type="text" class="form-control" placeholder="Search"
@@ -38,46 +41,28 @@
                     <thead class="thead-dark">
                     <tr>
                         <th>#</th>
-                        <th>Filename</th>
-                        <th>Title</th>
-                        <th>Type</th>
-                        <th>Date</th>
-                        <th>Action</th>
+                        <th>Name</th>
+                        <th>Location</th>
                     </tr>
                     </thead>
 
                     <tbody>
-                    @foreach($files as $row)
+                    @foreach($tracks as $row)
                         <tr id="parent_tr_{{$row->id}}">
                             <td>{{ $row->id }}</td>
-                            <td><a href="{{ $row->path }}" target="_blank">{{ $row->file_name }}</a></td>
-                            <td>{{ $row->title }}</td>
-                            <td>{{ $row->type }}</td>
-                            <td>{{ humanDate($row->created_at) }}</td>
-                            <td>
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-light dropdown-toggle"
-                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <i class="fas fa-cog"></i>
-                                    </button>
-
-                                    <div class="dropdown-menu">
-                                        <a class="dropdown-item"
-                                           href="{{ url('admin/file/destroy/' . $row->id) }}"
-                                           v-on:click.prevent="onDeleteResource($event, '#parent_tr_{{$row->id}}')">Delete</a>
-                                    </div>
-                                </div>
-                            </td>
+                            <td>{{ $row->full_name }}</td>
+                            <td><a href="https://www.google.com/maps/?q={{ $row->lat }},{{ $row->lng }}"
+                                   target="_blank">View Map</a></td>
                         </tr>
                     @endforeach
                     </tbody>
                 </table>
 
-                @if(!count($files))
-                    <h3 class="text-center"><i class="far fa-frown"></i> No Uploaded Files.</h3>
+                @if(!count($tracks))
+                    <h3 class="text-center"><i class="far fa-frown"></i> No Location Log.</h3>
                 @endif
 
-                {{$files->appends($request->all())->render()}}
+                {{$tracks->appends($request->all())->render()}}
             </div>
         </div>
     </div>

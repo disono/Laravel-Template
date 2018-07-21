@@ -23,11 +23,6 @@ class Token extends BaseModel
         parent::__construct($attributes);
     }
 
-    public function user()
-    {
-        return $this->belongsTo('App\Models\User');
-    }
-
     /**
      * Remove any related data from user
      *
@@ -43,5 +38,10 @@ class Token extends BaseModel
         FirebaseToken::where('token_id', $query->id)->delete();
 
         return true;
+    }
+
+    public function user()
+    {
+        return $this->belongsTo('App\Models\User');
     }
 }

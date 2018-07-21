@@ -327,7 +327,7 @@ if (!function_exists('devAssets')) {
             return asset($path) . devURLExt();
         }
 
-        return asset($path);
+        return asset($path . '?' . __settings('themeVersion')->value);
     }
 }
 

@@ -10,6 +10,7 @@ namespace App\Http\Controllers\Module\Page;
 
 use App\Http\Controllers\Controller;
 use App\Models\Page;
+use App\Models\PageView;
 
 class PageController extends Controller
 {
@@ -72,6 +73,14 @@ class PageController extends Controller
             $view = 'templates.' . $page->template;
         }
 
+        // save page view per device or user
+        $this->_savePageView($page);
+
         return $this->view($view, ['page' => $page]);
+    }
+
+    private function _savePageView($page)
+    {
+        PageView::log($page);
     }
 }

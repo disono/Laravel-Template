@@ -21,13 +21,15 @@ class User extends BaseUser
         'birthday', 'address', 'postal_code', 'country_id', 'city_id',
         'phone', 'role_id',
         'username', 'email', 'password',
-        'is_email_verified', 'is_phone_verified', 'is_account_activated', 'is_account_enabled'
+        'is_email_verified', 'is_phone_verified', 'is_account_activated', 'is_account_enabled',
+        'active_at'
     ];
 
     protected static $files = ['profile_picture'];
     protected static $imageOptions = ['tag' => 'profile_picture'];
 
     protected static $inputDates = ['birthday'];
+    protected static $inputDateTimes = ['active_at'];
     protected static $inputCrypt = ['password'];
     protected static $inputBooleans = ['is_email_verified', 'is_phone_verified', 'is_account_activated', 'is_account_enabled'];
 
@@ -69,6 +71,7 @@ class User extends BaseUser
         Verification::where('user_id', $user->id)->delete();
         AuthenticationHistory::where('user_id', $user->id)->delete();
         FirebaseNotification::where('user_id', $user->id)->delete();
+        PageView::where('user_id', $user->id)->delete();
 
         return true;
     }
@@ -276,6 +279,7 @@ class User extends BaseUser
             'role' => 'SELECT name FROM roles WHERE users.role_id = roles.id LIMIT 1',
             'country' => 'SELECT name FROM countries WHERE users.country_id = countries.id LIMIT 1',
             'city' => 'SELECT name FROM cities WHERE users.city_id = cities.id LIMIT 1',
+            'is_online' => 'IF(DATE_ADD(users.active_at, INTERVAL 60 MINUTE) >= NOW(), 1, 0)'
         ];
     }
 

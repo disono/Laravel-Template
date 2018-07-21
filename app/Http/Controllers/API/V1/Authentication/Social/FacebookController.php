@@ -91,29 +91,6 @@ class FacebookController extends APIController
     }
 
     /**
-     * Download avatar
-     *
-     * @param $user
-     */
-    private function _downloadFacebookPhoto($user)
-    {
-        $filename = httpDownloadImage($this->request->get('social_id') . '-' . time() . '-' . str_random(),
-            'http://graph.facebook.com/' . $this->request->get('social_id') . '/picture?type=large');
-
-        if (!$filename) {
-            File::store([
-                'user_id' => $user->id,
-                'file_name' => $filename,
-                'type' => 'photo',
-                'title' => $user->first_name,
-                'table_name' => 'users',
-                'table_id' => $user->id,
-                'tag' => 'profile'
-            ]);
-        }
-    }
-
-    /**
      * Fetch profile details
      *
      * @param string $id
@@ -161,5 +138,28 @@ class FacebookController extends APIController
         }
 
         return $create;
+    }
+
+    /**
+     * Download avatar
+     *
+     * @param $user
+     */
+    private function _downloadFacebookPhoto($user)
+    {
+        $filename = httpDownloadImage($this->request->get('social_id') . '-' . time() . '-' . str_random(),
+            'http://graph.facebook.com/' . $this->request->get('social_id') . '/picture?type=large');
+
+        if (!$filename) {
+            File::store([
+                'user_id' => $user->id,
+                'file_name' => $filename,
+                'type' => 'photo',
+                'title' => $user->first_name,
+                'table_name' => 'users',
+                'table_id' => $user->id,
+                'tag' => 'profile'
+            ]);
+        }
     }
 }

@@ -7,6 +7,18 @@
 
 var VueMounted = function () {
     jQ(document).ready(function () {
+        jQ('[data-toggle="offcanvas"]').on('click', function () {
+            jQ('.offcanvas-collapse').toggleClass('open')
+        });
+
+        // Tooltip
+        jQ('[data-toggle="tooltip"]').tooltip();
+
+        // Feather icons
+        if (typeof feather !== 'undefined') {
+            feather.replace();
+        }
+
         // initialize libraries
         WBLibraries();
     });
@@ -17,6 +29,11 @@ var VueAppData = {
         type: '',
         topic_name: '',
         token: ''
+    },
+
+    adminPage: {
+        name: jQ('#name[data-value]').val(),
+        slug: jQ('#slug[data-value]').val()
     }
 };
 
@@ -226,8 +243,13 @@ var VueAppMethods = {
         if (thisApp.formValidation(formAction) === true) {
             thisApp.formDisable();
 
+            jQ('#WBApp').hide();
+            jQ('#loaderUpload').show();
             thisApp.httpUpload(formAction.attr('action'), new FormData(e.target))
                 .then(function (response) {
+                    jQ('#WBApp').show();
+                    jQ('#loaderUpload').hide();
+
                     thisApp.formEnable();
                     thisApp.processFormResponse(formAction, response);
 
@@ -236,6 +258,9 @@ var VueAppMethods = {
                     }
                 })
                 .catch(function (error) {
+                    jQ('#WBApp').show();
+                    jQ('#loaderUpload').hide();
+
                     thisApp.formEnable();
                     var _error = null;
                     if (typeof error.response !== 'undefined') {
@@ -404,6 +429,7 @@ var VueAppMethods = {
 
                 if (typeof response.data === 'string') {
                     jQ.snackbar({content: response.data});
+                    swal("Success", response.data, "success");
                 }
             }
         } else if (response.success === false && typeof response.errors !== 'undefined') {
@@ -415,6 +441,7 @@ var VueAppMethods = {
             } else {
                 if (typeof response.errors === 'string') {
                     jQ.snackbar({content: response.errors});
+                    swal("Oops!", response.data, "error");
                 }
             }
         }
@@ -506,9 +533,16 @@ VueAppMethods.frmFCMTokenOnChangeType = function () {
     }
 };
 
+VueAppMethods.adminPageOnNameChange = function () {
+    if (this.adminPage.name) {
+        this.adminPage.slug = this.adminPage.name.replace(/\s+/g, '-').toLowerCase();
+    }
+};
+
 new Vue({
     el: '#WBApp',
     mounted: VueMounted,
     data: VueAppData,
     methods: VueAppMethods
 });
+

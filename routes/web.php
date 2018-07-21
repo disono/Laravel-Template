@@ -92,6 +92,9 @@ Route::group(['middleware' => ['auth', 'auth.checker']], function () {
         Route::post('admin/page/update', 'Admin\Page\PageController@updateAction')->name('admin.page.update');
         Route::delete('admin/page/destroy/{id}', 'Admin\Page\PageController@destroyAction')->name('admin.page.destroy');
 
+        // page views
+        Route::get('admin/page/views', 'Admin\Page\PageViewController@indexAction')->name('admin.pageView.index');
+
         // users
         Route::get('admin/users', 'Admin\User\UserController@indexAction')->name('admin.user.index');
         Route::get('admin/user/create', 'Admin\User\UserController@createAction')->name('admin.user.create');
@@ -100,6 +103,9 @@ Route::group(['middleware' => ['auth', 'auth.checker']], function () {
         Route::post('admin/user/update', 'Admin\User\UserController@updateAction')->name('admin.user.update');
         Route::get('admin/user/update/{id}/{column}/{value}', 'Admin\User\UserController@updateColumnAction')->name('admin.user.update.column');
         Route::delete('admin/user/destroy/{id}', 'Admin\User\UserController@destroyAction')->name('admin.user.destroy');
+
+        // user tracker
+        Route::get('admin/user/tracker', 'Admin\User\TrackerController@indexAction')->name('admin.user.tracker.index');
 
         // authentication history
         Route::get('admin/user/authentication/history', 'Admin\User\AuthenticationHistoryController@indexAction')->name('admin.user.authentication.history');
@@ -133,6 +139,9 @@ Route::group(['middleware' => ['auth', 'auth.checker']], function () {
         Route::get('admin/fcm-notification/edit/{id}', 'Admin\Notification\FCMController@editAction')->name('admin.fcmNotification.edit');
         Route::post('admin/fcm-notification/update', 'Admin\Notification\FCMController@updateAction')->name('admin.fcmNotification.update');
         Route::delete('admin/fcm-notification/destroy/{id}', 'Admin\Notification\FCMController@destroyAction')->name('admin.fcmNotification.destroy');
+
+        // activity logs
+        Route::get('admin/activity-logs', 'Admin\Setting\ActivityLogController@indexAction')->name('admin.activityLog.index');
 
         // settings
         Route::get('admin/settings', 'Admin\Setting\SettingController@showAction')->name('admin.setting.show');

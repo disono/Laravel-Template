@@ -26,6 +26,9 @@
     RewriteCond %{HTTP:authenticated_id} ^(.*)
     RewriteRule .* - [e=HTTP_authenticated_id:%1]
 
+    RewriteCond %{HTTP:device_id} ^(.*)
+    RewriteRule .* - [e=HTTP_device_id:%1]
+
     RewriteCond %{HTTP:token_key} ^(.*)
     RewriteRule .* - [e=HTTP_token_key:%1]
 </IfModule>

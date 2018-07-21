@@ -10,6 +10,7 @@ let WB_JS = [
     'node_modules/jquery/dist/jquery.slim.js',
     'node_modules/popper.js/dist/umd/popper.min.js',
     'node_modules/bootstrap/dist/js/bootstrap.min.js',
+    'node_modules/sweetalert/dist/sweetalert.min.js',
     'node_modules/snackbarjs/dist/snackbar.min.js',
     'node_modules/socket.io-client/dist/socket.io.js',
     'node_modules/validatorjs/dist/validator.js',
@@ -65,3 +66,7 @@ mix.copyDirectory('node_modules/tinymce/skins', 'public/assets/js/lib/tinymce/sk
 
 // ChartJS
 mix.copyDirectory('node_modules/chart.js/dist/Chart.js', 'public/assets/js/lib/chart.js');
+
+mix.copyDirectory('node_modules/feather-icons/dist/feather.min.js', 'public/assets/js/lib/feather.min.js');
+
+mix.copyDirectory('node_modules/moment/min/moment.min.js', 'public/assets/js/lib/moment.min.js');

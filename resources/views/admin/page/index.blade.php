@@ -50,6 +50,7 @@
                     <tr>
                         <th>#</th>
                         <th>Name</th>
+                        <th>Category</th>
                         <th>Action</th>
                     </tr>
                     </thead>
@@ -59,6 +60,7 @@
                         <tr id="parent_tr_{{$row->id}}">
                             <td>{{ $row->id }}</td>
                             <td>{{ $row->name }}</td>
+                            <td>{{ $row->page_category_slug }}</td>
                             <td>
                                 <div class="btn-group">
                                     <button type="button" class="btn btn-light dropdown-toggle"
@@ -69,6 +71,9 @@
                                     <div class="dropdown-menu">
                                         <a class="dropdown-item"
                                            href="{{ url('admin/page/edit/' . $row->id) }}">Edit</a>
+
+                                        <a class="dropdown-item"
+                                           href="{{ route('admin.pageView.index', ['page_id' => $row->id]) }}">Views</a>
 
                                         <div class="dropdown-divider"></div>
 

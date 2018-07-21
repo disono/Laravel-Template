@@ -42,6 +42,8 @@ class CreateUsersTable extends Migration
             $table->boolean('is_account_activated')->default(1);
             $table->boolean('is_account_enabled')->default(1);
             $table->rememberToken();
+
+            $table->dateTime('active_at')->nullable()->default(null);
             $table->timestamps();
         });
     }

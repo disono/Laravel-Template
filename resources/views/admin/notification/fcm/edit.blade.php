@@ -60,8 +60,12 @@
                                     <select name="type" id="type" class="form-control" v-model="frmFCM.type"
                                             @change="frmFCMTokenOnChangeType">
                                         <option value="">Select Type</option>
-                                        <option value="topic" {{ ($notification->type == 'topic') ? 'selected' : '' }}>Topic</option>
-                                        <option value="token" {{ ($notification->type == 'token') ? 'selected' : '' }}>Token</option>
+                                        <option value="topic" {{ ($notification->type == 'topic') ? 'selected' : '' }}>
+                                            Topic
+                                        </option>
+                                        <option value="token" {{ ($notification->type == 'token') ? 'selected' : '' }}>
+                                            Token
+                                        </option>
                                     </select>
 
                                     @if ($errors->has('type'))

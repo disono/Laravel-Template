@@ -90,9 +90,10 @@ $fontFamily = 'font-family: Arial, \'Helvetica Neue\', Helvetica, sans-serif;';
                                         <p style="{{ $style['paragraph'] }}">{{ $line }}</p>
                                     @endforeach
 
-                                    <!-- Action Button -->
+                                <!-- Action Button -->
                                     @if (isset($actionText))
-                                        <table style="{{ $style['body_action'] }}" align="center" width="100%" cellpadding="0" cellspacing="0">
+                                        <table style="{{ $style['body_action'] }}" align="center" width="100%"
+                                               cellpadding="0" cellspacing="0">
                                             <tr>
                                                 <td align="center">
                                                     <?php
@@ -119,12 +120,12 @@ $fontFamily = 'font-family: Arial, \'Helvetica Neue\', Helvetica, sans-serif;';
                                         </table>
                                     @endif
 
-                                    <!-- Outro -->
+                                <!-- Outro -->
                                     @foreach ($outroLines as $line)
                                         <p style="{{ $style['paragraph'] }}">{{ $line }}</p>
                                     @endforeach
 
-                                    <!-- Salutation -->
+                                <!-- Salutation -->
                                     <p style="{{ $style['paragraph'] }}">
                                         Regards,<br>{{ __settings('title')->value }}
                                     </p>
@@ -159,12 +160,14 @@ $fontFamily = 'font-family: Arial, \'Helvetica Neue\', Helvetica, sans-serif;';
                 <!-- Footer -->
                 <tr>
                     <td>
-                        <table style="{{ $style['email-footer'] }}" align="center" width="570" cellpadding="0" cellspacing="0">
+                        <table style="{{ $style['email-footer'] }}" align="center" width="570" cellpadding="0"
+                               cellspacing="0">
                             <tr>
                                 <td style="{{ $fontFamily }} {{ $style['email-footer_cell'] }}">
                                     <p style="{{ $style['paragraph-sub'] }}">
                                         &copy; {{ date('Y') }}
-                                        <a style="{{ $style['anchor'] }}" href="{{ url('/') }}" target="_blank">{{ __settings('title')->value }}</a>.
+                                        <a style="{{ $style['anchor'] }}" href="{{ url('/') }}"
+                                           target="_blank">{{ __settings('title')->value }}</a>.
                                         All rights reserved.
                                     </p>
                                 </td>
