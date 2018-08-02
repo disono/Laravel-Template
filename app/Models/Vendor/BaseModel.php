@@ -629,6 +629,10 @@ class BaseModel extends Model
         $update = [];
         $query = self::rawFetch($id, $columnName);
 
+        if (!$query) {
+            return false;
+        }
+
         if (!$query->first()) {
             return false;
         }
@@ -779,7 +783,12 @@ class BaseModel extends Model
     public static function remove($id, $columnName = null)
     {
         // check if exists or tried to delete the users authorization
-        $_r = self::rawFetch($id, $columnName)->first();
+        $_r = self::rawFetch($id, $columnName);
+        if (!$_r) {
+            return false;
+        }
+
+        $_r = $_r->first();
         if (!$_r) {
             return false;
         }

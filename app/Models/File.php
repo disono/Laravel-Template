@@ -72,7 +72,11 @@ class File extends BaseModel
             $row->cover = url('assets/img/placeholders/file.png');
         }
 
-        $row->path = url('private/' . $row->file_name);
+        if ($row->type === 'video') {
+            $row->path = url('stream/video/' . $row->file_name);
+        } else {
+            $row->path = url('private/' . $row->file_name);
+        }
 
         return $row;
     }
