@@ -143,22 +143,33 @@ class BaseModel extends Model
 
         foreach (static::$writableColumns as $row) {
             // writable columns (non-custom)
-            if (isset(static::$params[$row])) {
-                $query->where($tableName . $row, static::$params[$row]);
+            if (key_exists($row, self::$params)) {
+                if (self::allowNull($row) === true) {
+                    $query->where($tableName . $row, self::$params[$row]);
+                }
             }
 
             // default custom columns
             $defaultCustomColumn = self::rawQuerySelects($row);
-            if ($defaultCustomColumn) {
+            if (self::allowNullWithVal($defaultCustomColumn)) {
                 $query->where(DB::raw($defaultCustomColumn), static::$params[$row]);
+            }
+        }
+
+        // custom search
+        foreach (static::rawQuerySelectList() as $key => $value) {
+            if (self::allowNullWithVal($value) && isset(static::$params[$key])) {
+                $query->where(DB::raw($value), static::$params[$key]);
             }
         }
 
         // custom columns
         // array(['custom_column_name' => $params['key']])
         foreach ($customColumns as $column => $params_key) {
-            if (isset(static::$params[$params_key])) {
-                $query->where($column, static::$params[$params_key]);
+            if (key_exists($params_key, static::$params[$params_key])) {
+                if (self::allowNull($params_key) === true) {
+                    $query->where($column, static::$params[$params_key]);
+                }
             }
         }
 
@@ -788,12 +799,7 @@ class BaseModel extends Model
             return false;
         }
 
-        $_r = $_r->first();
-        if (!$_r) {
-            return false;
-        }
-
-        if (!static::actionRemove($_r)) {
+        if (!static::actionRemove($_r->get())) {
             return false;
         }
 
@@ -821,5 +827,42 @@ class BaseModel extends Model
     public static function actionRemove($query)
     {
         return true;
+    }
+
+    /**
+     * Check if we allow null on filters
+     *
+     * @param $row
+     * @return bool
+     */
+    private static function allowNull($row)
+    {
+        $_val = static::$params[$row] ?? null;
+        $_allowNull = self::$params['allow_null'] ?? false;
+        $_allowFilter = true;
+
+        if ($_val === null && $_allowNull === false) {
+            $_allowFilter = false;
+        }
+
+        return $_allowFilter;
+    }
+
+    /**
+     * Check if we allow null on filters with defined value
+     *
+     * @param $val
+     * @return bool
+     */
+    private static function allowNullWithVal($val)
+    {
+        $_allowNull = self::$params['allow_null'] ?? false;
+        $_allowFilter = true;
+
+        if ($val === null && $_allowNull === false) {
+            $_allowFilter = false;
+        }
+
+        return $_allowFilter;
     }
 }

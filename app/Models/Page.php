@@ -40,11 +40,9 @@ class Page extends BaseModel
      */
     public static function actionRemove($query)
     {
-        if (!$query) {
-            return false;
+        foreach ($query as $row) {
+            PageView::where('page_id', $row->id)->delete();
         }
-
-        PageView::where('page_id', $query->id)->delete();
 
         return true;
     }

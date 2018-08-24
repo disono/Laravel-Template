@@ -28,7 +28,9 @@ if (!function_exists('exceptionMessages')) {
             'TOKEN_NOT_FOUND' => 'Token or code is not found.',
             'TOKEN_IS_EXPIRED' => 'Token is expired please resend another verification token. To resend another token please login.',
 
-            'USER_NOT_FOUND' => 'User is not found, profile not exists.'
+            'USER_NOT_FOUND' => 'User is not found, profile not exists.',
+
+            'DB_INVALID_TABLE' => 'Invalid table name.'
         ];
 
         if ($key) {

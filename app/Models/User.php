@@ -63,15 +63,16 @@ class User extends BaseUser
             return false;
         }
 
-        $user = $query;
-        Page::where('user_id', $user->id)->delete();
-        Token::where('user_id', $user->id)->delete();
-        UserAddress::where('user_id', $user->id)->delete();
-        UserPhone::where('user_id', $user->id)->delete();
-        Verification::where('user_id', $user->id)->delete();
-        AuthenticationHistory::where('user_id', $user->id)->delete();
-        FirebaseNotification::where('user_id', $user->id)->delete();
-        PageView::where('user_id', $user->id)->delete();
+        foreach ($query as $user) {
+            Page::where('user_id', $user->id)->delete();
+            Token::where('user_id', $user->id)->delete();
+            UserAddress::where('user_id', $user->id)->delete();
+            UserPhone::where('user_id', $user->id)->delete();
+            Verification::where('user_id', $user->id)->delete();
+            AuthenticationHistory::where('user_id', $user->id)->delete();
+            FirebaseNotification::where('user_id', $user->id)->delete();
+            PageView::where('user_id', $user->id)->delete();
+        }
 
         return true;
     }

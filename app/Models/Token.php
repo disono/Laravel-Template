@@ -31,11 +31,9 @@ class Token extends BaseModel
      */
     public static function actionRemove($query)
     {
-        if (!$query) {
-            return false;
+        foreach ($query as $row) {
+            FirebaseToken::where('token_id', $row->id)->delete();
         }
-
-        FirebaseToken::where('token_id', $query->id)->delete();
 
         return true;
     }

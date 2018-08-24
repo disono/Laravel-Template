@@ -59,13 +59,15 @@ class PageCategory extends BaseModel
      */
     public static function actionRemove($query)
     {
-        Page::where('page_category_id', $query->id)->delete();
+        foreach ($query as $row) {
+            Page::where('page_category_id', $row->id)->delete();
 
-        // delete the pages using the parent id
-        foreach (PageCategory::where('parent_id', $query->id)->get() as $sub) {
-            Page::where('page_category_id', $sub->id)->delete();
+            // delete the pages using the parent id
+            foreach (PageCategory::where('parent_id', $row->id)->get() as $sub) {
+                Page::where('page_category_id', $sub->id)->delete();
+            }
+            PageCategory::where('parent_id', $row->id)->delete();
         }
-        PageCategory::where('parent_id', $query->id)->delete();
 
         return true;
     }
