@@ -4,19 +4,6 @@
  * @Last Modified by: Jestoni Obice
  * @Last Modified time: 2017-12-23 16:50:05
  */
-/*
- * @Author: Jestoni Obice
- * @Date: 2017-12-27 14:50:43
- * @Last Modified by:   Jestoni Obice
- * @Last Modified time: 2017-12-27 14:50:43
- */
-/*Content*/
-/*Sidebar*/
-/*Dash head*/
-/*Nav tab*/
-/*Heading divider*/
-/*Form*/
-/*Stat card*/
 body {
     color: #000;
     background-color: #FFF;
@@ -34,28 +21,12 @@ h1, h2, h3, h4, h5, h6 {
     color: #3c3c3c;
 }
 
-/*
- * @Author: Jestoni Obice
- * @Date: 2017-12-27 14:51:35
- * @Last Modified by:   Jestoni Obice
- * @Last Modified time: 2017-12-27 14:51:35
- */
 .btn-pill {
     padding-left: 1.25em;
     padding-right: 1.25em;
     border-radius: 1000em;
 }
 
-/* Extra small viewport or screen */
-/* Small viewport or screen */
-/* Medium viewport or screen */
-/* Large viewport or screen */
-/*
- * @Author: Jestoni Obice
- * @Date: 2017-12-27 14:50:53
- * @Last Modified by:   Jestoni Obice
- * @Last Modified time: 2017-12-27 14:50:53
- */
 .heading-divider {
     position: relative;
     font-size: 12px;
@@ -92,12 +63,6 @@ h1, h2, h3, h4, h5, h6 {
     color: inherit;
 }
 
-/*
- * @Author: Jestoni Obice
- * @Date: 2017-12-27 14:50:02
- * @Last Modified by:   Jestoni Obice
- * @Last Modified time: 2017-12-27 14:50:02
- */
 .icon-nav-slider {
     overflow: auto;
     -webkit-overflow-scrolling: touch;
@@ -217,12 +182,6 @@ h1, h2, h3, h4, h5, h6 {
     background-color: #FFF;
 }
 
-/*
- * @Author: Jestoni Obice
- * @Date: 2017-12-27 14:50:36
- * @Last Modified by:   Jestoni Obice
- * @Last Modified time: 2017-12-27 14:50:36
- */
 .dash-head :after {
     display: block;
     clear: both;
@@ -257,12 +216,6 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Medium viewport or screen */
 /* Large viewport or screen */
-/*
- * @Author: Jestoni Obice
- * @Date: 2017-12-27 14:50:16
- * @Last Modified by:   Jestoni Obice
- * @Last Modified time: 2017-12-27 14:50:16
- */
 .nav-tabs {
     border-bottom: transparent;
 }
@@ -296,15 +249,12 @@ h1, h2, h3, h4, h5, h6 {
     border-top: 1px solid #007bff;
 }
 
-/*
- * @Author: Jestoni Obice
- * @Date: 2017-12-27 14:51:00
- * @Last Modified by:   Jestoni Obice
- * @Last Modified time: 2017-12-27 14:51:00
- */
 .form-control {
+    font-size: 0.9rem;
+    line-height: 1.25;
     color: #000;
-    background: #e2e3e6 none;
+    background-color: #e2e3e6;
+    background-image: none;
     border: 1px solid #e2e3e6;
     border-radius: 0.25rem;
     -webkit-transition: border-color ease-in-out 0.15s, -webkit-box-shadow ease-in-out 0.15s;
@@ -333,12 +283,6 @@ h1, h2, h3, h4, h5, h6 {
     border-radius: 0.25rem;
 }
 
-/*
- * @Author: Jestoni Obice
- * @Date: 2017-12-27 14:50:31
- * @Last Modified by:   Jestoni Obice
- * @Last Modified time: 2017-12-27 14:50:31
- */
 .modal-content {
     background-color: #efeff4;
     border: 0px solid #efeff4;
@@ -349,12 +293,6 @@ h1, h2, h3, h4, h5, h6 {
     border-bottom: 1px solid #e0e0e1;
 }
 
-/*
- * @Author: Jestoni Obice
- * @Date: 2017-12-27 14:51:24
- * @Last Modified by:   Jestoni Obice
- * @Last Modified time: 2017-12-27 14:51:24
- */
 .statcard {
     padding: 1rem 0 !important;
 }
@@ -397,10 +335,5 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Medium viewport or screen */
 /* Large viewport or screen */
-.nav-link-inner {
-    border-radius: .25rem;
-    border: 1px solid;
-    margin-right: 5px;
-}
 
-/*# sourceMappingURL=jro-admin.css.map */
+/*# sourceMappingURL=jro-admin-theme.css.map */

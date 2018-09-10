@@ -526,9 +526,9 @@ var VueAppMethods = {
 };
 
 VueAppMethods.frmFCMTokenOnChangeType = function () {
-    if (this.frmFCM.type == 'topic') {
+    if (this.frmFCM.type === 'topic') {
         this.frmFCM.topic_name = '';
-    } else if (this.frmFCM.type == 'token') {
+    } else if (this.frmFCM.type === 'token') {
         this.frmFCM.token = '';
     }
 };
