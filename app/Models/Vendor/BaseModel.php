@@ -25,6 +25,7 @@ class BaseModel extends Model
     protected static $inputDates = [];
     protected static $inputDateTimes = [];
     protected static $inputIntegers = [];
+    protected static $inputNumeric = [];
     protected static $inputBooleans = [];
     protected static $inputCrypt = [];
 
@@ -524,6 +525,17 @@ class BaseModel extends Model
                 if ($inputs[$key] !== null && $inputs[$key] !== '' && is_numeric($inputs[$key])) {
                     $inputs[$key] = (int)$inputs[$key];
                 } else {
+                    $inputs[$key] = 0;
+                }
+            } else {
+                $inputs[$key] = 0;
+            }
+        }
+
+        // clean numeric
+        foreach (static::$inputNumeric as $key) {
+            if (isset($inputs[$key])) {
+                if ($inputs[$key] === null && $inputs[$key] === '' && !is_numeric($inputs[$key])) {
                     $inputs[$key] = 0;
                 }
             } else {

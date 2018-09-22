@@ -19,7 +19,7 @@
 
                 <div class="row mt-3">
                     <div class="col">
-                        <form action="{{ route('admin.fcmNotification.store') }}" method="post"
+                        <form action="{{ route('admin.fcmNotification.update') }}" method="post"
                               v-on:submit.prevent="onFormUpload">
                             {{ csrf_field() }}
 
