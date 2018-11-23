@@ -145,21 +145,21 @@ class BaseModel extends Model
         foreach (static::$writableColumns as $row) {
             // writable columns (non-custom)
             if (key_exists($row, self::$params)) {
-                if (self::allowNull($row) === true) {
+                if (self::_allowNull($row) === true) {
                     $query->where($tableName . $row, self::$params[$row]);
                 }
             }
 
             // default custom columns
             $defaultCustomColumn = self::rawQuerySelects($row);
-            if (self::allowNullWithVal($defaultCustomColumn)) {
+            if (self::_allowNullWithVal($defaultCustomColumn)) {
                 $query->where(DB::raw($defaultCustomColumn), static::$params[$row]);
             }
         }
 
         // custom search
         foreach (static::rawQuerySelectList() as $key => $value) {
-            if (self::allowNullWithVal($value) && isset(static::$params[$key])) {
+            if (self::_allowNullWithVal($value) && isset(static::$params[$key])) {
                 $query->where(DB::raw($value), static::$params[$key]);
             }
         }
@@ -168,7 +168,7 @@ class BaseModel extends Model
         // array(['custom_column_name' => $params['key']])
         foreach ($customColumns as $column => $params_key) {
             if (key_exists($params_key, static::$params[$params_key])) {
-                if (self::allowNull($params_key) === true) {
+                if (self::_allowNull($params_key) === true) {
                     $query->where($column, static::$params[$params_key]);
                 }
             }
@@ -619,12 +619,7 @@ class BaseModel extends Model
      */
     public static function _processStoreFiles($inputs, $save)
     {
-        foreach (static::$files as $file) {
-            if (isset($inputs[$file])) {
-                $save->_files = fileUpload($inputs[$file], 'private', static::$imageOptions,
-                    null, null, static::$tableName, $save->id);
-            }
-        }
+        $save->_files = self::_processFile($inputs, $save);
     }
 
     /**
@@ -770,16 +765,7 @@ class BaseModel extends Model
     public static function _processEditFiles($inputs, $update, $_data)
     {
         if ($_data) {
-            // process files
-            $_files = [];
-            foreach (static::$files as $file) {
-                if (isset($inputs[$file])) {
-                    $_files = fileUpload($inputs[$file], 'private', static::$imageOptions,
-                        null, null, static::$tableName, $_data->id);
-                }
-            }
-
-            $_data->_files = $_files;
+            $_data->_files = self::_processFile($inputs, $_data);
             static::actionEditAfter($_data, $update);
         }
     }
@@ -847,7 +833,7 @@ class BaseModel extends Model
      * @param $row
      * @return bool
      */
-    private static function allowNull($row)
+    private static function _allowNull($row)
     {
         $_val = static::$params[$row] ?? null;
         $_allowNull = self::$params['allow_null'] ?? false;
@@ -866,7 +852,7 @@ class BaseModel extends Model
      * @param $val
      * @return bool
      */
-    private static function allowNullWithVal($val)
+    private static function _allowNullWithVal($val)
     {
         $_allowNull = self::$params['allow_null'] ?? false;
         $_allowFilter = true;
@@ -876,5 +862,33 @@ class BaseModel extends Model
         }
 
         return $_allowFilter;
+    }
+
+    /**
+     * Process files
+     *
+     * @param $inputs
+     * @param $_data
+     * @return array
+     */
+    private static function _processFile($inputs, $_data)
+    {
+        $_files = [];
+
+        foreach (static::$files as $file) {
+            if (is_array($file)) {
+                if (isset($inputs[$file['name']])) {
+                    $_files[] = fileUpload($inputs[$file['name']], 'private', static::$imageOptions,
+                        null, null, $file['table'], $_data->id);
+                }
+            } else {
+                if (isset($inputs[$file])) {
+                    $_files[] = fileUpload($inputs[$file], 'private', static::$imageOptions,
+                        null, null, static::$tableName, $_data->id);
+                }
+            }
+        }
+
+        return $_files;
     }
 }

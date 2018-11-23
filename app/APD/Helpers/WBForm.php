@@ -18,7 +18,7 @@ if (!function_exists('frmIsSelected')) {
      */
     function frmIsSelected($inputName, $value, $default = null, $success = 'selected')
     {
-        return ((string)request($inputName) === (string)$value || (string)old($inputName, $default) === (string)$value) ? $success : null;
+        return (request($inputName) === $value || old($inputName, $default) === $value) ? $success : null;
     }
 }
 
@@ -34,19 +34,19 @@ if (!function_exists('frmIsChecked')) {
      */
     function frmIsChecked($inputName, $value, $default = null, $success = 'checked')
     {
-        if ((string)request($inputName) === (string)$value) {
+        if (request($inputName) === $value) {
             return $success;
         }
 
         if (is_array($default)) {
             foreach ($default as $val) {
-                if ((string)old($inputName, $val) === (string)$value) {
+                if (old($inputName, $val) === $value) {
                     return $success;
                 }
             }
         }
 
-        return ((string)old($inputName, $default) === (string)$value) ? $success : null;
+        return (old($inputName, $default) === $value) ? $success : null;
     }
 }
 
