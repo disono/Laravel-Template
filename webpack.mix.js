@@ -55,6 +55,8 @@ if (env === 'p') {
     mix.styles(WB_CSS, vendorCSS);
 }
 
+mix.sass('resources/assets/sass/jro-admin.scss', 'public/assets/css');
+
 // FontAwesome
 mix.copyDirectory('node_modules/@fortawesome/fontawesome-free-webfonts/webfonts', 'public/assets/webfonts');
 
@@ -66,7 +68,5 @@ mix.copyDirectory('node_modules/tinymce/skins', 'public/assets/js/lib/tinymce/sk
 
 // ChartJS
 mix.copyDirectory('node_modules/chart.js/dist/Chart.js', 'public/assets/js/lib/chart.js');
-
 mix.copyDirectory('node_modules/feather-icons/dist/feather.min.js', 'public/assets/js/lib/feather.min.js');
-
 mix.copyDirectory('node_modules/moment/min/moment.min.js', 'public/assets/js/lib/moment.min.js');

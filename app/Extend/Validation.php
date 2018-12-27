@@ -55,7 +55,7 @@ class Validation extends Validator
      */
     protected function validateAlphaDashSpaces($attribute, $value, $parameters)
     {
-        return (bool)preg_match("/^[A-Za-z\s-_]+$/", $value);
+        return (bool)preg_match("/^[A-Za-z\s\-_]+$/", $value);
     }
 
     /**

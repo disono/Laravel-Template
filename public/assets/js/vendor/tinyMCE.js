@@ -9,7 +9,7 @@ jQ(document).ready(function () {
     var _filePage = 1;
 
     tinymce.init({
-        selector: 'textarea',
+        selector: '.tiny-editor-content',
         menubar: false,
         theme: 'modern',
 

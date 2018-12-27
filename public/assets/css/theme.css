@@ -7,6 +7,12 @@ body {
  */
 .mce-tinymce {
     box-shadow: none !important;
+    border: none !important;
+}
+
+.mce-container {
+    box-shadow: none !important;
+    border: none !important;
 }
 
 /**

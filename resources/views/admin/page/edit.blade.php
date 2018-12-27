@@ -26,7 +26,7 @@
                                 <div class="col-md-9 col-sm-12 mb-3">
                                     <label for="content">Content/Body <strong class="text-danger">*</strong></label>
 
-                                    <textarea name="content" id="content" class="form-control" rows="18"
+                                    <textarea name="content" id="content" class="form-control tiny-editor-content" rows="24"
                                               placeholder="Content">{!! old('content', $page->content) !!}</textarea>
 
                                     @if ($errors->has('content'))

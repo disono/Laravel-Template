@@ -14,7 +14,6 @@
                 <div class="alert alert-success" role="alert">
                     <h4 class="alert-heading">Well done!</h4>
                     <p>Your email is now verified.</p>
-                    <hr>
                     <p class="mb-0"><a href="{{ url('u/' . __me()->username) }}">Visit my Profile/Account</a></p>
                 </div>
             </div>

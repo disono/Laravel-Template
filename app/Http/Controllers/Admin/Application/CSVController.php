@@ -10,7 +10,9 @@ namespace App\Http\Controllers\Admin\Application;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Application\File\CSVImport;
-use App\Models\CSV\UserCSV;
+use App\Models\CSV\User\UsersExport;
+use App\Models\CSV\User\UsersImport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class CSVController extends Controller
 {
@@ -34,12 +36,47 @@ class CSVController extends Controller
         return $this->view('import', $this->_link());
     }
 
-    private function _isValidSource()
+    /**
+     * Import data
+     *
+     * @param CSVImport $request
+     * @return bool
+     */
+    public function csvImportStoreAction(CSVImport $request)
     {
-        $sources = ['users', 'pages', 'page_categories'];
-        if (!in_array($this->request->get('source'), $sources)) {
-            abort(404);
+        if ($request->get('source') === 'users') {
+            Excel::import(new UsersImport, $request->file('csv'));
         }
+
+        return $this->redirect();
+    }
+
+    /**'
+     * Export Data
+     *
+     * @return bool|\Illuminate\Http\Response|\Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
+    public function csvExportAction()
+    {
+        if ($this->request->get('source') === 'users') {
+            return (new UsersExport($this->request->all()))->download('users.xlsx');
+        }
+
+        return $this->redirect();
+    }
+
+    /**
+     * Download template
+     *
+     * @return bool|\Illuminate\Http\Response|\Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
+    public function csvTemplateAction()
+    {
+        if ($this->request->get('source') === 'users') {
+            return (new UsersExport($this->request->all(), true))->download('users.xlsx');
+        }
+
+        return $this->redirect();
     }
 
     private function _link()
@@ -56,73 +93,13 @@ class CSVController extends Controller
         return null;
     }
 
-    /**
-     * Import data
-     *
-     * @param CSVImport $request
-     * @return mixed
-     */
-    public function csvImportStoreAction(CSVImport $request)
+    private function _isValidSource()
     {
-        $this->_isValidSource();
-        try {
-            $this->_processImport($request);
-        } catch (\Exception $e) {
-            return $this->redirect()->with('error_message', $e->getMessage());
-        }
+        $sources = ['users'];
 
-        return $this->redirect()->with('success', 'Successfully Uploaded the CSV file.');
-    }
-
-    private function _processImport($request)
-    {
-        if ($request->get('source') === 'users') {
-            $this->_importer($this->request->file('csv')->getPathName());
+        if (!in_array($this->request->get('source'), $sources)) {
+            abort(404);
         }
     }
 
-    private function _importer($file)
-    {
-        (new UserCSV())->import($file);
-    }
-
-    /**
-     * Export data
-     *
-     * @return bool
-     */
-    public function csvExportAction()
-    {
-        $this->_isValidSource();
-        return $this->_exporter();
-    }
-
-    private function _exporter()
-    {
-        if ($this->request->get('source') === 'users') {
-            return (new UserCSV($this->request->get('params')))->download('users');
-        }
-
-        return $this->redirect();
-    }
-
-    /**
-     * Download template
-     *
-     * @return bool
-     */
-    public function csvTemplateAction()
-    {
-        $this->_isValidSource();
-        return $this->_templates();
-    }
-
-    private function _templates()
-    {
-        if ($this->request->get('source') === 'users') {
-            return (new UserCSV($this->request->get('params')))->template();
-        }
-
-        return $this->redirect();
-    }
 }

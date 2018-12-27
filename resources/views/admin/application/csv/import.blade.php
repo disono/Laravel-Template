@@ -12,7 +12,6 @@
         <div class="row">
             <div class="col">
                 <h1 class="header">{{ $view_title }}</h1>
-                <hr>
             </div>
         </div>
 
