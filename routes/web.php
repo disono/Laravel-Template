@@ -34,9 +34,6 @@ Route::post('verify/phone', 'Module\Authentication\VerifyController@processPhone
 Route::get('verify/resend/{type}', 'Module\Authentication\VerifyController@resendVerificationViewAction')->name('auth.verify.resend.view');
 Route::post('verify/resend/{type}', 'Module\Authentication\VerifyController@resendVerificationProcessAction')->name('auth.verify.resend');
 
-// profile
-Route::get('u/{username}', 'Module\User\ProfileController@showAction')->name('user.show');
-
 // views
 Route::get('view/{type}', 'Module\Application\ViewController@viewAction')->name('application.view');
 
@@ -57,6 +54,11 @@ Route::group(['middleware' => ['auth', 'auth.checker']], function () {
      * Customers
      * ------------------------------------
      */
+
+    // profile
+    Route::get('u/search', 'Module\User\ProfileController@searchAction')->name('user.search');
+    Route::get('u/{username}', 'Module\User\ProfileController@showAction')->name('user.show');
+
     // user
     Route::get('dashboard', 'Module\User\DashboardController@showAction')->name('user.dashboard.show');
     Route::get('user/settings', 'Module\User\SettingsController@settingsAction')->name('user.settings');
@@ -69,6 +71,14 @@ Route::group(['middleware' => ['auth', 'auth.checker']], function () {
     Route::post('file/store', 'Module\Application\FileController@createAction')->name('module.file.store');
     Route::post('file/update', 'Module\Application\FileController@updateAction')->name('module.file.update');
     Route::delete('file/destroy/{id}', 'Module\Application\FileController@destroyAction')->name('admin.file.destroy');
+
+    // chat
+    Route::get('chat/{user_id?}', 'Module\Chat\MessageController@showAction')->name('module.chat.show');
+    Route::post('chat/send', 'Module\Chat\MessageController@sendAction')->name('module.chat.send');
+    Route::get('chat/group/show/{group_id}', 'Module\Chat\MessageController@showGroupAction')->name('module.chat.show.group');
+    Route::post('chat/group/store', 'Module\Chat\MessageController@storeGroupAction')->name('module.chat.group.store');
+    Route::get('chat/group/leave/{user_id}', 'Module\Chat\MessageController@leaveGroupAction')->name('module.chat.group.leave');
+    Route::post('chat/group/add/{group_id}/{user_id}', 'Module\Chat\MessageController@addToGroupAction')->name('module.chat.group.add');
 
     /*
      * ------------------------------------

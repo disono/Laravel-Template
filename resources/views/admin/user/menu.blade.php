@@ -20,3 +20,5 @@
 
     @include('vendor.menuCSV', ['csvSource' => 'users'])
 </nav>
+
+@include('admin.layouts.toolbarList')

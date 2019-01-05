@@ -34,7 +34,30 @@ var VueAppData = {
     adminPage: {
         name: jQ('#name[data-value]').val(),
         slug: jQ('#slug[data-value]').val()
-    }
+    },
+
+    chat: {
+        inboxMessages: [],
+        messages: [],
+
+        profileSearchGroup: [],
+        profileSearchWrite: [],
+
+        groupDetail: null,
+
+        writeMessage: {
+            to: [],
+            group_id: null,
+            message: null
+        },
+
+        createGroup: {
+            name: null,
+            members: []
+        }
+    },
+
+    deleteListCheckbox: []
 };
 
 var VueAppMethods = {
@@ -54,9 +77,9 @@ var VueAppMethods = {
      * @param callback
      */
     onDialogDelete: function (path, callback) {
-        var thisApp = this;
-        thisApp.dialogs('delete', null, function (r) {
-            thisApp.httpDelete(path)
+        var self = this;
+        self.dialogs('delete', null, function (r) {
+            self.httpDelete(path)
                 .then(function (response) {
                     if (callback) {
                         callback(response);
@@ -101,7 +124,7 @@ var VueAppMethods = {
      * @param callbackDismiss
      */
     dialogs: function (type, viewCallback, callbackConfirm, callbackDismiss) {
-        var thisApp = this;
+        var self = this;
         var _dialogContainer = 'dialog_' + Date.now();
 
         // event
@@ -111,14 +134,14 @@ var VueAppMethods = {
                 // dismiss
                 jQ('.dialogDismiss').off().on('click', function (e) {
                     e.preventDefault();
-                    thisApp.dialogRemoveContainer(_dialogContainer);
+                    self.dialogRemoveContainer(_dialogContainer);
                     callbackDismiss(views.data);
                 });
 
                 // confirm
                 jQ('.dialogConfirm').off().on('click', function (e) {
                     e.preventDefault();
-                    thisApp.dialogRemoveContainer(_dialogContainer);
+                    self.dialogRemoveContainer(_dialogContainer);
                     callbackConfirm(views.data);
                 });
             }
@@ -148,7 +171,7 @@ var VueAppMethods = {
         jQ('#' + _dialogContainer).modal('toggle');
 
         // resource
-        thisApp.httpGet('/view/' + type)
+        self.httpGet('/view/' + type)
             .then(function (response) {
                 jQ('#content_' + _dialogContainer).html(response);
 
@@ -160,7 +183,7 @@ var VueAppMethods = {
                 views.buttons();
             })
             .catch(function (error) {
-                thisApp.dialogRemoveContainer(_dialogContainer);
+                self.dialogRemoveContainer(_dialogContainer);
                 callbackDismiss();
             });
     },
@@ -190,20 +213,20 @@ var VueAppMethods = {
      * @param e
      */
     onFormPost: function (e) {
-        var thisApp = this;
+        var self = this;
         var formAction = jQ(e.target);
-        if (thisApp.formValidation(formAction) === true) {
-            thisApp.formDisable();
+        if (self.formValidation(formAction) === true) {
+            self.formDisable();
 
-            thisApp.httpPost(formAction.attr('action'), new FormData(e.target))
+            self.httpPost(formAction.attr('action'), new FormData(e.target))
                 .then(function (response) {
-                    thisApp.formEnable();
-                    thisApp.processFormResponse(formAction, response);
+                    self.formEnable();
+                    self.processFormResponse(formAction, response);
                 })
                 .catch(function (error) {
-                    thisApp.formEnable();
+                    self.formEnable();
                     if (typeof error.response !== 'undefined') {
-                        thisApp.processFormResponse(formAction, error.response.data);
+                        self.processFormResponse(formAction, error.response.data);
                     }
                 });
         }
@@ -215,16 +238,16 @@ var VueAppMethods = {
      * @param e
      */
     onFormGet: function (e) {
-        var thisApp = this;
+        var self = this;
         var formAction = jQ(e.target);
-        if (thisApp.formValidation(formAction) === true) {
-            thisApp.httpGet(formAction.attr('action'), formAction.serialize())
+        if (self.formValidation(formAction) === true) {
+            self.httpGet(formAction.attr('action'), formAction.serialize())
                 .then(function (response) {
-                    thisApp.processFormResponse(formAction, response);
+                    self.processFormResponse(formAction, response);
                 })
                 .catch(function (error) {
                     if (typeof error.response !== 'undefined') {
-                        thisApp.processFormResponse(formAction, error.response.data);
+                        self.processFormResponse(formAction, error.response.data);
                     }
                 });
         }
@@ -238,20 +261,20 @@ var VueAppMethods = {
      * @param callbackFailed
      */
     onUpload: function (e, callbackSuccess, callbackFailed) {
-        var thisApp = this;
+        var self = this;
         var formAction = jQ(e.target);
-        if (thisApp.formValidation(formAction) === true) {
-            thisApp.formDisable();
+        if (self.formValidation(formAction) === true) {
+            self.formDisable();
 
             jQ('#WBApp').hide();
             jQ('#loaderUpload').show();
-            thisApp.httpUpload(formAction.attr('action'), new FormData(e.target))
+            self.httpUpload(formAction.attr('action'), new FormData(e.target))
                 .then(function (response) {
                     jQ('#WBApp').show();
                     jQ('#loaderUpload').hide();
 
-                    thisApp.formEnable();
-                    thisApp.processFormResponse(formAction, response);
+                    self.formEnable();
+                    self.processFormResponse(formAction, response);
 
                     if (callbackSuccess !== null) {
                         callbackSuccess(response);
@@ -261,11 +284,11 @@ var VueAppMethods = {
                     jQ('#WBApp').show();
                     jQ('#loaderUpload').hide();
 
-                    thisApp.formEnable();
+                    self.formEnable();
                     var _error = null;
                     if (typeof error.response !== 'undefined') {
                         _error = error.response.data;
-                        thisApp.processFormResponse(formAction, error.response.data);
+                        self.processFormResponse(formAction, error.response.data);
                     }
 
                     if (callbackFailed !== null) {
@@ -418,13 +441,13 @@ var VueAppMethods = {
      * @param response
      */
     processFormResponse: function (formAction, response) {
-        var thisApp = this;
+        var self = this;
         if (response.success === true) {
             // data
             if (typeof response.data !== 'undefined') {
                 // redirect
                 if (typeof response.data.redirect !== 'undefined') {
-                    thisApp.redirect(response.data.redirect);
+                    self.redirect(response.data.redirect);
                 }
 
                 if (typeof response.data === 'string') {
@@ -436,7 +459,7 @@ var VueAppMethods = {
             if (typeof response.errors === 'object') {
                 jQ.each(response.errors, function (name, error) {
                     debugging(error);
-                    thisApp.formValid(formAction.find('[name=' + name + ']'), error);
+                    self.formValid(formAction.find('[name=' + name + ']'), error);
                 });
             } else {
                 if (typeof response.errors === 'string') {
@@ -537,6 +560,172 @@ VueAppMethods.adminPageOnNameChange = function () {
     if (this.adminPage.name) {
         this.adminPage.slug = this.adminPage.name.replace(/\s+/g, '-').toLowerCase();
     }
+};
+
+// fetch for users
+VueAppMethods.fetchUsers = function (params, success, failed) {
+    var self = this;
+    params = (params) ? params.response = 'json' : null;
+    self.httpGet('/u/search', params)
+        .then(function (response) {
+            success(response);
+        })
+        .catch(function (error) {
+            success(failed);
+        });
+};
+
+// fetch inbox
+VueAppMethods.fetchInbox = function (params, success, failed) {
+    var self = this;
+    params = (params) ? params.response = 'json' : null;
+    self.httpGet('/chat', params)
+        .then(function (response) {
+            success(response);
+        })
+        .catch(function (error) {
+            success(failed);
+        });
+};
+
+// fetch inbox (messages)
+VueAppMethods.fetchMessages = function (group_id, params, success, failed) {
+    var self = this;
+    params = (params) ? params.response = 'json' : null;
+    self.httpGet('/chat/group/show/' + group_id, params)
+        .then(function (response) {
+            success(response);
+        })
+        .catch(function (error) {
+            success(failed);
+        });
+};
+
+// create group chat
+VueAppMethods.createGroupChat = function (params, success, failed) {
+    var self = this;
+    params = (params) ? params.response = 'json' : null;
+    self.httpPost('/chat/group/store', params)
+        .then(function (response) {
+            success(response);
+        })
+        .catch(function (error) {
+            success(failed);
+        });
+};
+
+// leave group chat
+VueAppMethods.leaveGroupChat = function (group_id) {
+    var self = this;
+    self.httpPost('/chat/group/leave/' + group_id, {response: 'json'})
+        .then(function (response) {
+            success(response);
+        })
+        .catch(function (error) {
+            success(failed);
+        });
+};
+
+// add to group chat
+VueAppMethods.addToGroupChat = function (group_id, user_id) {
+    var self = this;
+    self.httpPost('/chat/group/add/' + group_id + '/' + user_id, {response: 'json'})
+        .then(function (response) {
+            success(response);
+        })
+        .catch(function (error) {
+            success(failed);
+        });
+};
+
+// send message
+VueAppMethods.sendMessage = function (params) {
+    var self = this;
+    params = (params) ? params.response = 'json' : null;
+    self.httpUpload('/chat/send', params)
+        .then(function (response) {
+            success(response);
+        })
+        .catch(function (error) {
+            success(failed);
+        });
+};
+
+// fetch profile
+VueAppMethods.profile = function (username) {
+    var self = this;
+    self.httpGet('/u/' + username, {response: 'json'})
+        .then(function (response) {
+            success(response);
+        })
+        .catch(function (error) {
+            success(failed);
+        });
+};
+
+VueAppMethods.btnChatWriteMessageModal = function () {
+    jQ('#writeMessageModal').modal('toggle');
+};
+
+VueAppMethods.btnChatCreateGroupModal = function () {
+    jQ('#writeGroupModal').modal('toggle');
+};
+
+VueAppMethods.deleteSelectAll = function (event) {
+    if (event.target.checked) {
+        var self = this;
+        jQ('input[delete-data="deleteListCheckbox"]').each(function (val, index) {
+            self.deleteListCheckbox.push(jQ(this).val());
+        });
+    } else {
+        this.deleteListCheckbox = [];
+    }
+};
+
+VueAppMethods.btnDeleteSelected = function () {
+    var self = this;
+
+    self.dialogs('delete', null, function (r) {
+        var list = [];
+        var index = 0;
+        jQ('input[delete-data="deleteListCheckbox"]').each(function (val, index) {
+            if (jQ(this).is(':checked')) {
+                list.push(jQ(this));
+            }
+        });
+
+        deleteSelectedItem();
+        function deleteSelectedItem() {
+            if (!isDone()) {
+                return;
+            }
+
+            var id = '#parent_tr_' + list[index].val();
+            self.httpDelete(jQ('#parent_tr_del_' + list[index].val()).attr('href'))
+                .then(function (response) {
+                    var parentTBody = jQ(id).parent();
+                    jQ(id).remove();
+
+                    if (parentTBody.children().length === 0) {
+                        // refresh the page
+                        location.reload();
+                    }
+
+                    index++;
+                    deleteSelectedItem();
+                })
+                .catch(function (error) {
+                    index++;
+                    deleteSelectedItem();
+                });
+        }
+
+        function isDone() {
+            return index <= (list.length - 1);
+        }
+    }, function (r) {
+
+    });
 };
 
 new Vue({

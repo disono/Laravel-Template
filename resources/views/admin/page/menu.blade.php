@@ -18,3 +18,5 @@
     <a class="nav-link {{ isActiveMenu('admin.page.create') }}"
        href="{{ route('admin.page.create') }}"><i class="fas fa-plus"></i> Create a New Page</a>
 </nav>
+
+@include('admin.layouts.toolbarList')

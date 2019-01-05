@@ -106,3 +106,37 @@ if (!function_exists('hasInputError')) {
         return $errors->has($inputName) ? ' is-invalid invalid' : '';
     }
 }
+
+if (!function_exists('thDelete')) {
+    /**
+     * Checkbox th delete
+     *
+     * @return string
+     */
+    function thDelete()
+    {
+        return '<th>
+            <div class="form-group form-check">
+                <input type="checkbox" class="form-check-input" value="" v-on:change="deleteSelectAll">
+            </div>
+        </th>';
+    }
+}
+
+if (!function_exists('tdDelete')) {
+    /**
+     * Checkbox td delete
+     *
+     * @param $id
+     * @return string
+     */
+    function tdDelete($id)
+    {
+        return '<td>
+            <div class="form-group form-check">
+                <input type="checkbox" class="form-check-input" delete-data="deleteListCheckbox" id="del_' . $id . '"
+                                           v-model="deleteListCheckbox" value="' . $id . '">
+            </div>
+        </td>';
+    }
+}

@@ -88,6 +88,7 @@
             <div class="modal-body">
                 <a href="{{ route('user.settings') }}" class="btn btn-block btn-outline-secondary">General Settings</a>
                 <a href="{{ route('user.security') }}" class="btn btn-block btn-outline-secondary">Security Settings</a>
+                <a href="{{ route('module.chat.show') }}" class="btn btn-block btn-outline-secondary">Inbox</a>
                 <a href="{{ route('auth.logout') }}" class="btn btn-block btn-danger">Log out</a>
             </div>
         </div>

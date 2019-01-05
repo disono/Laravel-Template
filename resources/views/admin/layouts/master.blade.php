@@ -67,6 +67,7 @@
 <script src="{{ devAssets('assets/js/lib/chart.js') }}"></script>
 <script src="{{ devAssets('assets/js/lib/moment.min.js') }}"></script>
 <script src="{{ devAssets('assets/js/vendor.js') }}"></script>
+<script src="{{ devAssets('assets/js/lib/feather.min.js') }}"></script>
 @if(env('APP_ENV') == 'local')
     <script src="{{ devAssets('assets/js/vendor/config.js') }}"></script>
     <script src="{{ devAssets('assets/js/vendor/helper.js') }}"></script>
@@ -74,6 +75,5 @@
     <script src="{{ devAssets('assets/js/application.js') }}"></script>
 @endif
 @yield('javascript')
-<script src="{{ devAssets('assets/js/lib/feather.min.js') }}"></script>
 </body>
 </html>

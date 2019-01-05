@@ -12,7 +12,6 @@
         <div class="row">
             <div class="col">
                 <h1 class="header">{{ $view_title }}</h1>
-
                 @include('admin.page.menu')
             </div>
         </div>
@@ -48,7 +47,8 @@
                 <table class="table mt-3">
                     <thead class="thead-dark">
                     <tr>
-                        <th>#</th>
+                        {!! thDelete() !!}
+
                         <th>Name</th>
                         <th>Category</th>
                         <th>Action</th>
@@ -57,8 +57,9 @@
 
                     <tbody>
                     @foreach($pages as $row)
-                        <tr id="parent_tr_{{$row->id}}">
-                            <td>{{ $row->id }}</td>
+                        <tr id="parent_tr_{{ $row->id }}">
+                            {!! tdDelete($row->id) !!}
+
                             <td>{{ $row->name }}</td>
                             <td>{{ $row->page_category_slug }}</td>
                             <td>
@@ -78,8 +79,8 @@
                                         <div class="dropdown-divider"></div>
 
                                         <a class="dropdown-item"
-                                           href="{{ url('admin/page/destroy/' . $row->id) }}"
-                                           v-on:click.prevent="onDeleteResource($event, '#parent_tr_{{$row->id}}')">Delete</a>
+                                           href="{{ url('admin/page/destroy/' . $row->id) }}" id="parent_tr_del_{{ $row->id }}"
+                                           v-on:click.prevent="onDeleteResource($event, '#parent_tr_{{ $row->id }}')">Delete</a>
                                     </div>
                                 </div>
                             </td>
@@ -92,7 +93,7 @@
                     <h3 class="text-center"><i class="far fa-frown"></i> No Pages Created.</h3>
                 @endif
 
-                {{$pages->appends($request->all())->render()}}
+                {{ $pages->appends($request->all())->render() }}
             </div>
         </div>
     </div>

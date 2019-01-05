@@ -47,7 +47,8 @@
                 <table class="table mt-3">
                     <thead class="thead-dark">
                     <tr>
-                        <th>#</th>
+                        {!! thDelete() !!}
+
                         <th>Name</th>
                         <th>Email</th>
                         <th>Username</th>
@@ -62,7 +63,8 @@
                     <tbody>
                     @foreach($users as $row)
                         <tr id="parent_tr_{{$row->id}}">
-                            <th>{{ $row->id }}</th>
+                            {!! tdDelete($row->id) !!}
+
                             <td>{{ $row->full_name }}</td>
                             <td>{{ $row->email }}</td>
                             <td>{{ $row->username }}</td>
@@ -101,7 +103,7 @@
                                         <div class="dropdown-divider"></div>
 
                                         <a class="dropdown-item"
-                                           href="{{ url('admin/user/destroy/' . $row->id) }}"
+                                           href="{{ url('admin/user/destroy/' . $row->id) }}" id="parent_tr_del_{{ $row->id }}"
                                            v-on:click.prevent="onDeleteResource($event, '#parent_tr_{{$row->id}}')">Delete</a>
                                     </div>
                                 </div>

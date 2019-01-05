@@ -46,7 +46,7 @@ class Controller extends BaseController
         // override the data for content
         $data = (count($this->content) > 0) ? $this->content : $data;
 
-        if ($this->request->ajax() || $this->viewType === 'json') {
+        if ($this->request->ajax() || $this->request->get('response') === 'json' || $this->viewType === 'json') {
             if ($response == 200) {
                 return successJSONResponse($data);
             }
@@ -142,7 +142,7 @@ class Controller extends BaseController
      */
     protected function error($code, $message = null)
     {
-        if ($this->request->ajax() || $this->viewType === 'json') {
+        if ($this->request->ajax() || $this->viewType === 'json' || $this->request->get('response') === 'json') {
             $message = ($message) ? $message : $code . ' response code.';
             return failedJSONResponse($message, $code);
         }
