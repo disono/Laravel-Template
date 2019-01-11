@@ -77,7 +77,7 @@ Route::group(['middleware' => ['auth', 'auth.checker']], function () {
     Route::post('chat/send', 'Module\Chat\MessageController@sendAction')->name('module.chat.send');
     Route::get('chat/group/show/{group_id}', 'Module\Chat\MessageController@showGroupAction')->name('module.chat.show.group');
     Route::post('chat/group/store', 'Module\Chat\MessageController@storeGroupAction')->name('module.chat.group.store');
-    Route::get('chat/group/leave/{user_id}', 'Module\Chat\MessageController@leaveGroupAction')->name('module.chat.group.leave');
+    Route::get('chat/group/leave/{group_id}/{user_id}', 'Module\Chat\MessageController@leaveGroupAction')->name('module.chat.group.leave');
     Route::post('chat/group/add/{group_id}/{user_id}', 'Module\Chat\MessageController@addToGroupAction')->name('module.chat.group.add');
 
     /*

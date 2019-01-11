@@ -17,8 +17,6 @@
 
     <a class="nav-link {{ isActiveMenu('admin.user.create') }}"
        href="{{ route('admin.user.create') }}"><i class="fas fa-user-plus"></i> Register New User</a>
-
-    @include('vendor.menuCSV', ['csvSource' => 'users'])
 </nav>
 
 @include('admin.layouts.toolbarList')

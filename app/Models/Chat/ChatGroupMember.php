@@ -25,4 +25,32 @@ class ChatGroupMember extends BaseModel
         $this->fillable(self::$writableColumns);
         parent::__construct($attributes);
     }
+
+    /**
+     * List of select
+     *
+     * @return array
+     */
+    protected static function rawQuerySelectList()
+    {
+        return [
+            'group_chat_name' => 'chat_groups.name',
+            'member_full_name' => 'CONCAT(member.first_name, " ", member.last_name)',
+            'creator_full_name' => 'CONCAT(creator.first_name, " ", creator.last_name)',
+        ];
+    }
+
+    /**
+     * Custom filters
+     *
+     * @param $query
+     * @return mixed
+     */
+    public static function rawFilters($query)
+    {
+        $query->join('chat_groups', 'chat_group_members.chat_group_id', '=', 'chat_groups.id');
+        $query->join('users AS member', 'chat_group_members.member_id', '=', 'member.id');
+        $query->join('users AS creator', 'chat_group_members.added_by_id', '=', 'creator.id');
+        return $query;
+    }
 }

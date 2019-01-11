@@ -9,6 +9,7 @@
 namespace App\Http\Controllers\Module\Page;
 
 use App\Http\Controllers\Controller;
+use App\Models\Chat\ChatGroup;
 
 class DevelopmentController extends Controller
 {
@@ -22,6 +23,6 @@ class DevelopmentController extends Controller
      */
     public function applicationAction()
     {
-
+        return $this->json(ChatGroup::fetchAll());
     }
 }

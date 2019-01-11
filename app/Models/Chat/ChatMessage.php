@@ -8,20 +8,60 @@
 
 namespace App\Models\Chat;
 
+use App\Models\File;
 use App\Models\Vendor\BaseModel;
 
 class ChatMessage extends BaseModel
 {
     protected static $tableName = 'chat_messages';
     protected static $writableColumns = [
-        'chat_group_id',
-        'file_id',
+        'chat_group_id', 'user_id',
         'message',
     ];
+
+    protected static $files = ['file_msg'];
 
     public function __construct(array $attributes = [])
     {
         $this->fillable(self::$writableColumns);
         parent::__construct($attributes);
+    }
+
+    /**
+     * Custom filters
+     *
+     * @param $query
+     * @return mixed
+     */
+    public static function rawFilters($query)
+    {
+        $query->join('chat_groups', 'chat_messages.chat_group_id', '=', 'chat_groups.id');
+        $query->join('users AS sender', 'chat_messages.user_id', '=', 'sender.id');
+        return $query;
+    }
+
+    /**
+     * List of select
+     *
+     * @return array
+     */
+    protected static function rawQuerySelectList()
+    {
+        return [
+            'group_name' => 'chat_groups.name',
+            'sender_full_name' => 'CONCAT(sender.first_name, " ", sender.last_name)',
+        ];
+    }
+
+    /**
+     * Add formatting to data
+     *
+     * @param $row
+     * @return mixed
+     */
+    protected static function dataFormatting($row)
+    {
+        $row->files = File::fetchAll(['table_name' => self::$tableName, 'table_id' => $row->id]);
+        return $row;
     }
 }

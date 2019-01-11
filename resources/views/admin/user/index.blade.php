@@ -13,6 +13,10 @@
             <div class="col">
                 <h1 class="header">{{ $view_title }}</h1>
                 @include('admin.user.menu')
+
+                <nav class="nav nav-pills nav-justified mt-3">
+                    @include('vendor.menuCSV', ['csvSource' => 'users'])
+                </nav>
             </div>
         </div>
 
@@ -103,7 +107,8 @@
                                         <div class="dropdown-divider"></div>
 
                                         <a class="dropdown-item"
-                                           href="{{ url('admin/user/destroy/' . $row->id) }}" id="parent_tr_del_{{ $row->id }}"
+                                           href="{{ url('admin/user/destroy/' . $row->id) }}"
+                                           id="parent_tr_del_{{ $row->id }}"
                                            v-on:click.prevent="onDeleteResource($event, '#parent_tr_{{$row->id}}')">Delete</a>
                                     </div>
                                 </div>

@@ -19,8 +19,9 @@ class CreateChatMessagesTable extends Migration
             $table->unsignedInteger('chat_group_id')->nullable();
             $table->foreign('chat_group_id')->references('id')->on('chat_groups');
 
-            $table->unsignedInteger('file_id')->nullable();
-            $table->foreign('file_id')->references('id')->on('files');
+            // sender
+            $table->unsignedInteger('user_id')->nullable();
+            $table->foreign('user_id')->references('id')->on('users');
 
             $table->text('message')->nullable();
 

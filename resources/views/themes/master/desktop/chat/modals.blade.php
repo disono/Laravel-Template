@@ -5,7 +5,8 @@
  * @copyright   Webmons Development Studio
 --}}
 
-<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="writeMessageLabelModal" id="writeMessageModal" aria-hidden="true">
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="writeMessageLabelModal" id="writeMessageModal"
+     aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -21,7 +22,8 @@
     </div>
 </div>
 
-<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="writeGroupLabelModal" id="writeGroupModal" aria-hidden="true">
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="writeGroupLabelModal" id="writeGroupModal"
+     aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">

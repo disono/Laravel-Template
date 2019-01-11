@@ -301,32 +301,6 @@ class User extends BaseUser
         return $row;
     }
 
-    /**
-     * Get profile picture
-     *
-     * @param $user_id
-     * @return null
-     */
-    private static function _profilePicture($user_id)
-    {
-        $file = File::where('table_name', 'users')->where('table_id', $user_id)->where('tag', 'profile_picture')
-            ->orderBy('created_at', 'DESC')->first();
-        return ($file) ? $file->file_name : null;
-    }
-
-    /**
-     * Unset hidden data
-     *
-     * @param $row
-     */
-    private static function _unsetHidden($row)
-    {
-        $_hidden = new User();
-        foreach ($_hidden->hidden as $item) {
-            unset($row->$item);
-        }
-    }
-
     public function role()
     {
         return $this->belongsTo('App\Models\Role');
@@ -380,5 +354,31 @@ class User extends BaseUser
     public function file()
     {
         return $this->hasMany('App\Models\File');
+    }
+
+    /**
+     * Get profile picture
+     *
+     * @param $user_id
+     * @return null
+     */
+    private static function _profilePicture($user_id)
+    {
+        $file = File::where('table_name', 'users')->where('table_id', $user_id)->where('tag', 'profile_picture')
+            ->orderBy('created_at', 'DESC')->first();
+        return ($file) ? $file->file_name : null;
+    }
+
+    /**
+     * Unset hidden data
+     *
+     * @param $row
+     */
+    private static function _unsetHidden($row)
+    {
+        $_hidden = new User();
+        foreach ($_hidden->hidden as $item) {
+            unset($row->$item);
+        }
     }
 }

@@ -45,7 +45,6 @@ Form for sending messages
     <div class="row">
         <div class="col-md-10 col-sm-12 mt-3">
             <div class="btn-group" role="group" aria-label="Toolbar">
-                <button class="btn btn-secondary"><i class="fas fa-image"></i></button>
                 <button class="btn btn-secondary"><i class="fas fa-paperclip"></i></button>
             </div>
         </div>

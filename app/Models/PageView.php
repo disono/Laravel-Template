@@ -27,7 +27,6 @@ class PageView extends BaseModel
         parent::__construct($attributes);
     }
 
-
     /**
      * Custom filters
      *

@@ -695,6 +695,7 @@ VueAppMethods.btnDeleteSelected = function () {
         });
 
         deleteSelectedItem();
+
         function deleteSelectedItem() {
             if (!isDone()) {
                 return;
