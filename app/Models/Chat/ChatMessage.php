@@ -47,9 +47,12 @@ class ChatMessage extends BaseModel
      */
     protected static function rawQuerySelectList()
     {
+        $_me = __me() ? __me()->id : 0;
+
         return [
             'group_name' => 'chat_groups.name',
             'sender_full_name' => 'CONCAT(sender.first_name, " ", sender.last_name)',
+            'is_me' => 'IF(chat_messages.user_id = ' . $_me . ', 1, 0)'
         ];
     }
 

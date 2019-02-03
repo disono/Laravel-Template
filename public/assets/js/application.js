@@ -663,8 +663,8 @@ VueAppMethods.profile = function (username) {
         });
 };
 
-VueAppMethods.btnChatWriteMessageModal = function () {
-    jQ('#writeMessageModal').modal('toggle');
+VueAppMethods.btnChatWriteMessage = function () {
+
 };
 
 VueAppMethods.btnChatCreateGroupModal = function () {

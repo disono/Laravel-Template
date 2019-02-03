@@ -5,12 +5,18 @@
  * @copyright   Webmons Development Studio
 --}}
 
-<a class="nav-link {{ isActiveMenu('admin.csv.import') }}"
-   href="{{ route('admin.csv.import', ['source' => $csvSource, 'params' => $request->all()]) }}"><i
-            class="fas fa-upload"></i> Import CSV</a>
-<a class="nav-link {{ isActiveMenu('admin.csv.export') }}"
-   href="{{ route('admin.csv.export', ['source' => $csvSource, 'params' => $request->all()]) }}"><i
-            class="fas fa-download"></i> Export CSV</a>
-<a class="nav-link {{ isActiveMenu('admin.csv.template') }}"
-   href="{{ route('admin.csv.template', ['source' => $csvSource, 'params' => $request->all()]) }}"><i
-            class="fas fa-newspaper"></i> CSV Template</a>
+@if(isset($export))
+    <a class="nav-link {{ isActiveMenu('admin.csv.export') }}"
+       href="{{ route('admin.csv.export', array_merge(['source' => $csvSource], $request->all())) }}"><i
+                class="fas fa-download"></i> Export CSV</a>
+@else
+    <a class="nav-link {{ isActiveMenu('admin.csv.import') }}"
+       href="{{ route('admin.csv.import', array_merge(['source' => $csvSource], $request->all())) }}"><i
+                class="fas fa-upload"></i> Import CSV</a>
+    <a class="nav-link {{ isActiveMenu('admin.csv.export') }}"
+       href="{{ route('admin.csv.export', array_merge(['source' => $csvSource], $request->all())) }}"><i
+                class="fas fa-download"></i> Export CSV</a>
+    <a class="nav-link {{ isActiveMenu('admin.csv.template') }}"
+       href="{{ route('admin.csv.template', array_merge(['source' => $csvSource], $request->all())) }}"><i
+                class="fas fa-newspaper"></i> CSV Template</a>
+@endif

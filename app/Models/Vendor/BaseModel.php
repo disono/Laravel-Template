@@ -353,6 +353,12 @@ class BaseModel extends Model
         $orderByDirection = static::$params['order_by_direction'] ?? 'DESC';
         $query->orderBy($orderByColumn, $orderByDirection);
 
+        if (isset(self::$params['group_by'])) {
+            if (in_array(self::$params['group_by'], static::$writableColumns)) {
+                $query->groupBy(self::$params['group_by']);
+            }
+        }
+
         return $query;
     }
 
@@ -879,12 +885,12 @@ class BaseModel extends Model
             if (is_array($file)) {
                 if (isset($inputs[$file['name']])) {
                     $_files[] = fileUpload($inputs[$file['name']], 'private', static::$imageOptions,
-                        null, null, $file['table'], $_data->id);
+                        null, null, $file['table'], $_data->id, $file['name']);
                 }
             } else {
                 if (isset($inputs[$file])) {
                     $_files[] = fileUpload($inputs[$file], 'private', static::$imageOptions,
-                        null, null, static::$tableName, $_data->id);
+                        null, null, static::$tableName, $_data->id, $file);
                 }
             }
         }

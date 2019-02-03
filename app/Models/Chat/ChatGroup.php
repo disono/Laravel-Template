@@ -36,14 +36,18 @@ class ChatGroup extends BaseModel
         $member_id = self::$params['is_member'] ?? 0;
         $two_participant = self::$params['two_participants'] ?? [0, 0];
 
-        $pat_one = 'SELECT COUNT(*) FROM chat_group_members WHERE chat_groups.id = chat_group_members.chat_group_id AND chat_group_members.member_id = ' . $two_participant[0] . ' LIMIT 1';
-        $pat_two = 'SELECT COUNT(*) FROM chat_group_members WHERE chat_groups.id = chat_group_members.chat_group_id AND chat_group_members.member_id = ' . $two_participant[1] . ' LIMIT 1';
+        // count how many members
+        $count_pat = 'SELECT COUNT(*) FROM chat_group_members WHERE chat_groups.id = chat_group_members.chat_group_id';
+
+        // is two user is member of the group
+        $pat_one = 'SELECT COUNT(*) FROM chat_group_members WHERE chat_groups.id = chat_group_members.chat_group_id AND chat_group_members.member_id = ' . $two_participant[0];
+        $pat_two = 'SELECT COUNT(*) FROM chat_group_members WHERE chat_groups.id = chat_group_members.chat_group_id AND chat_group_members.member_id = ' . $two_participant[1];
 
         return [
-            'count_members' => 'SELECT COUNT(*) FROM chat_group_members WHERE chat_groups.id = chat_group_members.chat_group_id',
+            'count_members' => $count_pat,
             'is_member' => 'SELECT member_id FROM chat_group_members ' .
                 'WHERE chat_groups.id = chat_group_members.chat_group_id AND chat_group_members.member_id = ' . (int)$member_id . ' LIMIT 1',
-            'has_two_participants' => 'IF(' . $pat_one . ' > 0, IF(' . $pat_two . ' > 0, 1, 0), 0) '
+            'has_two_participants' => 'IF((' . $pat_one . ') > 0, IF((' . $pat_two . ') > 0, IF((' . $count_pat . ') = 2, 1, 0), 0), 0)'
         ];
     }
 

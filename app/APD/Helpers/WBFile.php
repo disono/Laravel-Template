@@ -21,20 +21,21 @@ if (!function_exists('fileUpload')) {
      * @param null $tableName
      * @param int $tableId
      *
+     * @param null $fileName
      * @return array
      */
-    function fileUpload($file, $destinationPath = 'private', $imageOptions = [], $title = null, $description = null, $tableName = null, $tableId = 0)
+    function fileUpload($file, $destinationPath = 'private', $imageOptions = [], $title = null, $description = null, $tableName = null, $tableId = 0, $fileName = null)
     {
         $files = [];
         if (is_array($file)) {
             foreach ($file as $value) {
-                $uploaded = fileSave($value, $destinationPath, $imageOptions, $title, $description, $tableName, $tableId);
+                $uploaded = fileSave($value, $destinationPath, $imageOptions, $title, $description, $tableName, $tableId, $fileName);
                 if ($uploaded) {
                     $files[] = $uploaded;
                 }
             }
         } else {
-            $uploaded = fileSave($file, $destinationPath, $imageOptions, $title, $description, $tableName, $tableId);
+            $uploaded = fileSave($file, $destinationPath, $imageOptions, $title, $description, $tableName, $tableId, $fileName);
             if ($uploaded) {
                 $files[] = $uploaded;
             }
@@ -56,9 +57,10 @@ if (!function_exists('fileSave')) {
      * @param null $tableName
      * @param int $tableId
      *
+     * @param null $fileName
      * @return null
      */
-    function fileSave($file, $destinationPath = 'private', $imageOptions = [], $title = null, $description = null, $tableName = null, $tableId = 0)
+    function fileSave($file, $destinationPath = 'private', $imageOptions = [], $title = null, $description = null, $tableName = null, $tableId = 0, $fileName = null)
     {
         $file = processUpload($file, $destinationPath, $title, $description);
         if ($file->fileName) {
@@ -78,7 +80,7 @@ if (!function_exists('fileSave')) {
                 'description' => $description,
                 'table_name' => $tableName,
                 'table_id' => $tableId,
-                'tag' => ($file->type === 'photo') ? hasImageTag($imageOptions) : null
+                'tag' => ($file->type === 'photo') ? hasImageTag($imageOptions, $fileName) : null
             ]);
 
             if ($fileSave) {
@@ -99,16 +101,17 @@ if (!function_exists('hasImageTag')) {
      * Get the tag for image option
      *
      * @param $imageOptions
+     * @param null $fileName
      * @return mixed|null
      */
-    function hasImageTag($imageOptions)
+    function hasImageTag($imageOptions, $fileName = null)
     {
         $tag = $imageOptions['tag'] ?? null;
 
         if (is_array($tag)) {
-            foreach ($tag as $key => $value) {
+            foreach ($tag as $key) {
                 if (request()->hasFile($key)) {
-                    return $value;
+                    return $fileName;
                 }
             }
         }
