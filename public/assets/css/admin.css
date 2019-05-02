@@ -1,5 +1,6 @@
 body {
     font-size: .8rem !important;
+    background-color: #F9F9F9 !important;
 }
 
 /*
@@ -47,4 +48,9 @@ body {
 .sidebar-heading {
     font-size: .75rem;
     text-transform: uppercase;
+}
+
+.table thead th {
+    vertical-align: bottom;
+    border-bottom: 1px solid #dee2e6;
 }

@@ -19,7 +19,7 @@ class CreateUserAddressesTable extends Migration
             $table->unsignedInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
 
-            $table->string('address', 100);
+            $table->text('address');
             $table->string('postal_code', 11)->nullable();
 
             $table->unsignedInteger('country_id')->nullable();
@@ -27,6 +27,11 @@ class CreateUserAddressesTable extends Migration
 
             $table->unsignedInteger('city_id')->nullable();
             $table->foreign('city_id')->references('id')->on('cities');
+
+            $table->boolean('is_verified')->default(0);
+
+            $table->string('verification_code', 100)->nullable();
+            $table->timestamp('verification_expired_at')->nullable();
 
             $table->timestamps();
         });

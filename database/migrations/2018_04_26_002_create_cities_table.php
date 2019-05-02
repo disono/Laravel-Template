@@ -20,8 +20,8 @@ class CreateCitiesTable extends Migration
             $table->foreign('country_id')->references('id')->on('countries');
 
             $table->string('name', 100);
-            $table->double('lat', 14, 6)->default(0);
-            $table->double('lng', 14, 6)->default(0);
+            $table->double('lat', 14, 6)->nullable();
+            $table->double('lng', 14, 6)->nullable();
             $table->timestamps();
         });
     }

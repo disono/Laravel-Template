@@ -1,11 +1,18 @@
 {{--
- * @author      Archie, Disono (webmonsph@gmail.com)
+ * @author      Archie Disono (webmonsph@gmail.com)
  * @link        https://github.com/disono/Laravel-Template
- * @lincense    https://github.com/disono/Laravel-Template/blob/master/LICENSE
+ * @license     https://github.com/disono/Laravel-Template/blob/master/LICENSE
  * @copyright   Webmons Development Studio
 --}}
 
-<nav class="nav nav-pills nav-justified mt-3">
-    <a class="nav-link {{ isActiveMenu('admin.fcmNotification.create') }}"
-       href="{{ route('admin.fcmNotification.create') }}"><i class="fas fa-plus"></i> Send new notification</a>
-</nav>
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link {{ isActiveMenu('admin.fcm.notification.list') }}"
+           href="{{ route('admin.fcm.notification.list') }}"><i class="fas fa-bell"></i> Sent Notifications</a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link {{ isActiveMenu('admin.fcm.notification.create') }}"
+           href="{{ route('admin.fcm.notification.create') }}"><i class="fas fa-paper-plane"></i> Send new notification</a>
+    </li>
+</ul>

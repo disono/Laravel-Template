@@ -19,16 +19,17 @@ class CreateChatGroupMembersTable extends Migration
             $table->unsignedInteger('chat_group_id')->nullable();
             $table->foreign('chat_group_id')->references('id')->on('chat_groups');
 
-
             $table->unsignedInteger('member_id')->nullable();
             $table->foreign('member_id')->references('id')->on('users');
 
             $table->unsignedInteger('added_by_id')->nullable();
             $table->foreign('added_by_id')->references('id')->on('users');
 
+            $table->boolean('is_admin')->default(0);
             $table->boolean('is_mute')->default(0);
             $table->boolean('is_active')->default(0);
             $table->boolean('is_seen')->default(0);
+            $table->boolean('is_archive')->default(0);
 
             $table->timestamps();
         });

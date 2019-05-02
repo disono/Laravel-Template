@@ -1,16 +1,16 @@
-<!DOCTYPE html>
 {{--
- * @author      Archie, Disono (webmonsph@gmail.com)
+ * @author      Archie Disono (webmonsph@gmail.com)
  * @link        https://github.com/disono/Laravel-Template
- * @lincense    https://github.com/disono/Laravel-Template/blob/master/LICENSE
+ * @license     https://github.com/disono/Laravel-Template/blob/master/LICENSE
  * @copyright   Webmons Development Studio
 --}}
-
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="_token" content="{{ $token }}">
+    <meta name="_routeName" content="{{ getRouteName() }}">
 
     {{-- SEO variables --}}
     <title>{{ $page_title }}</title>
@@ -19,61 +19,28 @@
     <meta name="author" content="{{ $page_author }}">
 
     {{-- ICON --}}
-    <link rel="icon" type="image/png" href="{{url('assets/img/placeholder/favicon.png')}}"/>
+    <link rel="icon" type="image/png" href="{{ url('assets/img/placeholder/favicon.png') }}"/>
 
-    <link rel="stylesheet" href="{{ devAssets('assets/css/vendor.css') }}"/>
-    @if(env('APP_ENV') == 'local')
-        <link rel="stylesheet" href="{{ devAssets('assets/css/theme.css') }}"/>
-    @endif
-    <link rel="stylesheet" href="{{ devAssets('assets/css/admin.css') }}"/>
-    <link rel="stylesheet" href="{{ devAssets('assets/css/jro-admin.css') }}"/>
-
-    {{-- Inlince CSS for VueJS --}}
-    <style>
-        [v-cloak] > * {
-            display: none;
-            text-align: center !important;
-        }
-
-        [v-cloak]::before {
-            content: "Loading…";
-            font-size: 22px;
-            text-align: center !important;
-            display: block;
-            margin: 12em 0 !important;
-        }
-    </style>
+    {{-- CSS --}}
+    @include('vendor.view.adminStyles')
 </head>
 
 <body>
-<div id="loaderUpload">
-    <div id="spinnerUploadLoading"></div>
-    <h3>Please wait...</h3>
-</div>
-
-<div class="sidebar-wrapper">
+<main class="container-fluid content-panel" id="{{ $vue_app }}" v-cloak>
+    {{-- sidebars --}}
     @include('admin.layouts.sidebar')
 
-    <main class="container-fluid content-panel" id="WBApp" v-cloak>
-        @yield('content')
-    </main>
-</div>
+    {{-- contents --}}
+    @yield('content')
 
-{{-- Google Map API --}}
-@if(env('GOOGLE_API_KEY'))
-    <script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_API_KEY') }}&libraries=places"></script>
-@endif
+    {{-- footer --}}
+    @include('admin.layouts.footer')
+</main>
 
-<script src="{{ devAssets('assets/js/lib/chart.js') }}"></script>
-<script src="{{ devAssets('assets/js/lib/moment.min.js') }}"></script>
-<script src="{{ devAssets('assets/js/vendor.js') }}"></script>
-<script src="{{ devAssets('assets/js/lib/feather.min.js') }}"></script>
-@if(env('APP_ENV') == 'local')
-    <script src="{{ devAssets('assets/js/vendor/config.js') }}"></script>
-    <script src="{{ devAssets('assets/js/vendor/helper.js') }}"></script>
-    <script src="{{ devAssets('assets/js/vendor/libraries.js') }}"></script>
-    <script src="{{ devAssets('assets/js/application.js') }}"></script>
-@endif
-@yield('javascript')
+{{-- loading modal --}}
+@include(currentTheme() . 'modals.loading')
+
+{{-- load all javascript --}}
+@include('vendor.view.javascript')
 </body>
 </html>

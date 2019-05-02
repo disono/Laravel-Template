@@ -1,7 +1,7 @@
 {{--
- * @author      Archie, Disono (webmonsph@gmail.com)
+ * @author      Archie Disono (webmonsph@gmail.com)
  * @link        https://github.com/disono/Laravel-Template
- * @lincense    https://github.com/disono/Laravel-Template/blob/master/LICENSE
+ * @license     https://github.com/disono/Laravel-Template/blob/master/LICENSE
  * @copyright   Webmons Development Studio
 --}}
 
@@ -14,15 +14,15 @@
                 @include(currentTheme() . 'user.settings.menu')
             </div>
 
-            <div class="col-sm-12 col-lg-9">
-                <form role="form" method="POST" action="{{ route('user.settingsUpdate') }}"
+            <div class="col-sm-12 col-lg-9 p-3 shadow-sm bg-white">
+                <form role="form" method="POST" action="{{ route('user.settings.update') }}"
                       enctype="multipart/form-data" v-on:submit.prevent="onFormUpload">
                     {!! csrf_field() !!}
 
                     {{-- image/avatar --}}
                     <img src="{{ $user->profile_picture }}" alt="{{ $user->first_name }}"
-                         class="rounded mx-auto d-block img-thumbnail mb-3 my-3"
-                         style="width: 140px;">
+                         class="rounded-circle mx-auto d-block img-thumbnail mb-3 my-3"
+                         style="width: 140px; height: 140px;">
 
                     <div class="row">
                         <div class="col-md-6 col-sm-12 mb-3">
@@ -102,7 +102,7 @@
                         <div class="col-md-6 col-sm-12 mb-3">
                             <label for="birthday">Birthday</label>
                             <input type="text"
-                                   class="form-control date-picker{{ $errors->has('birthday') ? ' is-invalid' : '' }}"
+                                   class="form-control date-picker-no-future{{ $errors->has('birthday') ? ' is-invalid' : '' }}"
                                    name="birthday"
                                    value="{{ old('birthday', $user->birthday) }}"
                                    id="birthday" data-validate="required">
@@ -115,7 +115,7 @@
 
                     <div class="row">
                         <div class="col-md-12 col-sm-12 mb-3">
-                            <label for="address">Address</label>
+                            <label for="address">Home Address</label>
                             <textarea
                                     class="form-control{{ $errors->has('address') ? ' is-invalid' : '' }}"
                                     name="address"

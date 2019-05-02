@@ -1,7 +1,7 @@
 {{--
- * @author      Archie, Disono (webmonsph@gmail.com)
+ * @author      Archie Disono (webmonsph@gmail.com)
  * @link        https://github.com/disono/Laravel-Template
- * @lincense    https://github.com/disono/Laravel-Template/blob/master/LICENSE
+ * @license     https://github.com/disono/Laravel-Template/blob/master/LICENSE
  * @copyright   Webmons Development Studio
 --}}
 
@@ -9,8 +9,8 @@
 
 @section('content')
     <div class="container">
-        <div class="row">
-            <div class="col">
+        <div class="row p-3 rounded shadow-sm bg-white">
+            <div class="col-12">
                 @if($page->has_cover)
                     <div class="row">
                         <img src="{{ $page->cover }}" alt="{{ $page->name }}" class="img-fluid col-12">

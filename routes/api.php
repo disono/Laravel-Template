@@ -31,8 +31,8 @@ Route::get('v1/application/settings', 'API\V1\Application\ApplicationController@
 Route::group(['middleware' => ['api.auth']], function () {
     // user
     Route::get('v1/user/sync', 'API\V1\User\SettingController@syncAction')->name('api.v1.user.sync');
-    Route::post('v1/user/setting/update', 'API\V1\User\SettingController@settingsUpdateAction')->name('api.v1.user.settingsUpdate');
-    Route::post('v1/user/security/update', 'API\V1\User\SettingController@securityUpdateAction')->name('api.v1.user.securityUpdate');
+    Route::post('v1/user/setting/update', 'API\V1\User\SettingController@settingsUpdateAction')->name('api.v1.user.settings.update');
+    Route::post('v1/user/security/update', 'API\V1\User\SettingController@securityUpdateAction')->name('api.v1.user.security.update');
 
     // FCM tokens
     Route::post('v1/user/fcm/store', 'API\V1\User\FCMController@storeAction')->name('api.v1.user.fcm.store');

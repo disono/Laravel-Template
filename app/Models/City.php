@@ -1,8 +1,8 @@
 <?php
 /**
- * @author          Archie, Disono (webmonsph@gmail.com)
+ * @author          Archie Disono (webmonsph@gmail.com)
  * @link            https://github.com/disono/Laravel-Template
- * @copyright       Webmons Development Studio. (webmons.com), 2016-2018
+ * @copyright       Webmons Development Studio. (https://webmons.com), 2016-2019
  * @license         Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
@@ -31,5 +31,18 @@ class City extends BaseModel
     public function country()
     {
         return $this->belongsTo('App\Models\Country');
+    }
+
+    public static function rawFilters($query)
+    {
+        $query->join('countries', 'cities.country_id', '=', 'countries.id');
+        return $query;
+    }
+
+    protected static function rawQuerySelectList()
+    {
+        return [
+            'country_name' => 'countries.name',
+        ];
     }
 }

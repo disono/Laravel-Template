@@ -1,8 +1,8 @@
 <?php
 /**
- * @author          Archie, Disono (webmonsph@gmail.com)
+ * @author          Archie Disono (webmonsph@gmail.com)
  * @link            https://github.com/disono/Laravel-Template
- * @copyright       Webmons Development Studio. (webmons.com), 2016-2018
+ * @copyright       Webmons Development Studio. (https://webmons.com), 2016-2019
  * @license         Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
@@ -11,6 +11,8 @@ namespace App\Http\Controllers;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
 use Illuminate\Routing\Controller as BaseController;
 
 class Controller extends BaseController
@@ -21,6 +23,7 @@ class Controller extends BaseController
     protected $request = null;
     protected $theme = null;
     protected $me = null;
+    protected $view = null;
     protected $viewType = 'guest';
 
     public function __construct()
@@ -28,6 +31,7 @@ class Controller extends BaseController
         $this->middleware(function ($request, $next) {
             $this->request = request();
             $this->me = __me();
+            $this->view = view();
 
             return $next($request);
         });
@@ -39,7 +43,7 @@ class Controller extends BaseController
      * @param $path
      * @param array $data
      * @param int $response
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
+     * @return JsonResponse|Response
      */
     protected function view($path, $data = [], $response = 200)
     {
@@ -77,7 +81,7 @@ class Controller extends BaseController
      * @param $data
      * @param int $response
      * @param bool $default_message
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     protected function json($data, $response = 200, $default_message = true)
     {
@@ -114,23 +118,32 @@ class Controller extends BaseController
      */
     protected function setHeader($key, $value)
     {
-        $view = view();
-
         switch ($key) {
             case 'title':
-                $view->share('page_title', ucfirst($value) . ' - ' . __settings('title')->value);
-                $view->share('view_title', ucfirst($value));
+                $this->view->share('page_title', ucfirst($value) . ' - ' . __settings('title')->value);
+                $this->view->share('view_title', ucfirst($value));
                 break;
             case 'description':
-                $view->share('page_description', $value);
+                $this->view->share('page_description', $value);
                 break;
             case 'keywords':
-                $view->share('page_keywords', $value);
+                $this->view->share('page_keywords', $value);
                 break;
             case 'author':
-                $view->share('page_author', $value);
+                $this->view->share('page_author', $value);
                 break;
         }
+    }
+
+    /**
+     * Set view variables in app
+     *
+     * @param $key
+     * @param $value
+     */
+    protected function setApp($key, $value)
+    {
+        $this->view->share($key, $value);
     }
 
     /**
@@ -138,7 +151,7 @@ class Controller extends BaseController
      *
      * @param $code
      * @param null $message
-     * @return \Illuminate\Http\JsonResponse|void
+     * @return JsonResponse|void
      */
     protected function error($code, $message = null)
     {

@@ -1,8 +1,8 @@
 <?php
 /**
- * @author          Archie, Disono (webmonsph@gmail.com)
+ * @author          Archie Disono (webmonsph@gmail.com)
  * @link            https://github.com/disono/Laravel-Template
- * @copyright       Webmons Development Studio. (webmons.com), 2016-2018
+ * @copyright       Webmons Development Studio. (https://webmons.com), 2016-2019
  * @license         Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
@@ -16,7 +16,8 @@ class Setting extends BaseModel
 
     protected static $tableName = 'settings';
     protected static $writableColumns = [
-        'name', 'key', 'value', 'description', 'input_type', 'input_value', 'attributes', 'is_disabled'
+        'name', 'key', 'value', 'description', 'input_type', 'input_value', 'attributes', 'is_disabled',
+        'category'
     ];
 
     protected static $inputBooleans = ['is_disabled'];
@@ -97,6 +98,11 @@ class Setting extends BaseModel
         }
 
         return $values;
+    }
+
+    public static function categories()
+    {
+        return self::select('category')->groupBy('category')->get();
     }
 
     /**

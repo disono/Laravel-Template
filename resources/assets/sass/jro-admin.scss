@@ -190,9 +190,10 @@ a {
   display: block;
 }
 
-.nav-item .nav-link.active {
-  color: $brand-200;
-  background-color: #FFF;
+.icon-nav-slider .nav-item .nav-link.active {
+  color: #ea5954;
+  background-color: #282828;
+  border-right: solid 4px #ea5954 !important;
 }
 
 .dash-head :after {
@@ -470,24 +471,14 @@ nav {
 
 h1.header {
   background: $brand-700;
-  width: 97%;
+  color: $brand-500;
+  width: 100%;
   position: relative;
   padding: 12px;
-  height: 50px;
-  color: $brand-500;
+  height: auto;
   font-size: 1.8em;
   font-weight: 400;
-
-  &::before {
-    background: $brand-700 none repeat scroll 0 0;
-    content: "";
-    height: 50px;
-    position: absolute;
-    right: -25px;
-    top: 0;
-    transform: skew(-20deg);
-    width: 50px;
-  }
+  border-radius: 4px;
 }
 
 .text-primary {

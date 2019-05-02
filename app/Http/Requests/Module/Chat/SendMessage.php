@@ -24,7 +24,7 @@ class SendMessage extends FormRequest
     public function rules()
     {
         return [
-            'group_id' => 'required|integer|exists:chat_groups,id',
+            'chat_group_id' => 'required|integer|exists:chat_groups,id',
             'message' => 'required'
         ];
     }

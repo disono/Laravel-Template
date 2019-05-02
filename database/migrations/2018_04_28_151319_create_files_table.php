@@ -20,7 +20,7 @@ class CreateFilesTable extends Migration
             $table->foreign('user_id')->references('id')->on('users');
 
             $table->string('file_name', 100);
-            $table->enum('type', ['video', 'photo', 'doc', 'file']);
+            $table->enum('type', ['video', 'audio', 'photo', 'doc', 'file']);
             $table->string('ext', 45)->nullable();
             $table->string('title', 100)->nullable();
             $table->string('description', 100)->nullable();

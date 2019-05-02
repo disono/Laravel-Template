@@ -1,7 +1,7 @@
 {{--
- * @author      Archie, Disono (webmonsph@gmail.com)
+ * @author      Archie Disono (webmonsph@gmail.com)
  * @link        https://github.com/disono/Laravel-Template
- * @lincense    https://github.com/disono/Laravel-Template/blob/master/LICENSE
+ * @license     https://github.com/disono/Laravel-Template/blob/master/LICENSE
  * @copyright   Webmons Development Studio
 --}}
 
@@ -11,7 +11,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-4 col-sm-12 mr-auto ml-auto">
-                <div class="alert alert-warning" role="alert">
+                <div class="alert alert-warning rounded shadow-sm" role="alert">
                     <form action="{{ route('auth.verify.phone.process') }}" method="post">
                         {{ csrf_field() }}
 

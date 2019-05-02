@@ -1,8 +1,8 @@
 <?php
 /**
- * @author          Archie, Disono (webmonsph@gmail.com)
+ * @author          Archie Disono (webmonsph@gmail.com)
  * @link            https://github.com/disono/Laravel-Template
- * @copyright       Webmons Development Studio. (webmons.com), 2016-2018
+ * @copyright       Webmons Development Studio. (https://webmons.com), 2016-2019
  * @license         Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
@@ -45,8 +45,8 @@ class UsersImport implements ToModel, WithHeadingRow
 
     public function columns(): array
     {
-        $cleanHidden = array_diff(User::getColumns(), $this->hidden);
-        $cleanColumns = array_diff($this->hidden, User::getColumns());
+        $cleanHidden = array_diff(User::getWritableColumns(), $this->hidden);
+        $cleanColumns = array_diff($this->hidden, User::getWritableColumns());
         $final_output = array_merge($cleanHidden, $cleanColumns);
 
         return $final_output;

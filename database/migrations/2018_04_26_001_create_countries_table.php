@@ -17,6 +17,8 @@ class CreateCountriesTable extends Migration
             $table->increments('id');
             $table->string('code', 4);
             $table->string('name', 100);
+            $table->double('lat', 14, 6)->nullable();
+            $table->double('lng', 14, 6)->nullable();
             $table->timestamps();
         });
     }

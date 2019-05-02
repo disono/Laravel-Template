@@ -1,7 +1,7 @@
 {{--
- * @author      Archie, Disono (webmonsph@gmail.com)
+ * @author      Archie Disono (webmonsph@gmail.com)
  * @link        https://github.com/disono/Laravel-Template
- * @lincense    https://github.com/disono/Laravel-Template/blob/master/LICENSE
+ * @license     https://github.com/disono/Laravel-Template/blob/master/LICENSE
  * @copyright   Webmons Development Studio
 --}}
 
@@ -11,15 +11,17 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-5 mr-auto ml-auto">
-                <div class="jumbotron">
+                <div class="jumbotron shadow-sm">
                     <h2 class="text-center">Join Today.</h2>
                     <p class="text-muted text-center">Fill in the form below to get instant access.</p>
 
                     @if(__settings('authSocialFacebook')->value == 'enabled')
-                        <a href="{{ route('auth.facebook') }}" class="btn btn-block">
+                        <a href="{{ route('auth.facebook') }}" class="btn btn-block btn-facebook btn-lg mt-3">
                             <i class="fab fa-facebook-square fa-lg"></i>
-                            Register using Facebook
+                            Continue with Facebook
                         </a>
+
+                        <p class="hr-line-word-jumbotron mt-3"><span>OR</span></p>
                     @endif
 
                     <form role="form" method="POST" class="mt-3" action="{{ route('auth.register') }}"
@@ -109,7 +111,7 @@
                         </div>
 
                         <div class="form-group">
-                            <button type="submit" class="btn blue btn-block">Register</button>
+                            <button type="submit" class="btn blue btn-block btn-primary">Register</button>
                         </div>
                     </form>
 

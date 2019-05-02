@@ -1,12 +1,13 @@
 {{--
- * @author      Archie, Disono (webmonsph@gmail.com)
+ * @author      Archie Disono (webmonsph@gmail.com)
  * @link        https://github.com/disono/Laravel-Template
- * @lincense    https://github.com/disono/Laravel-Template/blob/master/LICENSE
+ * @license     https://github.com/disono/Laravel-Template/blob/master/LICENSE
  * @copyright   Webmons Development Studio
 --}}
 
 <div class="modal-header">
     <h5 class="modal-title">Files</h5>
+
     <button type="button" class="close dialogDismiss" aria-label="Close">
         <span aria-hidden="true">&times;</span>
     </button>
@@ -16,7 +17,7 @@
     <div class="row">
         {{-- file list --}}
         <div class="col-sm-12 col-md-9">
-            <ul class="nav nav-pills mb-3">
+            <ul class="nav nav-tabs mb-3">
                 <li class="nav-item">
                     <a class="nav-link fileSelectorNav" href="#" data-type="all">All</a>
                 </li>
@@ -25,6 +26,9 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link fileSelectorNav" href="#" data-type="video">Videos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fileSelectorNav" href="#" data-type="audio">Audios</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link fileSelectorNav" href="#" data-type="doc">Documents</a>

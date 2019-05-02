@@ -1,7 +1,7 @@
 {{--
- * @author      Archie, Disono (webmonsph@gmail.com)
+ * @author      Archie Disono (webmonsph@gmail.com)
  * @link        https://github.com/disono/Laravel-Template
- * @lincense    https://github.com/disono/Laravel-Template/blob/master/LICENSE
+ * @license     https://github.com/disono/Laravel-Template/blob/master/LICENSE
  * @copyright   Webmons Development Studio
 --}}
 
@@ -11,16 +11,18 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-4 mr-auto ml-auto">
-                <div class="jumbotron jumbotron-sm">
+                <div class="jumbotron jumbotron-sm shadow-sm">
                     <h2>Log In</h2>
 
                     {{-- Facebook login --}}
                     @if(__settings('authSocialFacebook')->value == 'enabled')
                         <a href="{{ route('auth.facebook') }}"
-                           class="btn btn-block">
+                           class="btn btn-block btn-facebook btn-lg mt-3">
                             <i class="fab fa-facebook-square fa-lg"></i>
-                            Login using Facebook
+                            Continue with Facebook
                         </a>
+
+                        <p class="hr-line-word-jumbotron mt-3"><span>OR</span></p>
                     @endif
 
                     {{-- login form --}}
@@ -60,7 +62,7 @@
                         </div>
 
                         <div class="form-group">
-                            <button type="submit" class="btn btn-block">Login</button>
+                            <button type="submit" class="btn btn-block btn-primary">Login</button>
                         </div>
                     </form>
 

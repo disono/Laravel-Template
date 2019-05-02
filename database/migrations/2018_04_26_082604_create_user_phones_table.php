@@ -21,7 +21,12 @@ class CreateUserPhonesTable extends Migration
 
             $table->string('ext', 5)->nullable();
             $table->string('phone', 20);
+
             $table->boolean('is_verified')->default(0);
+
+            $table->string('verification_code', 100)->nullable();
+            $table->timestamp('verification_expired_at')->nullable();
+
             $table->timestamps();
         });
     }

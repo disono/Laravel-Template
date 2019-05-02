@@ -1,22 +1,28 @@
 {{--
- * @author      Archie, Disono (webmonsph@gmail.com)
+ * @author      Archie Disono (webmonsph@gmail.com)
  * @link        https://github.com/disono/Laravel-Template
- * @lincense    https://github.com/disono/Laravel-Template/blob/master/LICENSE
+ * @license     https://github.com/disono/Laravel-Template/blob/master/LICENSE
  * @copyright   Webmons Development Studio
 --}}
 
-<nav class="nav nav-pills nav-justified">
-    <a class="nav-link {{ isActiveMenu('admin.user.index') }}"
-       href="{{ route('admin.user.index') }}"><i class="fas fa-user-friends"></i> All Users</a>
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link {{ isActiveMenu('admin.user.list') }}"
+           href="{{ route('admin.user.list') }}"><i class="fas fa-user-friends"></i> All Users</a>
+    </li>
 
-    <a class="nav-link {{ isActiveMenu('admin.user.authentication.history') }}"
-       href="{{ route('admin.user.authentication.history') }}"><i class="fas fa-history"></i> Authentication History</a>
+    <li class="nav-item">
+        <a class="nav-link {{ isActiveMenu('admin.user.authentication.history') }}"
+           href="{{ route('admin.user.authentication.history') }}"><i class="fas fa-history"></i> Authentication History</a>
+    </li>
 
-    <a class="nav-link {{ isActiveMenu('admin.user.tracker.index') }}"
-       href="{{ route('admin.user.tracker.index') }}"><i class="fas fa-map"></i> Tracker</a>
+    <li class="nav-item">
+        <a class="nav-link {{ isActiveMenu('admin.user.tracker.list') }}"
+           href="{{ route('admin.user.tracker.list') }}"><i class="fas fa-map"></i> Tracker</a>
+    </li>
 
-    <a class="nav-link {{ isActiveMenu('admin.user.create') }}"
-       href="{{ route('admin.user.create') }}"><i class="fas fa-user-plus"></i> Register New User</a>
-</nav>
-
-@include('admin.layouts.toolbarList')
+    <li class="nav-item">
+        <a class="nav-link {{ isActiveMenu('admin.user.create') }}"
+           href="{{ route('admin.user.create') }}"><i class="fas fa-user-plus"></i> Register New User</a>
+    </li>
+</ul>

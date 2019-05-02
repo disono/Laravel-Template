@@ -1,18 +1,18 @@
 {{--
- * @author      Archie, Disono (webmonsph@gmail.com)
+ * @author      Archie Disono (webmonsph@gmail.com)
  * @link        https://github.com/disono/Laravel-Template
- * @lincense    https://github.com/disono/Laravel-Template/blob/master/LICENSE
+ * @license     https://github.com/disono/Laravel-Template/blob/master/LICENSE
  * @copyright   Webmons Development Studio
 --}}
 
 @extends('admin.layouts.master')
 
 @section('content')
-    <div class="container">
+    <div class="container-fluid shadow-sm p-3 bg-white">
         <div class="row">
             <div class="col">
-                <h1 class="header">{{ $view_title }}</h1>
-
+                <h1>{{ $view_title }}</h1>
+                <hr>
                 @include('admin.page.menu')
 
                 <div class="row mt-3">
@@ -24,9 +24,8 @@
 
                             <div class="row">
                                 <div class="col-md-9 col-sm-12 mb-3">
-                                    <label for="content">Content/Body <strong class="text-danger">*</strong></label>
-
-                                    <textarea name="content" id="content" class="form-control tiny-editor-content" rows="24"
+                                    <textarea name="content" id="content" class="form-control tiny-editor-content"
+                                              rows="24"
                                               placeholder="Content">{!! old('content', $page->content) !!}</textarea>
 
                                     @if ($errors->has('content'))
@@ -35,12 +34,14 @@
                                 </div>
 
                                 <div class="col-md-3 col-sm-12 mb-3">
-                                    <div class="row mb-3">
+                                    <div class="form-group">
                                         <label for="name">Page Name/Title <strong class="text-danger">*</strong></label>
 
                                         <input id="name" type="text"
                                                class="form-control{{ hasInputError($errors, 'name') }}"
                                                name="name" value="{{ old('name', $page->name) }}"
+                                               v-model="frmAdminPage.name" @change="adminPageOnNameChange"
+                                               data-value="{{ old('name', $page->name) }}"
                                                data-validate="required">
 
                                         @if ($errors->has('name'))
@@ -48,13 +49,15 @@
                                         @endif
                                     </div>
 
-                                    <div class="row mb-3">
+                                    <div class="form-group">
                                         <label for="slug">Slug (Friendly URL Name) <strong
                                                     class="text-danger">*</strong></label>
 
                                         <input id="slug" type="text"
                                                class="form-control{{ hasInputError($errors, 'slug') }}"
                                                name="slug" value="{{ old('slug', $page->slug) }}"
+                                               data-value="{{ old('slug', $page->slug) }}"
+                                               v-model="frmAdminPage.slug"
                                                data-validate="required">
 
                                         @if ($errors->has('slug'))
@@ -62,7 +65,7 @@
                                         @endif
                                     </div>
 
-                                    <div class="row mb-3">
+                                    <div class="form-group">
                                         <label for="page_category_id">Category <strong
                                                     class="text-danger">*</strong></label>
 
@@ -80,7 +83,7 @@
                                         @endif
                                     </div>
 
-                                    <div class="row mb-3">
+                                    <div class="form-group">
                                         <label for="template">Template (Custom Page Design)</label>
 
                                         <input id="template" type="text"
@@ -92,7 +95,7 @@
                                         @endif
                                     </div>
 
-                                    <div class="row mb-3">
+                                    <div class="form-group">
                                         <label for="cover_photo">Cover Photo</label>
 
                                         <div class="custom-file">
@@ -106,11 +109,11 @@
                                         @endif
                                     </div>
 
-                                    <div class="row mb-3">
+                                    <div class="form-group">
                                         <label for="post_at">Post At</label>
 
                                         <input id="post_at" type="text"
-                                               class="form-control date-picker-current{{ hasInputError($errors, 'post_at') }}"
+                                               class="form-control date-picker-no-pass{{ hasInputError($errors, 'post_at') }}"
                                                name="post_at" value="{{ old('post_at', $page->post_at) }}">
 
                                         @if ($errors->has('post_at'))
@@ -118,11 +121,11 @@
                                         @endif
                                     </div>
 
-                                    <div class="row mb-3">
+                                    <div class="form-group">
                                         <label for="expired_at">Expired At</label>
 
                                         <input id="expired_at" type="text"
-                                               class="form-control date-picker-current{{ hasInputError($errors, 'expired_at') }}"
+                                               class="form-control date-picker-no-pass{{ hasInputError($errors, 'expired_at') }}"
                                                name="expired_at" value="{{ old('expired_at', $page->expired_at) }}">
 
                                         @if ($errors->has('expired_at'))
@@ -130,7 +133,7 @@
                                         @endif
                                     </div>
 
-                                    <div class="row mb-3">
+                                    <div class="form-group">
                                         <div class="custom-control custom-checkbox">
                                             <input type="checkbox" class="custom-control-input" id="is_draft"
                                                    value="1" name="is_draft"
@@ -143,7 +146,7 @@
                                         @endif
                                     </div>
 
-                                    <div class="row mb-3">
+                                    <div class="form-group">
                                         <div class="custom-control custom-checkbox">
                                             <input type="checkbox" class="custom-control-input"
                                                    id="is_email_to_subscriber"
@@ -158,7 +161,7 @@
                                         @endif
                                     </div>
 
-                                    <div class="row mb-3">
+                                    <div class="form-group">
                                         <button type="submit" class="btn btn-raised btn-primary">Submit</button>
                                     </div>
                                 </div>
@@ -173,5 +176,5 @@
 
 @section('javascript')
     <script src="{{ devAssets('assets/js/lib/tinymce/tinymce.min.js') }}"></script>
-    <script src="{{ devAssets('assets/js/vendor/tinyMCE.js') }}"></script>
+    <script src="{{ devAssets('assets/js/app/tiny_mce.js') }}"></script>
 @endsection

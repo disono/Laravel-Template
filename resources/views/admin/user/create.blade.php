@@ -1,274 +1,281 @@
 {{--
- * @author      Archie, Disono (webmonsph@gmail.com)
+ * @author      Archie Disono (webmonsph@gmail.com)
  * @link        https://github.com/disono/Laravel-Template
- * @lincense    https://github.com/disono/Laravel-Template/blob/master/LICENSE
+ * @license     https://github.com/disono/Laravel-Template/blob/master/LICENSE
  * @copyright   Webmons Development Studio
 --}}
 
 @extends('admin.layouts.master')
 
 @section('content')
-    <div class="container">
+    <div class="container-fluid shadow-sm p-3 bg-white">
         <div class="row">
             <div class="col">
-                <h1 class="header">{{ $view_title }}</h1>
-
+                <h3>{{ $view_title }}</h3>
+                <hr>
                 @include('admin.user.menu')
 
-                <div class="row mt-3">
-                    <div class="col">
-                        <form action="{{ route('admin.user.store') }}" method="post" v-on:submit.prevent="onFormUpload">
-                            <div class="row">
-                                <div class="col-md-3 col-sm-12 mb-3">
-                                    <label for="first_name">First Name <strong class="text-danger">*</strong></label>
+                <form action="{{ route('admin.user.store') }}" method="post" v-on:submit.prevent="onFormUpload">
+                    <div class="row mt-3">
+                        <div class="col-md-4 col-sm-12 mb-3">
+                            <h5><i class="fas fa-user"></i> Profile</h5>
+                            <hr>
 
-                                    <input id="first_name" type="text"
-                                           class="form-control{{ hasInputError($errors, 'first_name') }}"
-                                           name="first_name" value="{{ old('first_name') }}" data-validate="required">
+                            <div class="form-group">
+                                <label for="profile_picture">Profile Image</label>
 
-                                    @if ($errors->has('first_name'))
-                                        <div class="invalid-feedback">{{ $errors->first('first_name') }}</div>
-                                    @endif
+                                <div class="custom-file">
+                                    <input type="file" class="custom-file-input" name="profile_picture"
+                                           id="profile_picture">
+                                    <label class="custom-file-label" for="profile_picture">Choose image</label>
                                 </div>
 
-                                <div class="col-md-3 col-sm-12 mb-3">
-                                    <label for="middle_name">Middle Name</label>
-
-                                    <input id="middle_name" type="text"
-                                           class="form-control{{ hasInputError($errors, 'middle_name') }}"
-                                           name="middle_name" value="{{ old('middle_name') }}">
-
-                                    @if ($errors->has('middle_name'))
-                                        <div class="invalid-feedback">{{ $errors->first('middle_name') }}</div>
-                                    @endif
-                                </div>
-
-                                <div class="col-md-3 col-sm-12 mb-3">
-                                    <label for="last_name">Last Name <strong class="text-danger">*</strong></label>
-
-                                    <input id="last_name" type="text"
-                                           class="form-control{{ hasInputError($errors, 'last_name') }}"
-                                           name="last_name" value="{{ old('last_name') }}" data-validate="required">
-
-                                    @if ($errors->has('last_name'))
-                                        <div class="invalid-feedback">{{ $errors->first('last_name') }}</div>
-                                    @endif
-                                </div>
-
-                                <div class="col-md-3 col-sm-12 mb-3">
-                                    <label for="profile_picture">Profile Image</label>
-
-                                    <div class="custom-file">
-                                        <input type="file" class="custom-file-input" name="profile_picture"
-                                               id="profile_picture">
-                                        <label class="custom-file-label" for="profile_picture">Choose image</label>
-                                    </div>
-
-                                    @if ($errors->has('profile_picture'))
-                                        <div class="invalid-feedback">{{ $errors->first('profile_picture') }}</div>
-                                    @endif
-                                </div>
+                                @if ($errors->has('profile_picture'))
+                                    <div class="invalid-feedback">{{ $errors->first('profile_picture') }}</div>
+                                @endif
                             </div>
 
-                            <div class="row">
-                                <div class="col-md-3 col-sm-12 mb-3">
-                                    <label for="gender">Gender <strong class="text-danger">*</strong></label>
+                            <div class="form-group">
+                                <label for="first_name">First Name <strong
+                                            class="text-danger">*</strong></label>
 
-                                    <select class="custom-select{{ hasInputError($errors, 'gender') }}"
-                                            name="gender" id="gender" data-validate="required">
-                                        <option value="">Select Gender</option>
-                                        <option value="Male">Male</option>
-                                        <option value="Female">Female</option>
-                                    </select>
+                                <input id="first_name" type="text"
+                                       class="form-control{{ hasInputError($errors, 'first_name') }}"
+                                       name="first_name" value="{{ old('first_name') }}"
+                                       data-validate="required">
 
-                                    @if ($errors->has('gender'))
-                                        <div class="invalid-feedback">{{ $errors->first('gender') }}</div>
-                                    @endif
-                                </div>
-
-                                <div class="col-md-3 col-sm-12 mb-3">
-                                    <label for="birthday">Birthday <strong class="text-danger">*</strong></label>
-
-                                    <input id="birthday" type="text"
-                                           class="form-control date-picker{{ hasInputError($errors, 'birthday') }}"
-                                           name="birthday" value="{{ old('birthday') }}" data-validate="required">
-
-                                    @if ($errors->has('birthday'))
-                                        <div class="invalid-feedback">{{ $errors->first('birthday') }}</div>
-                                    @endif
-                                </div>
+                                @if ($errors->has('first_name'))
+                                    <div class="invalid-feedback">{{ $errors->first('first_name') }}</div>
+                                @endif
                             </div>
 
-                            <div class="row">
-                                <div class="col-md-3 col-sm-12 mb-3">
-                                    <label for="address">Address <strong class="text-danger">*</strong></label>
+                            <div class="form-group">
+                                <label for="middle_name">Middle Name</label>
 
-                                    <textarea name="address" id="address"
-                                              class="form-control{{ hasInputError($errors, 'address') }}"
-                                              data-validate="required"></textarea>
+                                <input id="middle_name" type="text"
+                                       class="form-control{{ hasInputError($errors, 'middle_name') }}"
+                                       name="middle_name" value="{{ old('middle_name') }}">
 
-                                    @if ($errors->has('address'))
-                                        <div class="invalid-feedback">{{ $errors->first('address') }}</div>
-                                    @endif
-                                </div>
-
-                                <div class="col-md-3 col-sm-12 mb-3">
-                                    <label for="postal_code">Postal Code <strong class="text-danger">*</strong></label>
-
-                                    <input id="postal_code" type="text"
-                                           class="form-control{{ hasInputError($errors, 'postal_code') }}"
-                                           name="postal_code" value="{{ old('postal_code') }}" data-validate="required">
-
-                                    @if ($errors->has('postal_code'))
-                                        <div class="invalid-feedback">{{ $errors->first('postal_code') }}</div>
-                                    @endif
-                                </div>
-
-                                <div class="col-md-3 col-sm-12 mb-3">
-                                    <label for="country_id">Country</label>
-
-                                    <select class="custom-select" name="country_id" id="country_id">
-                                        <option value="">Select Country</option>
-                                        @foreach($countries as $country)
-                                            <option value="{{ $country->id }}">{{ $country->name }}</option>
-                                        @endforeach
-                                    </select>
-
-                                    @if ($errors->has('country_id'))
-                                        <div class="invalid-feedback">{{ $errors->first('country_id') }}</div>
-                                    @endif
-                                </div>
-
-                                <div class="col-md-3 col-sm-12 mb-3">
-                                    <label for="city_id">City</label>
-
-                                    <select class="custom-select" name="city_id" id="city_id">
-                                        <option value="">Select City</option>
-                                        @foreach($cities as $city)
-                                            <option value="{{ $city->id }}">{{ $city->name }}</option>
-                                        @endforeach
-                                    </select>
-
-                                    @if ($errors->has('city_id'))
-                                        <div class="invalid-feedback">{{ $errors->first('city_id') }}</div>
-                                    @endif
-                                </div>
+                                @if ($errors->has('middle_name'))
+                                    <div class="invalid-feedback">{{ $errors->first('middle_name') }}</div>
+                                @endif
                             </div>
 
-                            <div class="row">
-                                <div class="col-md-3 col-sm-12 mb-3">
-                                    <label for="role_id">Role <strong class="text-danger">*</strong></label>
+                            <div class="form-group">
+                                <label for="last_name">Last Name <strong class="text-danger">*</strong></label>
 
-                                    <select class="custom-select{{ hasInputError($errors, 'role_id') }}"
-                                            name="role_id" id="role_id" data-validate="required">
-                                        <option value="">Select Role</option>
-                                        @foreach($roles as $role)
-                                            <option value="{{ $role->id }}">{{ $role->name }}</option>
-                                        @endforeach
-                                    </select>
+                                <input id="last_name" type="text"
+                                       class="form-control{{ hasInputError($errors, 'last_name') }}"
+                                       name="last_name" value="{{ old('last_name') }}" data-validate="required">
 
-                                    @if ($errors->has('role_id'))
-                                        <div class="invalid-feedback">{{ $errors->first('role_id') }}</div>
-                                    @endif
-                                </div>
-
-                                <div class="col-md-3 col-sm-12 mb-3">
-                                    <label for="username">Username <strong class="text-danger">*</strong></label>
-
-                                    <input id="username" type="text"
-                                           class="form-control{{ hasInputError($errors, 'username') }}"
-                                           name="username" value="{{ old('username') }}" data-validate="required">
-
-                                    @if ($errors->has('username'))
-                                        <div class="invalid-feedback">{{ $errors->first('username') }}</div>
-                                    @endif
-                                </div>
-
-                                <div class="col-md-3 col-sm-12 mb-3">
-                                    <label for="email">Email <strong class="text-danger">*</strong></label>
-
-                                    <input id="email" type="text"
-                                           class="form-control{{ hasInputError($errors, 'email') }}"
-                                           name="email" value="{{ old('email') }}" data-validate="required">
-
-                                    @if ($errors->has('email'))
-                                        <div class="invalid-feedback">{{ $errors->first('email') }}</div>
-                                    @endif
-                                </div>
-
-                                <div class="col-md-3 col-sm-12 mb-3">
-                                    <label for="password">Password <strong class="text-danger">*</strong></label>
-
-                                    <input id="password" type="text"
-                                           class="form-control{{ hasInputError($errors, 'password') }}"
-                                           name="password" value="{{ old('password') }}" data-validate="required">
-
-                                    @if ($errors->has('password'))
-                                        <div class="invalid-feedback">{{ $errors->first('password') }}</div>
-                                    @endif
-                                </div>
+                                @if ($errors->has('last_name'))
+                                    <div class="invalid-feedback">{{ $errors->first('last_name') }}</div>
+                                @endif
                             </div>
 
-                            <div class="row">
-                                <div class="col-md-3 col-sm-12 mb-3">
-                                    <div class="custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input" id="is_email_verified"
-                                               value="1" name="is_email_verified">
-                                        <label class="custom-control-label" for="is_email_verified">Email
-                                            Verified</label>
-                                    </div>
+                            <div class="form-group">
+                                <label for="gender">Gender <strong class="text-danger">*</strong></label>
 
-                                    @if ($errors->has('is_email_verified'))
-                                        <div class="invalid-feedback">{{ $errors->first('is_email_verified') }}</div>
-                                    @endif
-                                </div>
+                                <select class="custom-select{{ hasInputError($errors, 'gender') }}"
+                                        name="gender" id="gender" data-validate="required">
+                                    <option value="">Select Gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                </select>
 
-                                <div class="col-md-3 col-sm-12 mb-3">
-                                    <div class="custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input" id="is_phone_verified"
-                                               value="1" name="is_phone_verified">
-                                        <label class="custom-control-label" for="is_phone_verified">Phone
-                                            Verified</label>
-                                    </div>
-
-                                    @if ($errors->has('is_phone_verified'))
-                                        <div class="invalid-feedback">{{ $errors->first('is_phone_verified') }}</div>
-                                    @endif
-                                </div>
-
-                                <div class="col-md-3 col-sm-12 mb-3">
-                                    <div class="custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input" id="is_account_activated"
-                                               value="1" name="is_account_activated">
-                                        <label class="custom-control-label" for="is_account_activated">
-                                            Account Activated
-                                        </label>
-                                    </div>
-
-                                    @if ($errors->has('is_account_activated'))
-                                        <div class="invalid-feedback">{{ $errors->first('is_account_activated') }}</div>
-                                    @endif
-                                </div>
-
-                                <div class="col-md-3 col-sm-12 mb-3">
-                                    <div class="custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input" id="is_account_enabled"
-                                               value="1" name="is_account_enabled">
-                                        <label class="custom-control-label" for="is_account_enabled">
-                                            Account Enabled
-                                        </label>
-                                    </div>
-
-                                    @if ($errors->has('is_account_enabled'))
-                                        <div class="invalid-feedback">{{ $errors->first('is_account_enabled') }}</div>
-                                    @endif
-                                </div>
+                                @if ($errors->has('gender'))
+                                    <div class="invalid-feedback">{{ $errors->first('gender') }}</div>
+                                @endif
                             </div>
 
-                            <button type="submit" class="btn btn-raised btn-primary">Submit</button>
-                        </form>
+                            <div class="form-group">
+                                <label for="birthday">Birthday <strong class="text-danger">*</strong></label>
+
+                                <input id="birthday" type="text"
+                                       class="form-control date-picker-no-future{{ hasInputError($errors, 'birthday') }}"
+                                       name="birthday" value="{{ old('birthday') }}" data-validate="required">
+
+                                @if ($errors->has('birthday'))
+                                    <div class="invalid-feedback">{{ $errors->first('birthday') }}</div>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="col-md-4 col-sm-12 mb-3">
+                            <h5><i class="fas fa-building"></i> Location</h5>
+                            <hr>
+
+                            <div class="form-group">
+                                <label for="address">Address <strong class="text-danger">*</strong></label>
+
+                                <textarea name="address" id="address"
+                                          class="form-control{{ hasInputError($errors, 'address') }}"
+                                          data-validate="required"></textarea>
+
+                                @if ($errors->has('address'))
+                                    <div class="invalid-feedback">{{ $errors->first('address') }}</div>
+                                @endif
+                            </div>
+
+                            <div class="form-group">
+                                <label for="postal_code">Postal Code <strong
+                                            class="text-danger">*</strong></label>
+
+                                <input id="postal_code" type="text"
+                                       class="form-control{{ hasInputError($errors, 'postal_code') }}"
+                                       name="postal_code" value="{{ old('postal_code') }}"
+                                       data-validate="required">
+
+                                @if ($errors->has('postal_code'))
+                                    <div class="invalid-feedback">{{ $errors->first('postal_code') }}</div>
+                                @endif
+                            </div>
+
+                            <div class="form-group">
+                                <label for="country_id">Country</label>
+
+                                <select class="custom-select" name="country_id" id="country_id"
+                                        v-model="location.country_id" @change="onCountrySelect($event, location.country_id)">
+                                    <option value="">Select Country</option>
+                                    @foreach($countries as $country)
+                                        <option value="{{ $country->id }}">{{ $country->name }}</option>
+                                    @endforeach
+                                </select>
+
+                                @if ($errors->has('country_id'))
+                                    <div class="invalid-feedback">{{ $errors->first('country_id') }}</div>
+                                @endif
+                            </div>
+
+                            <div class="form-group">
+                                <label for="city_id">City</label>
+
+                                <select class="custom-select" name="city_id" id="city_id">
+                                    <option value="">Select City</option>
+                                    <option v-for="city in location.cities" v-bind:value="city.id">@{{ city.name }}</option>
+                                </select>
+
+                                @if ($errors->has('city_id'))
+                                    <div class="invalid-feedback">{{ $errors->first('city_id') }}</div>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="col-md-4 col-sm-12 mb-3">
+                            <h5><i class="fas fa-key"></i> Security</h5>
+                            <hr>
+
+                            <div class="form-group">
+                                <label for="role_id">Role <strong class="text-danger">*</strong></label>
+
+                                <select class="custom-select{{ hasInputError($errors, 'role_id') }}"
+                                        name="role_id" id="role_id" data-validate="required">
+                                    <option value="">Select Role</option>
+                                    @foreach($roles as $role)
+                                        <option value="{{ $role->id }}">{{ $role->name }}</option>
+                                    @endforeach
+                                </select>
+
+                                @if ($errors->has('role_id'))
+                                    <div class="invalid-feedback">{{ $errors->first('role_id') }}</div>
+                                @endif
+                            </div>
+
+                            <div class="form-group">
+                                <label for="username">Username <strong class="text-danger">*</strong></label>
+
+                                <input id="username" type="text"
+                                       class="form-control{{ hasInputError($errors, 'username') }}"
+                                       name="username" value="{{ old('username') }}" data-validate="required">
+
+                                @if ($errors->has('username'))
+                                    <div class="invalid-feedback">{{ $errors->first('username') }}</div>
+                                @endif
+                            </div>
+
+                            <div class="form-group">
+                                <label for="email">Email <strong class="text-danger">*</strong></label>
+
+                                <input id="email" type="text"
+                                       class="form-control{{ hasInputError($errors, 'email') }}"
+                                       name="email" value="{{ old('email') }}" data-validate="required">
+
+                                @if ($errors->has('email'))
+                                    <div class="invalid-feedback">{{ $errors->first('email') }}</div>
+                                @endif
+                            </div>
+
+                            <div class="form-group">
+                                <label for="password">Password <strong class="text-danger">*</strong></label>
+
+                                <input id="password" type="text"
+                                       class="form-control{{ hasInputError($errors, 'password') }}"
+                                       name="password" value="{{ old('password') }}" data-validate="required">
+
+                                @if ($errors->has('password'))
+                                    <div class="invalid-feedback">{{ $errors->first('password') }}</div>
+                                @endif
+                            </div>
+
+                            <div class="form-group">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="is_email_verified"
+                                           value="1" name="is_email_verified">
+                                    <label class="custom-control-label" for="is_email_verified">Email
+                                        Verified</label>
+                                </div>
+
+                                @if ($errors->has('is_email_verified'))
+                                    <div class="invalid-feedback">{{ $errors->first('is_email_verified') }}</div>
+                                @endif
+                            </div>
+
+                            <div class="form-group">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="is_phone_verified"
+                                           value="1" name="is_phone_verified">
+                                    <label class="custom-control-label" for="is_phone_verified">Phone
+                                        Verified</label>
+                                </div>
+
+                                @if ($errors->has('is_phone_verified'))
+                                    <div class="invalid-feedback">{{ $errors->first('is_phone_verified') }}</div>
+                                @endif
+                            </div>
+
+                            <div class="form-group">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input"
+                                           id="is_account_activated"
+                                           value="1" name="is_account_activated">
+                                    <label class="custom-control-label" for="is_account_activated">
+                                        Account Activated
+                                    </label>
+                                </div>
+
+                                @if ($errors->has('is_account_activated'))
+                                    <div class="invalid-feedback">{{ $errors->first('is_account_activated') }}</div>
+                                @endif
+                            </div>
+
+                            <div class="form-group">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="is_account_enabled"
+                                           value="1" name="is_account_enabled">
+                                    <label class="custom-control-label" for="is_account_enabled">
+                                        Account Enabled
+                                    </label>
+                                </div>
+
+                                @if ($errors->has('is_account_enabled'))
+                                    <div class="invalid-feedback">{{ $errors->first('is_account_enabled') }}</div>
+                                @endif
+                            </div>
+                        </div>
                     </div>
-                </div>
+
+                    <button type="submit" class="btn btn-raised btn-primary">Submit</button>
+                </form>
             </div>
         </div>
     </div>

@@ -17,7 +17,7 @@ class Authenticator
     {
         $me = __me();
         if ($me) {
-            if (!$me->is_email_verified && __settings('user_email_verification')->value == 'enabled' && !$this->_allowedRoute($request, ['user.settings', 'user.settingsUpdate'])) {
+            if (!$me->is_email_verified && __settings('user_email_verification')->value == 'enabled' && !$this->_allowedRoute($request, ['user.settings', 'user.settings.update'])) {
                 if (request()->ajax()) {
                     return failedJSONResponse('Email verification is required to use the app.', 498);
                 }
@@ -33,7 +33,7 @@ class Authenticator
                 return theme('errors.user.user_phone_verification', [], 498);
             }
 
-            if (!$me->is_account_enabled && __settings('user_account_enabled')->value == 'enabled') {
+            if (!$me->is_account_enabled && __settings('user_account_enabled')->value === 'enabled') {
                 if (request()->ajax()) {
                     return failedJSONResponse('Your account is disabled or remove from the system.', 498);
                 }

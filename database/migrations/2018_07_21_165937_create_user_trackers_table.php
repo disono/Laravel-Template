@@ -19,8 +19,8 @@ class CreateUserTrackersTable extends Migration
             $table->unsignedInteger('user_id')->nullable();
             $table->foreign('user_id')->references('id')->on('users');
 
-            $table->double('lat', 22, 12);
-            $table->double('lng', 22, 12);
+            $table->double('lat', 22, 12)->nullable();
+            $table->double('lng', 22, 12)->nullable();
 
             $table->string('device_id', 100)->nullable()->default(null);
             $table->text('http_referrer')->nullable()->default(null);

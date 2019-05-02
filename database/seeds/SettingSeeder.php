@@ -19,6 +19,7 @@ class SettingSeeder extends Seeder
 
                 'input_type' => $value[3],
                 'input_value' => $value[4],
+                'category' => $value[5],
                 'created_at' => sqlDate()
             ]);
         }
@@ -27,34 +28,35 @@ class SettingSeeder extends Seeder
     private function _settings()
     {
         return [
-            ['Application Name', 'title', 'Webmons Development Studio', 'text', null],
-            ['Description', 'description', 'Project Template', 'textarea', null],
-            ['Author', 'author', 'Archie Disono', 'text', null],
-            ['Keywords', 'keywords', 'webmons, project template, boiler plate', 'textarea', null],
-            ['Theme Version', 'themeVersion', '1.0', 'text', null],
-            ['Theme Name', 'theme', 'master', 'text', null],
+            ['Application Name', 'title', 'Webmons Development Studio', 'text', null, 'Application Settings'],
+            ['Default App URL', 'appUrl', 'http://domain.com', 'text', null, 'Application Settings'],
+            ['Description', 'description', 'Project Template', 'textarea', null, 'Application Settings'],
+            ['Author', 'author', 'Archie Disono', 'text', null, 'Application Settings'],
+            ['Keywords', 'keywords', 'webmons, project template, boiler plate', 'textarea', null, 'Application Settings'],
+            ['Theme Version', 'themeVersion', '1.0', 'text', null, 'Application Settings'],
+            ['Theme Name', 'theme', 'master', 'text', null, 'Application Settings'],
+            ['Subscriber Form', 'subscriberForm', 'enabled', 'select', 'enabled,disabled', 'Application Settings'],
+            ['Items per page(pagination)', 'pagination', '12', 'text', null, 'Application Settings'],
+            ['Chat/Messaging', 'chat', 'enabled', 'select', 'enabled,disabled', 'Application Settings'],
 
-            ['File size limit(image)', 'fileSizeLimitImage', '3000', 'text', null],
-            ['File size limit(default)', 'fileSizeLimit', '3000', 'text', null],
-            ['Minimum age for registration', 'minimumAgeForRegistration', '13', 'text', null],
-            ['Maximum age for registration', 'maximumAgeForRegistration', '120', 'text', null],
-            ['Items per page(pagination)', 'pagination', '12', 'text', null],
+            ['Minimum age for registration', 'minimumAgeForRegistration', '13', 'text', null, 'User Registration'],
+            ['Maximum age for registration', 'maximumAgeForRegistration', '120', 'text', null, 'User Registration'],
 
-            ['Facebook Page', 'socialFacebook', '#', 'text', null],
-            ['Twitter Page', 'socialTwitter', '#', 'text', null],
-            ['IG Page', 'socialIG', '#', 'text', null],
+            ['File size limit(image)', 'fileSizeLimitImage', '3000', 'text', null, 'File Options'],
+            ['File size limit(default)', 'fileSizeLimit', '3000', 'text', null, 'File Options'],
 
-            ['Subscriber Form', 'subscriberForm', 'enabled', 'select', 'enabled,disabled'],
+            ['Facebook Page', 'socialFacebook', '#', 'text', null, 'Social Media Links'],
+            ['Twitter Page', 'socialTwitter', '#', 'text', null, 'Social Media Links'],
+            ['IG Page', 'socialIG', '#', 'text', null, 'Social Media Links'],
 
-            ['Enable User Registration', 'authUserRegistration', 'enabled', 'select', 'enabled,disabled'],
-            ['Auth Facebook', 'authSocialFacebook', 'enabled', 'select', 'enabled,disabled'],
+            ['Enable User Registration', 'authUserRegistration', 'enabled', 'select', 'enabled,disabled', 'Authentication'],
+            ['Auth Facebook', 'authSocialFacebook', 'enabled', 'select', 'enabled,disabled', 'Authentication'],
+            ['Email Verification', 'user_email_verification', 'enabled', 'select', 'enabled,disabled', 'Authentication'],
+            ['Phone Verification', 'user_phone_verification', 'disabled', 'select', 'enabled,disabled', 'Authentication'],
+            ['Account Enabled', 'user_account_enabled', 'enabled', 'select', 'enabled,disabled', 'Authentication'],
 
-            ['Email Verification', 'user_email_verification', 'enabled', 'select', 'enabled,disabled'],
-            ['Phone Verification', 'user_phone_verification', 'disabled', 'select', 'enabled,disabled'],
-            ['Account Enabled', 'user_account_enabled', 'enabled', 'select', 'enabled,disabled'],
-
-            ['FCM', 'fcm', 'disabled', 'select', 'enabled,disabled'],
-            ['FCM Topics', 'fcm_topics', 'news', 'checkbox', 'news,marketing'],
+            ['FCM', 'fcm', 'disabled', 'select', 'enabled,disabled', 'Broadcast'],
+            ['FCM Topics', 'fcm_topics', 'news', 'checkbox', 'news,marketing', 'Broadcast'],
         ];
     }
 }

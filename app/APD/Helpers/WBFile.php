@@ -1,8 +1,8 @@
 <?php
 /**
- * @author          Archie, Disono (webmonsph@gmail.com)
+ * @author          Archie Disono (webmonsph@gmail.com)
  * @link            https://github.com/disono/Laravel-Template
- * @copyright       Webmons Development Studio. (webmons.com), 2016-2018
+ * @copyright       Webmons Development Studio. (https://webmons.com), 2016-2019
  * @license         Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
@@ -13,29 +13,24 @@ if (!function_exists('fileUpload')) {
     /**
      * Upload file
      *
-     * @param $file
-     * @param string $destinationPath
-     * @param array $imageOptions
-     * @param null $title
-     * @param null $description
-     * @param null $tableName
-     * @param int $tableId
+     * @param $options = [file, filename, destination, options, title, desc, tableName, tableId]
      *
-     * @param null $fileName
      * @return array
      */
-    function fileUpload($file, $destinationPath = 'private', $imageOptions = [], $title = null, $description = null, $tableName = null, $tableId = 0, $fileName = null)
+    function fileUpload($options)
     {
+        $file = $options['file'];
         $files = [];
+
         if (is_array($file)) {
-            foreach ($file as $value) {
-                $uploaded = fileSave($value, $destinationPath, $imageOptions, $title, $description, $tableName, $tableId, $fileName);
+            foreach ($file as $request) {
+                $uploaded = fileSave($request, $options);
                 if ($uploaded) {
                     $files[] = $uploaded;
                 }
             }
         } else {
-            $uploaded = fileSave($file, $destinationPath, $imageOptions, $title, $description, $tableName, $tableId, $fileName);
+            $uploaded = fileSave($file, $options);
             if ($uploaded) {
                 $files[] = $uploaded;
             }
@@ -50,23 +45,24 @@ if (!function_exists('fileSave')) {
      * Save file to database
      *
      * @param $file
-     * @param string $destinationPath
-     * @param array $imageOptions
-     * @param null $title
-     * @param null $description
-     * @param null $tableName
-     * @param int $tableId
+     * @param $options = [filename, destination, options, title, desc, tableName, tableId]
      *
-     * @param null $fileName
      * @return null
      */
-    function fileSave($file, $destinationPath = 'private', $imageOptions = [], $title = null, $description = null, $tableName = null, $tableId = 0, $fileName = null)
+    function fileSave($file, $options)
     {
-        $file = processUpload($file, $destinationPath, $title, $description);
-        if ($file->fileName) {
+        $destination = $options['destination'] ?? 'private';
+        $title = $options['title'] ?? null;
+        $description = $options['desc'] ?? null;
+        $fileOptions = $options['options'] ?? [];
+        $tableName = $options['tableName'] ?? null;
+        $tableId = $options['tableId'] ?? 0;
+
+        $file = processUpload($file, $destination, $title, $description);
+        if ($file->fileName && $file->type) {
             // process image
-            if (count($imageOptions) && $file->type === 'photo') {
-                processImage($destinationPath . '/' . $file->fileName, $imageOptions);
+            if (count($fileOptions) && $file->type === 'photo') {
+                processImage($destination . '/' . $file->fileName, $fileOptions);
             }
 
             // save to database
@@ -80,7 +76,7 @@ if (!function_exists('fileSave')) {
                 'description' => $description,
                 'table_name' => $tableName,
                 'table_id' => $tableId,
-                'tag' => ($file->type === 'photo') ? hasImageTag($imageOptions, $fileName) : null
+                'tag' => retrievedFileOption($options, 'tag')
             ]);
 
             if ($fileSave) {
@@ -88,7 +84,7 @@ if (!function_exists('fileSave')) {
                 return $file;
             } else {
                 // delete if not successful saving to database
-                fileDestroy($destinationPath . '/' . $file->fileName);
+                fileDestroy($destination . '/' . $file->fileName);
             }
         }
 
@@ -96,27 +92,29 @@ if (!function_exists('fileSave')) {
     }
 }
 
-if (!function_exists('hasImageTag')) {
+if (!function_exists('retrievedFileOption')) {
     /**
-     * Get the tag for image option
+     * Options
      *
-     * @param $imageOptions
-     * @param null $fileName
-     * @return mixed|null
+     * @param $options
+     * @param $key
+     * @return null
      */
-    function hasImageTag($imageOptions, $fileName = null)
+    function retrievedFileOption($options, $key)
     {
-        $tag = $imageOptions['tag'] ?? null;
+        if (isset($options['options'])) {
+            $_options = $options['options'];
 
-        if (is_array($tag)) {
-            foreach ($tag as $key) {
-                if (request()->hasFile($key)) {
-                    return $fileName;
+            if (isset($_options[$options['filename']])) {
+                $_fileOptions = $_options[$options['filename']];
+
+                if (isset($_fileOptions[$key])) {
+                    return $_fileOptions[$key];
                 }
             }
         }
 
-        return $tag;
+        return null;
     }
 }
 
@@ -125,9 +123,10 @@ if (!function_exists('processUpload')) {
      * Profile the file to upload
      *
      * @param $file
-     * @param string $destinationPath
-     * @param null $title
-     * @param null $description
+     * @param $destinationPath
+     * @param $title
+     * @param $description
+     *
      * @return stdClass
      */
     function processUpload($file, $destinationPath = 'private', $title = null, $description = null)
@@ -159,42 +158,42 @@ if (!function_exists('processImage')) {
      * Process the image
      *
      * @param $path
-     * @param array $imageOptions
+     * @param array $fileOptions
      */
-    function processImage($path, $imageOptions = [])
+    function processImage($path, $fileOptions = [])
     {
         $image = Image::make($path);
         if ($image) {
             // crop
-            if (isset($imageOptions['crop_width']) && isset($imageOptions['crop_height'])) {
-                $imageOptions->crop((int)$imageOptions['crop_width'], (int)$imageOptions['crop_height']);
-            } else if (isset($imageOptions['crop_auto'])) {
-                $height = $imageOptions->height() * 0.85;
+            if (isset($fileOptions['crop_width']) && isset($fileOptions['crop_height'])) {
+                $fileOptions->crop((int)$fileOptions['crop_width'], (int)$fileOptions['crop_height']);
+            } else if (isset($fileOptions['crop_auto'])) {
+                $height = $image->height() * 0.85;
                 $width = $height;
                 $image->crop((int)$width, (int)$height);
             }
 
             // resize
-            if (isset($imageOptions['width']) && isset($imageOptions['height'])) {
-                $image->resize((int)$imageOptions['width'], (int)$imageOptions['height']);
+            if (isset($fileOptions['width']) && isset($fileOptions['height'])) {
+                $image->resize((int)$fileOptions['width'], (int)$fileOptions['height']);
             }
 
             // resize only the height of the image
-            if (isset($imageOptions['heightRatio'])) {
-                $image->resize(null, (int)$imageOptions['heightRatio'], function ($constraint) {
+            if (isset($fileOptions['heightRatio'])) {
+                $image->resize(null, (int)$fileOptions['heightRatio'], function ($constraint) {
                     $constraint->aspectRatio();
                 });
             }
 
             // resize only the width of the image
-            if (isset($imageOptions['widthRatio'])) {
-                $image->resize(null, (int)$imageOptions['widthRatio'], function ($constraint) {
+            if (isset($fileOptions['widthRatio'])) {
+                $image->resize(null, (int)$fileOptions['widthRatio'], function ($constraint) {
                     $constraint->aspectRatio();
                 });
             }
 
             // save
-            $quality = (isset($imageOptions['quality'])) ? $imageOptions['quality'] : 100;
+            $quality = (isset($fileOptions['quality'])) ? $fileOptions['quality'] : 100;
             $image->save(null, imageQuality($image->filesize(), $quality));
         }
     }
@@ -205,6 +204,7 @@ if (!function_exists('getFileType')) {
      * Get the file type
      *
      * @param $extension
+     *
      * @return string
      */
     function getFileType($extension)
@@ -214,11 +214,15 @@ if (!function_exists('getFileType')) {
             return 'photo';
         } else if (in_array($extension, ['mpeg', 'mp4', 'avi', 'wmv', 'mov'])) {
             return 'video';
+        } else if (in_array($extension, ['mp3'])) {
+            return 'audio';
         } else if (in_array($extension, ['pdf', 'doc', 'docx', 'txt', 'ppt', 'pptx', 'tiff', 'odt', 'ods', 'xls', 'xlsx'])) {
             return 'doc';
-        } else {
+        } else if (in_array($extension, ['zip', 'rar'])) {
             return 'file';
         }
+
+        return null;
     }
 }
 
@@ -227,6 +231,7 @@ if (!function_exists('fileDestroy')) {
      * Delete file
      *
      * @param $path
+     *
      * @return bool
      */
     function fileDestroy($path)
@@ -347,11 +352,39 @@ if (!function_exists('logErrors')) {
      */
     function logErrors($message)
     {
+        $message = (is_string($message)) ? $message : (string)$message;
+
         Log::error(
             '(Date: ' . date('M d Y h:i:s A', time()) .
-            ' - Error Message: ' . clean($message) .
+            ' - Error Message: ' . $message .
             ' - Request Path: ' .
             "http://" . ((isset($_SERVER['HTTP_HOST']) && isset($_SERVER['REQUEST_URI'])) ? $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] : request()->getRequestUri())
         );
+    }
+}
+
+if (!function_exists('imgPathToBase64')) {
+    /**
+     * Convert image path to base64 image
+     *
+     * @param $path
+     * @return string
+     */
+    function imgPathToBase64($path)
+    {
+        try {
+            // A few settings
+            $img_file = $path;
+
+            // Read image path, convert to base64 encoding
+            $imgData = base64_encode(file_get_contents($img_file));
+
+            // Format the image SRC:  data:{mime};base64,{data};
+            $src = 'data: ' . mime_content_type($img_file) . ';base64,' . $imgData;
+
+            return $src;
+        } catch (Exception $e) {
+            return $path;
+        }
     }
 }

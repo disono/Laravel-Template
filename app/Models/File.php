@@ -1,8 +1,8 @@
 <?php
 /**
- * @author          Archie, Disono (webmonsph@gmail.com)
+ * @author          Archie Disono (webmonsph@gmail.com)
  * @link            https://github.com/disono/Laravel-Template
- * @copyright       Webmons Development Studio. (webmons.com), 2016-2018
+ * @copyright       Webmons Development Studio. (https://webmons.com), 2016-2019
  * @license         Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
@@ -12,11 +12,12 @@ use App\Models\Vendor\BaseModel;
 
 class File extends BaseModel
 {
-    // types: video, photo, doc, file
-
     protected static $tableName = 'files';
     protected static $writableColumns = [
-        'user_id', 'file_name', 'type', 'ext', 'title', 'description',
+        'user_id', 'file_name',
+
+        // types: video, photo, doc, file, audio
+        'type', 'ext', 'title', 'description',
         'table_name', 'table_id', 'tag'
     ];
 
@@ -24,6 +25,11 @@ class File extends BaseModel
     {
         $this->fillable(self::$writableColumns);
         parent::__construct($attributes);
+    }
+
+    public static function types()
+    {
+        return ['video', 'photo', 'doc', 'file', 'audio'];
     }
 
     /**
@@ -64,16 +70,23 @@ class File extends BaseModel
     {
         if ($row->type === 'photo') {
             $row->cover = fetchImage($row->file_name, 'assets/img/placeholders/no_image.png');
+            $row->icon = url('assets/img/placeholders/image.png');
         } else if ($row->type === 'video') {
             $row->cover = url('assets/img/placeholders/video.png');
         } else if ($row->type === 'doc') {
             $row->cover = url('assets/img/placeholders/document.png');
         } else if ($row->type === 'file') {
             $row->cover = url('assets/img/placeholders/file.png');
+        } else if ($row->type === 'audio') {
+            $row->cover = url('assets/img/placeholders/audio.png');
         }
 
         if ($row->type === 'video') {
             $row->path = url('stream/video/' . $row->file_name);
+        } else if ($row->type === 'audio') {
+            $row->path = url('stream/audio/' . $row->file_name);
+        } else if ($row->type === 'photo' && self::hasParams('to_base64_img')) {
+            $row->path = imgPathToBase64('private/' . $row->file_name);
         } else {
             $row->path = url('private/' . $row->file_name);
         }

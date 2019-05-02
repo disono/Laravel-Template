@@ -1,8 +1,14 @@
 {{--
- * @author      Archie, Disono (webmonsph@gmail.com)
+ * @author      Archie Disono (webmonsph@gmail.com)
  * @link        https://github.com/disono/Laravel-Template
- * @lincense    https://github.com/disono/Laravel-Template/blob/master/LICENSE
+ * @license     https://github.com/disono/Laravel-Template/blob/master/LICENSE
  * @copyright   Webmons Development Studio
 --}}
 
-<button class="btn btn-danger mt-3" v-if="deleteListCheckbox.length > 0" v-on:click="btnDeleteSelected">Delete Selected Item</button>
+<div class="row mt-3" v-if="toolbar.selectedItems.length > 0">
+    <div class="col">
+        <button class="btn btn-danger" v-on:click="toolbarDeleteSelected(toolbar.selectedItems)">
+            <i class="fas fa-trash"></i> Delete Selected
+        </button>
+    </div>
+</div>

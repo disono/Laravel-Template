@@ -1,8 +1,8 @@
 <?php
 /**
- * @author          Archie, Disono (webmonsph@gmail.com)
+ * @author          Archie Disono (webmonsph@gmail.com)
  * @link            https://github.com/disono/Laravel-Template
- * @copyright       Webmons Development Studio. (webmons.com), 2016-2018
+ * @copyright       Webmons Development Studio. (https://webmons.com), 2016-2019
  * @license         Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
@@ -11,6 +11,7 @@ namespace App\Models\Vendor;
 use App\Models\ActivityLog;
 use App\Models\File;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 
 class BaseModel extends Model
@@ -19,24 +20,53 @@ class BaseModel extends Model
     protected static $tableName = null;
     protected static $params = [];
 
+    // single: [filename]
+    // multiple: [[filename, table]]
     protected static $files = [];
-    protected static $imageOptions = [];
+    // [filename => [tag => string, crop_width => num, crop_height => num, crop_auto => boolean, width => num,
+    // height => num, heightRatio => num, widthRatio => num, quality => int]]
+    protected static $fileOptions = [];
 
     protected static $inputDates = [];
     protected static $inputDateTimes = [];
+    protected static $inputCrypt = [];
+
     protected static $inputIntegers = [];
     protected static $inputNumeric = [];
     protected static $inputBooleans = [];
-    protected static $inputCrypt = [];
 
     /**
      * Get writable columns set
      *
      * @return array
      */
-    public static function getColumns()
+    public static function getWritableColumns()
     {
         return static::$writableColumns;
+    }
+
+    /**
+     * Remove all boolean to update
+     */
+    public static function clearBoolean()
+    {
+        static::$inputBooleans = [];
+    }
+
+    /**
+     * Remove all integer to update
+     */
+    public static function clearInteger()
+    {
+        static::$inputIntegers = [];
+    }
+
+    /**
+     * Remove all numeric to update
+     */
+    public static function clearNumeric()
+    {
+        static::$inputNumeric = [];
     }
 
     /**
@@ -138,15 +168,16 @@ class BaseModel extends Model
         $tableName = (static::$tableName) ? static::$tableName . '.' : '';
 
         // current id of the table index
-        if (is_numeric(self::requestParams('id'))) {
+        if (is_numeric(static::hasParams('id'))) {
             $query->where($tableName . 'id', static::$params['id']);
         }
 
+        // equal fetch
         foreach (static::$writableColumns as $row) {
             // writable columns (non-custom)
-            if (key_exists($row, self::$params)) {
+            if (key_exists($row, static::$params)) {
                 if (self::_allowNull($row) === true) {
-                    $query->where($tableName . $row, self::$params[$row]);
+                    $query->where($tableName . $row, static::$params[$row]);
                 }
             }
 
@@ -159,7 +190,7 @@ class BaseModel extends Model
 
         // custom search
         foreach (static::rawQuerySelectList() as $key => $value) {
-            if (self::_allowNullWithVal($value) && isset(static::$params[$key])) {
+            if (self::_allowNullWithVal($value) && static::hasParams($key) !== null) {
                 $query->where(DB::raw($value), static::$params[$key]);
             }
         }
@@ -174,12 +205,13 @@ class BaseModel extends Model
             }
         }
 
-        // NOTE: https://www.w3schools.com/sql/func_mysql_date_format.asp
         // date range
         // date_range_from and date_range_to
         // custom date_range_name unless use is created_at
-        if (self::requestParams('date_range_from') && self::requestParams('date_range_to')) {
+        // NOTE: https://www.w3schools.com/sql/func_mysql_date_format.asp
+        if (static::hasParams('date_range_from') && static::hasParams('date_range_to')) {
             $date_name = static::$params['date_range_name'] ?? ($tableName . 'created_at');
+
             $query->whereBetween(DB::raw('DATE(' . $date_name . ')'), [
                 sqlDate(static::$params['date_range_from'], true),
                 sqlDate(static::$params['date_range_to'], true)
@@ -188,7 +220,7 @@ class BaseModel extends Model
 
         // fetch today
         // if $fetch_today is boolean get the data today unless specify the date
-        if (self::requestParams('fetch_today')) {
+        if (static::hasParams('fetch_today')) {
             $data_name_today = static::$params['fetch_today_name'] ?? ($tableName . 'created_at');
             $current_date = (static::$params['fetch_today'] === true || is_numeric(static::$params['fetch_today'])) ?
                 'CURDATE()' : sqlDate(static::$params['fetch_today'], true);
@@ -197,21 +229,26 @@ class BaseModel extends Model
         }
 
         // fetch by year e.g. 2018, 2019
-        if (is_numeric(self::requestParams('raw_year'))) {
+        if (is_numeric(static::hasParams('raw_year'))) {
             $date_name = static::$params['raw_date_name'] ?? ($tableName . 'created_at');
-            $query->whereRaw('DATE_FORMAT(' . $date_name . ', "%Y") = "' . self::requestParams('raw_year') . '"');
+            $query->whereRaw('DATE_FORMAT(' . $date_name . ', "%Y") = "' . static::hasParams('raw_year') . '"');
         }
 
         // fetch by month e.g. June, February
-        if (self::requestParams('raw_month')) {
+        if (static::hasParams('raw_month')) {
             $date_name = static::$params['raw_date_name'] ?? ($tableName . 'created_at');
-            $query->whereRaw('DATE_FORMAT(' . $date_name . ', "%M") = "' . self::requestParams('raw_month') . '"');
+            $query->whereRaw('DATE_FORMAT(' . $date_name . ', "%M") = "' . static::hasParams('raw_month') . '"');
         }
 
         // fetch by day e.g. 01, 11
-        if (is_numeric(self::requestParams('raw_day'))) {
+        if (is_numeric(static::hasParams('raw_day'))) {
             $date_name = static::$params['raw_date_name'] ?? ($tableName . 'created_at');
-            $query->whereRaw('DATE_FORMAT(' . $date_name . ', "%d") = "' . self::requestParams('raw_day') . '"');
+            $query->whereRaw('DATE_FORMAT(' . $date_name . ', "%d") = "' . static::hasParams('raw_day') . '"');
+        }
+
+        // fetch selected num
+        if (static::hasParams('limit')) {
+            $query->limit(static::hasParams('limit'));
         }
 
         return $query;
@@ -223,7 +260,7 @@ class BaseModel extends Model
      * @param $key
      * @return mixed|null
      */
-    protected static function requestParams($key)
+    protected static function hasParams($key)
     {
         return static::$params[$key] ?? null;
     }
@@ -241,7 +278,7 @@ class BaseModel extends Model
         $columns[] = 'id';
 
         // ['column_name' => [value, value, value]]
-        if (isset(static::$params['exclude'])) {
+        if (static::hasParams('exclude')) {
             $exclude = static::$params['exclude'];
             $exclude = self::extractIncExcData($exclude);
 
@@ -255,7 +292,7 @@ class BaseModel extends Model
         }
 
         // ['column_name' => [value, value, value]]
-        if (isset(static::$params['include'])) {
+        if (static::hasParams('include')) {
             $include = static::$params['include'];
             $include = self::extractIncExcData($include);
 
@@ -309,7 +346,7 @@ class BaseModel extends Model
      */
     public static function rawSearch($query)
     {
-        if (self::requestParams('search')) {
+        if (static::hasParams('search')) {
             // always check for values
             $query->where(function ($query) {
                 $num = 0;
@@ -326,7 +363,7 @@ class BaseModel extends Model
                     $num++;
                 }
             });
-        } else if (self::requestParams('search_only')) {
+        } else if (static::hasParams('search_only')) {
             // search only for specific columns
             $search_only = static::$params['search_only'];
 
@@ -351,11 +388,11 @@ class BaseModel extends Model
 
         $orderByColumn = static::$params['order_by_column'] ?? 'updated_at';
         $orderByDirection = static::$params['order_by_direction'] ?? 'DESC';
-        $query->orderBy($orderByColumn, $orderByDirection);
+        $query->orderBy(DB::raw($orderByColumn), $orderByDirection);
 
-        if (isset(self::$params['group_by'])) {
-            if (in_array(self::$params['group_by'], static::$writableColumns)) {
-                $query->groupBy(self::$params['group_by']);
+        if (static::hasParams('group_by')) {
+            if (in_array(static::$params['group_by'], static::$writableColumns)) {
+                $query->groupBy(static::$params['group_by']);
             }
         }
 
@@ -404,11 +441,11 @@ class BaseModel extends Model
      */
     protected static function readyFormatting($query)
     {
-        if (isset(static::$params['object'])) {
+        if (static::hasParams('object')) {
             return $query;
-        } else if (isset(static::$params['single'])) {
+        } else if (static::hasParams('single')) {
             return static::format($query->first());
-        } else if (isset(static::$params['all'])) {
+        } else if (static::hasParams('all')) {
             return static::format($query->get());
         } else {
             $perPage = (int)__settings('pagination')->value;
@@ -425,7 +462,7 @@ class BaseModel extends Model
      */
     protected static function format($query)
     {
-        if (isset(static::$params['single'])) {
+        if (static::hasParams('single')) {
             if (!$query) {
                 return null;
             }
@@ -489,6 +526,11 @@ class BaseModel extends Model
         if ($save) {
             self::_processStoreFiles($inputs, $save);
             static::actionStoreAfter($save, $store);
+        }
+
+        // refresh data with files added
+        if ($save && isset($save->_files)) {
+            return static::single($save->id);
         }
 
         return $save;
@@ -618,17 +660,6 @@ class BaseModel extends Model
     }
 
     /**
-     * Process file uploads from store
-     *
-     * @param $inputs
-     * @param $save
-     */
-    public static function _processStoreFiles($inputs, $save)
-    {
-        $save->_files = self::_processFile($inputs, $save);
-    }
-
-    /**
      * After successful save
      *
      * @param $query
@@ -691,7 +722,7 @@ class BaseModel extends Model
         ActivityLog::log($id, static::$writableColumns, $_data, $update, static::$tableName);
 
         // process files
-        self::_processEditFiles($inputs, $update, static::single($query->first()->id));
+        self::processEditFiles($inputs, $update, static::single($query->first()->id));
 
         return $_u;
     }
@@ -701,7 +732,7 @@ class BaseModel extends Model
      *
      * @param $id
      * @param null $columnName
-     * @return bool|\Illuminate\Database\Query\Builder|null
+     * @return bool|Builder|null
      */
     public static function rawFetch($id, $columnName = null)
     {
@@ -717,7 +748,7 @@ class BaseModel extends Model
         } else {
             $i = 0;
             foreach ($columnName as $key => $value) {
-                if (!in_array($key, static::$writableColumns)) {
+                if (!in_array($key, static::$writableColumns) && $key !== 'id') {
                     return false;
                 }
 
@@ -768,7 +799,7 @@ class BaseModel extends Model
      * @param $update
      * @param $_data
      */
-    public static function _processEditFiles($inputs, $update, $_data)
+    public static function processEditFiles($inputs, $update, $_data)
     {
         if ($_data) {
             $_data->_files = self::_processFile($inputs, $_data);
@@ -803,7 +834,7 @@ class BaseModel extends Model
             return false;
         }
 
-        if (!static::actionRemove($_r->get())) {
+        if (!static::actionRemoveBefore($_r->get())) {
             return false;
         }
 
@@ -823,14 +854,24 @@ class BaseModel extends Model
     }
 
     /**
-     * Custom action remove
+     * Before removing the data
      *
      * @param $query
      * @return bool
      */
-    public static function actionRemove($query)
+    public static function actionRemoveBefore($query)
     {
         return true;
+    }
+
+    /**
+     * After removing the data
+     *
+     * @param $save
+     */
+    public static function actionRemoveAfter($save)
+    {
+
     }
 
     /**
@@ -842,7 +883,7 @@ class BaseModel extends Model
     private static function _allowNull($row)
     {
         $_val = static::$params[$row] ?? null;
-        $_allowNull = self::$params['allow_null'] ?? false;
+        $_allowNull = static::$params['allow_null'] ?? false;
         $_allowFilter = true;
 
         if ($_val === null && $_allowNull === false) {
@@ -860,7 +901,7 @@ class BaseModel extends Model
      */
     private static function _allowNullWithVal($val)
     {
-        $_allowNull = self::$params['allow_null'] ?? false;
+        $_allowNull = static::$params['allow_null'] ?? false;
         $_allowFilter = true;
 
         if ($val === null && $_allowNull === false) {
@@ -868,6 +909,17 @@ class BaseModel extends Model
         }
 
         return $_allowFilter;
+    }
+
+    /**
+     * Process file uploads from store
+     *
+     * @param $inputs
+     * @param $save
+     */
+    private static function _processStoreFiles($inputs, $save)
+    {
+        $save->_files = self::_processFile($inputs, $save);
     }
 
     /**
@@ -884,13 +936,25 @@ class BaseModel extends Model
         foreach (static::$files as $file) {
             if (is_array($file)) {
                 if (isset($inputs[$file['name']])) {
-                    $_files[] = fileUpload($inputs[$file['name']], 'private', static::$imageOptions,
-                        null, null, $file['table'], $_data->id, $file['name']);
+                    $_files[] = fileUpload([
+                        'file' => $inputs[$file['name']],
+                        'destination' => 'private',
+                        'options' => static::$fileOptions,
+                        'tableName' => $file['table'],
+                        'tableId' => $_data->id,
+                        'filename' => $file['name']
+                    ]);
                 }
             } else {
                 if (isset($inputs[$file])) {
-                    $_files[] = fileUpload($inputs[$file], 'private', static::$imageOptions,
-                        null, null, static::$tableName, $_data->id, $file);
+                    $_files[] = fileUpload([
+                        'file' => $inputs[$file],
+                        'destination' => 'private',
+                        'options' => static::$fileOptions,
+                        'tableName' => static::$tableName,
+                        'tableId' => $_data->id,
+                        'filename' => $file
+                    ]);
                 }
             }
         }

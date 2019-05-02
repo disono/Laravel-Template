@@ -90,14 +90,14 @@ $fontFamily = 'font-family: Arial, \'Helvetica Neue\', Helvetica, sans-serif;';
                                         <p style="{{ $style['paragraph'] }}">{{ $line }}</p>
                                     @endforeach
 
-                                <!-- Action Button -->
+                                    <!-- Action Button -->
                                     @if (isset($actionText))
                                         <table style="{{ $style['body_action'] }}" align="center" width="100%"
                                                cellpadding="0" cellspacing="0">
                                             <tr>
                                                 <td align="center">
                                                     <?php
-                                                    switch ($level) {
+                                                    switch (isset($level)) {
                                                         case 'success':
                                                             $actionColor = 'button--green';
                                                             break;
@@ -120,12 +120,12 @@ $fontFamily = 'font-family: Arial, \'Helvetica Neue\', Helvetica, sans-serif;';
                                         </table>
                                     @endif
 
-                                <!-- Outro -->
+                                    <!-- Outro -->
                                     @foreach ($outroLines as $line)
                                         <p style="{{ $style['paragraph'] }}">{{ $line }}</p>
                                     @endforeach
 
-                                <!-- Salutation -->
+                                    <!-- Salutation -->
                                     <p style="{{ $style['paragraph'] }}">
                                         Regards,<br>{{ __settings('title')->value }}
                                     </p>

@@ -1,12 +1,13 @@
 <?php
 /**
- * @author          Archie, Disono (webmonsph@gmail.com)
+ * @author          Archie Disono (webmonsph@gmail.com)
  * @link            https://github.com/disono/Laravel-Template
- * @copyright       Webmons Development Studio. (webmons.com), 2016-2018
+ * @copyright       Webmons Development Studio. (https://webmons.com), 2016-2019
  * @license         Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
 use App\APDApp\Helpers\libs\VideoStream;
+use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Intervention\Image\Facades\Image;
 use LaravelFCM\Facades\FCM;
@@ -327,7 +328,7 @@ if (!function_exists('devAssets')) {
             return asset($path) . devURLExt();
         }
 
-        return asset($path . '?' . __settings('themeVersion')->value);
+        return asset($path) . '?' . __settings('themeVersion')->value;
     }
 }
 
@@ -403,7 +404,7 @@ if (!function_exists('fetchRequestValue')) {
      *
      * @param $key
      * @param null $default
-     * @return array|\Illuminate\Http\Request|string
+     * @return array|Request|string
      */
     function fetchRequestValue($key, $default = null)
     {

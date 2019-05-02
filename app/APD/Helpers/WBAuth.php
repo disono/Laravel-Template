@@ -1,12 +1,16 @@
 <?php
 /**
- * @author          Archie, Disono (webmonsph@gmail.com)
+ * @author          Archie Disono (webmonsph@gmail.com)
  * @link            https://github.com/disono/Laravel-Template
- * @copyright       Webmons Development Studio. (webmons.com), 2016-2018
+ * @copyright       Webmons Development Studio. (https://webmons.com), 2016-2019
  * @license         Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
+use App\Models\AuthorizationRole;
+use App\Models\Token;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
@@ -40,7 +44,7 @@ if (!function_exists('authID')) {
     /**
      * Get the authenticated id
      *
-     * @return array|\Illuminate\Http\Request|string
+     * @return array|Request|string
      */
     function authID()
     {
@@ -79,14 +83,15 @@ if (!function_exists('jwt')) {
      * Check API JWT
      *
      * @param bool $response
-     * @return bool|\Illuminate\Http\JsonResponse|null
+     * @return bool|JsonResponse|null
      */
     function jwt($response = false)
     {
         $user = null;
 
         try {
-            jwt_initialize_token_by_key();
+            JWTInitializeTokenByKey();
+            setTimezone();
 
             $user = JWTAuth::parseToken()->authenticate();
             if (!$user) {
@@ -108,18 +113,18 @@ if (!function_exists('jwt')) {
     }
 }
 
-if (!function_exists('jwt_initialize_token_by_key')) {
+if (!function_exists('JWTInitializeTokenByKey')) {
     /**
      * Initialize JWT token by key
      */
-    function jwt_initialize_token_by_key()
+    function JWTInitializeTokenByKey()
     {
         if (!Schema::hasTable('tokens')) {
             return;
         }
 
         // token
-        $token = \App\Models\Token::where('key', request()->header('token_key'))->first();
+        $token = Token::where('key', request()->header('token_key'))->first();
         if (!$token) {
             return;
         }
@@ -141,7 +146,7 @@ if (!function_exists('isAuthorize')) {
      * @param array $roles
      * @param bool $boolean_only
      * @param string $delimiter
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
      */
     function isAuthorize($roles = [], $boolean_only = false, $delimiter = '|')
     {
@@ -176,7 +181,7 @@ if (!function_exists('authorizeMe')) {
      */
     function authorizeMe($roles = [], $user_id, $route_check = true)
     {
-        $user_role = \App\Models\User::find($user_id)->role;
+        $user_role = User::find($user_id)->role;
 
         if (!$user_role) {
             return false;
@@ -187,7 +192,7 @@ if (!function_exists('authorizeMe')) {
         }
 
         if ($route_check) {
-            $authentication_role = \App\Models\AuthorizationRole::where('route', request()->route()->getName())
+            $authentication_role = AuthorizationRole::where('route', request()->route()->getName())
                 ->where('role_id', $user_role->id)
                 ->first();
 
@@ -226,7 +231,7 @@ if (!function_exists('authorizeRoute')) {
             return false;
         }
 
-        $authentication_role = \App\Models\AuthorizationRole::where('route', request()->route()->getName())
+        $authentication_role = AuthorizationRole::where('route', request()->route()->getName())
             ->where('role_id', $user_role->id)
             ->first();
         if (!$authentication_role) {
@@ -234,6 +239,35 @@ if (!function_exists('authorizeRoute')) {
         }
 
         return true;
+    }
+}
+
+if (!function_exists('setTimezone')) {
+    /**
+     * Set Timezone
+     */
+    function setTimezone()
+    {
+        try {
+            if (!fetchRequestValue('device_timezone')) {
+                return;
+            }
+
+            $collection = collect(timezone_identifiers_list());
+            $searchFor = fetchRequestValue('device_timezone');
+            $c = $collection->search(function ($item, $key) use ($searchFor) {
+                return strpos($item, $searchFor) !== false;
+            });
+            $timezone = $collection->get($c);
+            if (!$timezone) {
+                return;
+            }
+
+            // secret key
+            config(['timezone' => $timezone]);
+        } catch (Exception $e) {
+            logErrors('Error (App\APDApp\Helpers\WBAuth - setTimezone()): ' . $e->getMessage());
+        }
     }
 }
 

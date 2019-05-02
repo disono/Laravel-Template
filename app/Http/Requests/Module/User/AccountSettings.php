@@ -1,8 +1,8 @@
 <?php
 /**
- * @author          Archie, Disono (webmonsph@gmail.com)
+ * @author          Archie Disono (webmonsph@gmail.com)
  * @link            https://github.com/disono/Laravel-Template
- * @copyright       Webmons Development Studio. (webmons.com), 2016-2018
+ * @copyright       Webmons Development Studio. (https://webmons.com), 2016-2019
  * @license         Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
@@ -40,7 +40,7 @@ class AccountSettings extends BaseRequest
             'birthday' => 'required|date|birthday:' . __settings('minimumAgeForRegistration')->value,
 
             'country_id' => 'integer|exists:countries,id',
-            'city_id' => 'integer|exists:countries,id'
+            'city_id' => 'integer|exists:cities,id'
         ];
     }
 }

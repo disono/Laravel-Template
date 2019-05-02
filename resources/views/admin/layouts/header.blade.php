@@ -1,7 +1,7 @@
 {{--
- * @author      Archie, Disono (webmonsph@gmail.com)
+ * @author      Archie Disono (webmonsph@gmail.com)
  * @link        https://github.com/disono/Laravel-Template
- * @lincense    https://github.com/disono/Laravel-Template/blob/master/LICENSE
+ * @license     https://github.com/disono/Laravel-Template/blob/master/LICENSE
  * @copyright   Webmons Development Studio
 --}}
 
@@ -20,6 +20,7 @@
                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     {{ __me()->first_name }}
                 </a>
+
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                     <a class="dropdown-item" href="{{ route('user.settings') }}">Account Settings</a>
                     <a class="dropdown-item" href="{{ route('user.security') }}">Security</a>

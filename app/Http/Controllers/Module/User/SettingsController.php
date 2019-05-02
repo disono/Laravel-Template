@@ -1,8 +1,8 @@
 <?php
 /**
- * @author          Archie, Disono (webmonsph@gmail.com)
+ * @author          Archie Disono (webmonsph@gmail.com)
  * @link            https://github.com/disono/Laravel-Template
- * @copyright       Webmons Development Studio. (webmons.com), 2016-2018
+ * @copyright       Webmons Development Studio. (https://webmons.com), 2016-2019
  * @license         Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
@@ -14,6 +14,8 @@ use App\Http\Requests\Module\User\AccountSettings;
 use App\Models\City;
 use App\Models\Country;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
 
 class SettingsController extends Controller
 {
@@ -26,7 +28,7 @@ class SettingsController extends Controller
     /**
      * View general settings
      *
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
+     * @return JsonResponse|Response
      */
     public function settingsAction()
     {
@@ -38,7 +40,7 @@ class SettingsController extends Controller
      * Save settings
      *
      * @param AccountSettings $request
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
      */
     public function settingsUpdateAction(AccountSettings $request)
     {
@@ -60,7 +62,7 @@ class SettingsController extends Controller
     /**
      * View for security
      *
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
+     * @return JsonResponse|Response
      */
     public function securityAction()
     {
@@ -71,7 +73,7 @@ class SettingsController extends Controller
      * Update security
      *
      * @param AccountSecurity $request
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
      */
     public function securityUpdateAction(AccountSecurity $request)
     {

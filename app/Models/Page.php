@@ -1,8 +1,8 @@
 <?php
 /**
- * @author          Archie, Disono (webmonsph@gmail.com)
+ * @author          Archie Disono (webmonsph@gmail.com)
  * @link            https://github.com/disono/Laravel-Template
- * @copyright       Webmons Development Studio. (webmons.com), 2016-2018
+ * @copyright       Webmons Development Studio. (https://webmons.com), 2016-2019
  * @license         Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
@@ -24,7 +24,7 @@ class Page extends BaseModel
     protected static $inputBooleans = ['is_draft', 'is_email_to_subscriber'];
 
     protected static $files = ['cover_photo'];
-    protected static $imageOptions = ['tag' => 'cover_photo'];
+    protected static $fileOptions = ['cover_photo' => ['tag' => 'cover_photo']];
 
     public function __construct(array $attributes = [])
     {
@@ -38,7 +38,7 @@ class Page extends BaseModel
      * @param $query
      * @return bool
      */
-    public static function actionRemove($query)
+    public static function actionRemoveBefore($query)
     {
         foreach ($query as $row) {
             PageView::where('page_id', $row->id)->delete();
@@ -55,7 +55,7 @@ class Page extends BaseModel
     protected static function rawQuerySelectList()
     {
         return [
-            'page_category_slug' => 'SELECT name FROM page_categories WHERE pages.page_category_id = page_categories.id LIMIT 1'
+            'page_category_slug' => '(SELECT name FROM page_categories WHERE pages.page_category_id = page_categories.id LIMIT 1)'
         ];
     }
 

@@ -1,8 +1,8 @@
 <?php
 /**
- * @author          Archie, Disono (webmonsph@gmail.com)
+ * @author          Archie Disono (webmonsph@gmail.com)
  * @link            https://github.com/disono/Laravel-Template
- * @copyright       Webmons Development Studio. (webmons.com), 2016-2018
+ * @copyright       Webmons Development Studio. (https://webmons.com), 2016-2019
  * @license         Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
@@ -12,7 +12,7 @@ use App\Models\Vendor\BaseModel;
 
 class UserTracker extends BaseModel
 {
-    protected static $tableName = 'page_views';
+    protected static $tableName = 'user_trackers';
     protected static $writableColumns = [
         'user_id',
         'lat', 'lng',
@@ -27,21 +27,15 @@ class UserTracker extends BaseModel
         parent::__construct($attributes);
     }
 
-    /**
-     * Custom filters
-     *
-     * @param $query
-     * @return mixed
-     */
     public static function rawFilters($query)
     {
-        $query->join('users', 'page_views.user_id', '=', 'users.id');
+        $query->join('users', 'user_trackers.user_id', '=', 'users.id');
         return $query;
     }
 
     public static function log()
     {
-        if (!request('lat') || request('lng') || !authID()) {
+        if (!request('lat') || !request('lng') || !authID()) {
             return;
         }
 
@@ -63,11 +57,6 @@ class UserTracker extends BaseModel
         }
     }
 
-    /**
-     * List of select
-     *
-     * @return array
-     */
     protected static function rawQuerySelectList()
     {
         return [

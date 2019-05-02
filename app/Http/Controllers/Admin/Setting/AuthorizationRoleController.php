@@ -1,8 +1,8 @@
 <?php
 /**
- * @author          Archie, Disono (webmonsph@gmail.com)
+ * @author          Archie Disono (webmonsph@gmail.com)
  * @link            https://github.com/disono/Laravel-Template
- * @copyright       Webmons Development Studio. (webmons.com), 2016-2018
+ * @copyright       Webmons Development Studio. (https://webmons.com), 2016-2019
  * @license         Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
@@ -55,7 +55,9 @@ class AuthorizationRoleController extends Controller
             $action = $route->getAction();
 
             if (array_key_exists('as', $action)) {
-                if (strpos($action['as'], 'admin.') !== false) {
+                $_name = explode('.',  $action['as']);
+
+                if ($_name[0] === 'admin') {
                     $data = new \stdClass();
                     $data->id = str_random(32);
                     $data->name = ucwords(str_replace('.', ' ', str_replace('admin.', '', $action['as'])));

@@ -1,8 +1,8 @@
 <?php
 /**
- * @author          Archie, Disono (webmonsph@gmail.com)
+ * @author          Archie Disono (webmonsph@gmail.com)
  * @link            https://github.com/disono/Laravel-Template
- * @copyright       Webmons Development Studio. (webmons.com), 2016-2018
+ * @copyright       Webmons Development Studio. (https://webmons.com), 2016-2019
  * @license         Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
@@ -10,6 +10,7 @@ namespace App\Http\Controllers\API\V1\Authentication;
 
 use App\Http\Controllers\API\APIController;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 
 class VerifyController extends APIController
 {
@@ -18,7 +19,7 @@ class VerifyController extends APIController
      *
      * Inputs: token, email|phone
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function verifyPhoneAction()
     {
@@ -35,7 +36,7 @@ class VerifyController extends APIController
      * Inputs: type_value
      *
      * @param $type
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function resendVerificationAction($type)
     {

@@ -4,7 +4,6 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken as Middleware;
-use Illuminate\Http\Response;
 
 class VerifyCsrfToken extends Middleware
 {
@@ -41,8 +40,6 @@ class VerifyCsrfToken extends Middleware
             return failedJSONResponse($message, 400);
         }
 
-        return new Response(theme('errors.default', [
-            'message' => $message
-        ]));
+        return theme('errors.default', ['message' => $message], 400);
     }
 }

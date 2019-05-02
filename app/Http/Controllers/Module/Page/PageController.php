@@ -1,8 +1,8 @@
 <?php
 /**
- * @author          Archie, Disono (webmonsph@gmail.com)
+ * @author          Archie Disono (webmonsph@gmail.com)
  * @link            https://github.com/disono/Laravel-Template
- * @copyright       Webmons Development Studio. (webmons.com), 2016-2018
+ * @copyright       Webmons Development Studio. (https://webmons.com), 2016-2019
  * @license         Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
@@ -11,6 +11,8 @@ namespace App\Http\Controllers\Module\Page;
 use App\Http\Controllers\Controller;
 use App\Models\Page;
 use App\Models\PageView;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
 
 class PageController extends Controller
 {
@@ -23,7 +25,7 @@ class PageController extends Controller
     /**
      * Home page
      *
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
+     * @return JsonResponse|Response
      */
     public function homeAction()
     {
@@ -35,7 +37,7 @@ class PageController extends Controller
      * List by category page
      *
      * @param $category
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
+     * @return JsonResponse|Response
      */
     public function categoryAction($category)
     {
@@ -47,7 +49,7 @@ class PageController extends Controller
      *
      * @param $year
      * @param $month
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
+     * @return JsonResponse|Response
      */
     public function archiveAction($year, $month)
     {
@@ -58,7 +60,7 @@ class PageController extends Controller
      * Show page details
      *
      * @param $slug
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response|void
+     * @return JsonResponse|Response|void
      */
     public function showAction($slug)
     {

@@ -1,8 +1,8 @@
 <?php
 /**
- * @author          Archie, Disono (webmonsph@gmail.com)
+ * @author          Archie Disono (webmonsph@gmail.com)
  * @link            https://github.com/disono/Laravel-Template
- * @copyright       Webmons Development Studio. (webmons.com), 2016-2018
+ * @copyright       Webmons Development Studio. (https://webmons.com), 2016-2019
  * @license         Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
@@ -10,6 +10,8 @@ namespace App\Http\Controllers\Module\Authentication;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
 
 class VerifyController extends Controller
 {
@@ -21,7 +23,7 @@ class VerifyController extends Controller
     /**
      * Verify email address
      *
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
+     * @return JsonResponse|Response
      */
     public function emailAction()
     {
@@ -32,7 +34,7 @@ class VerifyController extends Controller
      * Check the verification
      *
      * @param $type
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
+     * @return JsonResponse|Response
      */
     private function _verify($type)
     {
@@ -48,7 +50,7 @@ class VerifyController extends Controller
     /**
      * Verification form for phone
      *
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
+     * @return JsonResponse|Response
      */
     public function phoneAction()
     {
@@ -58,7 +60,7 @@ class VerifyController extends Controller
     /**
      * Verify phone
      *
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
+     * @return JsonResponse|Response
      */
     public function processPhoneAction()
     {
@@ -69,7 +71,7 @@ class VerifyController extends Controller
      * Resend verification code
      *
      * @param $type
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
+     * @return JsonResponse|Response
      */
     public function resendVerificationViewAction($type)
     {

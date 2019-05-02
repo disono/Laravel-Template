@@ -1,7 +1,7 @@
 {{--
- * @author      Archie, Disono (webmonsph@gmail.com)
+ * @author      Archie Disono (webmonsph@gmail.com)
  * @link        https://github.com/disono/Laravel-Template
- * @lincense    https://github.com/disono/Laravel-Template/blob/master/LICENSE
+ * @license     https://github.com/disono/Laravel-Template/blob/master/LICENSE
  * @copyright   Webmons Development Studio
 --}}
 
@@ -15,7 +15,7 @@
                     <h2>Recover Password</h2>
 
                     {{-- login form --}}
-                    <form role="form" method="POST" class="mt-3" action="{{ route('auth.password.processRecover') }}"
+                    <form role="form" method="POST" class="mt-3" action="{{ route('auth.password.process.recover') }}"
                           v-on:submit.prevent="onFormPost">
                         {{ csrf_field() }}
                         <input type="hidden" name="reset_token" value="{{ $reset_token }}">

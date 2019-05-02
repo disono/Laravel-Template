@@ -1,7 +1,7 @@
 {{--
- * @author      Archie, Disono (webmonsph@gmail.com)
+ * @author      Archie Disono (webmonsph@gmail.com)
  * @link        https://github.com/disono/Laravel-Template
- * @lincense    https://github.com/disono/Laravel-Template/blob/master/LICENSE
+ * @license     https://github.com/disono/Laravel-Template/blob/master/LICENSE
  * @copyright   Webmons Development Studio
 --}}
 
@@ -14,15 +14,15 @@
                 @include(currentTheme() . 'user.settings.menu')
             </div>
 
-            <div class="col-sm-12 col-lg-9">
-                <form role="form" method="POST" action="{{ route('user.securityUpdate') }}"
+            <div class="col-sm-12 col-lg-9 p-3 shadow-sm bg-white">
+                <form role="form" method="POST" action="{{ route('user.security.update') }}"
                       enctype="multipart/form-data" v-on:submit.prevent="onFormPost">
                     {!! csrf_field() !!}
 
                     <div class="form-group">
                         <label for="username">Username</label>
                         <input type="text" readonly class="form-control form-control-plaintext" id="username"
-                               value="{{$user->username}}"/>
+                               value="{{ $user->username }}" data-disabled="yes"/>
                     </div>
 
                     <div class="form-group">
@@ -70,11 +70,9 @@
                         @endif
                     </div>
 
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-primary pull-right">
-                            Save Changes
-                        </button>
-                    </div>
+                    <button type="submit" class="btn btn-primary pull-right">
+                        Save Changes
+                    </button>
                 </form>
             </div>
         </div>

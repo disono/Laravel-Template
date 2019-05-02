@@ -1,8 +1,8 @@
 <?php
 /**
- * @author          Archie, Disono (webmonsph@gmail.com)
+ * @author          Archie Disono (webmonsph@gmail.com)
  * @link            https://github.com/disono/Laravel-Template
- * @copyright       Webmons Development Studio. (webmons.com), 2016-2018
+ * @copyright       Webmons Development Studio. (https://webmons.com), 2016-2019
  * @license         Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
@@ -76,6 +76,26 @@ if (!function_exists('isCurrentRoute')) {
     }
 }
 
+if (!function_exists('getRouteName')) {
+    /**
+     * Get the current route name
+     *
+     * @return bool|string|null
+     */
+    function getRouteName()
+    {
+        if (!request()) {
+            return false;
+        }
+
+        if (!request()->route()) {
+            return null;
+        }
+
+        return request()->route()->getName();
+    }
+}
+
 if (!function_exists('isActiveMenu')) {
     /**
      * Is active menu
@@ -115,9 +135,11 @@ if (!function_exists('thDelete')) {
      */
     function thDelete()
     {
+        $_id = '_check_' . time();
         return '<th>
-            <div class="form-group form-check">
-                <input type="checkbox" class="form-check-input" value="" v-on:change="deleteSelectAll">
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" value="" id="' . $_id .'" v-on:change="toolbarSelectItem($event)">
+                <label class="custom-control-label" for="' . $_id .'"></label>
             </div>
         </th>';
     }
@@ -133,10 +155,29 @@ if (!function_exists('tdDelete')) {
     function tdDelete($id)
     {
         return '<td>
-            <div class="form-group form-check">
-                <input type="checkbox" class="form-check-input" delete-data="deleteListCheckbox" id="del_' . $id . '"
-                                           v-model="deleteListCheckbox" value="' . $id . '">
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" delete-data="toolbarSelectedItems" id="del_' . $id . '"
+                                           v-model="toolbar.selectedItems" value="' . $id . '">
+                <label class="custom-control-label" for="del_' . $id .'"></label>
             </div>
         </td>';
+    }
+}
+
+if (!function_exists('html_meta_tag')) {
+    /**
+     * Meta tag
+     *
+     * @param $property
+     * @param $content
+     * @return string
+     */
+    function html_meta_tag($property, $content)
+    {
+        if (!$property || !$content) {
+            return null;
+        }
+
+        return '<meta property="' . $property . '" content="' . $content . '" />';
     }
 }

@@ -1,8 +1,8 @@
 <?php
 /**
- * @author          Archie, Disono (webmonsph@gmail.com)
+ * @author          Archie Disono (webmonsph@gmail.com)
  * @link            https://github.com/disono/Laravel-Template
- * @copyright       Webmons Development Studio. (webmons.com), 2016-2018
+ * @copyright       Webmons Development Studio. (https://webmons.com), 2016-2019
  * @license         Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
@@ -20,6 +20,7 @@ if (!function_exists('exceptionMessages')) {
             'INVALID_RAW' => 'Invalid',
             'UNKNOWN' => 'Unknown error occurred or invalid response.',
             'AUTH_DENIED_ACCESS' => 'You are not authorize to access this route.',
+            'AUTH_FORBIDDEN_ACCESS' => 'You are not allowed to access this route (FORBIDDEN).',
 
             'PAGE_NOT_FOUND' => '404 Page not found.',
             'METHOD_NOT_ALLOWED' => '402 HTTP Method not allowed.',

@@ -1,17 +1,18 @@
 {{--
- * @author      Archie, Disono (webmonsph@gmail.com)
+ * @author      Archie Disono (webmonsph@gmail.com)
  * @link        https://github.com/disono/Laravel-Template
- * @lincense    https://github.com/disono/Laravel-Template/blob/master/LICENSE
+ * @license     https://github.com/disono/Laravel-Template/blob/master/LICENSE
  * @copyright   Webmons Development Studio
 --}}
 
 @extends('admin.layouts.master')
 
 @section('content')
-    <div class="container">
+     <div class="container-fluid shadow-sm p-3 bg-white">
         <div class="row">
             <div class="col">
-                <h1 class="header">{{ $view_title }}</h1>
+                <h3>{{ $view_title }}</h3>
+                <hr>
             </div>
         </div>
 

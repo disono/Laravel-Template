@@ -1,12 +1,12 @@
 {{--
- * @author      Archie, Disono (webmonsph@gmail.com)
+ * @author      Archie Disono (webmonsph@gmail.com)
  * @link        https://github.com/disono/Laravel-Template
- * @lincense    https://github.com/disono/Laravel-Template/blob/master/LICENSE
+ * @license     https://github.com/disono/Laravel-Template/blob/master/LICENSE
  * @copyright   Webmons Development Studio
 --}}
 
 <!-- Sidebar -->
-<nav class="nav-wrapper">
+<nav class="nav-wrapper" style="overflow-y: auto !important;">
     <a class="nav-icon-brand" href="{{ url('/') }}">
         <span data-feather="zap" class="iconav-brand-icon"></span>
     </a>
@@ -14,15 +14,24 @@
     <div class="icon-nav-slider">
         <ul class="nav nav-pills iconav-nav flex-md-column">
             <li class="nav-item">
+                <div data-toggle="modal" data-target="#profileSettingsModal">
+                    <a class="nav-link" href="#" title="Signed in as {{ me()->first_name }}">
+                        <img src="{{ me()->profile_picture }}" alt="" class="rounded-circle img-fluid nav-avatar">
+                        <small class="iconav-nav-label d-md-none">{{ me()->first_name }}</small>
+                    </a>
+                </div>
+            </li>
+
+            <li class="nav-item">
                 <a class="nav-link {{ isActiveMenu('user.dashboard.show') }}" href="{{ route('user.dashboard.show') }}"
                    title="Overview">
-                    <span data-feather="home"></span>
+                    <span data-feather="monitor"></span>
                     <small class="iconav-nav-label d-md-none">Overview</small>
                 </a>
             </li>
 
             <li class="nav-item">
-                <a class="nav-link {{ isActiveMenu('admin.user.index') }}" href="{{ route('admin.user.index') }}"
+                <a class="nav-link {{ isActiveMenu('admin.user.list') }}" href="{{ route('admin.user.list') }}"
                    title="Users">
                     <span data-feather="users"></span>
                     <small class="iconav-nav-label d-md-none">Users</small>
@@ -30,7 +39,7 @@
             </li>
 
             <li class="nav-item">
-                <a class="nav-link {{ isActiveMenu('admin.page.index') }}" href="{{ route('admin.page.index') }}"
+                <a class="nav-link {{ isActiveMenu('admin.page.list') }}" href="{{ route('admin.page.list') }}"
                    title="Pages" data-container="body">
                     <span data-feather="layout"></span>
                     <small class="iconav-nav-label d-md-none">Pages</small>
@@ -38,18 +47,26 @@
             </li>
 
             <li class="nav-item">
-                <a class="nav-link {{ isActiveMenu('admin.fcmNotification.index') }}"
-                   href="{{ route('admin.fcmNotification.index') }}" title="FCM Notifications">
-                    <span data-feather="speaker"></span>
+                <a class="nav-link {{ isActiveMenu('admin.fcm.notification.list') }}"
+                   href="{{ route('admin.fcm.notification.list') }}" title="FCM Notifications">
+                    <span data-feather="bell"></span>
                     <small class="iconav-nav-label d-md-none">Notifications</small>
                 </a>
             </li>
 
             <li class="nav-item">
-                <a class="nav-link {{ isActiveMenu('admin.file.index') }}" href="{{ route('admin.file.index') }}"
-                   title="Media">
-                    <span data-feather="camera"></span>
-                    <small class="iconav-nav-label d-md-none">Media</small>
+                <a class="nav-link {{ isActiveMenu('admin.file.list') }}" href="{{ route('admin.file.list') }}"
+                   title="Files">
+                    <span data-feather="upload"></span>
+                    <small class="iconav-nav-label d-md-none">Files</small>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link {{ isActiveMenu('admin.submitted.report.list') }}" href="{{ route('admin.submitted.report.list') }}"
+                   title="Reports">
+                    <span data-feather="flag"></span>
+                    <small class="iconav-nav-label d-md-none">Reports</small>
                 </a>
             </li>
 
@@ -59,15 +76,6 @@
                     <span data-feather="settings"></span>
                     <small class="iconav-nav-label d-md-none">Settings</small>
                 </a>
-            </li>
-
-            <li class="nav-item">
-                <div data-toggle="modal" data-target="#profileSettingsModal">
-                    <a class="nav-link" href="#" title="Signed in as {{ me()->first_name }}">
-                        <img src="{{ me()->profile_picture }}" alt="" class="rounded-circle img-fluid nav-avatar">
-                        <small class="iconav-nav-label d-md-none">{{ me()->first_name }}</small>
-                    </a>
-                </div>
             </li>
         </ul>
     </div>

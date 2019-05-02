@@ -23,6 +23,7 @@ class CreateSettingsTable extends Migration
             $table->text('input_value')->nullable();
             $table->text('attributes')->nullable();
             $table->boolean('is_disabled')->default(0);
+            $table->string('category', 100);
             $table->timestamps();
         });
     }
