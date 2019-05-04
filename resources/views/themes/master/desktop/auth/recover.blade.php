@@ -11,7 +11,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-4 mr-auto ml-auto">
-                <div class="jumbotron jumbotron-sm">
+                <div class="p-3 shadow-sm rounded bg-white">
                     <h2>Recover Password</h2>
 
                     {{-- login form --}}

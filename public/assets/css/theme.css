@@ -148,6 +148,19 @@ body {
     padding: 0 10px;
 }
 
+.hr-line-word {
+    width: 100%;
+    text-align: center;
+    border-bottom: 1px solid #000;
+    line-height: 0.1em;
+    margin: 10px 0 20px;
+}
+
+.hr-line-word span {
+    background: #FFF;
+    padding: 0 10px;
+}
+
 .alert-chat {
     color: #383d41;
     background-color: #F1F0F0;

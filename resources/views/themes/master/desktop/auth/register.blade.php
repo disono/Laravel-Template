@@ -11,7 +11,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-5 mr-auto ml-auto">
-                <div class="jumbotron shadow-sm">
+                <div class="p-3 shadow-sm rounded bg-white">
                     <h2 class="text-center">Join Today.</h2>
                     <p class="text-muted text-center">Fill in the form below to get instant access.</p>
 
@@ -21,7 +21,7 @@
                             Continue with Facebook
                         </a>
 
-                        <p class="hr-line-word-jumbotron mt-3"><span>OR</span></p>
+                        <p class="hr-line-word mt-3"><span>OR</span></p>
                     @endif
 
                     <form role="form" method="POST" class="mt-3" action="{{ route('auth.register') }}"

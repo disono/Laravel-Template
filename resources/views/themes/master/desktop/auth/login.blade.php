@@ -11,7 +11,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-4 mr-auto ml-auto">
-                <div class="jumbotron jumbotron-sm shadow-sm">
+                <div class="p-3 shadow-sm rounded bg-white">
                     <h2>Log In</h2>
 
                     {{-- Facebook login --}}
@@ -22,7 +22,7 @@
                             Continue with Facebook
                         </a>
 
-                        <p class="hr-line-word-jumbotron mt-3"><span>OR</span></p>
+                        <p class="hr-line-word mt-3"><span>OR</span></p>
                     @endif
 
                     {{-- login form --}}
