@@ -31,7 +31,8 @@
             </li>
 
             <li class="nav-item">
-                <a class="nav-link {{ isActiveMenu('admin.user.list') }}" href="{{ route('admin.user.list') }}"
+                <a class="nav-link {{ isActiveMenu('admin.user.list|admin.user.create|admin.user.edit|admin.user.tracker.list|admin.user.authentication.history') }}"
+                   href="{{ route('admin.user.list') }}"
                    title="Users">
                     <span data-feather="users"></span>
                     <small class="iconav-nav-label d-md-none">Users</small>
@@ -63,7 +64,8 @@
             </li>
 
             <li class="nav-item">
-                <a class="nav-link {{ isActiveMenu('admin.submitted.report.list') }}" href="{{ route('admin.submitted.report.list') }}"
+                <a class="nav-link {{ isActiveMenu('admin.submitted.report.list') }}"
+                   href="{{ route('admin.submitted.report.list') }}"
                    title="Reports">
                     <span data-feather="flag"></span>
                     <small class="iconav-nav-label d-md-none">Reports</small>

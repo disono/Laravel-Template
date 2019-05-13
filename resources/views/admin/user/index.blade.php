@@ -29,7 +29,7 @@
                         </div>
 
                         <div class="col-md-3 col-sm-12 mb-3 mb-sm-0">
-                            <select class="custom-select" name="role_id">
+                            <select class="form-control select_picker" name="role_id">
                                 <option value="">Select Role</option>
                                 @foreach($roles as $role)
                                     <option value="{{ $role->id }}" {{ frmIsSelected('role_id', $role->id) }}>{{ $role->name }}</option>

@@ -6,6 +6,7 @@
  * @license         Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
+use Illuminate\Http\Response;
 use Jenssegers\Agent\Agent;
 
 if (!function_exists('theme')) {
@@ -15,7 +16,7 @@ if (!function_exists('theme')) {
      * @param null $file
      * @param array $data
      * @param int $response
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     function theme($file = null, $data = [], $response = 200)
     {
@@ -43,7 +44,7 @@ if (!function_exists('adminTheme')) {
      * @param $file
      * @param $data
      * @param int $response
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     function adminTheme($file, $data, $response = 200)
     {
@@ -68,7 +69,8 @@ if (!function_exists('isCurrentRoute')) {
             return false;
         }
 
-        if ($to === request()->route()->getName()) {
+        $to = explode('|', $to);
+        if (in_array(request()->route()->getName(), $to)) {
             return true;
         }
 

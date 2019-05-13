@@ -29,16 +29,25 @@ let WBProviderPlugin = {
             let self = this;
             jQ('[data-input-city-remove="true"]').remove();
 
-            if (country_id === '') {
+            if (country_id === '' || !country_id) {
                 self.location.cities = [];
+                resetSelectPicker();
                 return;
             }
 
             WBServices.raw.get('/location/cities/' + country_id).then(function (response) {
                 self.location.cities = response.data;
+                resetSelectPicker();
             }).catch(function (error) {
                 self.location.cities = [];
             });
         };
+
+        function resetSelectPicker() {
+            setTimeout(function () {
+                jQ('.select_picker').selectpicker('destroy');
+                jQ('.select_picker').selectpicker('render');
+            }, 100);
+        }
     }
 };

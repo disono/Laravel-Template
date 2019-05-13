@@ -44,5 +44,8 @@ let WBInitialize = function () {
         });
 
         jQ('[data-toggle="tooltip"]').tooltip();
+
+        jQ.fn.selectpicker.Constructor.BootstrapVersion = '4';
+        jQ('.select_picker').selectpicker();
     });
 };

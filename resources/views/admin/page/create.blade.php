@@ -65,7 +65,7 @@
                                         <label for="page_category_id">Category <strong
                                                     class="text-danger">*</strong></label>
 
-                                        <select class="custom-select" name="page_category_id"
+                                        <select class="form-control select_picker" name="page_category_id"
                                                 id="page_category_id" data-validate="required">
                                             <option value="">Select Category</option>
                                             @foreach($categories as $category)

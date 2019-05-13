@@ -87,7 +87,7 @@
 
                     {{ $reports->appends($request->all())->render() }}
                 @else
-                    <h3 class="text-center"><i class="far fa-frown"></i> No Submitted Found.</h3>
+                    <h3 class="text-center"><i class="far fa-frown"></i> No Report Submitted Found.</h3>
                 @endif
             </div>
         </div>

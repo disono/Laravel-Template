@@ -27,7 +27,7 @@
                         </div>
 
                         <div class="col-md-3 col-sm-12 mb-3 mb-sm-0">
-                            <select class="custom-select" name="page_category_id">
+                            <select class="form-control select_picker" name="page_category_id">
                                 <option value="">Select Category</option>
                                 @foreach($categories as $category)
                                     <option value="{{ $category->id }}" {{ frmIsSelected('page_category_id', $category->id) }}>{{ $category->name }}</option>

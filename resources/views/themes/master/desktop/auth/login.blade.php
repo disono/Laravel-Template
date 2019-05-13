@@ -55,10 +55,11 @@
                         </div>
 
                         <div class="form-group">
-                            <div class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input" id="remember" name="remember">
-                                <label class="custom-control-label" for="remember">Remember Me</label>
-                            </div>
+                            <label class="custom-control material-checkbox">
+                                <input type="checkbox" class="material-control-input" id="remember" name="remember">
+                                <span class="material-control-indicator"></span>
+                                <span class="material-control-description">Remember Me</span>
+                            </label>
                         </div>
 
                         <div class="form-group">

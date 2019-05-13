@@ -17,11 +17,13 @@ class DevelopmentController extends Controller
         parent::__construct();
     }
 
-    /**
-     * Development view
-     */
     public function applicationAction()
     {
 
+    }
+
+    public function documentationAction()
+    {
+        return $this->view('docs.web');
     }
 }

@@ -20,6 +20,7 @@ let WB_JS = [
     'node_modules/@fortawesome/fontawesome-free/js/all.js',
     'node_modules/feather-icons/dist/feather.min.js',
     'node_modules/axios/dist/axios.min.js',
+    'node_modules/bootstrap-select/dist/js/bootstrap-select.min.js',
     'node_modules/vue/dist/vue.min.js'
 ];
 
@@ -31,6 +32,7 @@ let WB_CSS = [
     'node_modules/@fortawesome/fontawesome-free/css/all.css',
     'node_modules/snackbarjs/dist/snackbar.min.css',
     'node_modules/snackbarjs/themes-css/material.css',
+    'node_modules/bootstrap-select/dist/css/bootstrap-select.min.css',
     'node_modules/bootstrap/dist/css/bootstrap.min.css'
 ];
 

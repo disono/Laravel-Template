@@ -42,11 +42,14 @@ Route::get('stream/video/{file}', 'Module\Application\FileController@streamVideo
 Route::get('stream/audio/{file}', 'Module\Application\FileController@streamAudioAction')->name('module.file.audio.stream');
 Route::get('stream/image/{file}', 'Module\Application\FileController@streamImageAction')->name('module.file.image.stream');
 
+// location
+Route::get('location/cities/{country_id}', 'Module\Application\LocationController@citiesAction')->name('module.location.cities');
+
 // development
 Route::get('dev', 'Module\Page\DevelopmentController@applicationAction')->name('development.application');
 
-// location
-Route::get('location/cities/{country_id}', 'Module\Application\LocationController@citiesAction')->name('module.location.cities');
+// documentation
+Route::get('dev/docs', 'Module\Page\DevelopmentController@documentationAction')->name('development.documentation');
 
 /*
  * ------------------------------------

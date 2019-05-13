@@ -88,7 +88,7 @@
                                     <div class="form-group">
                                         <label for="gender">Gender <strong class="text-danger">*</strong></label>
 
-                                        <select class="custom-select{{ hasInputError($errors, 'gender') }}"
+                                        <select class="form-control select_picker{{ hasInputError($errors, 'gender') }}"
                                                 name="gender" id="gender" data-validate="required">
                                             <option value="">Select Gender</option>
                                             <option value="Male" {{ frmIsSelected('gender', 'Male', $user->gender) }}>
@@ -152,7 +152,7 @@
                                     <div class="form-group">
                                         <label for="country_id">Country</label>
 
-                                        <select class="custom-select" name="country_id" id="country_id"
+                                        <select class="form-control select_picker" name="country_id" id="country_id"
                                                 data-input-country-id="{{ $user->country_id }}"
                                                 v-model="location.country_id"
                                                 @change="onCountrySelect($event, location.country_id)">
@@ -173,7 +173,7 @@
                                     <div class="form-group">
                                         <label for="city_id">City</label>
 
-                                        <select class="custom-select" name="city_id" id="city_id">
+                                        <select class="form-control select_picker" name="city_id" id="city_id">
                                             <option value="">Select City</option>
 
                                             @foreach(\App\Models\City::fetchAll(['country_id' => $user->country_id]) as $city)
@@ -201,7 +201,7 @@
                                     <div class="form-group">
                                         <label for="role_id">Role <strong class="text-danger">*</strong></label>
 
-                                        <select class="custom-select{{ hasInputError($errors, 'role_id') }}"
+                                        <select class="form-control select_picker{{ hasInputError($errors, 'role_id') }}"
                                                 name="role_id" id="role_id" data-validate="required">
                                             <option value="">Select Role</option>
                                             @foreach($roles as $role)

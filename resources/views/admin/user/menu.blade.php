@@ -23,6 +23,6 @@
 
     <li class="nav-item">
         <a class="nav-link {{ isActiveMenu('admin.user.create') }}"
-           href="{{ route('admin.user.create') }}"><i class="fas fa-user-plus"></i> Register New User</a>
+           href="{{ route('admin.user.create') }}"><i class="fas fa-user-plus"></i> Add User</a>
     </li>
 </ul>
