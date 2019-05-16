@@ -12,18 +12,18 @@ use App\Models\Vendor\BaseModel;
 
 class PageCategory extends BaseModel
 {
-    protected static $tableName = 'page_categories';
-    protected static $writableColumns = [
+    protected $tableName = 'page_categories';
+    protected $writableColumns = [
         'parent_id', 'name', 'description', 'slug'
     ];
 
-    protected static $inputIntegers = ['parent_id'];
+    protected $inputIntegers = ['parent_id'];
 
-    private static $list = [];
+    private $list = [];
 
     public function __construct(array $attributes = [])
     {
-        $this->fillable(self::$writableColumns);
+        $this->fillable($this->writableColumns);
         parent::__construct($attributes);
     }
 
@@ -35,7 +35,7 @@ class PageCategory extends BaseModel
      * @param $inputs
      * @return bool
      */
-    public static function actionEditBefore($tableName, $query, $inputs)
+    public function actionEditBefore($tableName, $query, $inputs)
     {
         if (!$query) {
             return false;
@@ -57,7 +57,7 @@ class PageCategory extends BaseModel
      * @param $query
      * @return bool
      */
-    public static function actionRemoveBefore($query)
+    public function actionRemoveBefore($query)
     {
         foreach ($query as $row) {
             Page::where('page_category_id', $row->id)->delete();
@@ -66,6 +66,7 @@ class PageCategory extends BaseModel
             foreach (PageCategory::where('parent_id', $row->id)->get() as $sub) {
                 Page::where('page_category_id', $sub->id)->delete();
             }
+
             PageCategory::where('parent_id', $row->id)->delete();
         }
 
@@ -78,7 +79,7 @@ class PageCategory extends BaseModel
      * @param $data
      * @return string
      */
-    public static function nested2ul($data)
+    public function nested2ul($data)
     {
         $result = array();
         if (sizeof($data) > 0) {
@@ -87,7 +88,7 @@ class PageCategory extends BaseModel
                 $result[] = sprintf(
                     '<li><a href="' . url('p/category/' . $row['slug']) . '">%s</a> %s</li>',
                     $row['name'],
-                    self::nested2ul($row['sub_categories'])
+                    $this->nested2ul($row['sub_categories'])
                 );
             }
             $result[] = '</ul>';
@@ -102,7 +103,7 @@ class PageCategory extends BaseModel
      * @param array $params
      * @return mixed
      */
-    public static function nestedToTabs($params = [])
+    public function nestedToTabs($params = [])
     {
         $include_tab = true;
         if (isset($params['include_tab'])) {
@@ -115,7 +116,7 @@ class PageCategory extends BaseModel
         }
 
         // query sub categories (counting)
-        $data = self::print_ar(self::fetchTree($params), 0, $include_tab, $strong);
+        $data = $this->print_ar($this->fetchTree($params), 0, $include_tab, $strong);
         $query = [
             'all' => true
         ];
@@ -124,7 +125,7 @@ class PageCategory extends BaseModel
             $query = array_merge($query, $params['exclude']);
         }
 
-        $count_cat = count(self::fetch($query));
+        $count_cat = count($this->fetch($query));
         $query = [];
         $num = 0;
         foreach ($data as $row) {
@@ -147,7 +148,7 @@ class PageCategory extends BaseModel
      * @param string $_tab
      * @return array
      */
-    public static function print_ar($array = [], $count = 0, $include_tab = true, $strong = false, $_tab = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;")
+    public function print_ar($array = [], $count = 0, $include_tab = true, $strong = false, $_tab = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;")
     {
         $i = 0;
         $tab = '';
@@ -173,15 +174,15 @@ class PageCategory extends BaseModel
             }
 
             $key['tab'] = $tab;
-            self::$list[] = (object)$key;
+            $this->list[] = (object)$key;
             if (count($key['sub_categories']) > 0) {
                 $count++;
-                self::print_ar($key['sub_categories'], $count, $include_tab);
+                $this->print_ar($key['sub_categories'], $count, $include_tab);
                 $count--;
             }
         }
 
-        return self::$list;
+        return $this->list;
     }
 
     /**
@@ -190,10 +191,10 @@ class PageCategory extends BaseModel
      * @param array $params
      * @return mixed
      */
-    public static function fetchTree($params = [])
+    public function fetchTree($params = [])
     {
         $params['all'] = true;
-        $query = self::fetch($params);
+        $query = $this->fetch($params);
         $categories = [];
 
         foreach ($query as $category) {

@@ -12,17 +12,17 @@ use App\Models\Vendor\BaseModel;
 
 class UserPhone extends BaseModel
 {
-    protected static $tableName = 'user_phones';
-    protected static $writableColumns = [
+    protected $tableName = 'user_phones';
+    protected $writableColumns = [
         'user_id', 'ext', 'phone', 'is_verified',
         'is_verified', 'verification_code', 'verification_expired_at'
     ];
 
-    protected static $inputDates = ['verification_expired_at'];
+    protected $inputDates = ['verification_expired_at'];
 
     public function __construct(array $attributes = [])
     {
-        $this->fillable(self::$writableColumns);
+        $this->fillable($this->writableColumns);
         parent::__construct($attributes);
     }
 

@@ -6,12 +6,14 @@
  * @license         Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
+use App\Models\Setting;
+
 $GLOBALS['_app_settings'] = [];
 $GLOBALS['_me'] = null;
 
 function initialize_settings()
 {
-    $set_app_settings = \App\Models\Setting::all();
+    $set_app_settings = Setting::all();
     $clean = [];
 
     foreach ($set_app_settings as $row) {

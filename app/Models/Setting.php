@@ -12,25 +12,24 @@ use App\Models\Vendor\BaseModel;
 
 class Setting extends BaseModel
 {
-    // input_type: text, select, checkbox
-
-    protected static $tableName = 'settings';
-    protected static $writableColumns = [
+    protected $tableName = 'settings';
+    protected $writableColumns = [
+        // input_type: text, select, checkbox
         'name', 'key', 'value', 'description', 'input_type', 'input_value', 'attributes', 'is_disabled',
         'category'
     ];
 
-    protected static $inputBooleans = ['is_disabled'];
+    protected $inputBooleans = ['is_disabled'];
 
     public function __construct(array $attributes = [])
     {
-        $this->fillable(self::$writableColumns);
+        $this->fillable($this->writableColumns);
         parent::__construct($attributes);
     }
 
-    public static function listColumns()
+    public function listColumns()
     {
-        return self::$writableColumns;
+        return $this->writableColumns;
     }
 
     /**
@@ -40,9 +39,9 @@ class Setting extends BaseModel
      * @param $inputs
      * @return mixed
      */
-    public static function formatStore($tableName, $inputs)
+    public function formatStore($tableName, $inputs)
     {
-        return self::formatInputs($inputs);
+        return $this->formatInputs($inputs);
     }
 
     /**
@@ -51,7 +50,7 @@ class Setting extends BaseModel
      * @param $inputs
      * @return mixed
      */
-    private static function formatInputs($inputs)
+    private function formatInputs($inputs)
     {
         $inputs['input_type'] = $inputs['input_type'] ?? 'text';
         $inputs['input_value'] = $inputs['input_value'] ?? null;
@@ -72,9 +71,9 @@ class Setting extends BaseModel
      * @param $inputs
      * @return mixed
      */
-    public static function formatEdit($tableName, $inputs)
+    public function formatEdit($tableName, $inputs)
     {
-        return self::formatInputs($inputs);
+        return $this->formatInputs($inputs);
     }
 
     /**
@@ -82,11 +81,11 @@ class Setting extends BaseModel
      *
      * @return array
      */
-    public static function keyValuePair()
+    public function keyValuePair()
     {
         $values = [];
 
-        foreach (self::fetchAll() as $row) {
+        foreach ((new Setting())->fetchAll() as $row) {
             if (!$row->is_disabled) {
                 $values[$row->key] = [
                     'name' => $row->name,
@@ -100,7 +99,7 @@ class Setting extends BaseModel
         return $values;
     }
 
-    public static function categories()
+    public function categories()
     {
         return self::select('category')->groupBy('category')->get();
     }
@@ -111,7 +110,7 @@ class Setting extends BaseModel
      * @param $row
      * @return mixed
      */
-    protected static function dataFormatting($row)
+    protected function dataFormatting($row)
     {
         $row->original_value = $row->value;
         if ($row->input_type == 'checkbox') {

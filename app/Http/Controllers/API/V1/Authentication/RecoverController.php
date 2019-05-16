@@ -12,6 +12,7 @@ use App\Http\Controllers\API\APIController;
 use App\Http\Requests\API\V1\Authentication\RecoverPasswordRequest;
 use App\Models\User;
 use App\Notifications\ResetPasswordNotification;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Notification;
 
 class RecoverController extends APIController
@@ -20,7 +21,7 @@ class RecoverController extends APIController
      * Send a reset link
      *
      * @param RecoverPasswordRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function passwordAction(RecoverPasswordRequest $request)
     {

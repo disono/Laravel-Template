@@ -24,12 +24,12 @@ class FileController extends Controller
     public function indexAction()
     {
         $this->setHeader('title', 'Uploaded Files');
-        return $this->view('index', ['files' => File::fetch(requestValues('search'))]);
+        return $this->view('index', ['files' => (new File())->fetch(requestValues('search'))]);
     }
 
     public function destroyAction($id)
     {
-        File::remove($id);
+        (new File())->remove($id);
         return $this->json('File is successfully deleted.');
     }
 }

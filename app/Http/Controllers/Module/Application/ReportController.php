@@ -23,6 +23,6 @@ class ReportController extends Controller
     {
         $inputs = $request->all();
         $inputs['user_id'] = __me()->id;
-        return $this->json(PageReport::store($inputs));
+        return $this->json((new PageReport())->store($inputs));
     }
 }

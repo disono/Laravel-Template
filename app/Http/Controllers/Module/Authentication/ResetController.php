@@ -15,6 +15,8 @@ use App\Models\AuthenticationHistory;
 use App\Models\PasswordReset;
 use App\Models\User;
 use App\Notifications\ResetPasswordNotification;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
 
@@ -29,7 +31,7 @@ class ResetController extends Controller
     /**
      * Forgot view form
      *
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
+     * @return JsonResponse|Response
      */
     public function forgotAction()
     {
@@ -40,7 +42,7 @@ class ResetController extends Controller
      * Email the forgot link password
      *
      * @param ForgotPassword $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function processForgotAction(ForgotPassword $request)
     {
@@ -56,7 +58,7 @@ class ResetController extends Controller
      * Password recover form
      *
      * @param $token
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
+     * @return JsonResponse|Response
      */
     public function recoverAction($token)
     {
@@ -102,7 +104,7 @@ class ResetController extends Controller
      * Change password process
      *
      * @param RecoverPassword $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function processRecoveryAction(RecoverPassword $request)
     {
@@ -146,7 +148,7 @@ class ResetController extends Controller
         // authentication history
         if (__me()) {
             $userAgent = userAgent();
-            AuthenticationHistory::store([
+            (new AuthenticationHistory())->store([
                 'user_id' => __me()->id,
                 'ip' => ipAddress(),
                 'platform' => $userAgent->platform . ', ' . $userAgent->browserName,

@@ -72,7 +72,7 @@
                         <select name="city_id" id="city_id" class="form-control" data-validate="required">
                             <option value="">Select City</option>
 
-                            @foreach(\App\Models\City::fetchAll(['country_id' => $address->country_id]) as $city)
+                            @foreach((new \App\Models\City())->fetchAll(['country_id' => $address->country_id]) as $city)
                                 <option value="{{ $city->id }}"
                                         data-input-city-remove="true" {{ frmIsSelected('city_id', $city->id, $address->city_id) }}>
                                     {{ $city->name }}

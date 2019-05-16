@@ -12,14 +12,14 @@ use App\Models\Vendor\BaseModel;
 
 class SocialAuthentication extends BaseModel
 {
-    protected static $tableName = 'social_authentications';
-    protected static $writableColumns = [
+    protected $tableName = 'social_authentications';
+    protected $writableColumns = [
         'user_id', 'social_id', 'type'
     ];
 
     public function __construct(array $attributes = [])
     {
-        $this->fillable(self::$writableColumns);
+        $this->fillable($this->writableColumns);
         parent::__construct($attributes);
     }
 

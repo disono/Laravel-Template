@@ -6,6 +6,7 @@
  * @license         Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
+use App\Models\File;
 use Illuminate\Support\Facades\Log;
 use Intervention\Image\Facades\Image;
 
@@ -67,7 +68,7 @@ if (!function_exists('fileSave')) {
 
             // save to database
             $user_id = (__me()) ? __me()->id : 0;
-            $fileSave = \App\Models\File::store([
+            $fileSave = (new File())->store([
                 'user_id' => $user_id,
                 'file_name' => $file->fileName,
                 'type' => $file->type,
@@ -310,7 +311,7 @@ if (!function_exists('fetchImage')) {
         $image = null;
         $path = null;
         if (is_numeric($source)) {
-            $image = \App\Models\File::find($source);
+            $image = File::find($source);
         }
 
         $filename = null;

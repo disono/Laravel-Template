@@ -12,6 +12,7 @@ use App\Http\Controllers\API\APIController;
 use App\Models\AuthenticationHistory;
 use App\Models\Token;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
 class LoginController extends APIController
@@ -19,7 +20,7 @@ class LoginController extends APIController
     /**
      * Login user
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function loginAction()
     {
@@ -60,7 +61,7 @@ class LoginController extends APIController
         try {
             if (__me()) {
                 $userAgent = userAgent();
-                AuthenticationHistory::store([
+                (new AuthenticationHistory())->store([
                     'user_id' => __me()->id,
                     'ip' => ipAddress(),
                     'platform' => $userAgent->platform . ', ' . $userAgent->browserName,
@@ -80,18 +81,18 @@ class LoginController extends APIController
      */
     private function _profile($username = 'email')
     {
-        return User::crateToken(User::single($this->request->get('username'), $username));
+        return (new User())->crateToken((new User())->single($this->request->get('username'), $username));
     }
 
     /**
      * Logout user delete token
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function logoutAction($id)
     {
         $this->_logAuthentication('logout');
-        return $this->json(Token::remove($id));
+        return $this->json((new Token())->remove($id));
     }
 }

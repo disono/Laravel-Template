@@ -62,7 +62,7 @@ class BaseRequest extends FormRequest
     /**
      * Get the proper failed validation response for the request.
      *
-     * @param  array $errors
+     * @param array $errors
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function response(array $errors)
@@ -79,7 +79,7 @@ class BaseRequest extends FormRequest
     /**
      * Format the errors from the given Validator instance.
      *
-     * @param  \Illuminate\Contracts\Validation\Validator $validator
+     * @param \Illuminate\Contracts\Validation\Validator $validator
      * @return array
      */
     protected function formatErrors(Validator $validator)

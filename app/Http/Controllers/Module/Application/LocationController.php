@@ -15,6 +15,6 @@ class LocationController extends Controller
 {
     public function citiesAction($country_id)
     {
-        return $this->json(City::fetchAll(['country_id' => $country_id]));
+        return $this->json((new City())->fetchAll(['country_id' => $country_id]));
     }
 }

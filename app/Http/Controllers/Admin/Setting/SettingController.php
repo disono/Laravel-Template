@@ -53,7 +53,7 @@ class SettingController extends Controller
     public function indexAction()
     {
         $this->setHeader('title', 'Application Settings');
-        return $this->view('setting.application.index', ['settings' => Setting::fetch(requestValues('search'))]);
+        return $this->view('setting.application.index', ['settings' => (new Setting())->fetch(requestValues('search'))]);
     }
 
     public function createAction()
@@ -64,7 +64,7 @@ class SettingController extends Controller
 
     public function storeAction(SettingStore $request)
     {
-        $setting = Setting::store($request->all());
+        $setting = (new Setting())->store($request->all());
         if (!$setting) {
             return $this->json(['name' => 'Failed to crate a new setting.'], 422, false);
         }
@@ -75,7 +75,7 @@ class SettingController extends Controller
     public function editAction($id)
     {
         $this->setHeader('title', 'Edit Application Settings');
-        $this->content['setting'] = Setting::single($id);
+        $this->content['setting'] = (new Setting())->single($id);
         if (!$this->content['setting']) {
             abort(404);
         }
@@ -85,13 +85,13 @@ class SettingController extends Controller
 
     public function updateAction(SettingUpdate $request)
     {
-        Setting::edit($request->get('id'), $request->all());
+        (new Setting())->edit($request->get('id'), $request->all());
         return $this->json('Setting is successfully updated.');
     }
 
     public function destroyAction($id)
     {
-        Setting::remove($id);
+        S(new Setting())->remove($id);
         return $this->json('Setting is successfully deleted.');
     }
 }

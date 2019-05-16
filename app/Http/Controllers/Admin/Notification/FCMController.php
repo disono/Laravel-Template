@@ -35,7 +35,7 @@ class FCMController extends Controller
     {
         $this->setHeader('title', 'FCM Notifications');
         return $this->view('index', [
-            'notifications' => FirebaseNotification::fetch(requestValues('search'))
+            'notifications' => (new FirebaseNotification())->fetch(requestValues('search'))
         ]);
     }
 
@@ -51,7 +51,7 @@ class FCMController extends Controller
         $inputs['user_id'] = __me()->id;
 
         try {
-            $fcm = FirebaseNotification::store($inputs);
+            $fcm = (new FirebaseNotification())->store($inputs);
             if (!$fcm) {
                 return $this->json(['title' => 'Failed to crate a new FCM notification.'], 422, false);
             }
@@ -64,7 +64,7 @@ class FCMController extends Controller
 
     public function editAction($id)
     {
-        $fcm = FirebaseNotification::single($id);
+        $fcm = (new FirebaseNotification())->single($id);
         if (!$fcm) {
             abort(404);
         }
@@ -76,7 +76,7 @@ class FCMController extends Controller
     public function updateAction(FCMUpdate $request)
     {
         try {
-            FirebaseNotification::edit($request->get('id'), $request->all());
+            (new FirebaseNotification())->edit($request->get('id'), $request->all());
             return $this->json('FCM notification is successfully updated.');
         } catch (\Exception $e) {
             return $this->json(['title' => $e->getMessage()], 422, false);
@@ -85,7 +85,7 @@ class FCMController extends Controller
 
     public function destroyAction($id)
     {
-        FirebaseNotification::remove($id);
+        (new FirebaseNotification())->remove($id);
         return $this->json('FCM notification is successfully deleted.');
     }
 }

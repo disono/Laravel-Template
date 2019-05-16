@@ -140,8 +140,8 @@ if (!function_exists('thDelete')) {
         $_id = '_check_' . time();
         return '<th>
             <div class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" value="" id="' . $_id .'" v-on:change="toolbarSelectItem($event)">
-                <label class="custom-control-label" for="' . $_id .'"></label>
+                <input type="checkbox" class="custom-control-input" value="" id="' . $_id . '" v-on:change="toolbarSelectItem($event)">
+                <label class="custom-control-label" for="' . $_id . '"></label>
             </div>
         </th>';
     }
@@ -160,7 +160,7 @@ if (!function_exists('tdDelete')) {
             <div class="custom-control custom-checkbox">
                 <input type="checkbox" class="custom-control-input" delete-data="toolbarSelectedItems" id="del_' . $id . '"
                                            v-model="toolbar.selectedItems" value="' . $id . '">
-                <label class="custom-control-label" for="del_' . $id .'"></label>
+                <label class="custom-control-label" for="del_' . $id . '"></label>
             </div>
         </td>';
     }

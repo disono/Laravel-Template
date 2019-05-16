@@ -12,14 +12,14 @@ use App\Models\Vendor\BaseModel;
 
 class City extends BaseModel
 {
-    protected static $tableName = 'cities';
-    protected static $writableColumns = [
+    protected $tableName = 'cities';
+    protected $writableColumns = [
         'country_id', 'name', 'lat', 'lng'
     ];
 
     public function __construct(array $attributes = [])
     {
-        $this->fillable(self::$writableColumns);
+        $this->fillable($this->writableColumns);
         parent::__construct($attributes);
     }
 
@@ -33,13 +33,13 @@ class City extends BaseModel
         return $this->belongsTo('App\Models\Country');
     }
 
-    public static function rawFilters($query)
+    public function rawFilters($query)
     {
         $query->join('countries', 'cities.country_id', '=', 'countries.id');
         return $query;
     }
 
-    protected static function rawQuerySelectList()
+    protected function rawQuerySelectList()
     {
         return [
             'country_name' => 'countries.name',

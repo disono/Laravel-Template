@@ -20,15 +20,15 @@ class FCMController extends APIController
             return $this->json('Invalid token source or FCM is invalid.', 422);
         }
 
-        if (FirebaseToken::single($this->request->get('token_id'), 'token_id')) {
-            return $this->json(FirebaseToken::edit(null, [
+        if ((new FirebaseToken())->single($this->request->get('token_id'), 'token_id')) {
+            return $this->json((new FirebaseToken())->edit(null, [
                 'fcm_token' => $this->request->get('fcm_token')
             ], [
                 'token_id' => $this->request->get('token_id')
             ]));
         }
 
-        return $this->json(FirebaseToken::store([
+        return $this->json((new FirebaseToken())->store([
             'token_id' => $this->request->get('token_id'),
             'fcm_token' => $this->request->get('fcm_token')
         ]));

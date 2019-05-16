@@ -12,16 +12,17 @@ use App\Models\Vendor\BaseModel;
 
 class ChatGroup extends BaseModel
 {
-    protected static $tableName = 'chat_groups';
-    protected static $writableColumns = [
+    protected $tableName = 'chat_groups';
+    protected $writableColumns = [
         'created_by_id', 'name',
         'is_deleted', 'is_archived', 'is_spam'
     ];
-    protected static $inputBooleans = ['is_deleted', 'is_archived', 'is_spam'];
+
+    protected $inputBooleans = ['is_deleted', 'is_archived', 'is_spam'];
 
     public function __construct(array $attributes = [])
     {
-        $this->fillable(self::$writableColumns);
+        $this->fillable($this->writableColumns);
         parent::__construct($attributes);
     }
 
@@ -30,12 +31,12 @@ class ChatGroup extends BaseModel
      *
      * @return array
      */
-    protected static function rawQuerySelectList()
+    protected function rawQuerySelectList()
     {
-        $member_id = self::$params['is_member'] ?? 0;
+        $member_id = $this->params['is_member'] ?? 0;
 
         // message one person (private message 1 to 1)
-        $pm = self::$params['private_message'] ?? ['to' => 0, 'from' => 0];
+        $pm = $this->params['private_message'] ?? ['to' => 0, 'from' => 0];
 
         // count how many members
         $count_participant = 'SELECT COUNT(*) FROM chat_group_members WHERE chat_groups.id = chat_group_members.chat_group_id';
@@ -48,7 +49,7 @@ class ChatGroup extends BaseModel
         $pm_from = $member . ($pm['from'] ?? 0);
 
         // message self
-        $pm_me = $member . (self::$params['me_only'] ?? 0);
+        $pm_me = $member . ($this->params['me_only'] ?? 0);
 
         // self
         $me = (__me()) ? __me()->id : 0;
@@ -80,7 +81,7 @@ class ChatGroup extends BaseModel
         ];
 
         // search email, username, first name, last name and full name
-        $search = self::hasParams('search');
+        $search = $this->hasParams('search');
         if ($search) {
             $query['search_frn_member'] = '(SELECT users.first_name FROM chat_group_members 
                 JOIN users ON chat_group_members.member_id = users.id 
@@ -117,24 +118,24 @@ class ChatGroup extends BaseModel
      * @param $row
      * @return mixed
      */
-    protected static function dataFormatting($row)
+    protected function dataFormatting($row)
     {
-        $row->members = ChatGroupMember::fetchAll(['chat_group_id' => $row->id]);
+        $row->members = (new ChatGroupMember())->fetchAll(['chat_group_id' => $row->id]);
         $row->count_members = count($row->members);
 
-        $row->messages = ChatMessage::fetchAll(['chat_group_id' => $row->id, 'limit' => (int)__settings('pagination')->value]);
+        $row->messages = (new ChatMessage())->fetchAll(['chat_group_id' => $row->id, 'limit' => (int)__settings('pagination')->value]);
 
-        $row->latest_message = ChatMessage::fetch(['single' => true, 'chat_group_id' => $row->id, 'order_by_column' => 'created_at']);
+        $row->latest_message = (new ChatMessage())->fetch(['single' => true, 'chat_group_id' => $row->id, 'order_by_column' => 'created_at']);
         $row->latest_message_at = ($row->latest_message_at) ? humanDate($row->latest_message_at) : humanDate($row->created_at);
         $row->latest_message_summary = ($row->latest_message) ? str_limit($row->latest_message->message, 22) : null;
         $row->photo = ($row->latest_message) ? $row->latest_message->profile_picture : url('assets/img/placeholders/profile_picture.png');
 
         $me = __me() ? __me()->id : 0;
-        $row->is_admin = ChatGroupMember::where('chat_group_id', $row->id)
+        $row->is_admin = (new ChatGroupMember())->where('chat_group_id', $row->id)
             ->where('member_id', $me)->where('is_admin', 1)->first() ? 1 : 0;
 
         $row->group_name = $row->name;
-        self::_cleanGroupName($row);
+        $this->_cleanGroupName($row);
 
         return $row;
     }
@@ -144,7 +145,7 @@ class ChatGroup extends BaseModel
      *
      * @param $row
      */
-    private static function _cleanGroupName($row)
+    private function _cleanGroupName($row)
     {
         if ($row->group_name) {
             return;

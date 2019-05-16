@@ -125,7 +125,7 @@
 
                                 <select name="category" id="category" class="form-control" data-validate="required">
                                     <option value="">Select Category</option>
-                                    @foreach(\App\Models\Setting::categories() as $category)
+                                    @foreach((new \App\Models\Setting())->categories() as $category)
                                         <option value="{{ $category->$category }}">{{ $category->category }}</option>
                                     @endforeach
                                 </select>

@@ -176,7 +176,7 @@
                                         <select class="form-control select_picker" name="city_id" id="city_id">
                                             <option value="">Select City</option>
 
-                                            @foreach(\App\Models\City::fetchAll(['country_id' => $user->country_id]) as $city)
+                                            @foreach((new \App\Models\City())->fetchAll(['country_id' => $user->country_id]) as $city)
                                                 <option value="{{ $city->id }}"
                                                         {{ frmIsSelected('city_id', $city->id, $user->city_id) }}>
                                                     {{ $city->name }}

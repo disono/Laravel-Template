@@ -25,7 +25,7 @@ class PageViewController extends Controller
     {
         $this->setHeader('title', 'Page Views');
         return $this->view('index', [
-            'page_views' => PageView::fetch(requestValues('search|page_id'))
+            'page_views' => (new PageView())->fetch(requestValues('search|page_id'))
         ]);
     }
 }

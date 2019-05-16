@@ -9,6 +9,7 @@
 namespace App\Models\CSV\User;
 
 use App\Models\User;
+use Illuminate\Database\Eloquent\Model;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
@@ -19,7 +20,7 @@ class UsersImport implements ToModel, WithHeadingRow
     /**
      * @param array $row
      *
-     * @return \Illuminate\Database\Eloquent\Model|null
+     * @return Model|null
      */
     public function model(array $row)
     {
@@ -45,8 +46,8 @@ class UsersImport implements ToModel, WithHeadingRow
 
     public function columns(): array
     {
-        $cleanHidden = array_diff(User::getWritableColumns(), $this->hidden);
-        $cleanColumns = array_diff($this->hidden, User::getWritableColumns());
+        $cleanHidden = array_diff((new User())->getWritableColumns(), $this->hidden);
+        $cleanColumns = array_diff($this->hidden, (new User())->getWritableColumns());
         $final_output = array_merge($cleanHidden, $cleanColumns);
 
         return $final_output;

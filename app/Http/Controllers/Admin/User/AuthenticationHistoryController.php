@@ -25,7 +25,7 @@ class AuthenticationHistoryController extends Controller
     {
         $this->setHeader('title', 'Authentication Histories');
         return $this->view('index', [
-            'histories' => AuthenticationHistory::fetch(requestValues('user_id'))
+            'histories' => (new AuthenticationHistory())->fetch(requestValues('user_id'))
         ]);
     }
 }

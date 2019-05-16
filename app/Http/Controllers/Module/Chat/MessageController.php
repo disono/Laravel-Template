@@ -20,10 +20,18 @@ use Illuminate\Support\Facades\DB;
 
 class MessageController extends Controller
 {
+    private $chatGroup;
+    private $chatGroupMember;
+    private $chatMessage;
+
     public function __construct()
     {
         parent::__construct();
         $this->theme = 'chat';
+
+        $this->chatGroup = new ChatGroup();
+        $this->chatGroupMember = new ChatGroupMember();
+        $this->chatMessage = new ChatMessage();
 
         if (__settings('chat')->value === 'disabled') {
             abort(403);
@@ -50,10 +58,10 @@ class MessageController extends Controller
         if ($type === 'user') {
             if ($this->me->id == $id) {
                 // I'm messaging my self
-                $group = ChatGroup::fetch(['count_members' => 1, 'me_only' => $id, 'single' => true, 'is_deleted' => 0]);
+                $group = $this->chatGroup->fetch(['count_members' => 1, 'me_only' => $id, 'single' => true, 'is_deleted' => 0]);
             } else {
                 // messaging another person
-                $group = ChatGroup::fetch([
+                $group = $this->chatGroup->fetch([
                     'count_members' => 2,
                     'private_message' => ['to' => $id, 'from' => $this->me->id], 'has_private_message' => 1, 'has_empty_name' => 1,
                     'single' => true, 'is_deleted' => 0
@@ -62,24 +70,24 @@ class MessageController extends Controller
 
             if (!$group) {
                 // create a group chat
-                $group = ChatGroup::store(['created_by_id' => $this->me->id]);
+                $group = $this->chatGroup->store(['created_by_id' => $this->me->id]);
 
                 // add to group chat
                 if ($group) {
-                    ChatGroupMember::store([
+                    $this->chatGroupMember->store([
                         'chat_group_id' => $group->id, 'member_id' => $this->me->id,
                         'added_by_id' => $this->me->id, 'is_admin' => 1
                     ]);
 
                     // add another member if not messaging your self
                     if ($this->me->id != $id) {
-                        ChatGroupMember::store([
+                        $this->chatGroupMember->store([
                             'chat_group_id' => $group->id, 'member_id' => $id,
                             'added_by_id' => $this->me->id
                         ]);
                     }
 
-                    $group = ChatGroup::fetch(['single' => true, 'id' => $group->id, 'is_deleted' => 0]);
+                    $group = $this->chatGroup->fetch(['single' => true, 'id' => $group->id, 'is_deleted' => 0]);
                 }
             }
         } else {
@@ -87,7 +95,7 @@ class MessageController extends Controller
                 return $this->error(404);
             }
 
-            $group = ChatGroup::fetch(['single' => true, 'id' => $id, 'is_deleted' => 0]);
+            $group = $this->chatGroup->fetch(['single' => true, 'id' => $id, 'is_deleted' => 0]);
         }
 
         if (!$group || !in_array($type, ['user', 'group'])) {
@@ -95,7 +103,7 @@ class MessageController extends Controller
         }
 
         // mark as seen
-        ChatGroupMember::where('chat_group_id', $group->id)->where('member_id', $this->me->id)->update(['is_seen' => 1]);
+        $this->chatGroupMember->where('chat_group_id', $group->id)->where('member_id', $this->me->id)->update(['is_seen' => 1]);
 
         return $this->view('show', ['group' => $group]);
     }
@@ -103,12 +111,12 @@ class MessageController extends Controller
     public function showGroupAction($group_id)
     {
         // show messages on group with validation if current user is existing as member of the group
-        return $this->_isMember($group_id, ChatGroup::single($group_id));
+        return $this->_isMember($group_id, $this->chatGroup->single($group_id));
     }
 
     public function groupsAction()
     {
-        $group = ChatGroup::fetch(requestValues(
+        $group = $this->chatGroup->fetch(requestValues(
             'search|has_unread|has_archive', [
                 'is_member' => $this->me->id, 'is_deleted' => 0, 'order_by_column' => 'latest_message_at'
             ]
@@ -127,14 +135,14 @@ class MessageController extends Controller
             return $this->json('Invalid status for archive.', 422);
         }
 
-        return $this->_isMember($group_id, ChatGroupMember::where('chat_group_id', $group_id)
+        return $this->_isMember($group_id, $this->chatGroupMember->where('chat_group_id', $group_id)
             ->where('member_id', $this->me->id)
             ->update(['is_archive' => $status]));
     }
 
     public function messagesAction($group_id)
     {
-        return $this->_isMember($group_id, ChatMessage::fetch(requestValues('search', ['chat_group_id' => $group_id])));
+        return $this->_isMember($group_id, $this->chatMessage->fetch(requestValues('search', ['chat_group_id' => $group_id])));
     }
 
     public function sendAction(SendMessage $request)
@@ -143,7 +151,7 @@ class MessageController extends Controller
         $inputs = $request->all();
         $inputs['file_msg'] = $request->file('file_msg');
         $inputs['user_id'] = __me()->id;
-        return $this->_isMember($request->get('chat_group_id'), ChatMessage::store($inputs));
+        return $this->_isMember($request->get('chat_group_id'), $this->chatMessage->store($inputs));
     }
 
     public function storeGroupAction(CreateGroupChat $request)
@@ -156,7 +164,7 @@ class MessageController extends Controller
             // create group
             $inputs = $request->all();
             $inputs['created_by_id'] = $this->me->id;
-            $group = ChatGroup::store($inputs);
+            $group = $this->chatGroup->store($inputs);
 
             if (!$group) {
                 DB::rollBack();
@@ -168,14 +176,14 @@ class MessageController extends Controller
                 // add members
                 foreach ($members as $user) {
                     if (!$this->_checkIsMember($group->id, $user) && User::where('id', $user)->first()) {
-                        ChatGroupMember::store([
-                            'chat_group_id' => $group->id, 'added_by_id' => $this->me->id, 'member_id' => $user]
+                        $this->chatGroupMember->store([
+                                'chat_group_id' => $group->id, 'added_by_id' => $this->me->id, 'member_id' => $user]
                         );
                     }
                 }
 
                 // add your self
-                ChatGroupMember::store([
+                $this->chatGroupMember->store([
                     'chat_group_id' => $group->id, 'added_by_id' => $this->me->id, 'member_id' => $this->me->id, 'is_admin' => 1
                 ]);
             }
@@ -190,7 +198,7 @@ class MessageController extends Controller
 
     public function updateGroupAction(UpdateGroupChat $request)
     {
-        $group = ChatGroup::single($request->get('id'));
+        $group = $this->chatGroup->single($request->get('id'));
 
         if (!$group) {
             return $this->json('Group chat is not found.', 404);
@@ -205,7 +213,7 @@ class MessageController extends Controller
             // new members (everyone can add new members)
             foreach ($members as $user) {
                 if (!$this->_checkIsMember($group->id, $user) && User::where('id', $user)->first()) {
-                    ChatGroupMember::store(['chat_group_id' => $group->id,
+                    $this->chatGroupMember->store(['chat_group_id' => $group->id,
                         'added_by_id' => $this->me->id, 'member_id' => $user]);
                 }
             }
@@ -223,21 +231,21 @@ class MessageController extends Controller
                     }
 
                     if ($isFound === false && $member->member_id !== $this->me->id) {
-                        ChatGroupMember::remove(null, ['member_id' => $member->member_id, 'chat_group_id' => $group->id]);
+                        $this->chatGroupMember->remove(null, ['member_id' => $member->member_id, 'chat_group_id' => $group->id]);
                     }
                 }
             }
         }
 
         // update group
-        ChatGroup::edit($group->id, ['name' => $request->get('name')]);
+        $this->chatGroup->edit($group->id, ['name' => $request->get('name')]);
 
-        return $this->json(ChatGroup::single($request->get('id')));
+        return $this->json($this->chatGroup->single($request->get('id')));
     }
 
     public function leaveGroupAction($group_id)
     {
-        $group = ChatGroup::single($group_id);
+        $group = $this->chatGroup->single($group_id);
 
         if (!$group) {
             return $this->json('Group chat is not found.', 404);
@@ -250,12 +258,12 @@ class MessageController extends Controller
 
         // leave a group
         return $this->_isMember($group_id,
-            ChatGroupMember::remove(null, ['chat_group_id' => $group_id, 'member_id' => $this->me->id]));
+            $this->chatGroupMember->remove(null, ['chat_group_id' => $group_id, 'member_id' => $this->me->id]));
     }
 
     public function deleteConversation($group_id)
     {
-        $group = ChatGroup::single($group_id);
+        $group = $this->chatGroup->single($group_id);
 
         if (!$group) {
             return $this->json('Group chat is not found.', 404);
@@ -263,13 +271,13 @@ class MessageController extends Controller
 
         // delete messages
         return $this->_isMember($group_id,
-            ChatMessage::remove(null, ['chat_group_id' => $group_id, 'user_id' => $this->me->id]));
+            $this->chatMessage->remove(null, ['chat_group_id' => $group_id, 'user_id' => $this->me->id]));
     }
 
     public function addToGroupAction($group_id, $member_id)
     {
         // add a new user to group
-        return $this->json(ChatGroupMember::store(['chat_group_id' => $group_id, 'member_id' => $member_id,
+        return $this->json($this->chatGroupMember->store(['chat_group_id' => $group_id, 'member_id' => $member_id,
             'added_by_id' => $this->me->id]));
     }
 
@@ -277,18 +285,18 @@ class MessageController extends Controller
     {
         // is member of this group if not add a new member
         if (!$this->_checkIsMember($group_id, $member_id)) {
-            return $this->json(ChatGroupMember::store(['chat_group_id' => $group_id, 'member_id' => $member_id,
+            return $this->json($this->chatGroupMember->store(['chat_group_id' => $group_id, 'member_id' => $member_id,
                 'added_by_id' => $this->me->id, 'is_admin' => 1]));
         }
 
         // update is admin
-        return $this->json(ChatGroupMember::edit(null, ['is_admin' => 1],
+        return $this->json($this->chatGroupMember->edit(null, ['is_admin' => 1],
             ['chat_group_id' => $group_id, 'member_id' => $member_id]));
     }
 
     public function removeAdminAction($group_id, $member_id)
     {
-        $group = ChatGroup::single($group_id);
+        $group = $this->chatGroup->single($group_id);
 
         if (!$group) {
             return $this->json('Group chat is not found.', 404);
@@ -300,11 +308,11 @@ class MessageController extends Controller
         }
 
         // only admin can remove another admin
-        if (!ChatGroupMember::where('member_id', $this->me->id)->where('is_admin', 1)->first()) {
+        if (!$this->chatGroupMember->where('member_id', $this->me->id)->where('is_admin', 1)->first()) {
             return $this->json('Only a group admin can remove another admin.', 422);
         }
 
-        return $this->_isMember($group_id, ChatGroupMember::edit(null, ['is_admin' => 0],
+        return $this->_isMember($group_id, $this->chatGroupMember->edit(null, ['is_admin' => 0],
             ['chat_group_id' => $group_id, 'member_id' => $member_id]));
     }
 
@@ -324,7 +332,7 @@ class MessageController extends Controller
     private function _checkIsMember($group_id, $member_id = null)
     {
         $member_id = $member_id ? $member_id : $this->me->id;
-        return ChatGroupMember::where('chat_group_id', $group_id)->where('member_id', $member_id)->count();
+        return $this->chatGroupMember->where('chat_group_id', $group_id)->where('member_id', $member_id)->count();
     }
 
     private function _isValidMembers($members)

@@ -101,7 +101,7 @@ class FacebookController extends Controller
             urlTitle(__settings('title')->value, '.') . time() . str_random(4) . '@' . env('APP_DOMAIN');
         $username = ($user->getNickname()) ? $user->getNickname() . time() : preg_replace('/\s+/', '', $user->getNickname()) . time();
 
-        $create = User::store([
+        $create = (new User())->store([
             'first_name' => ucfirst($user->user['first_name']),
             'last_name' => ucfirst($user->user['last_name']),
 
@@ -156,7 +156,7 @@ class FacebookController extends Controller
             'http://graph.facebook.com/' . $social_id . '/picture?type=large');
 
         if (!$filename) {
-            File::store([
+            (new File())->store([
                 'user_id' => __me()->id,
                 'file_name' => $filename,
                 'type' => 'photo',
@@ -176,7 +176,7 @@ class FacebookController extends Controller
         // authentication history
         if (__me()) {
             $userAgent = userAgent();
-            AuthenticationHistory::store([
+            (new AuthenticationHistory())->store([
                 'user_id' => __me()->id,
                 'ip' => ipAddress(),
                 'platform' => $userAgent->platform . ', ' . $userAgent->browserName,

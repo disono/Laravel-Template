@@ -12,18 +12,18 @@ use App\Models\Vendor\BaseModel;
 
 class Verification extends BaseModel
 {
-    protected static $tableName = 'verifications';
-    protected static $writableColumns = [
+    protected $tableName = 'verifications';
+    protected $writableColumns = [
         'user_id', 'value', 'type', 'token', 'expired_at'
     ];
 
     public function __construct(array $attributes = [])
     {
-        $this->fillable(self::$writableColumns);
+        $this->fillable($this->writableColumns);
         parent::__construct($attributes);
     }
 
-    public static function isExpired($type)
+    public function isExpired($type)
     {
         if (!__me()) {
             return false;

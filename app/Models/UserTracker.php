@@ -12,37 +12,37 @@ use App\Models\Vendor\BaseModel;
 
 class UserTracker extends BaseModel
 {
-    protected static $tableName = 'user_trackers';
-    protected static $writableColumns = [
+    protected $tableName = 'user_trackers';
+    protected $writableColumns = [
         'user_id',
         'lat', 'lng',
         'device_id', 'http_referrer', 'current_url', 'ip_address', 'platform', 'browser',
     ];
 
-    protected static $inputDates = ['birthday'];
+    protected $inputDates = ['birthday'];
 
     public function __construct(array $attributes = [])
     {
-        $this->fillable(self::$writableColumns);
+        $this->fillable($this->writableColumns);
         parent::__construct($attributes);
     }
 
-    public static function rawFilters($query)
+    public function rawFilters($query)
     {
         $query->join('users', 'user_trackers.user_id', '=', 'users.id');
         return $query;
     }
 
-    public static function log()
+    public function log()
     {
-        if (!request('lat') || !request('lng') || !authID()) {
+        if (!request('lat') || !request('lng') || !authId()) {
             return;
         }
 
         try {
             $userAgent = userAgent();
-            self::store([
-                'user_id' => (authID()) ? authID() : 0,
+            (new UserTracker())->store([
+                'user_id' => (authId()) ? authId() : 0,
                 'lat' => request('lat'),
                 'lng' => request('lng'),
                 'device_id' => request()->header('device_id'),
@@ -57,7 +57,7 @@ class UserTracker extends BaseModel
         }
     }
 
-    protected static function rawQuerySelectList()
+    protected function rawQuerySelectList()
     {
         return [
             'full_name' => 'CONCAT(users.first_name, " ", users.last_name)',

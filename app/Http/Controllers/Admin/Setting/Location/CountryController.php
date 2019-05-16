@@ -27,7 +27,7 @@ class CountryController extends Controller
     {
         $this->setHeader('title', 'Countries');
         return $this->view('index', [
-            'countries' => Country::fetch(requestValues('search'))
+            'countries' => (new Country())->fetch(requestValues('search'))
         ]);
     }
 
@@ -39,7 +39,7 @@ class CountryController extends Controller
 
     public function storeAction(CountryStore $request)
     {
-        $country = Country::store($request->all());
+        $country = (new Country())->store($request->all());
         if (!$country) {
             return $this->json(['name' => 'Failed to crate a new country.'], 422, false);
         }
@@ -49,7 +49,7 @@ class CountryController extends Controller
 
     public function editAction($id)
     {
-        $country = Country::single($id);
+        $country = (new Country())->single($id);
         if (!$country) {
             abort(404);
         }
@@ -60,13 +60,13 @@ class CountryController extends Controller
 
     public function updateAction(CountryUpdate $request)
     {
-        Country::edit($request->get('id'), $request->all());
+        (new Country())->edit($request->get('id'), $request->all());
         return $this->json('Country is successfully updated.');
     }
 
     public function destroyAction($id)
     {
-        Country::remove($id);
+        (new Country())->remove($id);
         return $this->json('Country is successfully deleted.');
     }
 }

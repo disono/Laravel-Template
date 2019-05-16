@@ -41,7 +41,7 @@ class PageController extends Controller
      */
     public function categoryAction($category)
     {
-        return $this->view('list', ['pages' => Page::fetch(['page_category_slug' => $category])]);
+        return $this->view('list', ['pages' => (new Page())->fetch(['page_category_slug' => $category])]);
     }
 
     /**
@@ -53,7 +53,7 @@ class PageController extends Controller
      */
     public function archiveAction($year, $month)
     {
-        return $this->view('list', ['pages' => Page::fetch(['raw_year' => $year, 'raw_month' => $month])]);
+        return $this->view('list', ['pages' => (new Page())->fetch(['raw_year' => $year, 'raw_month' => $month])]);
     }
 
     /**
@@ -65,7 +65,7 @@ class PageController extends Controller
     public function showAction($slug)
     {
         $view = 'show';
-        $page = Page::single($slug, 'slug');
+        $page = (new Page())->single($slug, 'slug');
         if (!$page) {
             return $this->error(404, exceptionMessages('PAGE_NOT_FOUND'));
         }
@@ -83,6 +83,6 @@ class PageController extends Controller
 
     private function _savePageView($page)
     {
-        PageView::log($page);
+        (new PageView())->log($page);
     }
 }

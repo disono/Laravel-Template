@@ -36,8 +36,8 @@ class PageController extends Controller
     {
         $this->setHeader('title', 'Pages');
         return $this->view('index', [
-            'pages' => Page::fetch(requestValues('search|page_category_id')),
-            'categories' => PageCategory::fetchAll()
+            'pages' => (new Page())->fetch(requestValues('search|page_category_id')),
+            'categories' => (new PageCategory())->fetchAll()
         ]);
     }
 
@@ -45,13 +45,13 @@ class PageController extends Controller
     {
         $this->setHeader('title', 'Create a New Page');
         return $this->view('create', [
-            'categories' => PageCategory::fetchAll()
+            'categories' => (new PageCategory())->fetchAll()
         ]);
     }
 
     public function storeAction(PageStore $request)
     {
-        $page = Page::store($this->_formInputs($request));
+        $page = (new Page())->store($this->_formInputs($request));
         if (!$page) {
             return $this->json(['name' => 'Failed to crate a new page.'], 422, false);
         }
@@ -71,24 +71,24 @@ class PageController extends Controller
     public function editAction($id)
     {
         $this->setHeader('title', 'Editing Page');
-        $this->content['page'] = Page::single($id);
+        $this->content['page'] = (new Page())->single($id);
         if (!$this->content['page']) {
             abort(404);
         }
 
-        $this->content['categories'] = PageCategory::fetchAll();
+        $this->content['categories'] = (new PageCategory())->fetchAll();
         return $this->view('edit');
     }
 
     public function updateAction(PageUpdate $request)
     {
-        Page::edit($request->get('id'), $this->_formInputs($request));
+        (new Page())->edit($request->get('id'), $this->_formInputs($request));
         return $this->json('Page is successfully updated.');
     }
 
     public function destroyAction($id)
     {
-        Page::remove($id);
+        (new Page())->remove($id);
         return $this->json('Page is successfully deleted.');
     }
 }

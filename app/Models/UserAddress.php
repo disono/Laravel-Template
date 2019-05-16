@@ -12,17 +12,17 @@ use App\Models\Vendor\BaseModel;
 
 class UserAddress extends BaseModel
 {
-    protected static $tableName = 'user_addresses';
-    protected static $writableColumns = [
+    protected $tableName = 'user_addresses';
+    protected $writableColumns = [
         'user_id', 'address', 'postal_code', 'country_id', 'city_id',
         'is_verified', 'verification_code', 'verification_expired_at'
     ];
 
-    protected static $inputDates = ['verification_expired_at'];
+    protected $inputDates = ['verification_expired_at'];
 
     public function __construct(array $attributes = [])
     {
-        $this->fillable(self::$writableColumns);
+        $this->fillable($this->writableColumns);
         parent::__construct($attributes);
     }
 
@@ -41,14 +41,14 @@ class UserAddress extends BaseModel
         return $this->belongsTo('App\Models\City');
     }
 
-    public static function rawFilters($query)
+    public function rawFilters($query)
     {
         $query->join('countries', 'user_addresses.country_id', '=', 'countries.id');
         $query->join('cities', 'user_addresses.city_id', '=', 'cities.id');
         return $query;
     }
 
-    protected static function rawQuerySelectList()
+    protected function rawQuerySelectList()
     {
         return [
             'country_name' => 'countries.name',

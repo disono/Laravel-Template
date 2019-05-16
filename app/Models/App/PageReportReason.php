@@ -12,18 +12,18 @@ use App\Models\Vendor\BaseModel;
 
 class PageReportReason extends BaseModel
 {
-    protected static $tableName = 'page_report_reasons';
-    protected static $writableColumns = [
+    protected $tableName = 'page_report_reasons';
+    protected $writableColumns = [
         'name'
     ];
 
     public function __construct(array $attributes = [])
     {
-        $this->fillable(self::$writableColumns);
+        $this->fillable($this->writableColumns);
         parent::__construct($attributes);
     }
 
-    public static function actionRemoveBefore($query)
+    public function actionRemoveBefore($query)
     {
         foreach ($query as $row) {
             // is reason used by reported pages

@@ -17,7 +17,7 @@
                         folder.</p>
 
                     {{-- show link to resend code --}}
-                    @if(\App\Models\Verification::isExpired('email') && __me())
+                    @if((new \App\Models\Verification())->isExpired('email') && __me())
                         <a href="{{ route('auth.verify.resend.view', ['type' => 'email']) }}"
                            class="btn btn-danger">Resend Verification</a>
                     @endif

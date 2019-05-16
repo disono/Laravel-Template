@@ -10,28 +10,29 @@ namespace App\Http\Controllers\API\V1\User;
 
 use App\Http\Controllers\API\APIController;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 
 class UserController extends APIController
 {
     /**
      * Sync user profile
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function syncAction()
     {
-        return $this->json(User::single(__me()->id));
+        return $this->json((new User())->single(__me()->id));
     }
 
     /**
      * Fetch user profile
      *
      * @param $username
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function profileAction($username)
     {
-        $user = User::single($username, 'username');
+        $user = (new User())->single($username, 'username');
         if (!$user) {
             return $this->json(exceptionMessages('USER_NOT_FOUND'), 404);
         }

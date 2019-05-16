@@ -12,14 +12,14 @@ use App\Models\Vendor\BaseModel;
 
 class Country extends BaseModel
 {
-    protected static $tableName = 'countries';
-    protected static $writableColumns = [
+    protected $tableName = 'countries';
+    protected $writableColumns = [
         'code', 'name', 'lat', 'lng'
     ];
 
     public function __construct(array $attributes = [])
     {
-        $this->fillable(self::$writableColumns);
+        $this->fillable($this->writableColumns);
         parent::__construct($attributes);
     }
 

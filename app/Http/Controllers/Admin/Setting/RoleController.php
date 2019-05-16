@@ -27,7 +27,7 @@ class RoleController extends Controller
     {
         $this->setHeader('title', 'Roles');
         return $this->view('index', [
-            'roles' => Role::fetch(requestValues('search'))
+            'roles' => (new Role())->fetch(requestValues('search'))
         ]);
     }
 
@@ -39,7 +39,7 @@ class RoleController extends Controller
 
     public function storeAction(RoleStore $request)
     {
-        $role = Role::store($request->all());
+        $role = (new Role())->store($request->all());
         if (!$role) {
             return $this->json(['name' => 'Failed to crate a new role.'], 422, false);
         }
@@ -49,7 +49,7 @@ class RoleController extends Controller
 
     public function editAction($id)
     {
-        $role = Role::single($id);
+        $role = (new Role())->single($id);
         if (!$role) {
             abort(404);
         }
@@ -60,13 +60,13 @@ class RoleController extends Controller
 
     public function updateAction(RoleUpdate $request)
     {
-        Role::edit($request->get('id'), $request->all());
+        (new Role())->edit($request->get('id'), $request->all());
         return $this->json('Role is successfully updated.');
     }
 
     public function destroyAction($id)
     {
-        Role::remove($id);
+        (new Role())->remove($id);
         return $this->json('Role is successfully deleted.');
     }
 }

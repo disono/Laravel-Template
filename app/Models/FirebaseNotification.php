@@ -12,14 +12,14 @@ use App\Models\Vendor\BaseModel;
 
 class FirebaseNotification extends BaseModel
 {
-    protected static $tableName = 'firebase_notifications';
-    protected static $writableColumns = [
+    protected $tableName = 'firebase_notifications';
+    protected $writableColumns = [
         'user_id', 'title', 'content', 'type', 'topic_name', 'token'
     ];
 
     public function __construct(array $attributes = [])
     {
-        $this->fillable(self::$writableColumns);
+        $this->fillable($this->writableColumns);
         parent::__construct($attributes);
     }
 
@@ -30,7 +30,7 @@ class FirebaseNotification extends BaseModel
      * @param $inputs
      * @throws \Exception
      */
-    public static function actionStoreAfter($query, $inputs)
+    public function actionStoreAfter($query, $inputs)
     {
         try {
             if ($query->type === 'topic' && $query->topic_name) {
@@ -50,7 +50,7 @@ class FirebaseNotification extends BaseModel
      * @param $inputs
      * @throws \Exception
      */
-    public static function actionEditAfter($query, $inputs)
+    public function actionEditAfter($query, $inputs)
     {
         try {
             if ($query->type === 'topic' && $query->topic_name) {

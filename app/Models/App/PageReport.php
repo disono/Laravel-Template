@@ -14,8 +14,8 @@ use App\Models\Vendor\BaseModel;
 
 class PageReport extends BaseModel
 {
-    protected static $tableName = 'page_reports';
-    protected static $writableColumns = [
+    protected $tableName = 'page_reports';
+    protected $writableColumns = [
         'user_id', 'responded_by', 'page_report_reason_id',
         'url', 'description', 'status', 'rating'
     ];
@@ -24,7 +24,7 @@ class PageReport extends BaseModel
 
     public function __construct(array $attributes = [])
     {
-        $this->fillable(self::$writableColumns);
+        $this->fillable($this->writableColumns);
         parent::__construct($attributes);
     }
 
@@ -43,7 +43,7 @@ class PageReport extends BaseModel
      *
      * @return array
      */
-    protected static function rawQuerySelectList()
+    protected function rawQuerySelectList()
     {
         return [
             'submitted_by' => 'CONCAT(users.first_name, " ", users.last_name)',
@@ -51,7 +51,7 @@ class PageReport extends BaseModel
         ];
     }
 
-    public static function rawFilters($query)
+    public function rawFilters($query)
     {
         $query->join('users', 'page_reports.user_id', '=', 'users.id');
         $query->join('page_report_reasons', 'page_reports.page_report_reason_id', '=', 'page_report_reasons.id');
@@ -64,17 +64,17 @@ class PageReport extends BaseModel
      * @param $row
      * @return mixed
      */
-    protected static function dataFormatting($row)
+    protected function dataFormatting($row)
     {
-        $row->user = User::single($row->user_id);
-        $row->process_by = User::single($row->responded_by);
-        $row->reason = PageReportReason::single($row->page_report_reason_id);
-        $row->screenshots = File::fetchAll(['table_name' => 'page_reports', 'table_id' => $row->id]);
+        $row->user = (new User())->single($row->user_id);
+        $row->process_by = (new User())->single($row->responded_by);
+        $row->reason = (new PageReportReason())->single($row->page_report_reason_id);
+        $row->screenshots = (new File())->fetchAll(['table_name' => 'page_reports', 'table_id' => $row->id]);
 
         return $row;
     }
 
-    public static function statuses()
+    public function statuses()
     {
         return ['Pending', 'Processing', 'Reopened', 'Denied', 'Closed'];
     }

@@ -28,7 +28,7 @@ class CityController extends Controller
     {
         $this->setHeader('title', 'Cities');
         return $this->view('index', [
-            'cities' => City::fetch(requestValues('search|country_id'))
+            'cities' => (new City())->fetch(requestValues('search|country_id'))
         ]);
     }
 
@@ -38,18 +38,18 @@ class CityController extends Controller
 
         $country = null;
         if ($this->request->get('country_id')) {
-            $country = Country::single($this->request->get('country_id'));
+            $country = (new Country())->single($this->request->get('country_id'));
             if (!$country) {
                 abort(404);
             }
         }
 
-        return $this->view('create', ['countries' => Country::fetchAll(), 'country' => $country]);
+        return $this->view('create', ['countries' => (new Country())->fetchAll(), 'country' => $country]);
     }
 
     public function storeAction(CityStore $request)
     {
-        $city = City::store($request->all());
+        $city = (new City())->store($request->all());
         if (!$city) {
             return $this->json(['name' => 'Failed to crate a new city.'], 422, false);
         }
@@ -59,24 +59,24 @@ class CityController extends Controller
 
     public function editAction($id)
     {
-        $city = City::single($id);
+        $city = (new City())->single($id);
         if (!$city) {
             abort(404);
         }
 
         $this->setHeader('title', 'Editing ' . $city->name);
-        return $this->view('edit', ['city' => $city, 'countries' => Country::fetchAll()]);
+        return $this->view('edit', ['city' => $city, 'countries' => (new Country())->fetchAll()]);
     }
 
     public function updateAction(CityUpdate $request)
     {
-        City::edit($request->get('id'), $request->all());
+        (new City())->edit($request->get('id'), $request->all());
         return $this->json('City is successfully updated.');
     }
 
     public function destroyAction($id)
     {
-        City::remove($id);
+        (new City())->remove($id);
         return $this->json('City is successfully deleted.');
     }
 }

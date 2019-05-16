@@ -12,15 +12,15 @@ use App\Models\Vendor\BaseModel;
 
 class ActivityLog extends BaseModel
 {
-    protected static $tableName = 'activity_logs';
-    protected static $writableColumns = [
+    protected $tableName = 'activity_logs';
+    protected $writableColumns = [
         'user_id', 'table_id', 'table_name',
         'content', 'reason'
     ];
 
     public function __construct(array $attributes = [])
     {
-        $this->fillable(self::$writableColumns);
+        $this->fillable($this->writableColumns);
         parent::__construct($attributes);
     }
 
@@ -35,14 +35,14 @@ class ActivityLog extends BaseModel
      * $reason: Reason for updates
      *
      * @param $id
+     * @param $tableName
      * @param array $writableColumns
      * @param array $data
      * @param array $inputs
-     * @param $tableName
      * @param null $reason
      * @return bool
      */
-    public static function log($id, $writableColumns = [], $data = [], $inputs = [], $tableName, $reason = null)
+    public function log($id, $tableName, $writableColumns = [], $data = [], $inputs = [], $reason = null)
     {
         try {
             if (!$data) {
@@ -103,7 +103,7 @@ class ActivityLog extends BaseModel
      * @param $row
      * @return mixed
      */
-    protected static function dataFormatting($row)
+    protected function dataFormatting($row)
     {
         if ($row->content) {
             $row->content = json_decode($row->content, true);

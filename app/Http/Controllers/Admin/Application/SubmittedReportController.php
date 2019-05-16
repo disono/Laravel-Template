@@ -16,31 +16,36 @@ use App\Models\App\PageReportMessage;
 class SubmittedReportController extends Controller
 {
     protected $viewType = 'admin';
+    private $pageReport = null;
+    private $pageReportMessage = null;
 
     public function __construct()
     {
         parent::__construct();
         $this->theme = 'application.report.submitted';
+        $this->pageReport = new PageReport();
+        $this->pageReportMessage = new PageReportMessage();
     }
 
     public function indexAction()
     {
         $this->setHeader('title', 'Reports');
         return $this->view('index', [
-            'reports' => PageReport::fetch(requestValues('search'))
+            'reports' => $this->pageReport->fetch(requestValues('search'))
         ]);
     }
 
     public function showAction($id)
     {
-        $data = PageReport::single($id);
+        $data = $this->pageReport->single($id);
         if (!$data) {
             abort(404);
         }
 
         $this->setHeader('title', $data->page_report_reason_name);
         return $this->view('show', [
-            'report' => $data, 'statuses' => PageReport::statuses(), 'messages' => PageReportMessage::fetch(['page_report_id' => $data->id])
+            'report' => $data, 'statuses' => $this->pageReport->statuses(),
+            'messages' => $this->pageReportMessage->fetch(['page_report_id' => $data->id])
         ]);
     }
 
@@ -48,13 +53,13 @@ class SubmittedReportController extends Controller
     {
         $inputs = $request->all();
         $inputs['user_id'] = __me()->id;
-        PageReportMessage::store($inputs);
+        $this->pageReportMessage->store($inputs);
         return $this->json(['redirect' => '/admin/submitted-report/show/' . $request->get('page_report_id')]);
     }
 
     public function statusAction($id, $status)
     {
-        $report = PageReport::single($id);
+        $report = $this->pageReport->single($id);
         if (!$report) {
             abort(404);
         }
@@ -64,13 +69,13 @@ class SubmittedReportController extends Controller
             $inputs['responded_by'] = __me()->id;
         }
 
-        PageReport::edit($id, $inputs);
+        $this->pageReport->edit($id, $inputs);
         return $this->redirect();
     }
 
     public function destroyAction($id)
     {
-        PageReport::remove($id);
+        $this->pageReport->remove($id);
         return $this->json('Report is successfully deleted.');
     }
 }

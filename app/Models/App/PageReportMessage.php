@@ -13,14 +13,14 @@ use App\Models\Vendor\BaseModel;
 
 class PageReportMessage extends BaseModel
 {
-    protected static $tableName = 'page_report_messages';
-    protected static $writableColumns = [
+    protected $tableName = 'page_report_messages';
+    protected $writableColumns = [
         'page_report_id', 'user_id', 'message'
     ];
 
     public function __construct(array $attributes = [])
     {
-        $this->fillable(self::$writableColumns);
+        $this->fillable($this->writableColumns);
         parent::__construct($attributes);
     }
 
@@ -34,15 +34,15 @@ class PageReportMessage extends BaseModel
         return $this->belongsTo('App\Models\User');
     }
 
-    public static function rawFilters($query)
+    public function rawFilters($query)
     {
         $query->join('users', 'page_report_messages.user_id', '=', 'users.id');
         return $query;
     }
 
-    protected static function dataFormatting($row)
+    protected function dataFormatting($row)
     {
-        $row->user = User::single($row->user_id);
+        $row->user = (new User())->single($row->user_id);
 
         return $row;
     }

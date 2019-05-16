@@ -12,8 +12,8 @@ use App\Models\Vendor\BaseModel;
 
 class File extends BaseModel
 {
-    protected static $tableName = 'files';
-    protected static $writableColumns = [
+    protected $tableName = 'files';
+    protected $writableColumns = [
         'user_id', 'file_name',
 
         // types: video, photo, doc, file, audio
@@ -23,11 +23,11 @@ class File extends BaseModel
 
     public function __construct(array $attributes = [])
     {
-        $this->fillable(self::$writableColumns);
+        $this->fillable($this->writableColumns);
         parent::__construct($attributes);
     }
 
-    public static function types()
+    public function types()
     {
         return ['video', 'photo', 'doc', 'file', 'audio'];
     }
@@ -40,9 +40,9 @@ class File extends BaseModel
      *
      * @return bool
      */
-    public static function remove($id, $columnName = null)
+    public function remove($id, $columnName = null)
     {
-        $query = self::rawFetch($id, $columnName);
+        $query = $this->rawFetch($id, $columnName);
 
         // check if exists or tried to delete the users authorization
         $_r = $query->first();
@@ -66,7 +66,7 @@ class File extends BaseModel
      * @param $row
      * @return mixed
      */
-    protected static function dataFormatting($row)
+    protected function dataFormatting($row)
     {
         if ($row->type === 'photo') {
             $row->cover = fetchImage($row->file_name, 'assets/img/placeholders/no_image.png');
@@ -85,7 +85,7 @@ class File extends BaseModel
             $row->path = url('stream/video/' . $row->file_name);
         } else if ($row->type === 'audio') {
             $row->path = url('stream/audio/' . $row->file_name);
-        } else if ($row->type === 'photo' && self::hasParams('to_base64_img')) {
+        } else if ($row->type === 'photo' && $this->hasParams('to_base64_img')) {
             $row->path = imgPathToBase64('private/' . $row->file_name);
         } else {
             $row->path = url('private/' . $row->file_name);

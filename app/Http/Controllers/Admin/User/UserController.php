@@ -30,8 +30,8 @@ class UserController extends Controller
     {
         $this->setHeader('title', 'Users');
         return $this->view('index', [
-            'users' => User::fetch(requestValues('search|role_id')),
-            'roles' => Role::fetchAll()
+            'users' => (new User())->fetch(requestValues('search|role_id')),
+            'roles' => (new Role())->fetchAll()
         ]);
     }
 
@@ -39,15 +39,15 @@ class UserController extends Controller
     {
         $this->setHeader('title', 'Register New User');
         return $this->view('create', [
-            'roles' => Role::fetchAll(),
-            'countries' => Country::fetchAll(),
-            'cities' => City::fetchAll()
+            'roles' => (new Role())->fetchAll(),
+            'countries' => (new Country())->fetchAll(),
+            'cities' => (new City())->fetchAll()
         ]);
     }
 
     public function storeAction(UserStore $request)
     {
-        $user = User::store($this->_formInputs($request));
+        $user = (new User())->store($this->_formInputs($request));
         if (!$user) {
             return $this->json(['first_name' => 'Failed to crate a new user.'], 422, false);
         }
@@ -65,7 +65,7 @@ class UserController extends Controller
 
     public function editAction($id)
     {
-        $user = User::single($id);
+        $user = (new User())->single($id);
         if (!$user) {
             abort(404);
         }
@@ -73,15 +73,15 @@ class UserController extends Controller
         $this->setHeader('title', 'Editing ' . $user->full_name);
         return $this->view('edit', [
             'user' => $user,
-            'roles' => Role::fetchAll(),
-            'countries' => Country::fetchAll(),
-            'cities' => City::fetchAll()
+            'roles' => (new Role())->fetchAll(),
+            'countries' => (new Country())->fetchAll(),
+            'cities' => (new City())->fetchAll()
         ]);
     }
 
     public function updateAction(UserUpdate $request)
     {
-        User::edit($request->get('id'), $this->_formInputs($request));
+        (new User())->edit($request->get('id'), $this->_formInputs($request));
         return $this->json('User is successfully updated.');
     }
 
@@ -91,13 +91,13 @@ class UserController extends Controller
             return $this->redirect();
         }
 
-        User::edit($id, [$column => (int)$value], null, false);
+        (new User())->edit($id, [$column => (int)$value], null, false);
         return $this->redirect();
     }
 
     public function destroyAction($id)
     {
-        User::remove($id);
+        (new User())->remove($id);
         return $this->json('User is successfully deleted.');
     }
 }

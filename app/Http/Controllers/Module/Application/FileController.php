@@ -27,7 +27,7 @@ class FileController extends Controller
         if (__me()->role === 'client') {
             $default['user_id'] = __me()->id;
         }
-        return $this->json(File::fetch(requestValues('search|type', $default)));
+        return $this->json((new File())->fetch(requestValues('search|type', $default)));
     }
 
     public function streamVideoAction($file)
@@ -84,7 +84,7 @@ class FileController extends Controller
 
     public function updateAction(FileUpdate $request)
     {
-        File::edit($request->get('id'), $request->all());
+        (new File())->edit($request->get('id'), $request->all());
         return $this->json('File is updated successfully.');
     }
 

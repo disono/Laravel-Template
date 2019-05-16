@@ -173,7 +173,7 @@ class LoginController extends Controller
         try {
             if (__me()) {
                 $userAgent = userAgent();
-                AuthenticationHistory::store([
+                (new AuthenticationHistory())->store([
                     'user_id' => __me()->id,
                     'ip' => ipAddress(),
                     'platform' => $userAgent->platform . ', ' . $userAgent->browserName,

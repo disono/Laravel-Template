@@ -24,7 +24,7 @@ class VerifyController extends APIController
     public function verifyPhoneAction()
     {
         try {
-            return $this->json(User::verify('phone'));
+            return $this->json((new User())->verify('phone'));
         } catch (\Exception $e) {
             return $this->json($e->getMessage(), 422);
         }
@@ -41,7 +41,7 @@ class VerifyController extends APIController
     public function resendVerificationAction($type)
     {
         try {
-            $value = User::resendVerification($type);
+            $value = (new User())->resendVerification($type);
 
             if ($type == 'email') {
                 return $this->json('We already sent you a verification link for ' . $value . '. Thank You.');

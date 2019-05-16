@@ -27,7 +27,7 @@ class ReportReasonController extends Controller
     {
         $this->setHeader('title', 'Report Reasons');
         return $this->view('index', [
-            'reasons' => PageReportReason::fetch(requestValues('search'))
+            'reasons' => (new PageReportReason())->fetch(requestValues('search'))
         ]);
     }
 
@@ -39,7 +39,7 @@ class ReportReasonController extends Controller
 
     public function storeAction(ReportReasonStore $request)
     {
-        $role = PageReportReason::store($request->all());
+        $role = (new PageReportReason())->store($request->all());
         if (!$role) {
             return $this->json(['name' => 'Failed to crate a new role.'], 422, false);
         }
@@ -49,7 +49,7 @@ class ReportReasonController extends Controller
 
     public function editAction($id)
     {
-        $reason = PageReportReason::single($id);
+        $reason = (new PageReportReason())->single($id);
         if (!$reason) {
             abort(404);
         }
@@ -60,13 +60,13 @@ class ReportReasonController extends Controller
 
     public function updateAction(ReportReasonUpdate $request)
     {
-        PageReportReason::edit($request->get('id'), $request->all());
+        (new PageReportReason())->edit($request->get('id'), $request->all());
         return $this->json('Report Reason is successfully updated.');
     }
 
     public function destroyAction($id)
     {
-        if (!PageReportReason::remove($id)) {
+        if (!(new PageReportReason())->remove($id)) {
             return $this->json('Unable to remove report reason because is already used.', 422);
         }
 

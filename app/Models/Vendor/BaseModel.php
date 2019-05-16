@@ -16,57 +16,57 @@ use Illuminate\Support\Facades\DB;
 
 class BaseModel extends Model
 {
-    protected static $writableColumns = [];
-    protected static $tableName = null;
-    protected static $params = [];
+    protected $writableColumns = [];
+    protected $tableName = null;
+    protected $params = [];
 
     // single: [filename]
     // multiple: [[filename, table]]
-    protected static $files = [];
+    protected $files = [];
     // [filename => [tag => string, crop_width => num, crop_height => num, crop_auto => boolean, width => num,
     // height => num, heightRatio => num, widthRatio => num, quality => int]]
-    protected static $fileOptions = [];
+    protected $fileOptions = [];
 
-    protected static $inputDates = [];
-    protected static $inputDateTimes = [];
-    protected static $inputCrypt = [];
+    protected $inputDates = [];
+    protected $inputDateTimes = [];
+    protected $inputCrypt = [];
 
-    protected static $inputIntegers = [];
-    protected static $inputNumeric = [];
-    protected static $inputBooleans = [];
+    protected $inputIntegers = [];
+    protected $inputNumeric = [];
+    protected $inputBooleans = [];
 
     /**
      * Get writable columns set
      *
      * @return array
      */
-    public static function getWritableColumns()
+    public function getWritableColumns()
     {
-        return static::$writableColumns;
+        return $this->writableColumns;
     }
 
     /**
      * Remove all boolean to update
      */
-    public static function clearBoolean()
+    public function clearBoolean()
     {
-        static::$inputBooleans = [];
+        $this->inputBooleans = [];
     }
 
     /**
      * Remove all integer to update
      */
-    public static function clearInteger()
+    public function clearInteger()
     {
-        static::$inputIntegers = [];
+        $this->inputIntegers = [];
     }
 
     /**
      * Remove all numeric to update
      */
-    public static function clearNumeric()
+    public function clearNumeric()
     {
-        static::$inputNumeric = [];
+        $this->inputNumeric = [];
     }
 
     /**
@@ -75,11 +75,11 @@ class BaseModel extends Model
      * @param array $params
      * @return null
      */
-    public static function fetchAll($params = [])
+    public function fetchAll($params = [])
     {
         $params['all'] = true;
-        static::$params = $params;
-        return static::fetch($params);
+        $this->params = $params;
+        return $this->fetch($params);
     }
 
     /**
@@ -88,30 +88,30 @@ class BaseModel extends Model
      * @param array $params
      * @return null
      */
-    public static function fetch($params = [])
+    public function fetch($params = [])
     {
-        static::$params = $params;
+        $this->params = $params;
 
-        $select[] = static::$tableName . '.*';
-        $select = static::rawSelects($select);
+        $select[] = $this->tableName . '.*';
+        $select = $this->rawSelects($select);
 
         // custom select
-        $query = DB::table(static::$tableName)->select($select);
+        $query = DB::table($this->tableName)->select($select);
 
         // where equal
-        $query = static::rawWhere($query);
+        $query = $this->rawWhere($query);
 
         // exclude and include
-        $query = static::rawExcludeInclude($query);
+        $query = $this->rawExcludeInclude($query);
 
         // search
-        $query = static::rawSearch($query);
+        $query = $this->rawSearch($query);
 
         // custom filter
-        $query = static::rawFilters($query);
+        $query = $this->rawFilters($query);
 
         // add formatting
-        return static::readyFormatting($query);
+        return $this->readyFormatting($query);
     }
 
     /**
@@ -120,9 +120,9 @@ class BaseModel extends Model
      * @param array $select
      * @return array
      */
-    public static function rawSelects($select = [])
+    public function rawSelects($select = [])
     {
-        foreach (static::rawQuerySelects() as $key => $q) {
+        foreach ($this->rawQuerySelects() as $key => $q) {
             $select[] = DB::raw('(' . $q . ') AS ' . $key);
         }
 
@@ -135,9 +135,9 @@ class BaseModel extends Model
      * @param $key
      * @return mixed|null
      */
-    protected static function rawQuerySelects($key = null)
+    protected function rawQuerySelects($key = null)
     {
-        $queries = static::rawQuerySelectList();
+        $queries = $this->rawQuerySelectList();
 
         if ($key === null) {
             return $queries;
@@ -151,7 +151,7 @@ class BaseModel extends Model
      *
      * @return array
      */
-    protected static function rawQuerySelectList()
+    protected function rawQuerySelectList()
     {
         return [];
     }
@@ -163,44 +163,44 @@ class BaseModel extends Model
      * @param array $customColumns
      * @return mixed
      */
-    public static function rawWhere($query, $customColumns = [])
+    public function rawWhere($query, $customColumns = [])
     {
-        $tableName = (static::$tableName) ? static::$tableName . '.' : '';
+        $tableName = ($this->tableName) ? $this->tableName . '.' : '';
 
         // current id of the table index
-        if (is_numeric(static::hasParams('id'))) {
-            $query->where($tableName . 'id', static::$params['id']);
+        if (is_numeric($this->hasParams('id'))) {
+            $query->where($tableName . 'id', $this->params['id']);
         }
 
         // equal fetch
-        foreach (static::$writableColumns as $row) {
+        foreach ($this->writableColumns as $row) {
             // writable columns (non-custom)
-            if (key_exists($row, static::$params)) {
-                if (self::_allowNull($row) === true) {
-                    $query->where($tableName . $row, static::$params[$row]);
+            if (key_exists($row, $this->params)) {
+                if ($this->_allowNull($row) === true) {
+                    $query->where($tableName . $row, $this->params[$row]);
                 }
             }
 
             // default custom columns
-            $defaultCustomColumn = self::rawQuerySelects($row);
-            if (self::_allowNullWithVal($defaultCustomColumn)) {
-                $query->where(DB::raw($defaultCustomColumn), static::$params[$row]);
+            $defaultCustomColumn = $this->rawQuerySelects($row);
+            if ($this->_allowNullWithVal($defaultCustomColumn)) {
+                $query->where(DB::raw($defaultCustomColumn), $this->params[$row]);
             }
         }
 
         // custom search
-        foreach (static::rawQuerySelectList() as $key => $value) {
-            if (self::_allowNullWithVal($value) && static::hasParams($key) !== null) {
-                $query->where(DB::raw($value), static::$params[$key]);
+        foreach ($this->rawQuerySelectList() as $key => $value) {
+            if ($this->_allowNullWithVal($value) && $this->hasParams($key) !== null) {
+                $query->where(DB::raw($value), $this->params[$key]);
             }
         }
 
         // custom columns
         // array(['custom_column_name' => $params['key']])
         foreach ($customColumns as $column => $params_key) {
-            if (key_exists($params_key, static::$params[$params_key])) {
-                if (self::_allowNull($params_key) === true) {
-                    $query->where($column, static::$params[$params_key]);
+            if (key_exists($params_key, $this->params[$params_key])) {
+                if ($this->_allowNull($params_key) === true) {
+                    $query->where($column, $this->params[$params_key]);
                 }
             }
         }
@@ -209,46 +209,46 @@ class BaseModel extends Model
         // date_range_from and date_range_to
         // custom date_range_name unless use is created_at
         // NOTE: https://www.w3schools.com/sql/func_mysql_date_format.asp
-        if (static::hasParams('date_range_from') && static::hasParams('date_range_to')) {
-            $date_name = static::$params['date_range_name'] ?? ($tableName . 'created_at');
+        if ($this->hasParams('date_range_from') && $this->hasParams('date_range_to')) {
+            $date_name = $this->params['date_range_name'] ?? ($tableName . 'created_at');
 
             $query->whereBetween(DB::raw('DATE(' . $date_name . ')'), [
-                sqlDate(static::$params['date_range_from'], true),
-                sqlDate(static::$params['date_range_to'], true)
+                sqlDate($this->params['date_range_from'], true),
+                sqlDate($this->params['date_range_to'], true)
             ]);
         }
 
         // fetch today
         // if $fetch_today is boolean get the data today unless specify the date
-        if (static::hasParams('fetch_today')) {
-            $data_name_today = static::$params['fetch_today_name'] ?? ($tableName . 'created_at');
-            $current_date = (static::$params['fetch_today'] === true || is_numeric(static::$params['fetch_today'])) ?
-                'CURDATE()' : sqlDate(static::$params['fetch_today'], true);
+        if ($this->hasParams('fetch_today')) {
+            $data_name_today = $this->params['fetch_today_name'] ?? ($tableName . 'created_at');
+            $current_date = ($this->params['fetch_today'] === true || is_numeric($this->params['fetch_today'])) ?
+                'CURDATE()' : sqlDate($this->params['fetch_today'], true);
 
             $query->whereRaw('DATE(' . $data_name_today . ') = ' . $current_date);
         }
 
         // fetch by year e.g. 2018, 2019
-        if (is_numeric(static::hasParams('raw_year'))) {
-            $date_name = static::$params['raw_date_name'] ?? ($tableName . 'created_at');
-            $query->whereRaw('DATE_FORMAT(' . $date_name . ', "%Y") = "' . static::hasParams('raw_year') . '"');
+        if (is_numeric($this->hasParams('raw_year'))) {
+            $date_name = $this->params['raw_date_name'] ?? ($tableName . 'created_at');
+            $query->whereRaw('DATE_FORMAT(' . $date_name . ', "%Y") = "' . $this->hasParams('raw_year') . '"');
         }
 
         // fetch by month e.g. June, February
-        if (static::hasParams('raw_month')) {
-            $date_name = static::$params['raw_date_name'] ?? ($tableName . 'created_at');
-            $query->whereRaw('DATE_FORMAT(' . $date_name . ', "%M") = "' . static::hasParams('raw_month') . '"');
+        if ($this->hasParams('raw_month')) {
+            $date_name = $this->params['raw_date_name'] ?? ($tableName . 'created_at');
+            $query->whereRaw('DATE_FORMAT(' . $date_name . ', "%M") = "' . $this->hasParams('raw_month') . '"');
         }
 
         // fetch by day e.g. 01, 11
-        if (is_numeric(static::hasParams('raw_day'))) {
-            $date_name = static::$params['raw_date_name'] ?? ($tableName . 'created_at');
-            $query->whereRaw('DATE_FORMAT(' . $date_name . ', "%d") = "' . static::hasParams('raw_day') . '"');
+        if (is_numeric($this->hasParams('raw_day'))) {
+            $date_name = $this->params['raw_date_name'] ?? ($tableName . 'created_at');
+            $query->whereRaw('DATE_FORMAT(' . $date_name . ', "%d") = "' . $this->hasParams('raw_day') . '"');
         }
 
         // fetch selected num
-        if (static::hasParams('limit')) {
-            $query->limit(static::hasParams('limit'));
+        if ($this->hasParams('limit')) {
+            $query->limit($this->hasParams('limit'));
         }
 
         return $query;
@@ -260,9 +260,9 @@ class BaseModel extends Model
      * @param $key
      * @return mixed|null
      */
-    protected static function hasParams($key)
+    protected function hasParams($key)
     {
-        return static::$params[$key] ?? null;
+        return $this->params[$key] ?? null;
     }
 
     /**
@@ -271,16 +271,16 @@ class BaseModel extends Model
      * @param $query
      * @return mixed
      */
-    public static function rawExcludeInclude($query)
+    public function rawExcludeInclude($query)
     {
-        $tableName = (static::$tableName) ? static::$tableName . '.' : '';
-        $columns = static::$writableColumns;
+        $tableName = ($this->tableName) ? $this->tableName . '.' : '';
+        $columns = $this->writableColumns;
         $columns[] = 'id';
 
         // ['column_name' => [value, value, value]]
-        if (static::hasParams('exclude')) {
-            $exclude = static::$params['exclude'];
-            $exclude = self::extractIncExcData($exclude);
+        if ($this->hasParams('exclude')) {
+            $exclude = $this->params['exclude'];
+            $exclude = $this->extractIncExcData($exclude);
 
             foreach ($exclude as $key => $value) {
                 if (in_array($key, $columns)) {
@@ -292,9 +292,9 @@ class BaseModel extends Model
         }
 
         // ['column_name' => [value, value, value]]
-        if (static::hasParams('include')) {
-            $include = static::$params['include'];
-            $include = self::extractIncExcData($include);
+        if ($this->hasParams('include')) {
+            $include = $this->params['include'];
+            $include = $this->extractIncExcData($include);
 
             foreach ($include as $key => $value) {
                 if (in_array($key, $columns)) {
@@ -315,7 +315,7 @@ class BaseModel extends Model
      * @param $data
      * @return array|string
      */
-    protected static function extractIncExcData($data)
+    protected function extractIncExcData($data)
     {
         // if string e.g. column_name:value1,value2|column_name:value1,value2
         if (is_string($data)) {
@@ -344,55 +344,55 @@ class BaseModel extends Model
      * @param $query
      * @return mixed
      */
-    public static function rawSearch($query)
+    public function rawSearch($query)
     {
-        if (static::hasParams('search')) {
+        if ($this->hasParams('search')) {
             // always check for values
             $query->where(function ($query) {
                 $num = 0;
                 // default columns table search
-                foreach (static::$writableColumns as $row) {
-                    $column_name = static::$tableName . '.' . $row;
-                    $query = self::searchQuery($num, $query, $column_name, static::$params['search']);
+                foreach ($this->writableColumns as $row) {
+                    $column_name = $this->tableName . '.' . $row;
+                    $query = $this->searchQuery($num, $query, $column_name, $this->params['search']);
                     $num++;
                 }
 
                 // custom search parameters
-                foreach (static::rawQuerySelectList() as $column_name) {
-                    $query = self::searchQuery($num, $query, DB::raw('(' . $column_name . ')'), static::$params['search']);
+                foreach ($this->rawQuerySelectList() as $column_name) {
+                    $query = $this->searchQuery($num, $query, DB::raw('(' . $column_name . ')'), $this->params['search']);
                     $num++;
                 }
             });
-        } else if (static::hasParams('search_only')) {
+        } else if ($this->hasParams('search_only')) {
             // search only for specific columns
-            $search_only = static::$params['search_only'];
+            $search_only = $this->params['search_only'];
 
             if (is_array($search_only)) {
                 $query->where(function ($query) use ($search_only) {
                     // custom search parameters
-                    $_customSearch = static::rawQuerySelectList();
+                    $_customSearch = $this->rawQuerySelectList();
 
                     $num = 0;
                     foreach ($search_only as $column_name => $value) {
-                        $column_name = static::$tableName . $column_name;
-                        $query = self::searchQuery($num, $query, $column_name, $value);
+                        $column_name = $this->tableName . $column_name;
+                        $query = $this->searchQuery($num, $query, $column_name, $value);
                         $num++;
 
                         if (isset($_customSearch[$column_name])) {
-                            $query = self::searchQuery($num, $query, DB::raw('(' . $_customSearch[$column_name] . ')'), $value);
+                            $query = $this->searchQuery($num, $query, DB::raw('(' . $_customSearch[$column_name] . ')'), $value);
                         }
                     }
                 });
             }
         }
 
-        $orderByColumn = static::$params['order_by_column'] ?? 'updated_at';
-        $orderByDirection = static::$params['order_by_direction'] ?? 'DESC';
+        $orderByColumn = $this->params['order_by_column'] ?? 'updated_at';
+        $orderByDirection = $this->params['order_by_direction'] ?? 'DESC';
         $query->orderBy(DB::raw($orderByColumn), $orderByDirection);
 
-        if (static::hasParams('group_by')) {
-            if (in_array(static::$params['group_by'], static::$writableColumns)) {
-                $query->groupBy(static::$params['group_by']);
+        if ($this->hasParams('group_by')) {
+            if (in_array($this->params['group_by'], $this->writableColumns)) {
+                $query->groupBy($this->params['group_by']);
             }
         }
 
@@ -408,7 +408,7 @@ class BaseModel extends Model
      * @param $search
      * @return mixed
      */
-    protected static function searchQuery($index, $query, $column_name, $search)
+    protected function searchQuery($index, $query, $column_name, $search)
     {
         // check values to search must not be empty
         if ($search != '' && $search != null) {
@@ -428,7 +428,7 @@ class BaseModel extends Model
      * @param $query
      * @return mixed
      */
-    public static function rawFilters($query)
+    public function rawFilters($query)
     {
         return $query;
     }
@@ -439,18 +439,18 @@ class BaseModel extends Model
      * @param $query
      * @return mixed
      */
-    protected static function readyFormatting($query)
+    protected function readyFormatting($query)
     {
-        if (static::hasParams('object')) {
+        if ($this->hasParams('object')) {
             return $query;
-        } else if (static::hasParams('single')) {
-            return static::format($query->first());
-        } else if (static::hasParams('all')) {
-            return static::format($query->get());
+        } else if ($this->hasParams('single')) {
+            return $this->format($query->first());
+        } else if ($this->hasParams('all')) {
+            return $this->format($query->get());
         } else {
             $perPage = (int)__settings('pagination')->value;
             $perPage = ($perPage) ? $perPage : 12;
-            return static::format($query->paginate($perPage));
+            return $this->format($query->paginate($perPage));
         }
     }
 
@@ -460,17 +460,17 @@ class BaseModel extends Model
      * @param $query
      * @return null
      */
-    protected static function format($query)
+    protected function format($query)
     {
-        if (static::hasParams('single')) {
+        if ($this->hasParams('single')) {
             if (!$query) {
                 return null;
             }
 
-            static::dataFormatting($query);
+            $this->dataFormatting($query);
         } else {
             foreach ($query as $row) {
-                static::dataFormatting($row);
+                $this->dataFormatting($row);
             }
         }
 
@@ -483,7 +483,7 @@ class BaseModel extends Model
      * @param $row
      * @return mixed
      */
-    protected static function dataFormatting($row)
+    protected function dataFormatting($row)
     {
         return $row;
     }
@@ -495,11 +495,11 @@ class BaseModel extends Model
      * @param bool $checkDefaults
      * @return bool
      */
-    public static function store($inputs = [], $checkDefaults = true)
+    public function store($inputs = [], $checkDefaults = true)
     {
         $store = [];
         foreach ($inputs as $key => $value) {
-            if (in_array($key, static::$writableColumns) && $key !== 0 && $key !== null) {
+            if (in_array($key, $this->writableColumns) && $key !== 0 && $key !== null) {
                 $value = ($value === '' || $value === null) ? null : $value;
                 $store[$key] = $value;
             }
@@ -507,30 +507,30 @@ class BaseModel extends Model
 
         // add defaults
         if ($checkDefaults === true) {
-            $store = self::defaultInputs($store);
+            $store = $this->defaultInputs($store);
         }
 
         // other custom action
-        if (!static::actionStoreBefore(static::$tableName, $inputs)) {
+        if (!$this->actionStoreBefore($this->tableName, $inputs)) {
             return null;
         }
 
         // formatting before saving
-        $store = self::formatStore(static::$tableName, $store);
+        $store = $this->formatStore($this->tableName, $store);
 
         $store['created_at'] = sqlDate();
         $store['updated_at'] = sqlDate();
-        $save = static::single(self::insertGetId($store));
+        $save = $this->single($this->insertGetId($store));
 
         // process files
         if ($save) {
-            self::_processStoreFiles($inputs, $save);
-            static::actionStoreAfter($save, $store);
+            $this->_processStoreFiles($inputs, $save);
+            $this->actionStoreAfter($save, $store);
         }
 
         // refresh data with files added
         if ($save && isset($save->_files)) {
-            return static::single($save->id);
+            return $this->single($save->id);
         }
 
         return $save;
@@ -543,10 +543,10 @@ class BaseModel extends Model
      * @param array $defaults
      * @return array
      */
-    protected static function defaultInputs($inputs = [], $defaults = [])
+    protected function defaultInputs($inputs = [], $defaults = [])
     {
         // clean dates
-        foreach (static::$inputDates as $key) {
+        foreach ($this->inputDates as $key) {
             if (isset($inputs[$key])) {
                 if ($inputs[$key] !== null && $inputs[$key] !== '') {
                     $inputs[$key] = sqlDate($inputs[$key], true);
@@ -557,7 +557,7 @@ class BaseModel extends Model
         }
 
         // clean dates with time
-        foreach (static::$inputDateTimes as $key) {
+        foreach ($this->inputDateTimes as $key) {
             if (isset($inputs[$key])) {
                 if ($inputs[$key] !== null && $inputs[$key] !== '') {
                     $inputs[$key] = sqlDate($inputs[$key]);
@@ -568,7 +568,7 @@ class BaseModel extends Model
         }
 
         // clean integers with zero
-        foreach (static::$inputIntegers as $key) {
+        foreach ($this->inputIntegers as $key) {
             if (isset($inputs[$key])) {
                 if ($inputs[$key] !== null && $inputs[$key] !== '' && is_numeric($inputs[$key])) {
                     $inputs[$key] = (int)$inputs[$key];
@@ -581,7 +581,7 @@ class BaseModel extends Model
         }
 
         // clean numeric
-        foreach (static::$inputNumeric as $key) {
+        foreach ($this->inputNumeric as $key) {
             if (isset($inputs[$key])) {
                 if ($inputs[$key] === null && $inputs[$key] === '' && !is_numeric($inputs[$key])) {
                     $inputs[$key] = 0;
@@ -592,7 +592,7 @@ class BaseModel extends Model
         }
 
         // clean boolean
-        foreach (static::$inputBooleans as $key) {
+        foreach ($this->inputBooleans as $key) {
             if (isset($inputs[$key])) {
                 $inputs[$key] = ($inputs[$key] == 1) ? 1 : 0;
             } else {
@@ -601,7 +601,7 @@ class BaseModel extends Model
         }
 
         // BCrypt
-        foreach (static::$inputCrypt as $key) {
+        foreach ($this->inputCrypt as $key) {
             if (isset($inputs[$key])) {
                 if ($inputs[$key] !== null && $inputs[$key] !== '') {
                     $inputs[$key] = bcrypt($inputs[$key]);
@@ -623,7 +623,7 @@ class BaseModel extends Model
      * @param $inputs
      * @return bool
      */
-    public static function actionStoreBefore($tableName, $inputs)
+    public function actionStoreBefore($tableName, $inputs)
     {
         return true;
     }
@@ -635,7 +635,7 @@ class BaseModel extends Model
      * @param $inputs
      * @return mixed
      */
-    public static function formatStore($tableName, $inputs)
+    public function formatStore($tableName, $inputs)
     {
         return $inputs;
     }
@@ -647,13 +647,13 @@ class BaseModel extends Model
      * @param string $column
      * @return null
      */
-    public static function single($id, $column = 'id')
+    public function single($id, $column = 'id')
     {
         if (!$id) {
             return null;
         }
 
-        return static::fetch([
+        return $this->fetch([
             'single' => true,
             $column => $id
         ]);
@@ -665,7 +665,7 @@ class BaseModel extends Model
      * @param $query
      * @param $inputs
      */
-    public static function actionStoreAfter($query, $inputs)
+    public function actionStoreAfter($query, $inputs)
     {
 
     }
@@ -679,10 +679,10 @@ class BaseModel extends Model
      * @param bool $checkDefaults
      * @return bool
      */
-    public static function edit($id, $inputs = [], $columnName = null, $checkDefaults = true)
+    public function edit($id, $inputs = [], $columnName = null, $checkDefaults = true)
     {
         $update = [];
-        $query = self::rawFetch($id, $columnName);
+        $query = $this->rawFetch($id, $columnName);
 
         if (!$query) {
             return false;
@@ -694,7 +694,7 @@ class BaseModel extends Model
 
         // clean inputs
         foreach ($inputs as $key => $value) {
-            if (in_array($key, static::$writableColumns) && $key !== 0 && $key !== null) {
+            if (in_array($key, $this->writableColumns) && $key !== 0 && $key !== null) {
                 $value = ($value === '' || $value === null) ? null : $value;
                 $update[$key] = $value;
             }
@@ -704,25 +704,25 @@ class BaseModel extends Model
 
         // add defaults
         if ($checkDefaults === true) {
-            $update = self::defaultInputs($update, $_data);
+            $update = $this->defaultInputs($update, $_data);
         }
 
         // other custom action
-        if (!static::actionEditBefore(static::$tableName, $_data, $inputs)) {
+        if (!$this->actionEditBefore($this->tableName, $_data, $inputs)) {
             return false;
         }
 
         // formatting before saving
-        $update = self::formatEdit(static::$tableName, $update);
+        $update = $this->formatEdit($this->tableName, $update);
 
         $update['updated_at'] = sqlDate();
         $_u = (bool)$query->update($update);
 
         // save activity logs
-        ActivityLog::log($id, static::$writableColumns, $_data, $update, static::$tableName);
+        (new ActivityLog())->log($id, $this->tableName, $this->writableColumns, $_data, $update);
 
         // process files
-        self::processEditFiles($inputs, $update, static::single($query->first()->id));
+        $this->processEditFiles($inputs, $update, $this->single($query->first()->id));
 
         return $_u;
     }
@@ -734,7 +734,7 @@ class BaseModel extends Model
      * @param null $columnName
      * @return bool|Builder|null
      */
-    public static function rawFetch($id, $columnName = null)
+    public function rawFetch($id, $columnName = null)
     {
         $query = null;
 
@@ -744,16 +744,16 @@ class BaseModel extends Model
 
         // filters for editing
         if ($id && !is_array($columnName)) {
-            $query = DB::table(static::$tableName)->where($columnName, $id);
+            $query = DB::table($this->tableName)->where($columnName, $id);
         } else {
             $i = 0;
             foreach ($columnName as $key => $value) {
-                if (!in_array($key, static::$writableColumns) && $key !== 'id') {
+                if (!in_array($key, $this->writableColumns) && $key !== 'id') {
                     return false;
                 }
 
                 if (!$i) {
-                    $query = DB::table(static::$tableName)->where($key, $value);
+                    $query = DB::table($this->tableName)->where($key, $value);
                 } else {
                     if ($query) {
                         $query->where($key, $value);
@@ -775,7 +775,7 @@ class BaseModel extends Model
      * @param $inputs
      * @return bool
      */
-    public static function actionEditBefore($tableName, $query, $inputs)
+    public function actionEditBefore($tableName, $query, $inputs)
     {
         return true;
     }
@@ -787,7 +787,7 @@ class BaseModel extends Model
      * @param $inputs
      * @return mixed
      */
-    public static function formatEdit($tableName, $inputs)
+    public function formatEdit($tableName, $inputs)
     {
         return $inputs;
     }
@@ -799,11 +799,11 @@ class BaseModel extends Model
      * @param $update
      * @param $_data
      */
-    public static function processEditFiles($inputs, $update, $_data)
+    public function processEditFiles($inputs, $update, $_data)
     {
         if ($_data) {
-            $_data->_files = self::_processFile($inputs, $_data);
-            static::actionEditAfter($_data, $update);
+            $_data->_files = $this->_processFile($inputs, $_data);
+            $this->actionEditAfter($_data, $update);
         }
     }
 
@@ -813,7 +813,7 @@ class BaseModel extends Model
      * @param $query
      * @param $inputs
      */
-    public static function actionEditAfter($query, $inputs)
+    public function actionEditAfter($query, $inputs)
     {
 
     }
@@ -826,26 +826,26 @@ class BaseModel extends Model
      *
      * @return integer
      */
-    public static function remove($id, $columnName = null)
+    public function remove($id, $columnName = null)
     {
         // check if exists or tried to delete the users authorization
-        $_r = self::rawFetch($id, $columnName);
+        $_r = $this->rawFetch($id, $columnName);
         if (!$_r) {
             return false;
         }
 
-        if (!static::actionRemoveBefore($_r->get())) {
+        if (!$this->actionRemoveBefore($_r->get())) {
             return false;
         }
 
         // remove
-        $save = self::rawFetch($id, $columnName)->delete();
+        $save = $this->rawFetch($id, $columnName)->delete();
 
         // delete and remove all files based on table name and id
         if ($save) {
-            foreach (File::fetch(['table_name' => static::$tableName, 'table_id' => $id]) as $file) {
+            foreach ((new File())->fetch(['table_name' => $this->tableName, 'table_id' => $id]) as $file) {
                 if (fileDestroy('private/' . $file->file_name)) {
-                    File::remove($file->id);
+                    (new File())->remove($file->id);
                 }
             }
         }
@@ -859,7 +859,7 @@ class BaseModel extends Model
      * @param $query
      * @return bool
      */
-    public static function actionRemoveBefore($query)
+    public function actionRemoveBefore($query)
     {
         return true;
     }
@@ -869,7 +869,7 @@ class BaseModel extends Model
      *
      * @param $save
      */
-    public static function actionRemoveAfter($save)
+    public function actionRemoveAfter($save)
     {
 
     }
@@ -880,10 +880,10 @@ class BaseModel extends Model
      * @param $row
      * @return bool
      */
-    private static function _allowNull($row)
+    private function _allowNull($row)
     {
-        $_val = static::$params[$row] ?? null;
-        $_allowNull = static::$params['allow_null'] ?? false;
+        $_val = $this->params[$row] ?? null;
+        $_allowNull = $this->params['allow_null'] ?? false;
         $_allowFilter = true;
 
         if ($_val === null && $_allowNull === false) {
@@ -899,9 +899,9 @@ class BaseModel extends Model
      * @param $val
      * @return bool
      */
-    private static function _allowNullWithVal($val)
+    private function _allowNullWithVal($val)
     {
-        $_allowNull = static::$params['allow_null'] ?? false;
+        $_allowNull = $this->params['allow_null'] ?? false;
         $_allowFilter = true;
 
         if ($val === null && $_allowNull === false) {
@@ -917,9 +917,9 @@ class BaseModel extends Model
      * @param $inputs
      * @param $save
      */
-    private static function _processStoreFiles($inputs, $save)
+    private function _processStoreFiles($inputs, $save)
     {
-        $save->_files = self::_processFile($inputs, $save);
+        $save->_files = $this->_processFile($inputs, $save);
     }
 
     /**
@@ -929,17 +929,17 @@ class BaseModel extends Model
      * @param $_data
      * @return array
      */
-    private static function _processFile($inputs, $_data)
+    private function _processFile($inputs, $_data)
     {
         $_files = [];
 
-        foreach (static::$files as $file) {
+        foreach ($this->files as $file) {
             if (is_array($file)) {
                 if (isset($inputs[$file['name']])) {
                     $_files[] = fileUpload([
                         'file' => $inputs[$file['name']],
                         'destination' => 'private',
-                        'options' => static::$fileOptions,
+                        'options' => $this->fileOptions,
                         'tableName' => $file['table'],
                         'tableId' => $_data->id,
                         'filename' => $file['name']
@@ -950,8 +950,8 @@ class BaseModel extends Model
                     $_files[] = fileUpload([
                         'file' => $inputs[$file],
                         'destination' => 'private',
-                        'options' => static::$fileOptions,
-                        'tableName' => static::$tableName,
+                        'options' => $this->fileOptions,
+                        'tableName' => $this->tableName,
                         'tableId' => $_data->id,
                         'filename' => $file
                     ]);

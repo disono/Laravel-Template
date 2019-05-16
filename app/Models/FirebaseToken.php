@@ -12,14 +12,14 @@ use App\Models\Vendor\BaseModel;
 
 class FirebaseToken extends BaseModel
 {
-    protected static $tableName = 'firebase_tokens';
-    protected static $writableColumns = [
+    protected $tableName = 'firebase_tokens';
+    protected $writableColumns = [
         'token_id', 'fcm_token'
     ];
 
     public function __construct(array $attributes = [])
     {
-        $this->fillable(self::$writableColumns);
+        $this->fillable($this->writableColumns);
         parent::__construct($attributes);
     }
 

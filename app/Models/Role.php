@@ -12,14 +12,14 @@ use App\Models\Vendor\BaseModel;
 
 class Role extends BaseModel
 {
-    protected static $tableName = 'roles';
-    protected static $writableColumns = [
+    protected $tableName = 'roles';
+    protected $writableColumns = [
         'name', 'slug', 'description'
     ];
 
     public function __construct(array $attributes = [])
     {
-        $this->fillable(self::$writableColumns);
+        $this->fillable($this->writableColumns);
         parent::__construct($attributes);
     }
 

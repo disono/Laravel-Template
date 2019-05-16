@@ -11,6 +11,7 @@ namespace App\Http\Controllers\API\V1\Authentication;
 use App\Http\Controllers\API\APIController;
 use App\Http\Requests\API\V1\Authentication\RegisterRequest;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 
 class RegisterController extends APIController
 {
@@ -18,11 +19,11 @@ class RegisterController extends APIController
      * Register user
      *
      * @param RegisterRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function registerAction(RegisterRequest $request)
     {
-        $user = User::register($request->all());
+        $user = (new User())->register($request->all());
         if ($user) {
             return $this->json($user);
         }

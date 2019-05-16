@@ -25,12 +25,12 @@ class AuthorizationRoleController extends Controller
 
     public function editAction($role_id)
     {
-        $role = Role::single($role_id);
+        $role = (new Role())->single($role_id);
         if (!$role) {
             abort(404);
         }
 
-        $authorizations = $this->_routeNames(AuthorizationRole::fetchAll(['role_id' => $role->id]));
+        $authorizations = $this->_routeNames((new AuthorizationRole())->fetchAll(['role_id' => $role->id]));
 
         $this->setHeader('title', 'Updating Authorization for ' . $role->name);
         return $this->view('edit', ['role' => $role, 'authorizations' => $authorizations, 'routes' => $this->_routesName()]);
@@ -55,7 +55,7 @@ class AuthorizationRoleController extends Controller
             $action = $route->getAction();
 
             if (array_key_exists('as', $action)) {
-                $_name = explode('.',  $action['as']);
+                $_name = explode('.', $action['as']);
 
                 if ($_name[0] === 'admin') {
                     $data = new \stdClass();
@@ -79,13 +79,13 @@ class AuthorizationRoleController extends Controller
         }
 
         // is role exists
-        $role = Role::single($this->request->get('role_id'));
+        $role = (new Role())->single($this->request->get('role_id'));
         if (!$role) {
             return $this->json('Invalid role.', 422);
         }
 
         // clear old auth access
-        if (!AuthorizationRole::remove($role->id, 'role_id')) {
+        if (!(new AuthorizationRole())->remove($role->id, 'role_id')) {
             return $this->json('Failed to reset the authentication roles.', 422);
         }
 

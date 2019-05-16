@@ -32,8 +32,7 @@ class SettingsController extends Controller
      */
     public function settingsAction()
     {
-        return $this->view('settings',
-            ['user' => __me(), 'countries' => Country::get(), 'cities' => City::get()]);
+        return $this->view('settings', ['user' => __me(), 'countries' => Country::get(), 'cities' => City::get()]);
     }
 
     /**
@@ -49,8 +48,8 @@ class SettingsController extends Controller
         ]);
         $inputs['profile_picture'] = $request->file('profile_picture');
 
-        User::clearBoolean();
-        User::edit(__me()->id, $inputs);
+        (new User())->clearBoolean();
+        (new User())->edit(__me()->id, $inputs);
 
         if ($this->request->ajax()) {
             return $this->json('Profile is successfully updated.');
@@ -77,8 +76,8 @@ class SettingsController extends Controller
      */
     public function securityUpdateAction(AccountSecurity $request)
     {
-        User::clearBoolean();
-        User::edit(__me()->id, $request->only(['email', 'password']));
+        (new User())->clearBoolean();
+        (new User())->edit(__me()->id, $request->only(['email', 'password']));
 
         if ($this->request->ajax()) {
             return $this->json('Profile is successfully updated.');

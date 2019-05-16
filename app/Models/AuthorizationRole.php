@@ -12,14 +12,14 @@ use App\Models\Vendor\BaseModel;
 
 class AuthorizationRole extends BaseModel
 {
-    protected static $tableName = 'authorization_roles';
-    protected static $writableColumns = [
+    protected $tableName = 'authorization_roles';
+    protected $writableColumns = [
         'route', 'role_id'
     ];
 
     public function __construct(array $attributes = [])
     {
-        $this->fillable(self::$writableColumns);
+        $this->fillable($this->writableColumns);
         parent::__construct($attributes);
     }
 

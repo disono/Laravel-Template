@@ -26,21 +26,21 @@ class AddressController extends Controller
     {
         $this->setHeader('title', 'Addresses');
         return $this->view('index', [
-            'addresses' => UserAddress::fetch(requestValues('search', ['user_id' => __me()->id]))
+            'addresses' => (new UserAddress())->fetch(requestValues('search', ['user_id' => __me()->id]))
         ]);
     }
 
     public function createAction()
     {
         $this->setHeader('title', 'Create a New Address');
-        return $this->view('create', ['countries' => Country::fetchAll()]);
+        return $this->view('create', ['countries' => (new Country())->fetchAll()]);
     }
 
     public function storeAction(AddressStore $request)
     {
         $inputs = $request->all();
         $inputs['user_id'] = $this->me->id;
-        $c = UserAddress::store($inputs);
+        $c = (new UserAddress())->store($inputs);
         if (!$c) {
             return $this->json(['name' => 'Failed to crate a new address.'], 422, false);
         }
@@ -51,24 +51,24 @@ class AddressController extends Controller
     public function editAction($id)
     {
         $this->setHeader('title', 'Editing Address');
-        $this->content['address'] = UserAddress::fetch(['id' => $id, 'single' => true, 'user_id' => $this->me->id]);
+        $this->content['address'] = (new UserAddress())->fetch(['id' => $id, 'single' => true, 'user_id' => $this->me->id]);
         if (!$this->content['address']) {
             abort(404);
         }
 
-        $this->content['countries'] = Country::fetchAll();
+        $this->content['countries'] = (new Country())->fetchAll();
         return $this->view('edit');
     }
 
     public function updateAction(AddressUpdate $request)
     {
-        UserAddress::edit(null, $request->all(), ['id' => $request->get('id')]);
+        (new UserAddress())->edit(null, $request->all(), ['id' => $request->get('id')]);
         return $this->json('Address is successfully updated.');
     }
 
     public function destroyAction($id)
     {
-        UserAddress::remove($id);
+        (new UserAddress())->remove($id);
         return $this->json('Address is successfully deleted.');
     }
 }

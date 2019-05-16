@@ -44,7 +44,7 @@ if (!function_exists('profileUrl')) {
      */
     function profileUrl($id)
     {
-        $user = User::single($id);
+        $user = (new User())->single($id);
 
         if ($user) {
             return url('u/' . urlTitle($user->username));

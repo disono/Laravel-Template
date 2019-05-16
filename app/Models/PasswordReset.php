@@ -12,14 +12,14 @@ use App\Models\Vendor\BaseModel;
 
 class PasswordReset extends BaseModel
 {
-    protected static $tableName = 'password_resets';
-    protected static $writableColumns = [
+    protected $tableName = 'password_resets';
+    protected $writableColumns = [
         'email', 'token'
     ];
 
     public function __construct(array $attributes = [])
     {
-        $this->fillable(self::$writableColumns);
+        $this->fillable($this->writableColumns);
         parent::__construct($attributes);
     }
 }

@@ -14,8 +14,8 @@ use App\Models\Vendor\BaseModel;
 
 class ChatMessage extends BaseModel
 {
-    protected static $tableName = 'chat_messages';
-    protected static $writableColumns = [
+    protected $tableName = 'chat_messages';
+    protected $writableColumns = [
         'chat_group_id', 'user_id',
         'message',
     ];
@@ -24,7 +24,7 @@ class ChatMessage extends BaseModel
 
     public function __construct(array $attributes = [])
     {
-        $this->fillable(self::$writableColumns);
+        $this->fillable($this->writableColumns);
         parent::__construct($attributes);
     }
 
@@ -34,7 +34,7 @@ class ChatMessage extends BaseModel
      * @param $query
      * @return mixed
      */
-    public static function rawFilters($query)
+    public function rawFilters($query)
     {
         $query->join('chat_groups', 'chat_messages.chat_group_id', '=', 'chat_groups.id');
         $query->join('users AS sender', 'chat_messages.user_id', '=', 'sender.id');
@@ -46,7 +46,7 @@ class ChatMessage extends BaseModel
      *
      * @return array
      */
-    protected static function rawQuerySelectList()
+    protected function rawQuerySelectList()
     {
         $_me = __me() ? __me()->id : 0;
 
@@ -65,15 +65,15 @@ class ChatMessage extends BaseModel
      * @param $row
      * @return mixed
      */
-    protected static function dataFormatting($row)
+    protected function dataFormatting($row)
     {
         // file types
         $row->files = [];
-        foreach (File::types() as $type) {
-            $row->files[$type] = File::fetchAll(['table_name' => self::$tableName, 'table_id' => $row->id, 'type' => $type]);
+        foreach ((new File())->types() as $type) {
+            $row->files[$type] = (new File())->fetchAll(['table_name' => $this->tableName, 'table_id' => $row->id, 'type' => $type]);
         }
 
-        $row->profile_picture = User::profilePicture($row->user_id);
+        $row->profile_picture = (new User())->profilePicture($row->user_id);
         $row->formatted_created_at = humanDate($row->created_at);
 
         return $row;

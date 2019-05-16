@@ -27,26 +27,26 @@ if (!function_exists('me')) {
     function me($id = 0)
     {
         if ($id) {
-            return User::single($id);
+            return (new User())->single($id);
         }
 
         if (auth()->check()) {
-            return User::single(auth()->user()->id);
+            return (new User())->single(auth()->user()->id);
         } else if (authAPI()) {
-            return User::single(authID());
+            return (new User())->single(authId());
         }
 
         return null;
     }
 }
 
-if (!function_exists('authID')) {
+if (!function_exists('authId')) {
     /**
      * Get the authenticated id
      *
      * @return array|Request|string
      */
-    function authID()
+    function authId()
     {
         $id = (__me()) ? __me()->id : 0;
 
@@ -64,7 +64,7 @@ if (!function_exists('authAPI')) {
      */
     function authAPI()
     {
-        $user = User::find(authID());
+        $user = User::find(authId());
         if ($user) {
             // check if account is enabled
             if (!$user->is_account_enabled || $user->is_account_enabled == 0) {
@@ -130,7 +130,7 @@ if (!function_exists('JWTInitializeTokenByKey')) {
         }
 
         // check if user id is correct
-        if (authID() != $token->user_id) {
+        if (authId() != $token->user_id) {
             return;
         }
 
@@ -217,8 +217,8 @@ if (!function_exists('authorizeRoute')) {
         if (!$user_id) {
             if (auth()->check()) {
                 $user_id = __me()->id;
-            } else if (authID()) {
-                $user_id = authID();
+            } else if (authId()) {
+                $user_id = authId();
             }
         }
 

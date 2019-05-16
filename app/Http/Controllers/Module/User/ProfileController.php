@@ -21,7 +21,7 @@ class ProfileController extends Controller
 
     public function showAction($username)
     {
-        $profile = User::single($username, 'username');
+        $profile = (new User())->single($username, 'username');
         if (!$profile) {
             return $this->error(404);
         }
@@ -31,6 +31,6 @@ class ProfileController extends Controller
 
     public function searchAction()
     {
-        return $this->view('search', User::fetchAll(requestValues('search|role')));
+        return $this->view('search', (new User())->fetchAll(requestValues('search|role')));
     }
 }

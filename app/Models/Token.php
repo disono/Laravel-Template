@@ -12,14 +12,14 @@ use App\Models\Vendor\BaseModel;
 
 class Token extends BaseModel
 {
-    protected static $tableName = 'tokens';
-    protected static $writableColumns = [
+    protected $tableName = 'tokens';
+    protected $writableColumns = [
         'user_id', 'token', 'key', 'secret', 'source', 'expired_at'
     ];
 
     public function __construct(array $attributes = [])
     {
-        $this->fillable(self::$writableColumns);
+        $this->fillable($this->writableColumns);
         parent::__construct($attributes);
     }
 
@@ -29,7 +29,7 @@ class Token extends BaseModel
      * @param $query
      * @return bool
      */
-    public static function actionRemoveBefore($query)
+    public function actionRemoveBefore($query)
     {
         foreach ($query as $row) {
             FirebaseToken::where('token_id', $row->id)->delete();

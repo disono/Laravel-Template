@@ -20,14 +20,14 @@
 
         <form action="{{ route('admin.setting.save') }}" method="post" v-on:submit.prevent="onFormUpload">
             {{ csrf_field() }}
-            @foreach(\App\Models\Setting::categories()->chunk(3) as $chunk)
+            @foreach((new \App\Models\Setting())->categories()->chunk(3) as $chunk)
                 <div class="row mt-3">
                     @foreach ($chunk as $category)
                         <div class="col-sm-12 col-md-4">
                             <h4>{{ $category->category }}</h4>
                             <hr>
 
-                            @foreach(\App\Models\Setting::fetchAll(['is_disabled' => 0, 'category' => $category->category]) as $row)
+                            @foreach((new \App\Models\Setting())->fetchAll(['is_disabled' => 0, 'category' => $category->category]) as $row)
                                 <div class="form-group">
                                     @if($row->input_type == 'text')
                                         <label for="formID_{{ $row->id }}">{{ $row->name }}</label>

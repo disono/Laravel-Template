@@ -35,7 +35,7 @@
                         <button type="submit" class="btn btn-primary">Verify</button>
 
                         {{-- show link to resend code --}}
-                        @if(\App\Models\Verification::isExpired('phone') || !__me())
+                        @if((new \App\Models\Verification())->isExpired('phone') || !__me())
                             <a href="{{ route('auth.verify.resend.view', ['type' => 'phone']) }}"
                                class="btn btn-warning">Resend Code</a>
                         @endif

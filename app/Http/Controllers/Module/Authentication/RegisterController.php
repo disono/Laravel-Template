@@ -52,7 +52,7 @@ class RegisterController extends Controller
             abort(404);
         }
 
-        $user = User::register($request->all());
+        $user = (new User())->register($request->all());
         if ($user) {
             Auth::loginUsingId($user->id, true);
             if ($request->ajax()) {

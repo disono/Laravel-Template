@@ -98,7 +98,7 @@ class FacebookController extends APIController
      */
     private function _profile($id)
     {
-        return User::crateToken(User::single($id));
+        return (new User())->crateToken((new User())->single($id));
     }
 
     /**
@@ -112,7 +112,7 @@ class FacebookController extends APIController
             urlTitle(__settings('title')->value, '.') . time() . str_random(4) . '@' . env('APP_DOMAIN');
         $username = str_random(8) . time();
 
-        $create = User::store([
+        $create = (new User())->store([
             'first_name' => $this->request->get('first_name'),
             'last_name' => $this->request->get('last_name'),
 
@@ -151,7 +151,7 @@ class FacebookController extends APIController
             'http://graph.facebook.com/' . $this->request->get('social_id') . '/picture?type=large');
 
         if (!$filename) {
-            File::store([
+            (new File())->store([
                 'user_id' => $user->id,
                 'file_name' => $filename,
                 'type' => 'photo',

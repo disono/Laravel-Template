@@ -13,17 +13,18 @@ use App\Models\Vendor\BaseModel;
 
 class ChatGroupMember extends BaseModel
 {
-    protected static $tableName = 'chat_group_members';
-    protected static $writableColumns = [
+    protected $tableName = 'chat_group_members';
+    protected $writableColumns = [
         'chat_group_id',
         'member_id', 'added_by_id',
         'is_admin', 'is_mute', 'is_active', 'is_seen', 'is_archive'
     ];
-    protected static $inputBooleans = ['is_admin', 'is_mute', 'is_active', 'is_seen', 'is_archive'];
+
+    protected $inputBooleans = ['is_admin', 'is_mute', 'is_active', 'is_seen', 'is_archive'];
 
     public function __construct(array $attributes = [])
     {
-        $this->fillable(self::$writableColumns);
+        $this->fillable($this->writableColumns);
         parent::__construct($attributes);
     }
 
@@ -33,7 +34,7 @@ class ChatGroupMember extends BaseModel
      * @param $query
      * @return mixed
      */
-    public static function rawFilters($query)
+    public function rawFilters($query)
     {
         $query->join('chat_groups', 'chat_group_members.chat_group_id', '=', 'chat_groups.id');
         $query->join('users AS member', 'chat_group_members.member_id', '=', 'member.id');
@@ -46,7 +47,7 @@ class ChatGroupMember extends BaseModel
      *
      * @return array
      */
-    protected static function rawQuerySelectList()
+    protected function rawQuerySelectList()
     {
         $me = (__me()) ? __me()->id : 0;
 
@@ -64,9 +65,9 @@ class ChatGroupMember extends BaseModel
      * @param $row
      * @return mixed
      */
-    protected static function dataFormatting($row)
+    protected function dataFormatting($row)
     {
-        $row->profile_picture = User::profilePicture($row->id);
+        $row->profile_picture = (new User())->profilePicture($row->id);
 
         return $row;
     }

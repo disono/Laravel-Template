@@ -25,7 +25,7 @@ class ActivityLogController extends Controller
     {
         $this->setHeader('title', 'Activity Logs');
         return $this->view('index', [
-            'logs' => ActivityLog::fetch(requestValues('search'))
+            'logs' => (new ActivityLog())->fetch(requestValues('search'))
         ]);
     }
 }

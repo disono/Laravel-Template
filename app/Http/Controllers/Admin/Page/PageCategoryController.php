@@ -27,7 +27,7 @@ class PageCategoryController extends Controller
     {
         $this->setHeader('title', 'Page Categories');
         return $this->view('index', [
-            'page_categories' => PageCategory::nestedToTabs([
+            'page_categories' => (new PageCategory())->nestedToTabs([
                 'include_tab' => false, 'strong' => true, 'search' => $this->request->get('search')
             ])
         ]);
@@ -37,13 +37,13 @@ class PageCategoryController extends Controller
     {
         $this->setHeader('title', 'Create a New Page Category');
         return $this->view('create', [
-            'categories' => PageCategory::fetchAll(),
+            'categories' => (new PageCategory())->fetchAll(),
         ]);
     }
 
     public function storeAction(PageCategoryStore $request)
     {
-        $c = PageCategory::store($request->all());
+        $c = (new PageCategory())->store($request->all());
         if (!$c) {
             return $this->json(['name' => 'Failed to crate a new category.'], 422, false);
         }
@@ -54,24 +54,24 @@ class PageCategoryController extends Controller
     public function editAction($id)
     {
         $this->setHeader('title', 'Editing Page Category');
-        $this->content['category'] = PageCategory::single($id);
+        $this->content['category'] = (new PageCategory())->single($id);
         if (!$this->content['category']) {
             abort(404);
         }
 
-        $this->content['categories'] = PageCategory::fetchAll();
+        $this->content['categories'] = (new PageCategory())->fetchAll();
         return $this->view('edit');
     }
 
     public function updateAction(PageCategoryUpdate $request)
     {
-        PageCategory::edit($request->get('id'), $request->all());
+        (new PageCategory())->edit($request->get('id'), $request->all());
         return $this->json('Category is successfully updated.');
     }
 
     public function destroyAction($id)
     {
-        PageCategory::remove($id);
+        (new PageCategory())->remove($id);
         return $this->json('Category is successfully deleted.');
     }
 }

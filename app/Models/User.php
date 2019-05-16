@@ -18,8 +18,8 @@ use Illuminate\Support\Facades\Notification;
 
 class User extends BaseUser
 {
-    protected static $tableName = 'users';
-    protected static $writableColumns = [
+    protected $tableName = 'users';
+    protected $writableColumns = [
         'first_name', 'last_name', 'middle_name', 'gender',
         'birthday', 'address', 'postal_code', 'country_id', 'city_id',
         'phone', 'role_id',
@@ -28,13 +28,13 @@ class User extends BaseUser
         'active_at'
     ];
 
-    protected static $files = ['profile_picture'];
-    protected static $fileOptions = ['profile_picture' => ['tag' => 'profile_picture']];
+    protected $files = ['profile_picture'];
+    protected $fileOptions = ['profile_picture' => ['tag' => 'profile_picture']];
 
-    protected static $inputDates = ['birthday'];
-    protected static $inputDateTimes = ['active_at'];
-    protected static $inputCrypt = ['password'];
-    protected static $inputBooleans = ['is_email_verified', 'is_phone_verified', 'is_account_activated', 'is_account_enabled'];
+    protected $inputDates = ['birthday'];
+    protected $inputDateTimes = ['active_at'];
+    protected $inputCrypt = ['password'];
+    protected $inputBooleans = ['is_email_verified', 'is_phone_verified', 'is_account_activated', 'is_account_enabled'];
 
     protected $hidden = [
         'password', 'remember_token',
@@ -42,7 +42,7 @@ class User extends BaseUser
 
     public function __construct(array $attributes = [])
     {
-        $this->fillable(self::$writableColumns);
+        $this->fillable($this->writableColumns);
         parent::__construct($attributes);
     }
 
@@ -52,7 +52,7 @@ class User extends BaseUser
      * @param $query
      * @return bool
      */
-    public static function actionRemoveBefore($query)
+    public function actionRemoveBefore($query)
     {
         if (!$query) {
             return false;
@@ -78,7 +78,7 @@ class User extends BaseUser
      * @param array $data
      * @return null
      */
-    public static function register(array $data)
+    public function register(array $data)
     {
         // create new user
         $user = self::create([
@@ -94,9 +94,9 @@ class User extends BaseUser
             'is_account_activated' => 1
         ]);
 
-        self::_resendEmail($user);
+        $this->_resendEmail($user);
 
-        return self::single($user->id);
+        return $this->single($user->id);
     }
 
     /**
@@ -104,7 +104,7 @@ class User extends BaseUser
      *
      * @param $user
      */
-    private static function _resendEmail($user)
+    private function _resendEmail($user)
     {
         // send email for email verification
         Notification::send($user, new RegisterNotification($user));
@@ -116,14 +116,14 @@ class User extends BaseUser
      * @param $user
      * @return null
      */
-    public static function crateToken($user)
+    public function crateToken($user)
     {
         if (!$user) {
             return null;
         }
 
         $user->server_timestamp = sqlDate();
-        $user->token = Token::store([
+        $user->token = (new Token())->store([
             'user_id' => $user->id,
             'token' => str_random(64),
             'key' => str_random(64),
@@ -142,7 +142,7 @@ class User extends BaseUser
      * @return mixed
      * @throws Exception
      */
-    public static function verify($type)
+    public function verify($type)
     {
         // verifications
         $verification = Verification::where('token', request('token'))
@@ -194,7 +194,7 @@ class User extends BaseUser
      * @return array|Request|string
      * @throws Exception
      */
-    public static function resendVerification($type)
+    public function resendVerification($type)
     {
         $value = request('type_value');
 
@@ -217,12 +217,12 @@ class User extends BaseUser
             if (strtotime($verification->expired_at) > time()) {
                 $user->renew_code = false;
                 $user->verification_code = $verification->token;
-                self::_resendCode($type, $user);
+                $this->_resendCode($type, $user);
             } else {
-                self::_resendCode($type, $user);
+                $this->_resendCode($type, $user);
             }
         } else {
-            self::_resendCode($type, $user);
+            $this->_resendCode($type, $user);
         }
 
         return $value;
@@ -233,7 +233,7 @@ class User extends BaseUser
      *
      * @return array
      */
-    protected static function rawQuerySelectList()
+    protected function rawQuerySelectList()
     {
         return [
             'full_name' => 'CONCAT(users.first_name, " ", users.last_name)',
@@ -250,13 +250,13 @@ class User extends BaseUser
      * @param $row
      * @return mixed
      */
-    protected static function dataFormatting($row)
+    protected function dataFormatting($row)
     {
-        $row->profile_picture = self::profilePicture($row->id);
+        $row->profile_picture = $this->profilePicture($row->id);
         $row->birthday = ($row->birthday) ? humanDate($row->birthday, true) : null;
         $row->server_timestamp = sqlDate();
 
-        self::_unsetHidden($row);
+        $this->_unsetHidden($row);
 
         return $row;
     }
@@ -267,9 +267,9 @@ class User extends BaseUser
      * @param $id
      * @return UrlGenerator|string|null |null
      */
-    public static function profilePicture($id)
+    public function profilePicture($id)
     {
-        return fetchImage(self::_profilePicture($id), 'assets/img/placeholders/profile_picture.png');
+        return fetchImage($this->_profilePicture($id), 'assets/img/placeholders/profile_picture.png');
     }
 
     public function role()
@@ -333,12 +333,12 @@ class User extends BaseUser
      * @param $type
      * @param $user
      */
-    private static function _resendCode($type, $user)
+    private function _resendCode($type, $user)
     {
         if ($type == 'phone') {
-            self::_resendPhone($user);
+            $this->_resendPhone($user);
         } else if ($type == 'email') {
-            self::_resendEmail($user);
+            $this->_resendEmail($user);
         }
     }
 
@@ -347,7 +347,7 @@ class User extends BaseUser
      *
      * @param $user
      */
-    private static function _resendPhone($user)
+    private function _resendPhone($user)
     {
         // clean all verification before saving new
         Verification::where('value', $user->phone)->where('type', 'phone')->delete();
@@ -368,10 +368,12 @@ class User extends BaseUser
      * @param $id
      * @return null
      */
-    private static function _profilePicture($id)
+    private function _profilePicture($id)
     {
-        $file = File::where('table_name', 'users')->where('table_id', $id)->where('tag', 'profile_picture')
+        $file = File::where('table_name', 'users')
+            ->where('table_id', $id)->where('tag', 'profile_picture')
             ->orderBy('created_at', 'DESC')->first();
+
         return ($file) ? $file->file_name : null;
     }
 
@@ -380,10 +382,9 @@ class User extends BaseUser
      *
      * @param $row
      */
-    private static function _unsetHidden($row)
+    private function _unsetHidden($row)
     {
-        $_hidden = new User();
-        foreach ($_hidden->hidden as $item) {
+        foreach ((new User())->hidden as $item) {
             unset($row->$item);
         }
     }

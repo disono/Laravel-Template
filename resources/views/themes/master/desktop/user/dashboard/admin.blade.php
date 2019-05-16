@@ -19,7 +19,7 @@
         <div class="row">
             <div class="col">
                 <div class="jumbotron">
-                    <h4 class="display-4">{{ \App\Models\User::fetch(['object' => true, 'is_account_activated' => 1])->count() }}</h4>
+                    <h4 class="display-4">{{ (new \App\Models\User())->fetch(['object' => true, 'is_account_activated' => 1])->count() }}</h4>
                     <p class="lead">Total number of activated accounts/users.</p>
                     <h2>Active Users</h2>
                 </div>
@@ -27,7 +27,7 @@
 
             <div class="col">
                 <div class="jumbotron">
-                    <h4 class="display-4">{{ \App\Models\User::fetch(['object' => true, 'is_account_activated' => 0])->count() }}</h4>
+                    <h4 class="display-4">{{ (new \App\Models\User())->fetch(['object' => true, 'is_account_activated' => 0])->count() }}</h4>
                     <p class="lead">Total number of deactivated accounts/users.</p>
                     <h2>In-Active Users</h2>
                 </div>

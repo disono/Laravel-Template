@@ -34,7 +34,7 @@ class UsersExport implements FromQuery, WithMapping, WithHeadings
         }
 
         $this->params['object'] = true;
-        return User::fetchAll($this->params);
+        return (new User())->fetchAll($this->params);
     }
 
     public function map($data): array
@@ -50,8 +50,8 @@ class UsersExport implements FromQuery, WithMapping, WithHeadings
 
     public function columns(): array
     {
-        $cleanHidden = array_diff(User::getWritableColumns(), $this->hidden);
-        $cleanColumns = array_diff($this->hidden, User::getWritableColumns());
+        $cleanHidden = array_diff((new User())->getWritableColumns(), $this->hidden);
+        $cleanColumns = array_diff($this->hidden, (new User())->getWritableColumns());
         $final_output = array_merge($cleanHidden, $cleanColumns);
 
         return $final_output;

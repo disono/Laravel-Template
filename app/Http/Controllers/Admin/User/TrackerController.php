@@ -25,7 +25,7 @@ class TrackerController extends Controller
     {
         $this->setHeader('title', 'Users Location');
         return $this->view('index', [
-            'tracks' => UserTracker::fetch(requestValues('search'))
+            'tracks' => (new UserTracker())->fetch(requestValues('search'))
         ]);
     }
 }

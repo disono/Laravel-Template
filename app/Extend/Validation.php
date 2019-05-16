@@ -110,7 +110,7 @@ class Validation extends Validator
      */
     protected function validateCurrentPassword($attribute, $value, $parameters)
     {
-        $user = (__me()) ? User::find(__me()->id) : User::find(authID());
+        $user = (__me()) ? User::find(__me()->id) : User::find(authId());
 
         if (!$user) {
             return false;
@@ -264,7 +264,7 @@ class Validation extends Validator
         } else if (isset($parameters[1])) {
             $user_id = (int)$parameters[1];
         } else {
-            $user_id = (int)authID();
+            $user_id = (int)authId();
         }
 
         if (!isset($parameters[0])) {

@@ -13,19 +13,20 @@ use App\Http\Requests\API\V1\User\AccountSecurity;
 use App\Http\Requests\API\V1\User\AccountSettings;
 use App\Models\Setting;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 
 class SettingController extends APIController
 {
     /**
      * Sync user
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function syncAction()
     {
         return $this->json([
-            'profile' => User::single(authID()),
-            'setting' => Setting::keyValuePair()
+            'profile' => (new User())->single(authId()),
+            'setting' => (new Setting())->keyValuePair()
         ]);
     }
 
@@ -33,7 +34,7 @@ class SettingController extends APIController
      * Update profile details
      *
      * @param AccountSettings $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function settingsUpdateAction(AccountSettings $request)
     {
@@ -42,23 +43,23 @@ class SettingController extends APIController
         ]);
         $inputs['profile_picture'] = $request->file('profile_picture');
 
-        User::clearBoolean();
-        User::edit(__me()->id, $inputs);
+        (new User())->clearBoolean();
+        (new User())->edit(__me()->id, $inputs);
 
-        return $this->json(User::single(__me()->id));
+        return $this->json((new User())->single(__me()->id));
     }
 
     /**
      * Update profile security
      *
      * @param AccountSecurity $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function securityUpdateAction(AccountSecurity $request)
     {
-        User::clearBoolean();
-        User::edit(__me()->id, $request->only(['email', 'password']));
+        (new User())->clearBoolean();
+        (new User())->edit(__me()->id, $request->only(['email', 'password']));
 
-        return $this->json(User::single(__me()->id));
+        return $this->json((new User())->single(__me()->id));
     }
 }

@@ -17,8 +17,8 @@ class ApplicationController extends APIController
     public function settingsAction()
     {
         return $this->json([
-            'settings' => Setting::keyValuePair(),
-            'countries' => Country::fetchAll(),
+            'settings' => (new Setting())->keyValuePair(),
+            'countries' => (new Country())->fetchAll(),
         ]);
     }
 }
