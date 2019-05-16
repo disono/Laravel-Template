@@ -8,17 +8,16 @@
 @extends('admin.layouts.master')
 
 @section('content')
-     <div class="container-fluid shadow-sm p-3 bg-white">
-        <div class="row">
+     <div class="container-fluid">
+        <div class="row mb-3">
             <div class="col">
                 <h3>Dashboard</h3>
-                <hr>
             </div>
         </div>
 
         <div class="row">
             <div class="col">
-                <div class="jumbotron">
+                <div class="jumbotron shadow-sm p-3 bg-white">
                     <h4 class="display-4">{{ (new \App\Models\User())->fetch(['object' => true, 'is_account_activated' => 1])->count() }}</h4>
                     <p class="lead">Total number of activated accounts/users.</p>
                     <h2>Active Users</h2>
@@ -26,7 +25,7 @@
             </div>
 
             <div class="col">
-                <div class="jumbotron">
+                <div class="jumbotron shadow-sm p-3 bg-white">
                     <h4 class="display-4">{{ (new \App\Models\User())->fetch(['object' => true, 'is_account_activated' => 0])->count() }}</h4>
                     <p class="lead">Total number of deactivated accounts/users.</p>
                     <h2>In-Active Users</h2>

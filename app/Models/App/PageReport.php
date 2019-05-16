@@ -20,7 +20,7 @@ class PageReport extends BaseModel
         'url', 'description', 'status', 'rating'
     ];
 
-    protected static $files = ['screenshots'];
+    protected $files = ['screenshots'];
 
     public function __construct(array $attributes = [])
     {

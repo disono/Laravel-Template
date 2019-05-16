@@ -39,7 +39,7 @@
                                     @elseif($row->input_type == 'select')
                                         <label for="formID_{{ $row->id }}">{{ $row->name }}</label>
 
-                                        <select class="form-control" name="{{ $row->key }}"
+                                        <select class="form-control select_picker" name="{{ $row->key }}"
                                                 aria-describedby="formHelp_{{ $row->id }}"
                                                 id="formID_{{ $row->id }}">
                                             @foreach($row->input_value as $val)

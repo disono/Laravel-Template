@@ -40,8 +40,7 @@ class AddressController extends Controller
     {
         $inputs = $request->all();
         $inputs['user_id'] = $this->me->id;
-        $c = (new UserAddress())->store($inputs);
-        if (!$c) {
+        if (!(new UserAddress())->store($inputs)) {
             return $this->json(['name' => 'Failed to crate a new address.'], 422, false);
         }
 
@@ -62,7 +61,7 @@ class AddressController extends Controller
 
     public function updateAction(AddressUpdate $request)
     {
-        (new UserAddress())->edit(null, $request->all(), ['id' => $request->get('id')]);
+        (new UserAddress())->edit($request->get('id'), $request->all());
         return $this->json('Address is successfully updated.');
     }
 

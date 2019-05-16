@@ -20,7 +20,7 @@ class ChatMessage extends BaseModel
         'message',
     ];
 
-    protected static $files = ['file_msg'];
+    protected $files = ['file_msg'];
 
     public function __construct(array $attributes = [])
     {

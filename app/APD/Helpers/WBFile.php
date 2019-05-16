@@ -246,6 +246,10 @@ if (!function_exists('fileDestroy')) {
             }
         }
 
+        if (!file_exists($path)) {
+            return true;
+        }
+
         if (file_exists($path)) {
             return (bool)unlink($path);
         }
