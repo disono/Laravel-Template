@@ -18,6 +18,8 @@ class UserPhone extends BaseModel
         'is_verified', 'verification_code', 'verification_expired_at'
     ];
 
+    protected $columnHasRelations = ['user_id'];
+
     protected $inputDates = ['verification_expired_at'];
 
     public function __construct(array $attributes = [])

@@ -25,37 +25,36 @@
 
         <div class="row mt-3">
             <div class="col">
-                <form method="get" action="{{ route('admin.user.authentication.history') }}">
-                    <div class="row">
-                        <div class="col-md-3 col-sm-12 mb-3 mb-sm-0">
-                            <input type="text" class="form-control" placeholder="Search"
-                                   name="search" value="{{ request('search') }}">
-                        </div>
-                    </div>
+                <form method="get" action="{{ route('admin.user.authentication.history') }}" id="frmTableFilter">
+                    <input type="submit" style="display: none;">
 
-                    <div class="row mt-sm-3">
-                        <div class="col">
-                            <button class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
+                    @include('vendor.app.toolbar')
 
-        <div class="row mt-3">
-            <div class="col">
-                @if(count($histories))
                     <div class="table-responsive-sm">
                         <table class="table table-bordered">
                             <thead class="table-borderless">
                             <tr>
                                 <th>#</th>
-                                <th>IP</th>
-                                <th>Platform</th>
-                                <th>Type</th>
-                                <th>Lat</th>
-                                <th>Lng</th>
-                                <th>Date Created</th>
+                                <th><input type="text" class="form-control form-control-sm" name="ip"
+                                           placeholder="IP" value="{{ $request->get('ip') }}"></th>
+                                <th><input type="text" class="form-control form-control-sm" name="platform"
+                                           placeholder="Platform" value="{{ $request->get('platform') }}"></th>
+                                <th>
+                                    <select class="form-control form-control-sm select_picker"
+                                            name="type" data-style="btn-gray"
+                                            @change="onSelectChangeSubmitForm($event, '#frmTableFilter')">
+                                        <option value="">Type (All)</option>
+                                        <option value="login" {{ frmIsSelected('type', 'login') }}>Login</option>
+                                        <option value="logout" {{ frmIsSelected('type', 'logout') }}>Logout</option>
+                                    </select>
+                                </th>
+                                <th><input type="text" class="form-control form-control-sm" name="lat"
+                                           placeholder="Lat" value="{{ $request->get('lat') }}"></th>
+                                <th><input type="text" class="form-control form-control-sm" name="lng"
+                                           placeholder="Lng" value="{{ $request->get('lng') }}"></th>
+                                <th><input type="text" class="form-control form-control-sm date-picker-no-future" name="created_at"
+                                           placeholder="Date Created" data-form-submit="#frmTableFilter"
+                                           value="{{ $request->get('created_at') }}"></th>
                             </tr>
                             </thead>
 
@@ -75,10 +74,8 @@
                         </table>
                     </div>
 
-                    {{ $histories->appends($request->all())->render() }}
-                @else
-                    <h3 class="text-center"><i class="far fa-frown"></i> No Authentication History Found.</h3>
-                @endif
+                    @include('vendor.app.pagination', ['_lists' => $histories])
+                </form>
             </div>
         </div>
     </div>

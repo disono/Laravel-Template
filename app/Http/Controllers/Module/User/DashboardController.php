@@ -9,6 +9,7 @@
 namespace App\Http\Controllers\Module\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 
@@ -51,6 +52,12 @@ class DashboardController extends Controller
      */
     private function _admin()
     {
-        return [];
+        $this->addAppView('app_libraries', 'assets/js/lib/chart.js');
+
+        return [
+            'latest_members' => (new User())->fetchAll(['is_latest' => 1, 'limit' => 3]),
+            'count_active_members' => (new User())->fetch(['object' => true, 'is_account_activated' => 1])->count(),
+            'count_inactive_members' => (new User())->fetch(['object' => true, 'is_account_activated' => 0])->count()
+        ];
     }
 }

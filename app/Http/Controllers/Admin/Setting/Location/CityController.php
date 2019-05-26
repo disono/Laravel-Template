@@ -8,10 +8,10 @@
 
 namespace App\Http\Controllers\Admin\Setting\Location;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Application\Location\CityStore;
 use App\Http\Requests\Admin\Application\Location\CityUpdate;
 use App\Models\City;
-use App\Http\Controllers\Controller;
 use App\Models\Country;
 
 class CityController extends Controller
@@ -27,8 +27,10 @@ class CityController extends Controller
     public function indexAction()
     {
         $this->setHeader('title', 'Cities');
+        $cities = new City();
+        $cities->enableSearch = true;
         return $this->view('index', [
-            'cities' => (new City())->fetch(requestValues('search|country_id'))
+            'cities' => $cities->fetch(requestValues('name|country_id'))
         ]);
     }
 

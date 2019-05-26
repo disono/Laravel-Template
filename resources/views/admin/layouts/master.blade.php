@@ -26,10 +26,10 @@
 </head>
 
 <body>
-<main class="container-fluid content-panel" id="{{ $vue_app }}" v-cloak>
-    {{-- sidebars --}}
-    @include('admin.layouts.sidebar')
+{{-- sidebars --}}
+@include('admin.layouts.sidebar')
 
+<main class="container-fluid content-panel" id="{{ $vue_app }}" v-cloak>
     {{-- contents --}}
     @yield('content')
 

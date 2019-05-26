@@ -205,6 +205,14 @@ Route::group(['middleware' => ['auth', 'auth.checker']], function () {
         Route::post('admin/setting/application/update', 'Admin\Setting\SettingController@updateAction')->name('admin.setting.update');
         Route::delete('admin/setting/application/destroy/{id}', 'Admin\Setting\SettingController@destroyAction')->name('admin.setting.destroy');
 
+        // setting category
+        Route::get('admin/setting/categories', 'Admin\Setting\SettingCategoryController@indexAction')->name('admin.setting.category.list');
+        Route::get('admin/setting/category/create', 'Admin\Setting\SettingCategoryController@createAction')->name('admin.setting.category.create');
+        Route::post('admin/setting/category/store', 'Admin\Setting\SettingCategoryController@storeAction')->name('admin.setting.category.store');
+        Route::get('admin/setting/category/edit/{id}', 'Admin\Setting\SettingCategoryController@editAction')->name('admin.setting.category.edit');
+        Route::post('admin/setting/category/update', 'Admin\Setting\SettingCategoryController@updateAction')->name('admin.setting.category.update');
+        Route::delete('admin/setting/category/destroy/{id}', 'Admin\Setting\SettingCategoryController@destroyAction')->name('admin.setting.category.destroy');
+
         // country
         Route::get('admin/setting/countries', 'Admin\Setting\Location\CountryController@indexAction')->name('admin.setting.country.list');
         Route::get('admin/setting/country/create', 'Admin\Setting\Location\CountryController@createAction')->name('admin.setting.country.create');

@@ -17,7 +17,7 @@
         </div>
 
         <div class="row">
-            <div class="col-md-6 offset-3 mt-3">
+            <div class="col-md-4 col-sm-12 mt-3">
                 @if(session()->has('success'))
                     <div class="alert alert-success" role="alert">
                         {{ session()->get('success') }}

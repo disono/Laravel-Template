@@ -14,7 +14,6 @@
                 <h3>{{ $view_title }}</h3>
                 <hr>
                 @include('admin.page.menu')
-                @include('admin.page_category.menu')
             </div>
         </div>
 

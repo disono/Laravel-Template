@@ -19,6 +19,7 @@ class ChatGroup extends BaseModel
     ];
 
     protected $inputBooleans = ['is_deleted', 'is_archived', 'is_spam'];
+    protected $columnHasRelations = ['created_by_id'];
 
     public function __construct(array $attributes = [])
     {

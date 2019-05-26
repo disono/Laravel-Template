@@ -17,6 +17,8 @@ class AuthorizationRole extends BaseModel
         'route', 'role_id'
     ];
 
+    protected $columnHasRelations = ['role_id'];
+
     public function __construct(array $attributes = [])
     {
         $this->fillable($this->writableColumns);

@@ -24,7 +24,10 @@ class FileController extends Controller
     public function indexAction()
     {
         $this->setHeader('title', 'Uploaded Files');
-        return $this->view('index', ['files' => (new File())->fetch(requestValues('search'))]);
+        $file = new File();
+        $file->enableSearch = true;
+        $file->setNewWritableColumn('created_at');
+        return $this->view('index', ['files' => $file->fetch(requestValues('search|pagination_show|file_name|title|type|created_at'))]);
     }
 
     public function destroyAction($id)

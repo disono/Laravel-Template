@@ -9,44 +9,44 @@
 
 @section('content')
     <div class="container-fluid shadow-sm p-3 bg-white">
-        <div class="row">
+        <div class="row mb-3">
             <div class="col">
                 <h3>{{ $view_title }}</h3>
                 <hr>
             </div>
         </div>
 
-        <div class="row">
-            <div class="col">
-                <form method="get" action="{{ route('admin.file.list') }}">
-                    <div class="row">
-                        <div class="col-md-3 col-sm-12 mb-3 mb-sm-0">
-                            <input type="text" class="form-control" placeholder="Search"
-                                   name="search" value="{{ request('search') }}">
-                        </div>
-                    </div>
-
-                    <div class="row mt-sm-3">
-                        <div class="col">
-                            <button class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-
         <div class="row mt-3">
             <div class="col">
-                @if(count($files))
+                <form action="{{ route('admin.file.list') }}" method="get" id="frmTableFilter">
+                    <input type="submit" style="display: none;">
+
+                    @include('vendor.app.toolbar')
+
                     <div class="table-responsive-sm">
                         <table class="table table-bordered">
                             <thead class="table-borderless">
                             <tr>
                                 <th>#</th>
-                                <th>Filename</th>
-                                <th>Title</th>
-                                <th>Type</th>
-                                <th>Date</th>
+                                <th><input type="text" class="form-control form-control-sm" name="file_name"
+                                           placeholder="Filename" value="{{ $request->get('file_name') }}"></th>
+                                <th><input type="text" class="form-control form-control-sm" name="title"
+                                           placeholder="Title" value="{{ $request->get('title') }}"></th>
+                                <th>
+                                    <select class="form-control form-control-sm select_picker"
+                                            name="type" data-style="btn-gray"
+                                            @change="onSelectChangeSubmitForm($event, '#frmTableFilter')">
+                                        <option value="">Type (All)</option>
+                                        <option value="video" {{ frmIsSelected('type', 'video') }}>Video</option>
+                                        <option value="photo" {{ frmIsSelected('type', 'photo') }}>Photo</option>
+                                        <option value="doc" {{ frmIsSelected('type', 'doc') }}>Doc</option>
+                                        <option value="file" {{ frmIsSelected('type', 'file') }}>File</option>
+                                        <option value="audio" {{ frmIsSelected('type', 'audio') }}>Audio</option>
+                                    </select>
+                                </th>
+                                <th><input type="text" class="form-control form-control-sm date-picker-no-future" name="created_at"
+                                           placeholder="Date" data-form-submit="#frmTableFilter"
+                                           value="{{ $request->get('created_at') }}"></th>
                                 <th>Action</th>
                             </tr>
                             </thead>
@@ -78,11 +78,9 @@
                             </tbody>
                         </table>
                     </div>
+                </form>
 
-                    {{ $files->appends($request->all())->render() }}
-                @else
-                    <h3 class="text-center"><i class="far fa-frown"></i> No Uploaded Files Found.</h3>
-                @endif
+                @include('vendor.app.pagination', ['_lists' => $files])
             </div>
         </div>
     </div>

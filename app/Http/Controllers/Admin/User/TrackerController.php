@@ -24,8 +24,10 @@ class TrackerController extends Controller
     public function indexAction()
     {
         $this->setHeader('title', 'Users Location');
+        $tacker = new UserTracker();
+        $tacker->enableSearch = true;
         return $this->view('index', [
-            'tracks' => (new UserTracker())->fetch(requestValues('search'))
+            'tracks' => $tacker->fetch(requestValues('search|pagination_show|full_name|ip_address|location'))
         ]);
     }
 }

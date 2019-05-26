@@ -24,8 +24,11 @@ class AuthenticationHistoryController extends Controller
     public function indexAction()
     {
         $this->setHeader('title', 'Authentication Histories');
+        $authHistory = new AuthenticationHistory();
+        $authHistory->setNewWritableColumn('created_at');
+        $authHistory->enableSearch = true;
         return $this->view('index', [
-            'histories' => (new AuthenticationHistory())->fetch(requestValues('user_id'))
+            'histories' => $authHistory->fetch(requestValues('search|pagination_show|user_id|ip|platform|type|lat|lng|created_at'))
         ]);
     }
 }

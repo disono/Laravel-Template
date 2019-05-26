@@ -12,6 +12,7 @@
 
 <script src="{{ devAssets('assets/js/vendor.js') }}"></script>
 
+{{-- FOR DEVELOPMENT PURPOSES ONLY --}}
 @if(env('APP_ENV') == 'local')
     <script src="{{ devAssets('assets/js/app/config.js') }}"></script>
     <script src="{{ devAssets('assets/js/app/helper.js') }}"></script>

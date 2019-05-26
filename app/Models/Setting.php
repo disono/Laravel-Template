@@ -15,11 +15,12 @@ class Setting extends BaseModel
     protected $tableName = 'settings';
     protected $writableColumns = [
         // input_type: text, select, checkbox
-        'name', 'key', 'value', 'description', 'input_type', 'input_value', 'attributes', 'is_disabled',
-        'category'
+        'category_setting_id', 'name', 'key', 'value', 'description', 'input_type', 'input_value', 'attributes', 'is_disabled',
     ];
 
     protected $inputBooleans = ['is_disabled'];
+
+    protected $columnHasRelations = ['category_setting_id'];
 
     public function __construct(array $attributes = [])
     {
@@ -32,24 +33,11 @@ class Setting extends BaseModel
         return $this->writableColumns;
     }
 
-    /**
-     * Custom formatting for storing
-     *
-     * @param $tableName
-     * @param $inputs
-     * @return mixed
-     */
     public function formatStore($tableName, $inputs)
     {
         return $this->formatInputs($inputs);
     }
 
-    /**
-     * Format inputs before saving
-     *
-     * @param $inputs
-     * @return mixed
-     */
     private function formatInputs($inputs)
     {
         $inputs['input_type'] = $inputs['input_type'] ?? 'text';
@@ -64,16 +52,19 @@ class Setting extends BaseModel
         return $inputs;
     }
 
-    /**
-     * Custom formatting for editing
-     *
-     * @param $tableName
-     * @param $inputs
-     * @return mixed
-     */
     public function formatEdit($tableName, $inputs)
     {
         return $this->formatInputs($inputs);
+    }
+
+    public function categories()
+    {
+        return SettingCategory::get();
+    }
+
+    public function rawFilters($query): void
+    {
+        $query->join('setting_categories', 'settings.category_setting_id', '=', 'setting_categories.id');
     }
 
     /**
@@ -99,17 +90,13 @@ class Setting extends BaseModel
         return $values;
     }
 
-    public function categories()
+    protected function rawQuerySelectList()
     {
-        return self::select('category')->groupBy('category')->get();
+        return [
+            'category_name' => 'setting_categories.name'
+        ];
     }
 
-    /**
-     * Add formatting to data
-     *
-     * @param $row
-     * @return mixed
-     */
     protected function dataFormatting($row)
     {
         $row->original_value = $row->value;

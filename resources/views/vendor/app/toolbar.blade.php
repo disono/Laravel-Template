@@ -1,0 +1,47 @@
+{{--
+ * @author      Archie Disono (webmonsph@gmail.com)
+ * @link        https://github.com/disono/Laravel-Template
+ * @license     https://github.com/disono/Laravel-Template/blob/master/LICENSE
+ * @copyright   Webmons Development Studio
+--}}
+
+<?php
+$_toolbarOffSetSize = '';
+?>
+
+<div class="row mb-3">
+    @if(isset($csvSource))
+        <div class="col-md-6 col-sm-12 mb-3 mb-sm-0">
+            @include('vendor.menuCSV', ['csvSource' => $csvSource])
+        </div>
+    @else
+        <?php
+        $_toolbarOffSetSize = 'offset-md-6';
+        ?>
+    @endif
+
+    <div class="col-md-2 {{ $_toolbarOffSetSize }} col-sm-12 mb-3 mb-sm-0 text-right">
+        @if(isset($createRoute))
+            <a href="{{ route($createRoute) }}" class="btn btn-light"><i class="fas fa-plus"></i></a>
+        @endif
+
+        @include('admin.layouts.toolbarList')
+    </div>
+
+    <div class="col-md-1 col-sm-12 mb-3 mb-sm-0">
+        <select class="form-control select_picker"
+                name="pagination_show" data-style="btn-gray"
+                @change="onSelectChangeSubmitForm($event, '#frmTableFilter')">
+            <option value="12" {{ frmIsSelected('pagination_show', 12) }}>12</option>
+            <option value="24" {{ frmIsSelected('pagination_show', 24) }}>24</option>
+            <option value="36" {{ frmIsSelected('pagination_show', 36) }}>36</option>
+            <option value="48" {{ frmIsSelected('pagination_show', 48) }}>48</option>
+            <option value="100" {{ frmIsSelected('pagination_show', 100) }}>100</option>
+        </select>
+    </div>
+
+    <div class="col-md-3 col-sm-12 mb-3 mb-sm-0">
+        <input type="text" name="search"
+               value="{{ $request->get('search') }}" class="form-control" placeholder="Search...">
+    </div>
+</div>

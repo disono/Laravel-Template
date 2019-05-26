@@ -19,18 +19,22 @@ use App\Models\User;
 class UserController extends Controller
 {
     protected $viewType = 'admin';
+    private $_user;
 
     public function __construct()
     {
         parent::__construct();
         $this->theme = 'user';
+        $this->_user = new User();
     }
 
     public function indexAction()
     {
         $this->setHeader('title', 'Users');
+        $this->_user->enableSearch = true;
         return $this->view('index', [
-            'users' => (new User())->fetch(requestValues('search|role_id')),
+            'users' => $this->_user->fetch(requestValues('search|pagination_show|full_name|email|username|role_id|
+                is_email_verified|is_account_activated|is_account_enabled')),
             'roles' => (new Role())->fetchAll()
         ]);
     }
@@ -47,7 +51,7 @@ class UserController extends Controller
 
     public function storeAction(UserStore $request)
     {
-        $user = (new User())->store($this->_formInputs($request));
+        $user = $this->_user->store($this->_formInputs($request));
         if (!$user) {
             return $this->json(['first_name' => 'Failed to crate a new user.'], 422, false);
         }
@@ -65,7 +69,7 @@ class UserController extends Controller
 
     public function editAction($id)
     {
-        $user = (new User())->single($id);
+        $user = $this->_user->single($id);
         if (!$user) {
             abort(404);
         }
@@ -81,7 +85,7 @@ class UserController extends Controller
 
     public function updateAction(UserUpdate $request)
     {
-        (new User())->edit($request->get('id'), $this->_formInputs($request));
+        $this->_user->edit($request->get('id'), $this->_formInputs($request));
         return $this->json('User is successfully updated.');
     }
 
@@ -91,13 +95,13 @@ class UserController extends Controller
             return $this->redirect();
         }
 
-        (new User())->edit($id, [$column => (int)$value], null, false);
+        $this->_user->edit($id, [$column => (int)$value], null, false);
         return $this->redirect();
     }
 
     public function destroyAction($id)
     {
-        (new User())->remove($id);
+        $this->_user->remove($id);
         return $this->json('User is successfully deleted.');
     }
 }

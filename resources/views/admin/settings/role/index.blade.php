@@ -14,38 +14,23 @@
                 <h3>{{ $view_title }}</h3>
                 <hr>
                 @include('admin.settings.menu')
-                @include('admin.settings.role.menu')
             </div>
         </div>
 
         <div class="row mt-3">
             <div class="col">
-                <form method="get" action="{{ route('admin.role.list') }}">
-                    <div class="row">
-                        <div class="col-md-3 col-sm-12 mb-3 mb-sm-0">
-                            <input type="text" class="form-control" placeholder="Search"
-                                   name="search" value="{{ request('search') }}">
-                        </div>
-                    </div>
+                <form action="{{ route('admin.role.list') }}" method="get" id="frmTableFilter">
+                    <input type="submit" style="display: none;">
 
-                    <div class="row mt-sm-3">
-                        <div class="col">
-                            <button class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
+                    @include('vendor.app.toolbar', ['createRoute' => 'admin.role.create'])
 
-        <div class="row mt-3">
-            <div class="col">
-                @if(count($roles))
                     <div class="table-responsive-sm">
                         <table class="table table-bordered">
                             <thead class="table-borderless">
                             <tr>
                                 <th>#</th>
-                                <th>Name</th>
+                                <th><input type="text" class="form-control form-control-sm" name="name"
+                                           placeholder="Name" value="{{ $request->get('name') }}"></th>
                                 <th>Action</th>
                             </tr>
                             </thead>
@@ -81,11 +66,9 @@
                             </tbody>
                         </table>
                     </div>
+                </form>
 
-                    {{ $roles->appends($request->all())->render() }}
-                @else
-                    <h3 class="text-center"><i class="far fa-frown"></i> No Roles Found.</h3>
-                @endif
+                @include('vendor.app.pagination', ['_lists' => $roles])
             </div>
         </div>
     </div>

@@ -20,6 +20,7 @@ class PageView extends BaseModel
     ];
 
     protected $inputDates = ['birthday'];
+    protected $columnHasRelations = ['page_id', 'user_id'];
 
     public function __construct(array $attributes = [])
     {
@@ -33,10 +34,9 @@ class PageView extends BaseModel
      * @param $query
      * @return mixed
      */
-    public function rawFilters($query)
+    public function rawFilters($query): void
     {
         $query->join('pages', 'page_views.page_id', '=', 'pages.id');
-        return $query;
     }
 
     /**
@@ -79,6 +79,16 @@ class PageView extends BaseModel
         }
     }
 
+    public function user()
+    {
+        return $this->belongsTo('App\Models\User');
+    }
+
+    public function page()
+    {
+        return $this->belongsTo('App\Models\Page');
+    }
+
     /**
      * List of select
      *
@@ -90,15 +100,5 @@ class PageView extends BaseModel
             'is_expired' => 'IF(page_views.expired_at >= DATE(NOW()), 0, 1)',
             'page_name' => 'pages.name',
         ];
-    }
-
-    public function user()
-    {
-        return $this->belongsTo('App\Models\User');
-    }
-
-    public function page()
-    {
-        return $this->belongsTo('App\Models\Page');
     }
 }

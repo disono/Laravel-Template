@@ -97,18 +97,6 @@ let WBServices = (function () {
                 return validated;
             },
 
-            formValid(input, validation_message) {
-                input.next().not('.custom-file-input').not('.custom-file-label').not('.custom-control-label').not('form-text').not('.picker').remove();
-
-                if (validation_message) {
-                    input.removeClass('is-valid');
-                    input.addClass('is-invalid');
-                    input.after('<div class="invalid-feedback">' + validation_message + '</div>');
-                } else {
-                    input.removeClass('is-invalid');
-                }
-            },
-
             processResponse(formAction, response) {
                 let self = this;
                 if (response.success === true) {
@@ -128,7 +116,7 @@ let WBServices = (function () {
                     if (typeof response.errors === 'object') {
                         jQ.each(response.errors, function (name, error) {
                             WBHelper.console.error(error);
-                            self.error(formAction.find('[name=' + name + ']'), error);
+                            self.formValid(formAction.find('[name=' + name + ']'), error);
                         });
                     } else {
                         if (typeof response.errors === 'string') {
@@ -143,15 +131,33 @@ let WBServices = (function () {
                 }
             },
 
-            error(input, msg) {
-                input.next().not('.custom-file-input').not('.custom-file-label').not('.custom-control-label').not('form-text').not('.picker').remove();
+            formValid(input, msg) {
+                if (input.hasClass('select_picker')) {
+                    input.parent().parent().find('.select_picker').parent().find('.invalid-feedback').remove();
 
-                if (msg) {
-                    input.removeClass('is-valid');
-                    input.addClass('is-invalid');
-                    input.after('<div class="invalid-feedback">' + msg + '</div>');
+                    if (msg) {
+                        input.removeClass('is-valid');
+                        input.addClass('is-invalid');
+                        input.parent().parent().find('.select_picker').parent().after('<div class="invalid-feedback">' + msg + '</div>');
+                    } else {
+                        input.parent().parent().find('.select_picker').removeClass('is-invalid');
+                    }
+
+                    jQ('.select_picker').selectpicker('refresh');
                 } else {
-                    input.removeClass('is-invalid');
+                    input.next().not('.custom-file-input').not('.custom-file-label').not('.custom-control-label')
+                        .not('form-text').not('.picker')
+                        .not('.dropdown-toggle').not('.dropdown-menu')
+                        .not('.select_picker')
+                        .remove();
+
+                    if (msg) {
+                        input.removeClass('is-valid');
+                        input.addClass('is-invalid');
+                        input.after('<div class="invalid-feedback">' + msg + '</div>');
+                    } else {
+                        input.removeClass('is-invalid');
+                    }
                 }
             },
 

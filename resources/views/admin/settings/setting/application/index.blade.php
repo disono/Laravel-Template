@@ -20,34 +20,22 @@
 
         <div class="row mt-3">
             <div class="col">
-                <form method="get" action="{{ route('admin.setting.list') }}">
-                    <div class="row">
-                        <div class="col-md-3 col-sm-12 mb-3 mb-sm-0">
-                            <input type="text" class="form-control" placeholder="Search"
-                                   name="search" value="{{ request('search') }}">
-                        </div>
-                    </div>
+                <form action="{{ route('admin.setting.list') }}" method="get" id="frmTableFilter">
+                    <input type="submit" style="display: none;">
 
-                    <div class="row mt-sm-3">
-                        <div class="col">
-                            <button class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
+                    @include('vendor.app.toolbar', ['createRoute' => 'admin.setting.create'])
 
-        <div class="row mt-3">
-            <div class="col">
-                @if(count($settings))
                     <div class="table-responsive-sm">
                         <table class="table table-bordered">
                             <thead class="table-borderless">
                             <tr>
                                 <th>#</th>
-                                <th>Name</th>
-                                <th>Description</th>
-                                <th>Current Value</th>
+                                <th><input type="text" class="form-control form-control-sm" name="name"
+                                           placeholder="Name" value="{{ $request->get('name') }}"></th>
+                                <th><input type="text" class="form-control form-control-sm" name="description"
+                                           placeholder="Description" value="{{ $request->get('description') }}"></th>
+                                <th><input type="text" class="form-control form-control-sm" name="value"
+                                           placeholder="Current Value" value="{{ $request->get('value') }}"></th>
                                 <th>Action</th>
                             </tr>
                             </thead>
@@ -83,11 +71,9 @@
                             </tbody>
                         </table>
                     </div>
+                </form>
 
-                    {{ $settings->appends($request->all())->render() }}
-                @else
-                    <h3 class="text-center"><i class="far fa-frown"></i> No Settings Added.</h3>
-                @endif
+                @include('vendor.app.pagination', ['_lists' => $settings])
             </div>
         </div>
     </div>

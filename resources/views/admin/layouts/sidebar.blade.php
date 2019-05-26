@@ -31,24 +31,27 @@
             </li>
 
             <li class="nav-item">
-                <a class="nav-link {{ isActiveMenu('admin.user.list|admin.user.create|admin.user.edit|admin.user.tracker.list|admin.user.authentication.history') }}"
-                   href="{{ route('admin.user.list') }}"
-                   title="Users">
+                <a class="nav-link {{ isActiveMenu('admin.user.list|admin.user.create|admin.user.edit|
+                admin.user.tracker.list|admin.user.authentication.history') }}"
+                   href="{{ route('admin.user.list') }}" title="Users">
                     <span data-feather="users"></span>
                     <small class="iconav-nav-label d-md-none">Users</small>
                 </a>
             </li>
 
             <li class="nav-item">
-                <a class="nav-link {{ isActiveMenu('admin.page.list') }}" href="{{ route('admin.page.list') }}"
-                   title="Pages" data-container="body">
+                <a class="nav-link {{ isActiveMenu('admin.page.list|admin.page.category.list|
+                admin.page.category.create|admin.page.category.edit|admin.page.view|admin.page.create|
+                admin.page.edit') }}"
+                   href="{{ route('admin.page.list') }}" title="Pages" data-container="body">
                     <span data-feather="layout"></span>
                     <small class="iconav-nav-label d-md-none">Pages</small>
                 </a>
             </li>
 
             <li class="nav-item">
-                <a class="nav-link {{ isActiveMenu('admin.fcm.notification.list') }}"
+                <a class="nav-link {{ isActiveMenu('admin.fcm.notification.list|admin.fcm.notification.create|
+                admin.fcm.notification.edit') }}"
                    href="{{ route('admin.fcm.notification.list') }}" title="FCM Notifications">
                     <span data-feather="bell"></span>
                     <small class="iconav-nav-label d-md-none">Notifications</small>
@@ -64,7 +67,9 @@
             </li>
 
             <li class="nav-item">
-                <a class="nav-link {{ isActiveMenu('admin.submitted.report.list') }}"
+                <a class="nav-link {{ isActiveMenu('admin.submitted.report.list|admin.submitted.report.show|
+                admin.submitted.report.store|admin.report.reason.list|admin.report.reason.create|
+                admin.report.reason.edit') }}"
                    href="{{ route('admin.submitted.report.list') }}"
                    title="Reports">
                     <span data-feather="flag"></span>
@@ -73,8 +78,12 @@
             </li>
 
             <li class="nav-item">
-                <a class="nav-link {{ isActiveMenu('admin.setting.show') }}" href="{{ route('admin.setting.show') }}"
-                   title="Settings">
+                <a class="nav-link {{ isActiveMenu('admin.setting.show|admin.setting.list|admin.setting.create|
+                admin.setting.edit|admin.setting.category.list|admin.setting.category.create|
+                admin.setting.category.edit|admin.role.list|admin.role.create|admin.role.edit|
+                admin.auth.role.edit|admin.activityLog.list|admin.setting.country.list|admin.setting.country.create|
+                admin.setting.country.edit|admin.setting.city.list|admin.setting.city.create|admin.setting.city.edit') }}"
+                   href="{{ route('admin.setting.show') }}" title="Settings">
                     <span data-feather="settings"></span>
                     <small class="iconav-nav-label d-md-none">Settings</small>
                 </a>

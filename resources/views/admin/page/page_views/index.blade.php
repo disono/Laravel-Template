@@ -19,38 +19,46 @@
 
         <div class="row mt-3">
             <div class="col">
-                <form method="get" action="{{ route('admin.page.view') }}">
-                    <div class="row">
-                        <div class="col-md-3 col-sm-12 mb-3 mb-sm-0">
-                            <input type="text" class="form-control" placeholder="Search"
-                                   name="search" value="{{ request('search') }}">
-                        </div>
-                    </div>
+                <form method="get" action="{{ route('admin.page.view') }}" id="frmTableFilter">
+                    <input type="submit" style="display: none;">
 
-                    <div class="row mt-sm-3">
-                        <div class="col">
-                            <button class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
+                    @include('vendor.app.toolbar')
 
-        <div class="row mt-3">
-            <div class="col">
-                @if(count($page_views))
                     <div class="table-responsive-sm">
                         <table class="table table-bordered">
                             <thead class="table-borderless">
                             <tr>
                                 <th>#</th>
-                                <th>Page</th>
-                                <th>Referrer</th>
-                                <th>URL</th>
-                                <th>IP</th>
-                                <th>OS/Platform</th>
-                                <th>Browser</th>
-                                <th>Date</th>
+                                <th>
+                                    <input type="text" class="form-control form-control-sm" name="page_name"
+                                           placeholder="Page Name" value="{{ $request->get('page_name') }}">
+                                </th>
+                                <th>
+                                    <input type="text" class="form-control form-control-sm" name="http_referrer"
+                                           placeholder="Referrer" value="{{ $request->get('http_referrer') }}">
+                                </th>
+                                <th>
+                                    <input type="text" class="form-control form-control-sm" name="current_url"
+                                           placeholder="URL" value="{{ $request->get('current_url') }}">
+                                </th>
+                                <th>
+                                    <input type="text" class="form-control form-control-sm" name="ip_address"
+                                           placeholder="IP" value="{{ $request->get('ip_address') }}">
+                                </th>
+                                <th>
+                                    <input type="text" class="form-control form-control-sm" name="platform"
+                                           placeholder="OS/Platform" value="{{ $request->get('platform') }}">
+                                </th>
+                                <th>
+                                    <input type="text" class="form-control form-control-sm" name="browser"
+                                           placeholder="Browser" value="{{ $request->get('browser') }}">
+                                </th>
+                                <th>
+                                    <input type="text" class="form-control form-control-sm date-picker-no-future"
+                                           name="created_at"
+                                           data-form-submit="#frmTableFilter"
+                                           placeholder="Date" value="{{ $request->get('created_at') }}">
+                                </th>
                             </tr>
                             </thead>
 
@@ -64,17 +72,15 @@
                                     <td>{{ $row->ip_address }}</td>
                                     <td>{{ $row->platform }}</td>
                                     <td>{{ $row->browser }}</td>
-                                    <th>{{ humanDate($row->created_at) }}</th>
+                                    <td>{{ humanDate($row->created_at) }}</td>
                                 </tr>
                             @endforeach
                             </tbody>
                         </table>
                     </div>
+                </form>
 
-                    {{ $page_views->appends($request->all())->render() }}
-                @else
-                    <h3 class="text-center"><i class="far fa-frown"></i> No Page Views Found.</h3>
-                @endif
+                @include('vendor.app.pagination', ['_lists' => $page_views])
             </div>
         </div>
     </div>

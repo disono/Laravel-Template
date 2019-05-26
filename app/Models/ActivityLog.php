@@ -18,6 +18,8 @@ class ActivityLog extends BaseModel
         'content', 'reason'
     ];
 
+    protected $columnHasRelations = ['user_id', 'table_id'];
+
     public function __construct(array $attributes = [])
     {
         $this->fillable($this->writableColumns);

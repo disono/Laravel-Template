@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Role;
 use Illuminate\Database\Seeder;
 
 class RoleSeeder extends Seeder
@@ -37,7 +38,7 @@ class RoleSeeder extends Seeder
 
     private function _addAuthRoles()
     {
-        foreach (\App\Models\Role::fetchAll(['exclude' => ['id' => [3]]]) as $row) {
+        foreach ((new Role())->fetchAll(['exclude' => ['id' => [3]]]) as $row) {
             foreach (Route::getRoutes() as $value) {
                 $name = $value->getName();
 

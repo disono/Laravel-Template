@@ -8,7 +8,7 @@
 @extends('admin.layouts.master')
 
 @section('content')
-     <div class="container-fluid">
+    <div class="container-fluid">
         <div class="row mb-3">
             <div class="col">
                 <h3>Dashboard</h3>
@@ -18,19 +18,78 @@
         <div class="row">
             <div class="col">
                 <div class="jumbotron shadow-sm p-3 bg-white">
-                    <h4 class="display-4">{{ (new \App\Models\User())->fetch(['object' => true, 'is_account_activated' => 1])->count() }}</h4>
-                    <p class="lead">Total number of activated accounts/users.</p>
+                    <h4 class="display-4">{{ $count_active_members }}</h4>
+                    <p class="lead">Total number of activated accounts.</p>
                     <h2>Active Users</h2>
                 </div>
             </div>
 
             <div class="col">
                 <div class="jumbotron shadow-sm p-3 bg-white">
-                    <h4 class="display-4">{{ (new \App\Models\User())->fetch(['object' => true, 'is_account_activated' => 0])->count() }}</h4>
-                    <p class="lead">Total number of deactivated accounts/users.</p>
+                    <h4 class="display-4">{{ $count_inactive_members }}</h4>
+                    <p class="lead">Total number of deactivated accounts.</p>
                     <h2>In-Active Users</h2>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="jumbotron shadow-sm p-3 bg-white">
+                    <h4>New Members</h4>
+                    <hr>
+
+                    @foreach($latest_members as $member)
+                        <div class="media mb-3">
+                            <img src="{{ $member->profile_picture }}"
+                                 class="mr-3 rounded-circle shadow-sm" style="width: 64px;"
+                                 alt="{{ $member->full_name }}">
+                            <div class="media-body">
+                                <h5 class="mt-0">
+                                    <a href="{{ url('admin/user/edit/' . $member->id) }}">{{ $member->full_name }}</a>
+                                </h5>
+                                <p>{{ $member->email }}</p>
+                            </div>
+                        </div>
+                    @endforeach
+
+                    @if(!count($latest_members))
+                        <h5 class="text-center">No New Members for pass 10 days.</h5>
+                    @endif
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <div class="jumbotron shadow-sm p-3 bg-white">
+                    <canvas id="myChart" width="100" height="40"></canvas>
                 </div>
             </div>
         </div>
     </div>
+@endsection
+
+@section('javascript')
+    <script>
+        let ctx = document.getElementById('myChart').getContext('2d');
+        let myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: '# of Members Growth',
+                    data: [],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+    </script>
 @endsection

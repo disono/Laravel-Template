@@ -20,6 +20,7 @@ class UserTracker extends BaseModel
     ];
 
     protected $inputDates = ['birthday'];
+    protected $columnHasRelations = ['user_id'];
 
     public function __construct(array $attributes = [])
     {
@@ -27,10 +28,9 @@ class UserTracker extends BaseModel
         parent::__construct($attributes);
     }
 
-    public function rawFilters($query)
+    public function rawFilters($query): void
     {
         $query->join('users', 'user_trackers.user_id', '=', 'users.id');
-        return $query;
     }
 
     public function log()
@@ -57,13 +57,6 @@ class UserTracker extends BaseModel
         }
     }
 
-    protected function rawQuerySelectList()
-    {
-        return [
-            'full_name' => 'CONCAT(users.first_name, " ", users.last_name)',
-        ];
-    }
-
     public function user()
     {
         return $this->belongsTo('App\Models\User');
@@ -72,5 +65,13 @@ class UserTracker extends BaseModel
     public function page()
     {
         return $this->belongsTo('App\Models\Page');
+    }
+
+    protected function rawQuerySelectList()
+    {
+        return [
+            'full_name' => 'CONCAT(users.first_name, " ", users.last_name)',
+            'location' => 'CONCAT("http://maps.google.com/maps?q=", user_trackers.lat, ",", user_trackers.lng)',
+        ];
     }
 }

@@ -8,8 +8,8 @@
 
 namespace App\Http\Controllers\Module\Application;
 
-use App\Models\City;
 use App\Http\Controllers\Controller;
+use App\Models\City;
 
 class LocationController extends Controller
 {

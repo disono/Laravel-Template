@@ -20,6 +20,8 @@ class Page extends BaseModel
         'post_at', 'expired_at',
     ];
 
+    protected $columnHasRelations = ['page_category_id', 'user_id'];
+
     protected $inputDates = ['post_at', 'expired_at'];
     protected $inputBooleans = ['is_draft', 'is_email_to_subscriber'];
 
@@ -45,6 +47,16 @@ class Page extends BaseModel
         }
 
         return true;
+    }
+
+    public function pageCategory()
+    {
+        return $this->belongsTo('App\Models\PageCategory');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo('App\Models\User');
     }
 
     /**
@@ -91,15 +103,5 @@ class Page extends BaseModel
         $file = File::where('table_name', 'pages')->where('table_id', $page_id)->where('tag', 'cover_photo')
             ->orderBy('created_at', 'DESC')->first();
         return ($file) ? $file->file_name : null;
-    }
-
-    public function pageCategory()
-    {
-        return $this->belongsTo('App\Models\PageCategory');
-    }
-
-    public function user()
-    {
-        return $this->belongsTo('App\Models\User');
     }
 }

@@ -24,8 +24,12 @@ class PageViewController extends Controller
     public function indexAction()
     {
         $this->setHeader('title', 'Page Views');
+        $pageView = new PageView();
+        $pageView->enableSearch = true;
+        $pageView->setNewWritableColumn('created_at');
         return $this->view('index', [
-            'page_views' => (new PageView())->fetch(requestValues('search|page_id'))
+            'page_views' => $pageView->fetch(requestValues('search|pagination_show|page_id|page_name|
+                http_referrer|current_url|ip_address|platform|browser|created_at'))
         ]);
     }
 }

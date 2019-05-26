@@ -14,41 +14,33 @@
                 <h3>{{ $view_title }}</h3>
                 <hr>
                 @include('admin.settings.menu')
-                @include('admin.settings.location.city.menu')
             </div>
         </div>
 
         <div class="row mt-3">
             <div class="col">
-                <form method="get" action="{{ route('admin.setting.city.list') }}">
-                    <input type="hidden" name="country_id" value="{{ $request->get('country_id') }}">
+                <form action="{{ route('admin.setting.city.list') }}" method="get" id="frmTableFilter">
+                    <input type="submit" style="display: none;">
 
-                    <div class="row">
-                        <div class="col-md-3 col-sm-12 mb-3 mb-sm-0">
-                            <input type="text" class="form-control" placeholder="Search"
-                                   name="search" value="{{ request('search') }}">
-                        </div>
-                    </div>
+                    @include('vendor.app.toolbar', ['createRoute' => 'admin.setting.city.create'])
 
-                    <div class="row mt-sm-3">
-                        <div class="col">
-                            <button class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <div class="row mt-3">
-            <div class="col">
-                @if(count($cities))
                     <div class="table-responsive-sm">
                         <table class="table table-bordered">
                             <thead class="table-borderless">
                             <tr>
                                 <th>#</th>
-                                <th>Name</th>
-                                <th>Country</th>
+                                <th><input type="text" class="form-control form-control-sm" name="name"
+                                           placeholder="Name" value="{{ $request->get('name') }}"></th>
+                                <th>
+                                    <select class="form-control form-control-sm select_picker"
+                                            name="country_id" data-style="btn-gray"
+                                            @change="onSelectChangeSubmitForm($event, '#frmTableFilter')">
+                                        <option value="">Country (All)</option>
+                                        @foreach(\App\Models\Country::all() as $country)
+                                            <option value="{{ $country->id }}" {{ frmIsSelected('country_id', $country->id) }}>{{ $country->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </th>
                                 <th>Action</th>
                             </tr>
                             </thead>
@@ -84,11 +76,9 @@
                             </tbody>
                         </table>
                     </div>
+                </form>
 
-                    {{ $cities->appends($request->all())->render() }}
-                @else
-                    <h3 class="text-center"><i class="far fa-frown"></i> No Cities Found.</h3>
-                @endif
+                @include('vendor.app.pagination', ['_lists' => $cities])
             </div>
         </div>
     </div>

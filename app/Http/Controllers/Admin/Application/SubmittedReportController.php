@@ -8,10 +8,11 @@
 
 namespace App\Http\Controllers\Admin\Application;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Application\Report\ReportMessageStore;
 use App\Models\App\PageReport;
-use App\Http\Controllers\Controller;
 use App\Models\App\PageReportMessage;
+use App\Models\App\PageReportReason;
 
 class SubmittedReportController extends Controller
 {
@@ -30,8 +31,16 @@ class SubmittedReportController extends Controller
     public function indexAction()
     {
         $this->setHeader('title', 'Reports');
+        $this->pageReport->enableSearch = true;
+        $this->pageReport->setNewWritableColumn('created_at');
+
         return $this->view('index', [
-            'reports' => $this->pageReport->fetch(requestValues('search'))
+            'reports' => $this->pageReport->fetch(requestValues('search|pagination_show|page_report_reason_id|
+                responded_by_id|user_id|status|created_at')),
+            'reasons' => PageReportReason::all(),
+            'submitted_by' => (new PageReport())->fetchAll(['groupBy' => 'user_id']),
+            'process_by' => (new PageReport())->fetchAll(['groupBy' => 'responded_by_id']),
+            'statuses' => (new PageReport())->statuses()
         ]);
     }
 
@@ -65,8 +74,8 @@ class SubmittedReportController extends Controller
         }
 
         $inputs = ['status' => $status];
-        if (!$report->responded_by) {
-            $inputs['responded_by'] = __me()->id;
+        if (!$report->responded_by_id) {
+            $inputs['responded_by_id'] = __me()->id;
         }
 
         $this->pageReport->edit($id, $inputs);

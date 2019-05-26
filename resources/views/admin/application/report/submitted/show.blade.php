@@ -18,7 +18,7 @@
         </div>
 
         <div class="row mt-3">
-            <div class="col">
+            <div class="col-md-6 col-sm-12">
                 <div class="media">
                     <img class="mr-3 rounded-circle shadow-sm" style="width: 64px;"
                          src="{{ $report->user->profile_picture }}" alt="{{ $report->user->full_name }}">
@@ -45,23 +45,28 @@
                             </div>
                         </div>
 
-                        <p class="m-0"><strong>Date Submitted:</strong></p>
-                        <p class="m-0">{{ $report->created_at }}</p>
-                        <p class="m-0 mt-3"><strong>URL:</strong></p>
-                        <p class="m-0">
-                            @if($report->url)
-                                <a href="{{ $report->url }}" target="_blank">{{ $report->url }}</a>
-                            @else
-                                n/a
-                            @endif
-                        </p>
-                        <p class="m-0 mt-3"><strong>Description:</strong></p>
-                        <p class="m-0">{{ $report->description }}</p>
+                        <div class="jumbotron bg-light p-3">
+                            <p class="m-0"><strong>Date Submitted:</strong></p>
+                            <p class="m-0">{{ humanDate($report->created_at) }}</p>
+                            <p class="m-0 mt-3"><strong>URL:</strong></p>
+                            <p class="m-0">
+                                @if($report->url)
+                                    <a href="{{ $report->url }}" target="_blank">{{ $report->url }}</a>
+                                @else
+                                    n/a
+                                @endif
+                            </p>
+                            <p class="m-0 mt-3"><strong>Description:</strong></p>
+                            <p class="m-0">{{ ($report->description) ? $report->description : 'n/a' }}</p>
+                        </div>
                     </div>
                 </div>
+            </div>
 
-                <h4 class="mt-3"><i class="fas fa-envelope-open"></i> Posted Messages
-                    (Reviewed/Processed by: {{ ($report->process_by) ? $report->process_by->full_name : 'Pending' }})
+            <div class="col-md-6 col-sm-12">
+                <h4>
+                    <i class="fas fa-envelope-open"></i> Posted Messages
+                    (Reviewed & Processed by: {{ ($report->process_by !== 'n/a') ? $report->process_by : 'Pending' }})
                 </h4>
                 <hr>
 

@@ -17,6 +17,8 @@ class Country extends BaseModel
         'code', 'name', 'lat', 'lng'
     ];
 
+    protected $columnWhere = ['code'];
+
     public function __construct(array $attributes = [])
     {
         $this->fillable($this->writableColumns);

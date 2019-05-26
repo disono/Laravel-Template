@@ -15,32 +15,16 @@
                 <hr>
                 @include('admin.application.report.menu')
                 @include('admin.layouts.toolbarList')
-                @include('admin.application.report.reasons.menu')
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col mt-3">
-                <form method="get" action="{{ route('admin.report.reason.list') }}">
-                    <div class="row">
-                        <div class="col-md-3 col-sm-12 mb-3 mb-sm-0">
-                            <input type="text" class="form-control" placeholder="Search"
-                                   name="search" value="{{ request('search') }}">
-                        </div>
-                    </div>
-
-                    <div class="row mt-sm-3">
-                        <div class="col">
-                            <button class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
-                        </div>
-                    </div>
-                </form>
             </div>
         </div>
 
         <div class="row mt-3">
             <div class="col">
-                @if(count($reasons))
+                <form action="{{ route('admin.report.reason.list') }}" method="get" id="frmTableFilter">
+                    <input type="submit" style="display: none;">
+
+                    @include('vendor.app.toolbar', ['createRoute' => 'admin.report.reason.create'])
+
                     <div class="table-responsive-sm">
                         <table class="table table-bordered">
                             <thead class="table-borderless">
@@ -48,7 +32,8 @@
                                 {!! thDelete() !!}
 
                                 <th>#</th>
-                                <th>Name</th>
+                                <th><input type="text" class="form-control form-control-sm" name="name"
+                                           placeholder="Name" value="{{ $request->get('name') }}"></th>
                                 <th>Action</th>
                             </tr>
                             </thead>
@@ -85,11 +70,9 @@
                             </tbody>
                         </table>
                     </div>
+                </form>
 
-                    {{ $reasons->appends($request->all())->render() }}
-                @else
-                    <h3 class="text-center"><i class="far fa-frown"></i> No Report Reason Found.</h3>
-                @endif
+                @include('vendor.app.pagination', ['_lists' => $reasons])
             </div>
         </div>
     </div>

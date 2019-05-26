@@ -17,6 +17,8 @@ class SocialAuthentication extends BaseModel
         'user_id', 'social_id', 'type'
     ];
 
+    protected $columnHasRelations = ['user_id', 'social_id'];
+
     public function __construct(array $attributes = [])
     {
         $this->fillable($this->writableColumns);

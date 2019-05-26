@@ -26,10 +26,12 @@ class PageCategoryController extends Controller
     public function indexAction()
     {
         $this->setHeader('title', 'Page Categories');
+        $pageCategories = new PageCategory();
+        $pageCategories->enableSearch = true;
         return $this->view('index', [
-            'page_categories' => (new PageCategory())->nestedToTabs([
-                'include_tab' => false, 'strong' => true, 'search' => $this->request->get('search')
-            ])
+            'page_categories' => $pageCategories->nestedToTabs(requestValues('search|name|pagination_show',
+                ['include_tab' => false, 'strong' => true]
+            ))
         ]);
     }
 

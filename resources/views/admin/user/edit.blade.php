@@ -17,34 +17,28 @@
 
                 <div class="row mt-3">
                     <div class="col">
-                        <div class="text-center">
-                            <img src="{{ $user->profile_picture }}" alt="{{ $user->first_name }}"
-                                 style="height: 164px; width: 164px;"
-                                 class="mb-3 rounded-circle shadow-sm">
-                        </div>
-
                         <form action="{{ route('admin.user.update') }}" method="post"
                               v-on:submit.prevent="onFormUpload">
                             <input type="hidden" name="id" value="{{ $user->id }}">
+
+                            <div class="text-center">
+                                <img src="{{ $user->profile_picture }}" alt="{{ $user->first_name }}"
+                                     style="height: 164px; width: 164px;" id="img_profile"
+                                     class="mb-3 rounded-circle shadow-sm"
+                                     v-on:click="imgSelect('#profile_picture', '#img_profile')">
+
+                                <div class="form-group">
+                                    <label for="profile_picture" class="d-none">Profile Picture</label>
+                                    <input type="file" name="profile_picture"
+                                           accept="image/*"
+                                           id="profile_picture" class="form-control is-invalid d-none">
+                                </div>
+                            </div>
 
                             <div class="row">
                                 <div class="col-md-4 col-sm-12 mb-3">
                                     <h5><i class="fas fa-user"></i> Profile</h5>
                                     <hr>
-
-                                    <div class="form-group">
-                                        <label for="profile_picture">Profile Image</label>
-
-                                        <div class="custom-file">
-                                            <input type="file" class="custom-file-input" name="profile_picture"
-                                                   id="profile_picture">
-                                            <label class="custom-file-label" for="profile_picture">Choose image</label>
-                                        </div>
-
-                                        @if ($errors->has('profile_picture'))
-                                            <div class="invalid-feedback">{{ $errors->first('profile_picture') }}</div>
-                                        @endif
-                                    </div>
 
                                     <div class="form-group">
                                         <label for="first_name">First Name <strong
@@ -255,13 +249,13 @@
                                     </div>
 
                                     <div class="form-group">
-                                        <div class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" id="is_email_verified"
+                                        <label class="custom-control material-checkbox">
+                                            <input type="checkbox" class="material-control-input"
                                                    value="1"
                                                    name="is_email_verified" {{ frmIsChecked('is_email_verified', 1, $user->is_email_verified) }}>
-                                            <label class="custom-control-label" for="is_email_verified">Email
-                                                Verified</label>
-                                        </div>
+                                            <span class="material-control-indicator"></span>
+                                            <span class="material-control-description">Email Verified</span>
+                                        </label>
 
                                         @if ($errors->has('is_email_verified'))
                                             <div class="invalid-feedback">{{ $errors->first('is_email_verified') }}</div>
@@ -269,13 +263,13 @@
                                     </div>
 
                                     <div class="form-group">
-                                        <div class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" id="is_phone_verified"
+                                        <label class="custom-control material-checkbox">
+                                            <input type="checkbox" class="material-control-input"
                                                    value="1"
                                                    name="is_phone_verified" {{ frmIsChecked('is_phone_verified', 1, $user->is_phone_verified) }}>
-                                            <label class="custom-control-label" for="is_phone_verified">Phone
-                                                Verified</label>
-                                        </div>
+                                            <span class="material-control-indicator"></span>
+                                            <span class="material-control-description">Phone Verified</span>
+                                        </label>
 
                                         @if ($errors->has('is_phone_verified'))
                                             <div class="invalid-feedback">{{ $errors->first('is_phone_verified') }}</div>
@@ -283,15 +277,13 @@
                                     </div>
 
                                     <div class="form-group">
-                                        <div class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input"
-                                                   id="is_account_activated"
+                                        <label class="custom-control material-checkbox">
+                                            <input type="checkbox" class="material-control-input"
                                                    value="1"
                                                    name="is_account_activated" {{ frmIsChecked('is_account_activated', 1, $user->is_account_activated) }}>
-                                            <label class="custom-control-label" for="is_account_activated">
-                                                Account Activated
-                                            </label>
-                                        </div>
+                                            <span class="material-control-indicator"></span>
+                                            <span class="material-control-description">Account Activated</span>
+                                        </label>
 
                                         @if ($errors->has('is_account_activated'))
                                             <div class="invalid-feedback">{{ $errors->first('is_account_activated') }}</div>
@@ -299,14 +291,13 @@
                                     </div>
 
                                     <div class="form-group">
-                                        <div class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" id="is_account_enabled"
+                                        <label class="custom-control material-checkbox">
+                                            <input type="checkbox" class="material-control-input"
                                                    value="1"
                                                    name="is_account_enabled" {{ frmIsChecked('is_account_enabled', 1, $user->is_account_enabled) }}>
-                                            <label class="custom-control-label" for="is_account_enabled">
-                                                Account Enabled
-                                            </label>
-                                        </div>
+                                            <span class="material-control-indicator"></span>
+                                            <span class="material-control-description">Account Enabled</span>
+                                        </label>
 
                                         @if ($errors->has('is_account_enabled'))
                                             <div class="invalid-feedback">{{ $errors->first('is_account_enabled') }}</div>

@@ -9,8 +9,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Response;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class BaseController extends Controller
 {
@@ -18,9 +18,21 @@ class BaseController extends Controller
     protected $modelName;
     protected $dataName;
 
-    protected $data = null;
+    protected $indexData = [];
+    protected $showData = [];
+    protected $createData = [];
+    protected $storeData = [];
+    protected $editData = [];
+    protected $updateData = [];
+
+    // failed messages
+    protected $failedCreation = 'Failed to create new data.';
+    protected $failedUpdate = 'Failed to update data.';
+
+    // search parameters
     protected $requestValuesSearch = '';
     protected $requestValuesDefault = [];
+    protected $indexEnableSearch = false;
 
     protected $allowShow = false;
     protected $allowCreate = false;
@@ -32,7 +44,11 @@ class BaseController extends Controller
     protected $createTitle = null;
     protected $editTitle = null;
 
-    protected $afterCreateRedirectUrl = '/';
+    // redirect url after updating or creating a new data
+    protected $afterRedirectUrl = '/';
+
+    // adding user's id before storing new data (column name)
+    protected $hasOwner = null;
 
     public function __construct()
     {
@@ -46,16 +62,24 @@ class BaseController extends Controller
      */
     public function indexAction()
     {
-        $this->beforeIndexAction();
+        $this->beforeIndex();
         $this->setHeader('title', $this->indexTitle);
 
-        return $this->view('index',
-            array_merge($this->data, requestValues($this->requestValuesSearch, $this->requestValuesDefault)));
+        $this->modelName->enableSearch = $this->indexEnableSearch;
+        $this->indexData[$this->dataName] = $this->modelName->fetch(requestValues($this->requestValuesSearch, $this->requestValuesDefault));
+
+        $this->afterIndex();
+        return $this->view('index', $this->indexData);
     }
 
-    protected function beforeIndexAction()
+    protected function beforeIndex()
     {
+        // before showing the list of data
+    }
 
+    protected function afterIndex()
+    {
+        // after preparing the data
     }
 
     /**
@@ -70,20 +94,26 @@ class BaseController extends Controller
             abort(404);
         }
 
-        $this->beforeShowAction($id);
+        $this->beforeShow($id);
         $this->setHeader('title', $this->showTitle);
 
-        $this->data = $this->modelName->single($id);
-        if (!$this->data) {
+        $this->showData[$this->dataName] = $this->modelName->single($id);
+        if (!$this->showData[$this->dataName]) {
             abort(404);
         }
 
-        return $this->view('show', [$this->dataName => $this->data]);
+        $this->afterShow();
+        return $this->view('show', $this->showData);
     }
 
-    protected function beforeShowAction($id)
+    protected function beforeShow($id)
     {
+        // before preparing the data to show
+    }
 
+    protected function afterShow()
+    {
+        // after preparing the data to show
     }
 
     /**
@@ -99,12 +129,19 @@ class BaseController extends Controller
 
         $this->beforeCreate();
         $this->setHeader('title', $this->createTitle);
-        return $this->view('create', $this->data);
+
+        $this->afterCreate();
+        return $this->view('create', $this->createData);
     }
 
     protected function beforeCreate()
     {
+        // before preparing the data to view
+    }
 
+    protected function afterCreate()
+    {
+        // after preparing the data to view
     }
 
     /**
@@ -115,30 +152,39 @@ class BaseController extends Controller
      */
     public function storeAction(Request $request)
     {
+        return $this->processStore($request);
+    }
+
+    protected function processStore($request)
+    {
         if (!$this->allowCreate) {
             abort(401);
         }
 
-        $this->data = $request->all();
-        $this->beforeStoreAction();
+        $this->storeData = $request->all();
 
-        if (!$this->modelName->store($this->data)) {
-            return $this->json(['name' => 'Failed to crate a new data.'], 422, false);
+        // add the creator (User)
+        if ($this->hasOwner !== null) {
+            $this->storeData[$this->hasOwner] = __me()->id;
         }
 
-        $this->afterStoreAction();
+        $this->beforeStore();
+        if (!$this->modelName->store($this->storeData)) {
+            return $this->json(['name' => $this->failedCreation], 422, false);
+        }
 
-        return $this->json(['redirect' => $this->afterCreateRedirectUrl]);
+        $this->afterStore();
+        return $this->json(['redirect' => $this->afterRedirectUrl]);
     }
 
-    protected function beforeStoreAction()
+    protected function beforeStore()
     {
-
+        // before creating the new data
     }
 
-    protected function afterStoreAction()
+    protected function afterStore()
     {
-
+        // after creating the new data
     }
 
     /**
@@ -155,17 +201,23 @@ class BaseController extends Controller
 
         $this->beforeEdit();
         $this->setHeader('title', $this->editTitle);
-        $this->data[$this->dataName] = $this->modelName->single($id);
-        if (!$this->data[$this->dataName]) {
+        $this->editData[$this->dataName] = $this->modelName->single($id);
+        if (!$this->editData[$this->dataName]) {
             abort(404);
         }
 
-        return $this->view('edit', $this->data);
+        $this->afterEdit();
+        return $this->view('edit', $this->editData);
     }
 
     protected function beforeEdit()
     {
+        // before editing view showed
+    }
 
+    protected function afterEdit()
+    {
+        // after getting the data to view
     }
 
     /**
@@ -176,30 +228,34 @@ class BaseController extends Controller
      */
     public function updateAction(Request $request)
     {
+        return $this->processUpdate($request);
+    }
+
+    protected function processUpdate($request)
+    {
         if (!$this->allowEdit) {
             abort(401);
         }
 
-        $this->data = $request->all();
-        $this->beforeUpdateAction();
+        $this->updateData = $request->all();
+        $this->beforeUpdate();
 
-        if (!$this->modelName->edit($request->get('id'), $this->data)) {
-            return $this->json(['name' => 'Failed to update.'], 422, false);
+        if (!$this->modelName->edit($request->get('id'), $this->updateData)) {
+            return $this->json(['name' => $this->failedUpdate], 422, false);
         }
 
-        $this->afterUpdateAction();
-
-        return $this->json(['redirect' => $this->afterCreateRedirectUrl]);
+        $this->afterUpdate();
+        return $this->json(['redirect' => $this->afterRedirectUrl]);
     }
 
-    protected function beforeUpdateAction()
+    protected function beforeUpdate()
     {
-
+        // before updating the data
     }
 
-    protected function afterUpdateAction()
+    protected function afterUpdate()
     {
-
+        // after updating the data
     }
 
     /**
@@ -208,14 +264,27 @@ class BaseController extends Controller
      * @param $id
      * @return JsonResponse
      */
-    public function destroy($id)
+    public function destroyAction($id)
     {
         if (!$this->allowDelete) {
             abort(401);
         }
 
+        $this->beforeDestroy();
         $this->modelName->remove($id);
+        $this->afterDestroy();
+
         return $this->json('Data is successfully deleted.');
+    }
+
+    protected function beforeDestroy()
+    {
+        // before destroying the data
+    }
+
+    protected function afterDestroy()
+    {
+        // after destroying the data
     }
 
 }

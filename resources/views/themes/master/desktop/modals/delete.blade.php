@@ -13,10 +13,14 @@
 </div>
 
 <div class="modal-body text-center">
-    Deleting a item will permanently remove it from our database.
+    <h5>Deleting an item('s) will permanently remove it from our database.</h5>
 </div>
 
 <div class="modal-footer">
-    <button type="button" class="btn btn-default dialogDismiss">No, Keep Item</button>
-    <button type="button" class="btn btn-danger dialogConfirm">Yes, Delete Item</button>
+    <button type="button" class="btn btn-light dialogDismiss">
+        <i class="fas fa-times"></i> No, Keep Item
+    </button>
+    <button type="button" class="btn btn-danger dialogConfirm">
+        <i class="fas fa-exclamation-triangle"></i> Yes, Delete Item
+    </button>
 </div>

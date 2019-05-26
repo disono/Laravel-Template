@@ -21,6 +21,7 @@ class ChatMessage extends BaseModel
     ];
 
     protected $files = ['file_msg'];
+    protected $columnHasRelations = ['chat_group_id', 'user_id'];
 
     public function __construct(array $attributes = [])
     {
@@ -32,13 +33,11 @@ class ChatMessage extends BaseModel
      * Custom filters
      *
      * @param $query
-     * @return mixed
      */
-    public function rawFilters($query)
+    public function rawFilters($query): void
     {
         $query->join('chat_groups', 'chat_messages.chat_group_id', '=', 'chat_groups.id');
         $query->join('users AS sender', 'chat_messages.user_id', '=', 'sender.id');
-        return $query;
     }
 
     /**

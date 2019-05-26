@@ -215,7 +215,7 @@ if (!function_exists('authorizeRoute')) {
     function authorizeRoute($user_id = 0)
     {
         if (!$user_id) {
-            if (auth()->check()) {
+            if (auth()->check() && __me()) {
                 $user_id = __me()->id;
             } else if (authId()) {
                 $user_id = authId();

@@ -18,6 +18,8 @@ class PageReportMessage extends BaseModel
         'page_report_id', 'user_id', 'message'
     ];
 
+    protected $columnHasRelations = ['page_report_id', 'user_id'];
+
     public function __construct(array $attributes = [])
     {
         $this->fillable($this->writableColumns);
@@ -34,10 +36,9 @@ class PageReportMessage extends BaseModel
         return $this->belongsTo('App\Models\User');
     }
 
-    public function rawFilters($query)
+    public function rawFilters($query): void
     {
         $query->join('users', 'page_report_messages.user_id', '=', 'users.id');
-        return $query;
     }
 
     protected function dataFormatting($row)

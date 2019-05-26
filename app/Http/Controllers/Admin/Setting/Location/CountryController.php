@@ -8,10 +8,10 @@
 
 namespace App\Http\Controllers\Admin\Setting\Location;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Application\Location\CountryStore;
 use App\Http\Requests\Admin\Application\Location\CountryUpdate;
 use App\Models\Country;
-use App\Http\Controllers\Controller;
 
 class CountryController extends Controller
 {
@@ -26,8 +26,10 @@ class CountryController extends Controller
     public function indexAction()
     {
         $this->setHeader('title', 'Countries');
+        $countries = new Country();
+        $countries->enableSearch = true;
         return $this->view('index', [
-            'countries' => (new Country())->fetch(requestValues('search'))
+            'countries' => $countries->fetch(requestValues('search|pagination_show|name|code'))
         ]);
     }
 

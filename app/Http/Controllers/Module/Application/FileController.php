@@ -64,6 +64,25 @@ class FileController extends Controller
         }
     }
 
+    private function _imageSize($key)
+    {
+        return (int)$this->request->get($key);
+    }
+
+    private function _imageQuality()
+    {
+        $quality = $this->request->get('quality', 75);
+        if ($quality <= 0) {
+            return 45;
+        }
+
+        if ($quality > 100) {
+            return 100;
+        }
+
+        return $quality;
+    }
+
     public function createAction(FileCreate $request)
     {
         $file = fileUpload([
@@ -92,24 +111,5 @@ class FileController extends Controller
     {
         File::destroy($id);
         return $this->json('File is deleted successfully.');
-    }
-
-    private function _imageQuality()
-    {
-        $quality = $this->request->get('quality', 75);
-        if ($quality <= 0) {
-            return 45;
-        }
-
-        if ($quality > 100) {
-            return 100;
-        }
-
-        return $quality;
-    }
-
-    private function _imageSize($key)
-    {
-        return (int)$this->request->get($key);
     }
 }

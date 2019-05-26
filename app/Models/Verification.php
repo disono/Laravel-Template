@@ -17,6 +17,8 @@ class Verification extends BaseModel
         'user_id', 'value', 'type', 'token', 'expired_at'
     ];
 
+    protected $columnHasRelations = ['user_id'];
+
     public function __construct(array $attributes = [])
     {
         $this->fillable($this->writableColumns);

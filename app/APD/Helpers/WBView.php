@@ -69,6 +69,7 @@ if (!function_exists('isCurrentRoute')) {
             return false;
         }
 
+        $to = preg_replace('/\s*/m', '', $to);
         $to = explode('|', $to);
         if (in_array(request()->route()->getName(), $to)) {
             return true;
@@ -139,11 +140,14 @@ if (!function_exists('thDelete')) {
     {
         $_id = '_check_' . time();
         return '<th>
-            <div class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" value="" id="' . $_id . '" v-on:change="toolbarSelectItem($event)">
-                <label class="custom-control-label" for="' . $_id . '"></label>
-            </div>
-        </th>';
+			<label class="custom-control material-checkbox m-0 p-0">
+                <input type="checkbox" class="material-control-input" value="" 
+                    id="' . $_id . '" 
+                    v-on:change="toolbarSelectItem($event)">
+                <span class="material-control-indicator"></span>
+                <span class="material-control-description">&nbsp;</span>
+			</label>		
+		</th>';
     }
 }
 
@@ -156,13 +160,15 @@ if (!function_exists('tdDelete')) {
      */
     function tdDelete($id)
     {
-        return '<td>
-            <div class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" delete-data="toolbarSelectedItems" id="del_' . $id . '"
-                                           v-model="toolbar.selectedItems" value="' . $id . '">
-                <label class="custom-control-label" for="del_' . $id . '"></label>
-            </div>
-        </td>';
+        return '<th>
+			<label class="custom-control material-checkbox m-0 mr-2 p-0">
+                <input type="checkbox" class="material-control-input" 
+                    delete-data="toolbarSelectedItems" id="del_' . $id . '" 
+                    v-model="toolbar.selectedItems" value="' . $id . '">
+                <span class="material-control-indicator"></span>
+                <span class="material-control-description">&nbsp;</span>
+			</label>		
+		</th>';
     }
 }
 

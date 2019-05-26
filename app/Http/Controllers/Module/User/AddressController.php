@@ -8,11 +8,11 @@
 
 namespace App\Http\Controllers\Module\User;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Module\User\AddressStore;
 use App\Http\Requests\Module\User\AddressUpdate;
 use App\Models\Country;
 use App\Models\UserAddress;
-use App\Http\Controllers\Controller;
 
 class AddressController extends Controller
 {

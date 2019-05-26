@@ -17,6 +17,8 @@ class Token extends BaseModel
         'user_id', 'token', 'key', 'secret', 'source', 'expired_at'
     ];
 
+    protected $columnHasRelations = ['user_id'];
+
     public function __construct(array $attributes = [])
     {
         $this->fillable($this->writableColumns);

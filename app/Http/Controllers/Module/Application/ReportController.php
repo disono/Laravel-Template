@@ -8,8 +8,8 @@
 
 namespace App\Http\Controllers\Module\Application;
 
-use App\Http\Requests\Module\Application\ReportStore;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Module\Application\ReportStore;
 use App\Models\App\PageReport;
 
 class ReportController extends Controller

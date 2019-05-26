@@ -23,7 +23,7 @@ class FCMController extends Controller
         $this->theme = 'notification.fcm';
 
         $this->middleware(function ($request, $next) {
-            $this->setApp('app_scripts', [
+            $this->setAppView('app_scripts', [
                 'assets/js/admin/fcm.js'
             ]);
 
@@ -34,8 +34,11 @@ class FCMController extends Controller
     public function indexAction()
     {
         $this->setHeader('title', 'FCM Notifications');
+        $fcm = new FirebaseNotification();
+        $fcm->enableSearch = true;
+        $fcm->setNewWritableColumn('created_at');
         return $this->view('index', [
-            'notifications' => (new FirebaseNotification())->fetch(requestValues('search'))
+            'notifications' => $fcm->fetch(requestValues('search|pagination_show|title|created_at'))
         ]);
     }
 

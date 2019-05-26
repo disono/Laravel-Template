@@ -17,6 +17,14 @@ use Illuminate\Http\JsonResponse;
 
 class SettingController extends APIController
 {
+    private $_user;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->_user = new User();
+    }
+
     /**
      * Sync user
      *
@@ -43,8 +51,8 @@ class SettingController extends APIController
         ]);
         $inputs['profile_picture'] = $request->file('profile_picture');
 
-        (new User())->clearBoolean();
-        (new User())->edit(__me()->id, $inputs);
+        $this->_user->clearBoolean();
+        $this->_user->edit(__me()->id, $inputs);
 
         return $this->json((new User())->single(__me()->id));
     }
@@ -57,8 +65,8 @@ class SettingController extends APIController
      */
     public function securityUpdateAction(AccountSecurity $request)
     {
-        (new User())->clearBoolean();
-        (new User())->edit(__me()->id, $request->only(['email', 'password']));
+        $this->_user->clearBoolean();
+        $this->_user->edit(__me()->id, $request->only(['email', 'password']));
 
         return $this->json((new User())->single(__me()->id));
     }

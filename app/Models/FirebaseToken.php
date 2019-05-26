@@ -17,6 +17,8 @@ class FirebaseToken extends BaseModel
         'token_id', 'fcm_token'
     ];
 
+    protected $columnHasRelations = ['token_id'];
+
     public function __construct(array $attributes = [])
     {
         $this->fillable($this->writableColumns);

@@ -14,7 +14,6 @@
                 <h3>{{ $view_title }}</h3>
                 <hr>
                 @include('admin.settings.menu')
-                @include('admin.settings.role.menu')
             </div>
         </div>
 

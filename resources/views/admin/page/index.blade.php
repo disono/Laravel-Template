@@ -19,43 +19,33 @@
 
         <div class="row mt-3">
             <div class="col">
-                <form method="get" action="{{ route('admin.page.list') }}">
-                    <div class="row">
-                        <div class="col-md-3 col-sm-12 mb-3 mb-sm-0">
-                            <input type="text" class="form-control" placeholder="Search"
-                                   name="search" value="{{ request('search') }}">
-                        </div>
+                <form action="{{ route('admin.page.list') }}" method="get" id="frmTableFilter">
+                    <input type="submit" style="display: none;">
 
-                        <div class="col-md-3 col-sm-12 mb-3 mb-sm-0">
-                            <select class="form-control select_picker" name="page_category_id">
-                                <option value="">Select Category</option>
-                                @foreach($categories as $category)
-                                    <option value="{{ $category->id }}" {{ frmIsSelected('page_category_id', $category->id) }}>{{ $category->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
+                    @include('vendor.app.toolbar', ['createRoute' => 'admin.page.create', 'toolbarHasDel' => true])
 
-                    <div class="row mt-sm-3">
-                        <div class="col">
-                            <button class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <div class="row mt-3">
-            <div class="col">
-                @if(count($pages))
                     <div class="table-responsive-sm">
                         <table class="table table-bordered">
                             <thead class="table-borderless">
                             <tr>
                                 {!! thDelete() !!}
 
-                                <th>Name</th>
-                                <th>Category</th>
+                                <th>#</th>
+                                <th><input type="text" class="form-control form-control-sm" name="name"
+                                           placeholder="Name" value="{{ $request->get('name') }}"></th>
+                                <th><input type="text" class="form-control form-control-sm" name="slug"
+                                           placeholder="Slug" value="{{ $request->get('slug') }}"></th>
+                                <th>
+                                    <select class="form-control form-control-sm select_picker"
+                                            name="page_category_id" data-style="btn-gray"
+                                            @change="onSelectChangeSubmitForm($event, '#frmTableFilter')">
+                                        <option value="">Category (All)</option>
+                                        @foreach($categories as $category)
+                                            <option value="{{ $category->id }}"
+                                                    {{ frmIsSelected('page_category_id', $category->id) }}>{{ $category->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </th>
                                 <th>Action</th>
                             </tr>
                             </thead>
@@ -65,7 +55,9 @@
                                 <tr id="parent_tr_{{ $row->id }}">
                                     {!! tdDelete($row->id) !!}
 
+                                    <td>{{ $row->id }}</td>
                                     <td>{{ $row->name }}</td>
+                                    <td>{{ $row->slug }}</td>
                                     <td>{{ $row->page_category_slug }}</td>
                                     <td>
                                         <div class="btn-group">
@@ -95,11 +87,9 @@
                             </tbody>
                         </table>
                     </div>
+                </form>
 
-                    {{ $pages->appends($request->all())->render() }}
-                @else
-                    <h3 class="text-center"><i class="far fa-frown"></i> No Pages Found.</h3>
-                @endif
+                @include('vendor.app.pagination', ['_lists' => $pages])
             </div>
         </div>
     </div>

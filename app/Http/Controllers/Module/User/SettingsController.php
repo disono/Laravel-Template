@@ -19,10 +19,13 @@ use Illuminate\Http\Response;
 
 class SettingsController extends Controller
 {
+    private $_user;
+
     public function __construct()
     {
         parent::__construct();
         $this->theme = 'user.settings';
+        $this->_user = new User();
     }
 
     /**
@@ -48,8 +51,8 @@ class SettingsController extends Controller
         ]);
         $inputs['profile_picture'] = $request->file('profile_picture');
 
-        (new User())->clearBoolean();
-        (new User())->edit(__me()->id, $inputs);
+        $this->_user->clearBoolean();
+        $this->_user->edit(__me()->id, $inputs);
 
         if ($this->request->ajax()) {
             return $this->json('Profile is successfully updated.');
@@ -76,8 +79,8 @@ class SettingsController extends Controller
      */
     public function securityUpdateAction(AccountSecurity $request)
     {
-        (new User())->clearBoolean();
-        (new User())->edit(__me()->id, $request->only(['email', 'password']));
+        $this->_user->clearBoolean();
+        $this->_user->edit(__me()->id, $request->only(['email', 'password']));
 
         if ($this->request->ajax()) {
             return $this->json('Profile is successfully updated.');

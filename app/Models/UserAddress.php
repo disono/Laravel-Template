@@ -19,6 +19,7 @@ class UserAddress extends BaseModel
     ];
 
     protected $inputDates = ['verification_expired_at'];
+    protected $columnHasRelations = ['user_id', 'country_id', 'city_id'];
 
     public function __construct(array $attributes = [])
     {
@@ -41,11 +42,10 @@ class UserAddress extends BaseModel
         return $this->belongsTo('App\Models\City');
     }
 
-    public function rawFilters($query)
+    public function rawFilters($query): void
     {
         $query->join('countries', 'user_addresses.country_id', '=', 'countries.id');
         $query->join('cities', 'user_addresses.city_id', '=', 'cities.id');
-        return $query;
     }
 
     protected function rawQuerySelectList()

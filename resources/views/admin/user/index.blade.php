@@ -14,42 +14,16 @@
                 <h3>{{ $view_title }}</h3>
                 <hr>
                 @include('admin.user.menu')
-                @include('admin.layouts.toolbarList')
-                @include('vendor.menuCSV', ['csvSource' => 'users'])
             </div>
         </div>
 
         <div class="row mt-3">
             <div class="col">
-                <form method="get" action="{{ route('admin.user.list') }}">
-                    <div class="row">
-                        <div class="col-md-3 col-sm-12 mb-3 mb-sm-0">
-                            <input type="text" class="form-control" placeholder="Search"
-                                   name="search" value="{{ request('search') }}">
-                        </div>
+                <form action="{{ route('admin.user.list') }}" method="get" class="mb-3" id="frmTableFilter">
+                    <input type="submit" style="display: none;">
 
-                        <div class="col-md-3 col-sm-12 mb-3 mb-sm-0">
-                            <select class="form-control select_picker" name="role_id">
-                                <option value="">Select Role</option>
-                                @foreach($roles as $role)
-                                    <option value="{{ $role->id }}" {{ frmIsSelected('role_id', $role->id) }}>{{ $role->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
+                    @include('vendor.app.toolbar', ['csvSource' => 'users', 'createRoute' => 'admin.user.create', 'toolbarHasDel' => true])
 
-                    <div class="row mt-sm-3">
-                        <div class="col">
-                            <button class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <div class="row mt-3">
-            <div class="col">
-                @if(count($users))
                     <div class="table-responsive-sm">
                         <table class="table table-bordered">
                             <thead class="table-borderless">
@@ -57,13 +31,49 @@
                                 {!! thDelete() !!}
 
                                 <th>#</th>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Username</th>
-                                <th>Role</th>
-                                <th>Email Verified</th>
-                                <th>Account Activated</th>
-                                <th>Account Enabled</th>
+                                <th><input type="text" class="form-control form-control-sm" name="full_name"
+                                           placeholder="Name" value="{{ $request->get('full_name') }}"></th>
+                                <th><input type="email" class="form-control form-control-sm" name="email"
+                                           placeholder="Email" value="{{ $request->get('email') }}"></th>
+                                <th><input type="text" class="form-control form-control-sm" name="username"
+                                           placeholder="Username" value="{{ $request->get('username') }}"></th>
+                                <th>
+                                    <select class="form-control form-control-sm select_picker"
+                                            name="role_id" data-style="btn-gray"
+                                            @change="onSelectChangeSubmitForm($event, '#frmTableFilter')">
+                                        <option value="">Role (All)</option>
+                                        @foreach($roles as $role)
+                                            <option value="{{ $role->id }}" {{ frmIsSelected('role_id', $role->id) }}>{{ $role->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </th>
+                                <th>
+                                    <select class="form-control form-control-sm select_picker"
+                                            name="is_email_verified" data-style="btn-gray"
+                                            @change="onSelectChangeSubmitForm($event, '#frmTableFilter')">
+                                        <option value="">Email Verified (All)</option>
+                                        <option value="1" {{ frmIsSelected('is_email_verified', 1) }}>Yes</option>
+                                        <option value="0" {{ frmIsSelected('is_email_verified', 0) }}>No</option>
+                                    </select>
+                                </th>
+                                <th>
+                                    <select class="form-control form-control-sm select_picker"
+                                            name="is_account_activated" data-style="btn-gray"
+                                            @change="onSelectChangeSubmitForm($event, '#frmTableFilter')">
+                                        <option value="">Account Activated (All)</option>
+                                        <option value="1" {{ frmIsSelected('is_account_activated', 1) }}>Yes</option>
+                                        <option value="0" {{ frmIsSelected('is_account_activated', 0) }}>No</option>
+                                    </select>
+                                </th>
+                                <th>
+                                    <select class="form-control form-control-sm select_picker"
+                                            name="is_account_enabled" data-style="btn-gray"
+                                            @change="onSelectChangeSubmitForm($event, '#frmTableFilter')">
+                                        <option value="">Account Enabled (All)</option>
+                                        <option value="1" {{ frmIsSelected('is_account_enabled', 1) }}>Yes</option>
+                                        <option value="0" {{ frmIsSelected('is_account_enabled', 0) }}>No</option>
+                                    </select>
+                                </th>
                                 <th>Action</th>
                             </tr>
                             </thead>
@@ -96,7 +106,8 @@
                                     <td>
                                         <div class="btn-group">
                                             <button type="button" class="btn btn-light btn-sm dropdown-toggle"
-                                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    data-toggle="dropdown" aria-haspopup="true"
+                                                    aria-expanded="false">
                                                 <i class="fas fa-cog"></i>
                                             </button>
 
@@ -123,11 +134,9 @@
                             </tbody>
                         </table>
                     </div>
+                </form>
 
-                    {{ $users->appends($request->all())->render() }}
-                @else
-                    <h3 class="text-center"><i class="far fa-frown"></i> No Users Found.</h3>
-                @endif
+                @include('vendor.app.pagination', ['_lists' => $users])
             </div>
         </div>
     </div>

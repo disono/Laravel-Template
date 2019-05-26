@@ -19,8 +19,8 @@ class CreatePageReportsTable extends Migration
             $table->unsignedInteger('user_id')->nullable();
             $table->foreign('user_id')->references('id')->on('users');
 
-            $table->unsignedInteger('responded_by')->nullable();
-            $table->foreign('responded_by')->references('id')->on('users');
+            $table->unsignedInteger('responded_by_id')->nullable();
+            $table->foreign('responded_by_id')->references('id')->on('users');
 
             $table->unsignedInteger('page_report_reason_id')->nullable();
             $table->foreign('page_report_reason_id')->references('id')->on('page_report_reasons');

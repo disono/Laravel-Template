@@ -20,32 +20,21 @@
         <div class="row mt-3">
             <div class="col">
                 <form method="get" action="{{ route('admin.user.tracker.list') }}">
-                    <div class="row">
-                        <div class="col-md-3 col-sm-12 mb-3 mb-sm-0">
-                            <input type="text" class="form-control" placeholder="Search"
-                                   name="search" value="{{ request('search') }}">
-                        </div>
-                    </div>
+                    <input type="submit" style="display: none;">
 
-                    <div class="row mt-sm-3">
-                        <div class="col">
-                            <button class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
+                    @include('vendor.app.toolbar')
 
-        <div class="row mt-3">
-            <div class="col">
-                @if(count($tracks))
                     <div class="table-responsive-sm">
                         <table class="table table-bordered">
                             <thead class="table-borderless">
                             <tr>
                                 <th>#</th>
-                                <th>Name</th>
-                                <th>Location</th>
+                                <th><input type="text" class="form-control form-control-sm" name="full_name"
+                                           placeholder="Name" value="{{ $request->get('full_name') }}"></th>
+                                <th><input type="text" class="form-control form-control-sm" name="ip_address"
+                                           placeholder="IP Address" value="{{ $request->get('ip_address') }}"></th>
+                                <th><input type="text" class="form-control form-control-sm" name="location"
+                                           placeholder="Location (Lat/Lng)" value="{{ $request->get('location') }}"></th>
                             </tr>
                             </thead>
 
@@ -54,17 +43,16 @@
                                 <tr id="parent_tr_{{$row->id}}">
                                     <td>{{ $row->id }}</td>
                                     <td>{{ $row->full_name }}</td>
-                                    <td></td>
+                                    <td>{{ $row->ip_address }}</td>
+                                    <td><a href="{{ $row->location }}" target="_blank">View to Google Map</a></td>
                                 </tr>
                             @endforeach
                             </tbody>
                         </table>
                     </div>
+                </form>
 
-                    {{ $tracks->appends($request->all())->render() }}
-                @else
-                    <h3 class="text-center"><i class="far fa-frown"></i> No Location Log Found.</h3>
-                @endif
+                @include('vendor.app.pagination', ['_lists' => $tracks])
             </div>
         </div>
     </div>

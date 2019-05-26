@@ -26,8 +26,10 @@ class RoleController extends Controller
     public function indexAction()
     {
         $this->setHeader('title', 'Roles');
+        $roles = new Role();
+        $roles->enableSearch = true;
         return $this->view('index', [
-            'roles' => (new Role())->fetch(requestValues('search'))
+            'roles' => $roles->fetch(requestValues('search|pagination_show|name'))
         ]);
     }
 

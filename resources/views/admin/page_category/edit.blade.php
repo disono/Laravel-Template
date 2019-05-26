@@ -14,11 +14,10 @@
                 <h3>{{ $view_title }}</h3>
                 <hr>
                 @include('admin.page.menu')
-                @include('admin.page_category.menu')
             </div>
         </div>
 
-        <div class="row">
+        <div class="row mt-3">
             <div class="col-sm-12 col-md-4">
                 <form action="{{ route('admin.page.category.update') }}" method="post" v-on:submit.prevent="onFormPost">
                     {{ csrf_field() }}

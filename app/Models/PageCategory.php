@@ -18,6 +18,7 @@ class PageCategory extends BaseModel
     ];
 
     protected $inputIntegers = ['parent_id'];
+    protected $columnHasRelations = ['parent_id'];
 
     private $list = [];
 

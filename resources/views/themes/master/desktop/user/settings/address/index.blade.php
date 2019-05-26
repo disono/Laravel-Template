@@ -14,16 +14,15 @@
                 @include(currentTheme() . 'user.settings.menu')
             </div>
 
-            <div class="col-sm-12 col-lg-9  p-3 shadow-sm rounded bg-white">
+            <div class="col-sm-12 col-lg-9">
                 <a class="btn btn-primary mb-3" href="{{ url('user/setting/address/create') }}"
                    role="button"><i class="fas fa-plus"></i> Add a New Address</a>
 
                 @if(count($addresses))
                     <div class="row">
                         @foreach($addresses as $row)
-                            <div class="col-6">
-                                <div class="card m-0 mb-3 cart_list_address" data-parent-list="cart_list_address"
-                                     id="parent_card_{{ $row->id }}">
+                            <div class="col-6" data-parent-list="cart_list_address" id="parent_card_{{ $row->id }}">
+                                <div class="card m-0 mb-3 cart_list_address shadow-sm rounded bg-white border-0">
                                     <div class="card-body">
                                         <p class="card-text m-0">
                                             {{ $row->address }}
@@ -52,7 +51,9 @@
 
                     {{ $addresses->appends($request->all())->render() }}
                 @else
-                    <h3 class="text-center"><i class="far fa-frown"></i> No Address Found.</h3>
+                    <div class="p-3 shadow-sm rounded bg-white border-0">
+                        <h3 class="text-center"><i class="far fa-frown"></i> No Address Found.</h3>
+                    </div>
                 @endif
             </div>
         </div>

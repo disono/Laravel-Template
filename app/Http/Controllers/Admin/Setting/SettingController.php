@@ -53,7 +53,11 @@ class SettingController extends Controller
     public function indexAction()
     {
         $this->setHeader('title', 'Application Settings');
-        return $this->view('setting.application.index', ['settings' => (new Setting())->fetch(requestValues('search'))]);
+        $settings = new Setting();
+        $settings->enableSearch = true;
+        return $this->view('setting.application.index', ['settings' => $settings->fetch(requestValues(
+            'search|pagination_show|name|description|value'
+        ))]);
     }
 
     public function createAction()

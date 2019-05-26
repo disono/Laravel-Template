@@ -36,6 +36,8 @@ class User extends BaseUser
     protected $inputCrypt = ['password'];
     protected $inputBooleans = ['is_email_verified', 'is_phone_verified', 'is_account_activated', 'is_account_enabled'];
 
+    protected $columnHasRelations = ['country_id', 'city_id', 'role_id'];
+
     protected $hidden = [
         'password', 'remember_token',
     ];
@@ -229,47 +231,38 @@ class User extends BaseUser
     }
 
     /**
-     * List of select
+     * Resend the verification code
      *
-     * @return array
+     * @param $type
+     * @param $user
      */
-    protected function rawQuerySelectList()
+    private function _resendCode($type, $user)
     {
-        return [
-            'full_name' => 'CONCAT(users.first_name, " ", users.last_name)',
-            'role' => '(SELECT name FROM roles WHERE users.role_id = roles.id LIMIT 1)',
-            'country' => '(SELECT name FROM countries WHERE users.country_id = countries.id LIMIT 1)',
-            'city' => '(SELECT name FROM cities WHERE users.city_id = cities.id LIMIT 1)',
-            'is_online' => 'IF(DATE_ADD(users.active_at, INTERVAL 60 MINUTE) >= NOW(), 1, 0)'
-        ];
+        if ($type == 'phone') {
+            $this->_resendPhone($user);
+        } else if ($type == 'email') {
+            $this->_resendEmail($user);
+        }
     }
 
     /**
-     * Add formatting to data
+     * Resend verification to phone
      *
-     * @param $row
-     * @return mixed
+     * @param $user
      */
-    protected function dataFormatting($row)
+    private function _resendPhone($user)
     {
-        $row->profile_picture = $this->profilePicture($row->id);
-        $row->birthday = ($row->birthday) ? humanDate($row->birthday, true) : null;
-        $row->server_timestamp = sqlDate();
+        // clean all verification before saving new
+        Verification::where('value', $user->phone)->where('type', 'phone')->delete();
 
-        $this->_unsetHidden($row);
-
-        return $row;
-    }
-
-    /**
-     * Get profile photo
-     *
-     * @param $id
-     * @return UrlGenerator|string|null |null
-     */
-    public function profilePicture($id)
-    {
-        return fetchImage($this->_profilePicture($id), 'assets/img/placeholders/profile_picture.png');
+        // create token
+        Verification::create([
+            'user_id' => $user->id,
+            'token' => ucwords(str_random(6)),
+            'value' => $user->phone,
+            'type' => 'phone',
+            'expired_at' => expiredAt(1440)
+        ]);
     }
 
     public function role()
@@ -328,38 +321,48 @@ class User extends BaseUser
     }
 
     /**
-     * Resend the verification code
+     * List of select
      *
-     * @param $type
-     * @param $user
+     * @return array
      */
-    private function _resendCode($type, $user)
+    protected function rawQuerySelectList()
     {
-        if ($type == 'phone') {
-            $this->_resendPhone($user);
-        } else if ($type == 'email') {
-            $this->_resendEmail($user);
-        }
+        return [
+            'full_name' => 'CONCAT(users.first_name, " ", users.last_name)',
+            'role' => '(SELECT name FROM roles WHERE users.role_id = roles.id LIMIT 1)',
+            'country' => '(SELECT name FROM countries WHERE users.country_id = countries.id LIMIT 1)',
+            'city' => '(SELECT name FROM cities WHERE users.city_id = cities.id LIMIT 1)',
+            'is_online' => 'IF(DATE_ADD(users.active_at, INTERVAL 60 MINUTE) >= NOW(), 1, 0)',
+            'is_latest' => 'IF(DATE_ADD(users.created_at, INTERVAL 10 DAY) >= CURDATE(), 1, 0)'
+        ];
     }
 
     /**
-     * Resend verification to phone
+     * Add formatting to data
      *
-     * @param $user
+     * @param $row
+     * @return mixed
      */
-    private function _resendPhone($user)
+    protected function dataFormatting($row)
     {
-        // clean all verification before saving new
-        Verification::where('value', $user->phone)->where('type', 'phone')->delete();
+        $row->profile_picture = $this->profilePicture($row->id);
+        $row->birthday = ($row->birthday) ? humanDate($row->birthday, true) : null;
+        $row->server_timestamp = sqlDate();
 
-        // create token
-        Verification::create([
-            'user_id' => $user->id,
-            'token' => ucwords(str_random(6)),
-            'value' => $user->phone,
-            'type' => 'phone',
-            'expired_at' => expiredAt(1440)
-        ]);
+        $this->_unsetHidden($row);
+
+        return $row;
+    }
+
+    /**
+     * Get profile photo
+     *
+     * @param $id
+     * @return UrlGenerator|string|null |null
+     */
+    public function profilePicture($id)
+    {
+        return fetchImage($this->_profilePicture($id), 'assets/img/placeholders/profile_picture.png');
     }
 
     /**

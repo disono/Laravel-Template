@@ -6,7 +6,7 @@
 --}}
 
 <div class="modal-header">
-    <h5 class="modal-title">Files</h5>
+    <h5 class="modal-title">File Explorer</h5>
 
     <button type="button" class="close dialogDismiss" aria-label="Close">
         <span aria-hidden="true">&times;</span>
@@ -16,7 +16,7 @@
 <div class="modal-body">
     <div class="row">
         {{-- file list --}}
-        <div class="col-sm-12 col-md-9">
+        <div class="col-sm-12 col-md-8">
             <ul class="nav nav-tabs mb-3">
                 <li class="nav-item">
                     <a class="nav-link fileSelectorNav" href="#" data-type="all">All</a>
@@ -44,8 +44,7 @@
         </div>
 
         {{-- uploader --}}
-        <div class="col-sm-12 col-md-3">
-            <h6>Upload</h6>
+        <div class="col-sm-12 col-md-4">
             <form action="{{ route('module.file.store') }}" id="fileUploaderFrm">
                 <div class="form-group">
                     <label for="name">Title</label>
@@ -62,7 +61,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="file_selected">File <strong class="text-danger">*</strong></label>
+                    <label for="file_selected">Select a file <strong class="text-danger">*</strong></label>
 
                     <div class="custom-file">
                         <input type="file" class="custom-file-input" name="file_selected"
@@ -78,6 +77,6 @@
 </div>
 
 <div class="modal-footer">
-    <button type="button" class="btn btn-default dialogDismiss">Dismiss</button>
+    <button type="button" class="btn btn-light dialogDismiss">Dismiss</button>
     <button type="button" class="btn btn-primary dialogConfirm" style="display: none;">Select</button>
 </div>

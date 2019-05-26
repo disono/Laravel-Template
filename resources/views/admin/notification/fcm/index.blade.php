@@ -19,33 +19,21 @@
 
         <div class="row mt-3">
             <div class="col">
-                <form method="get" action="{{ route('admin.fcm.notification.list') }}">
-                    <div class="row">
-                        <div class="col-md-3 col-sm-12 mb-3 mb-sm-0">
-                            <input type="text" class="form-control" placeholder="Search"
-                                   name="search" value="{{ request('search') }}">
-                        </div>
-                    </div>
+                <form method="get" action="{{ route('admin.fcm.notification.list') }}" id="frmTableFilter">
+                    <input type="submit" style="display: none;">
 
-                    <div class="row mt-sm-3">
-                        <div class="col">
-                            <button class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
+                    @include('vendor.app.toolbar', ['createRoute' => 'admin.fcm.notification.create'])
 
-        <div class="row mt-3">
-            <div class="col">
-                @if(count($notifications))
                     <div class="table-responsive-sm">
                         <table class="table table-bordered">
                             <thead class="table-borderless">
                             <tr>
                                 <th>#</th>
-                                <th>Title</th>
-                                <th>Date</th>
+                                <th><input type="text" class="form-control form-control-sm" name="title"
+                                           placeholder="Title" value="{{ $request->get('title') }}"></th>
+                                <th><input type="text" class="form-control form-control-sm date-picker-no-future"
+                                           name="created_at" data-form-submit="#frmTableFilter"
+                                           placeholder="Date" value="{{ $request->get('created_at') }}"></th>
                                 <th>Action</th>
                             </tr>
                             </thead>
@@ -71,7 +59,7 @@
 
                                                 <a class="dropdown-item"
                                                    href="{{ url('admin/fcm-notification/destroy/' . $row->id) }}"
-                                                   v-on:click.prevent="onDeleteResource($event, '#parent_tr_{{$row->id}}')">Delete</a>
+                                                   v-on:click.prevent="onDeleteResource($event, '#parent_tr_{{ $row->id }}')">Delete</a>
                                             </div>
                                         </div>
                                     </td>
@@ -80,11 +68,9 @@
                             </tbody>
                         </table>
                     </div>
+                </form>
 
-                    {{ $notifications->appends($request->all())->render() }}
-                @else
-                    <h3 class="text-center"><i class="far fa-frown"></i> No Notification Found.</h3>
-                @endif
+                @include('vendor.app.pagination', ['_lists' => $notifications])
             </div>
         </div>
     </div>

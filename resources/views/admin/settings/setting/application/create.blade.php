@@ -121,17 +121,17 @@
                             </div>
 
                             <div class="form-group">
-                                <label for="attributes">Category <strong class="text-danger">*</strong></label>
+                                <label for="setting_category_id">Category <strong class="text-danger">*</strong></label>
 
-                                <select name="category" id="category" class="form-control" data-validate="required">
+                                <select name="setting_category_id" id="category" class="form-control" data-validate="required">
                                     <option value="">Select Category</option>
                                     @foreach((new \App\Models\Setting())->categories() as $category)
-                                        <option value="{{ $category->$category }}">{{ $category->category }}</option>
+                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
                                     @endforeach
                                 </select>
 
-                                @if ($errors->has('category'))
-                                    <div class="invalid-feedback">{{ $errors->first('category') }}</div>
+                                @if ($errors->has('setting_category_id'))
+                                    <div class="invalid-feedback">{{ $errors->first('setting_category_id') }}</div>
                                 @endif
                             </div>
 

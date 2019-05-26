@@ -17,49 +17,75 @@
             </div>
         </div>
 
-        <div class="row">
-            <div class="col mt-3">
-                <form method="get" action="{{ route('admin.role.list') }}">
-                    <div class="row">
-                        <div class="col-md-3 col-sm-12 mb-3 mb-sm-0">
-                            <input type="text" class="form-control" placeholder="Search"
-                                   name="search" value="{{ request('search') }}">
-                        </div>
-                    </div>
-
-                    <div class="row mt-sm-3">
-                        <div class="col">
-                            <button class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-
         <div class="row mt-3">
             <div class="col">
-                @if(count($reports))
+                <form action="{{ route('admin.submitted.report.list') }}" method="get" id="frmTableFilter">
+                    <input type="submit" style="display: none;">
+
+                    @include('vendor.app.toolbar')
+
                     <div class="table-responsive-sm">
                         <table class="table table-bordered">
                             <thead class="table-borderless">
                             <tr>
                                 <th>#</th>
-                                <th>Reason</th>
-                                <th>Submitted by</th>
-                                <th>Processed by</th>
-                                <th>Status</th>
-                                <th>Date</th>
+                                <th>
+                                    <select class="form-control form-control-sm select_picker"
+                                            name="page_report_reason_id" data-style="btn-gray"
+                                            @change="onSelectChangeSubmitForm($event, '#frmTableFilter')">
+                                        <option value="">Reason (All)</option>
+                                        @foreach($reasons as $row)
+                                            <option value="{{ $row->id }}" {{ frmIsSelected('page_report_reason_id', $row->id) }}>{{ $row->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </th>
+                                <th>
+                                    <select class="form-control form-control-sm select_picker"
+                                            name="responded_by_id" data-style="btn-gray"
+                                            @change="onSelectChangeSubmitForm($event, '#frmTableFilter')">
+                                        <option value="">Submitted by (All)</option>
+                                        @foreach($submitted_by as $row)
+                                            <option value="{{ $row->responded_by_id }}" {{ frmIsSelected('responded_by_id', $row->responded_by_id) }}>{{ $row->submitted_by }}</option>
+                                        @endforeach
+                                    </select>
+                                </th>
+                                <th>
+                                    <select class="form-control form-control-sm select_picker"
+                                            name="user_id" data-style="btn-gray"
+                                            @change="onSelectChangeSubmitForm($event, '#frmTableFilter')">
+                                        <option value="">Processed by (All)</option>
+                                        @foreach($process_by as $row)
+                                            <option value="{{ $row->user_id }}" {{ frmIsSelected('user_id', $row->user_id) }}>{{ $row->process_by }}</option>
+                                        @endforeach
+                                    </select>
+                                </th>
+                                <th>
+                                    <select class="form-control form-control-sm select_picker"
+                                            name="status" data-style="btn-gray"
+                                            @change="onSelectChangeSubmitForm($event, '#frmTableFilter')">
+                                        <option value="">Status (All)</option>
+                                        @foreach($statuses as $row)
+                                            <option value="{{ $row }}" {{ frmIsSelected('status', $row) }}>{{ $row }}</option>
+                                        @endforeach
+                                    </select>
+                                </th>
+                                <th>
+                                    <input type="text" class="form-control form-control-sm date-picker-no-future"
+                                           name="created_at"
+                                           data-form-submit="#frmTableFilter"
+                                           placeholder="Date" value="{{ $request->get('created_at') }}">
+                                </th>
                                 <th>Action</th>
                             </tr>
                             </thead>
 
                             <tbody>
                             @foreach($reports as $row)
-                                <tr id="parent_tr_{{$row->id}}">
+                                <tr id="parent_tr_{{ $row->id }}">
                                     <th>{{ $row->id }}</th>
                                     <td>{{ $row->page_report_reason_name }}</td>
                                     <td>{{ $row->submitted_by }}</td>
-                                    <td>{{ ($row->process_by) ? $row->process_by->full_name : 'n/a' }}</td>
+                                    <td>{{ ($row->process_by) }}</td>
                                     <td>{{ $row->status }}</td>
                                     <td>{{ humanDate($row->created_at) }}</td>
                                     <td>
@@ -84,11 +110,9 @@
                             </tbody>
                         </table>
                     </div>
+                </form>
 
-                    {{ $reports->appends($request->all())->render() }}
-                @else
-                    <h3 class="text-center"><i class="far fa-frown"></i> No Report Submitted Found.</h3>
-                @endif
+                @include('vendor.app.pagination', ['_lists' => $reports])
             </div>
         </div>
     </div>

@@ -21,6 +21,8 @@ class File extends BaseModel
         'table_name', 'table_id', 'tag'
     ];
 
+    protected $columnHasRelations = ['user_id', 'table_id'];
+
     public function __construct(array $attributes = [])
     {
         $this->fillable($this->writableColumns);
@@ -60,6 +62,11 @@ class File extends BaseModel
         return $save;
     }
 
+    public function user()
+    {
+        return $this->belongsTo('App\Models\User');
+    }
+
     /**
      * Add formatting to data
      *
@@ -92,10 +99,5 @@ class File extends BaseModel
         }
 
         return $row;
-    }
-
-    public function user()
-    {
-        return $this->belongsTo('App\Models\User');
     }
 }

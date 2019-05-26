@@ -7,6 +7,7 @@
  */
 
 use App\APDApp\Helpers\libs\VideoStream;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Intervention\Image\Facades\Image;
@@ -22,7 +23,7 @@ if (!function_exists('successJSONResponse')) {
      * @param array $data
      * @param null $links
      * @param null $pagination
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     function successJSONResponse($data = [], $links = null, $pagination = null)
     {
@@ -77,7 +78,7 @@ if (!function_exists('failedJSONResponse')) {
      * @param array $errors
      * @param int $status
      * @param bool $default_message
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     function failedJSONResponse($errors = [], $status = 422, $default_message = true)
     {
@@ -379,6 +380,7 @@ if (!function_exists('requestOptions')) {
 
         // if inputs is strings
         if (is_string($inputs)) {
+            $inputs = preg_replace('/\s*/m', '', $inputs);
             $inputs = explode('|', $inputs);
         }
 

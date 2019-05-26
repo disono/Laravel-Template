@@ -17,6 +17,8 @@ class AuthenticationHistory extends BaseModel
         'user_id', 'ip', 'platform', 'type', 'lat', 'lng'
     ];
 
+    protected $columnHasRelations = ['user_id'];
+
     public function __construct(array $attributes = [])
     {
         $this->fillable($this->writableColumns);

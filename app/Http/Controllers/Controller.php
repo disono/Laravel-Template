@@ -136,12 +136,36 @@ class Controller extends BaseController
     }
 
     /**
+     * Set new app data view
+     *
+     * @param $key
+     * @param $value
+     */
+    protected function addAppView($key, $value)
+    {
+        $data = $this->getAppView($key);
+        $data[] = $value;
+        return $this->setAppView($key, $data);
+    }
+
+    /**
+     * Get app view value
+     *
+     * @param $key
+     * @return mixed
+     */
+    protected function getAppView($key)
+    {
+        return $this->view->share($key);
+    }
+
+    /**
      * Set view variables in app
      *
      * @param $key
      * @param $value
      */
-    protected function setApp($key, $value)
+    protected function setAppView($key, $value)
     {
         $this->view->share($key, $value);
     }

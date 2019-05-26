@@ -17,6 +17,8 @@ class City extends BaseModel
         'country_id', 'name', 'lat', 'lng'
     ];
 
+    protected $columnHasRelations = ['country_id'];
+
     public function __construct(array $attributes = [])
     {
         $this->fillable($this->writableColumns);
@@ -33,10 +35,9 @@ class City extends BaseModel
         return $this->belongsTo('App\Models\Country');
     }
 
-    public function rawFilters($query)
+    public function rawFilters($query): void
     {
         $query->join('countries', 'cities.country_id', '=', 'countries.id');
-        return $query;
     }
 
     protected function rawQuerySelectList()

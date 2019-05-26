@@ -6,6 +6,8 @@
 --}}
 
 <link rel="stylesheet" href="{{ devAssets('assets/css/vendor.css') }}"/>
+
+{{-- FOR DEVELOPMENT PURPOSES ONLY --}}
 @if(env('APP_ENV') == 'local')
     <link rel="stylesheet" href="{{ devAssets('assets/css/theme.css') }}"/>
 @endif

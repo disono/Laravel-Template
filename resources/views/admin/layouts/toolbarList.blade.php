@@ -5,10 +5,17 @@
  * @copyright   Webmons Development Studio
 --}}
 
-<div class="row mt-3" v-if="toolbar.selectedItems.length > 0">
-    <div class="col">
-        <button class="btn btn-danger" v-on:click="toolbarDeleteSelected(toolbar.selectedItems)">
-            <i class="fas fa-trash"></i> Delete Selected
-        </button>
+@if(isset($toolbarHasDel))
+    <div class="btn-group" role="group">
+        {{-- Delete Button --}}
+        @if(isset($toolbarHasDel))
+            <button v-if="toolbar.selectedItems.length > 0" type="button" class="btn btn-danger"
+                    v-on:click="toolbarDeleteSelected(toolbar.selectedItems)">
+                <i class="fas fa-trash"></i>
+            </button>
+            <button v-if="toolbar.selectedItems.length <= 0" type="button" class="btn btn-light" disabled>
+                <i class="fas fa-trash"></i>
+            </button>
+        @endif
     </div>
-</div>
+@endif

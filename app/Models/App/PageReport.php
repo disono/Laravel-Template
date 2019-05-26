@@ -16,9 +16,12 @@ class PageReport extends BaseModel
 {
     protected $tableName = 'page_reports';
     protected $writableColumns = [
-        'user_id', 'responded_by', 'page_report_reason_id',
+        'user_id', 'responded_by_id', 'page_report_reason_id',
         'url', 'description', 'status', 'rating'
     ];
+
+    protected $columnHasRelations = ['user_id', 'responded_by_id', 'page_report_reason_id'];
+    protected $columnWhere = ['status'];
 
     protected $files = ['screenshots'];
 
@@ -38,6 +41,17 @@ class PageReport extends BaseModel
         return $this->belongsTo('App\Models\User');
     }
 
+    public function rawFilters($query): void
+    {
+        $query->join('users', 'page_reports.user_id', '=', 'users.id');
+        $query->join('page_report_reasons', 'page_reports.page_report_reason_id', '=', 'page_report_reasons.id');
+    }
+
+    public function statuses()
+    {
+        return ['Pending', 'Processing', 'Reopened', 'Denied', 'Closed'];
+    }
+
     /**
      * List of select
      *
@@ -47,15 +61,10 @@ class PageReport extends BaseModel
     {
         return [
             'submitted_by' => 'CONCAT(users.first_name, " ", users.last_name)',
+            'process_by' => 'IF(page_reports.responded_by_id = 0, "n/a", (SELECT CONCAT(first_name, " ", last_name) AS 
+                name FROM users AS process WHERE process.id = page_reports.responded_by_id))',
             'page_report_reason_name' => 'page_report_reasons.name',
         ];
-    }
-
-    public function rawFilters($query)
-    {
-        $query->join('users', 'page_reports.user_id', '=', 'users.id');
-        $query->join('page_report_reasons', 'page_reports.page_report_reason_id', '=', 'page_report_reasons.id');
-        return $query;
     }
 
     /**
@@ -67,15 +76,9 @@ class PageReport extends BaseModel
     protected function dataFormatting($row)
     {
         $row->user = (new User())->single($row->user_id);
-        $row->process_by = (new User())->single($row->responded_by);
         $row->reason = (new PageReportReason())->single($row->page_report_reason_id);
         $row->screenshots = (new File())->fetchAll(['table_name' => 'page_reports', 'table_id' => $row->id]);
 
         return $row;
-    }
-
-    public function statuses()
-    {
-        return ['Pending', 'Processing', 'Reopened', 'Denied', 'Closed'];
     }
 }

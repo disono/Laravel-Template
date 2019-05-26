@@ -21,6 +21,7 @@ class ChatGroupMember extends BaseModel
     ];
 
     protected $inputBooleans = ['is_admin', 'is_mute', 'is_active', 'is_seen', 'is_archive'];
+    protected $columnHasRelations = ['chat_group_id', 'member_id', 'added_by_id',];
 
     public function __construct(array $attributes = [])
     {
@@ -32,14 +33,12 @@ class ChatGroupMember extends BaseModel
      * Custom filters
      *
      * @param $query
-     * @return mixed
      */
-    public function rawFilters($query)
+    public function rawFilters($query): void
     {
         $query->join('chat_groups', 'chat_group_members.chat_group_id', '=', 'chat_groups.id');
         $query->join('users AS member', 'chat_group_members.member_id', '=', 'member.id');
         $query->join('users AS creator', 'chat_group_members.added_by_id', '=', 'creator.id');
-        return $query;
     }
 
     /**

@@ -38,7 +38,7 @@ class MessageController extends Controller
         }
 
         $this->middleware(function ($request, $next) {
-            $this->setApp('app_scripts', [
+            $this->setAppView('app_scripts', [
                 'assets/js/app/chat.js'
             ]);
 
@@ -108,10 +108,29 @@ class MessageController extends Controller
         return $this->view('show', ['group' => $group]);
     }
 
+    private function _checkIsMember($group_id, $member_id = null)
+    {
+        $member_id = $member_id ? $member_id : $this->me->id;
+        return $this->chatGroupMember->where('chat_group_id', $group_id)->where('member_id', $member_id)->count();
+    }
+
     public function showGroupAction($group_id)
     {
         // show messages on group with validation if current user is existing as member of the group
         return $this->_isMember($group_id, $this->chatGroup->single($group_id));
+    }
+
+    private function _isMember($group_id, $data)
+    {
+        if ($this->_checkIsMember($group_id) <= 0) {
+            return $this->json($this->me->full_name . ' is not a member of this group chat.', 404);
+        }
+
+        if ($data === null) {
+            return $this->error(404);
+        }
+
+        return $this->json($data);
     }
 
     public function groupsAction()
@@ -194,6 +213,23 @@ class MessageController extends Controller
 
         DB::commit();
         return $this->json($group);
+    }
+
+    private function _isValidMembers($members)
+    {
+        if (!$members) {
+            return false;
+        }
+
+        if (!is_array($members)) {
+            return false;
+        }
+
+        if (!count($members)) {
+            return false;
+        }
+
+        return true;
     }
 
     public function updateGroupAction(UpdateGroupChat $request)
@@ -314,41 +350,5 @@ class MessageController extends Controller
 
         return $this->_isMember($group_id, $this->chatGroupMember->edit(null, ['is_admin' => 0],
             ['chat_group_id' => $group_id, 'member_id' => $member_id]));
-    }
-
-    private function _isMember($group_id, $data)
-    {
-        if ($this->_checkIsMember($group_id) <= 0) {
-            return $this->json($this->me->full_name . ' is not a member of this group chat.', 404);
-        }
-
-        if ($data === null) {
-            return $this->error(404);
-        }
-
-        return $this->json($data);
-    }
-
-    private function _checkIsMember($group_id, $member_id = null)
-    {
-        $member_id = $member_id ? $member_id : $this->me->id;
-        return $this->chatGroupMember->where('chat_group_id', $group_id)->where('member_id', $member_id)->count();
-    }
-
-    private function _isValidMembers($members)
-    {
-        if (!$members) {
-            return false;
-        }
-
-        if (!is_array($members)) {
-            return false;
-        }
-
-        if (!count($members)) {
-            return false;
-        }
-
-        return true;
     }
 }

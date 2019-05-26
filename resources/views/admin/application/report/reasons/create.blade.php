@@ -16,7 +16,6 @@
                         <h3>{{ $view_title }}</h3>
                         <hr>
                         @include('admin.application.report.menu')
-                        @include('admin.application.report.reasons.menu')
                     </div>
                 </div>
 

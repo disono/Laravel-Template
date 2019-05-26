@@ -17,6 +17,8 @@ class FirebaseNotification extends BaseModel
         'user_id', 'title', 'content', 'type', 'topic_name', 'token'
     ];
 
+    protected $columnHasRelations = ['user_id'];
+
     public function __construct(array $attributes = [])
     {
         $this->fillable($this->writableColumns);

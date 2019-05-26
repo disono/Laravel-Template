@@ -24,7 +24,7 @@ class PageController extends Controller
         $this->theme = 'page';
 
         $this->middleware(function ($request, $next) {
-            $this->setApp('app_scripts', [
+            $this->setAppView('app_scripts', [
                 'assets/js/admin/page.js'
             ]);
 
@@ -35,8 +35,10 @@ class PageController extends Controller
     public function indexAction()
     {
         $this->setHeader('title', 'Pages');
+        $page = new Page();
+        $page->enableSearch = true;
         return $this->view('index', [
-            'pages' => (new Page())->fetch(requestValues('search|page_category_id')),
+            'pages' => $page->fetch(requestValues('name|slug|page_category_id')),
             'categories' => (new PageCategory())->fetchAll()
         ]);
     }
