@@ -4,10 +4,9 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.0.4 (2019-04-23)
+ * Version: 5.0.9 (2019-06-26)
  */
-(function () {
-var mobile = (function (domGlobals) {
+(function (domGlobals) {
     'use strict';
 
     var extendStatics = function (d, b) {
@@ -368,17 +367,9 @@ var mobile = (function (domGlobals) {
     });
 
     var noop = function () {
-      var args = [];
-      for (var _i = 0; _i < arguments.length; _i++) {
-        args[_i] = arguments[_i];
-      }
     };
     var noarg = function (f) {
       return function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-          args[_i] = arguments[_i];
-        }
         return f();
       };
     };
@@ -873,6 +864,17 @@ var mobile = (function (domGlobals) {
     var isUndefined = isType('undefined');
     var isFunction = isType('function');
     var isNumber = isType('number');
+    var isArrayOf = function (value, pred) {
+      if (isArray(value)) {
+        for (var i = 0, len = value.length; i < len; ++i) {
+          if (pred(value[i]) !== true) {
+            return false;
+          }
+        }
+        return true;
+      }
+      return false;
+    };
 
     var Type = /*#__PURE__*/Object.freeze({
         isString: isString,
@@ -882,9 +884,11 @@ var mobile = (function (domGlobals) {
         isBoolean: isBoolean,
         isUndefined: isUndefined,
         isFunction: isFunction,
-        isNumber: isNumber
+        isNumber: isNumber,
+        isArrayOf: isArrayOf
     });
 
+    var slice = Array.prototype.slice;
     var rawIndexOf = function () {
       var pIndexOf = Array.prototype.indexOf;
       var fastIndex = function (xs, x) {
@@ -915,7 +919,7 @@ var mobile = (function (domGlobals) {
     var chunk = function (array, size) {
       var r = [];
       for (var i = 0; i < array.length; i += size) {
-        var s = array.slice(i, i + size);
+        var s = slice.call(array, i, i + size);
         r.push(s);
       }
       return r;
@@ -1053,7 +1057,6 @@ var mobile = (function (domGlobals) {
         return x === a2[i];
       });
     };
-    var slice = Array.prototype.slice;
     var reverse = function (xs) {
       var r = slice.call(xs, 0);
       r.reverse();
@@ -1609,6 +1612,11 @@ var mobile = (function (domGlobals) {
     var owner = function (element) {
       return Element.fromDom(element.dom().ownerDocument);
     };
+    var defaultView = function (element) {
+      var el = element.dom();
+      var defView = el.ownerDocument.defaultView;
+      return Element.fromDom(defView);
+    };
     var parent = function (element) {
       var dom = element.dom();
       return Option.from(dom.parentNode).map(Element.fromDom);
@@ -1865,9 +1873,15 @@ var mobile = (function (domGlobals) {
         toOption: Option.none
       };
     };
+    var fromOption = function (opt, err) {
+      return opt.fold(function () {
+        return error(err);
+      }, value$1);
+    };
     var Result = {
       value: value$1,
-      error: error
+      error: error,
+      fromOption: fromOption
     };
 
     var generate = function (cases) {
@@ -7356,60 +7370,19 @@ var mobile = (function (domGlobals) {
         record: record
     });
 
-    function create$3(width, height) {
-      return resize(domGlobals.document.createElement('canvas'), width, height);
+    function FileReader () {
+      var f = Global$1.getOrDie('FileReader');
+      return new f();
     }
-    function clone$2(canvas) {
-      var tCanvas, ctx;
-      tCanvas = create$3(canvas.width, canvas.height);
-      ctx = get2dContext(tCanvas);
-      ctx.drawImage(canvas, 0, 0);
-      return tCanvas;
-    }
-    function get2dContext(canvas) {
-      return canvas.getContext('2d');
-    }
-    function get3dContext(canvas) {
-      var gl = null;
-      try {
-        gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-      } catch (e) {
-      }
-      if (!gl) {
-        gl = null;
-      }
-      return gl;
-    }
-    function resize(canvas, width, height) {
-      canvas.width = width;
-      canvas.height = height;
-      return canvas;
-    }
-    var Canvas = {
-      create: create$3,
-      clone: clone$2,
-      resize: resize,
-      get2dContext: get2dContext,
-      get3dContext: get3dContext
-    };
-
-    function getWidth(image) {
-      return image.naturalWidth || image.width;
-    }
-    function getHeight(image) {
-      return image.naturalHeight || image.height;
-    }
-    var ImageSize = {
-      getWidth: getWidth,
-      getHeight: getHeight
-    };
 
     var promise = function () {
       var Promise = function (fn) {
-        if (typeof this !== 'object')
+        if (typeof this !== 'object') {
           throw new TypeError('Promises must be constructed via new');
-        if (typeof fn !== 'function')
+        }
+        if (typeof fn !== 'function') {
           throw new TypeError('not a function');
+        }
         this._state = null;
         this._value = null;
         this._deferreds = [];
@@ -7420,7 +7393,7 @@ var mobile = (function (domGlobals) {
       };
       function bind(fn, thisArg) {
         return function () {
-          fn.apply(thisArg, arguments);
+          return fn.apply(thisArg, arguments);
         };
       }
       var isArray = Array.isArray || function (value) {
@@ -7450,8 +7423,9 @@ var mobile = (function (domGlobals) {
       }
       function resolve(newValue) {
         try {
-          if (newValue === this)
+          if (newValue === this) {
             throw new TypeError('A promise cannot be resolved with itself.');
+          }
           if (newValue && (typeof newValue === 'object' || typeof newValue === 'function')) {
             var then = newValue.then;
             if (typeof then === 'function') {
@@ -7472,10 +7446,11 @@ var mobile = (function (domGlobals) {
         finale.call(this);
       }
       function finale() {
-        for (var i = 0, len = this._deferreds.length; i < len; i++) {
-          handle.call(this, this._deferreds[i]);
+        for (var _i = 0, _a = this._deferreds; _i < _a.length; _i++) {
+          var deferred = _a[_i];
+          handle.call(this, deferred);
         }
-        this._deferreds = null;
+        this._deferreds = [];
       }
       function Handler(onFulfilled, onRejected, resolve, reject) {
         this.onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : null;
@@ -7487,24 +7462,27 @@ var mobile = (function (domGlobals) {
         var done = false;
         try {
           fn(function (value) {
-            if (done)
+            if (done) {
               return;
+            }
             done = true;
             onFulfilled(value);
           }, function (reason) {
-            if (done)
+            if (done) {
               return;
+            }
             done = true;
             onRejected(reason);
           });
         } catch (ex) {
-          if (done)
+          if (done) {
             return;
+          }
           done = true;
           onRejected(ex);
         }
       }
-      Promise.prototype['catch'] = function (onRejected) {
+      Promise.prototype.catch = function (onRejected) {
         return this.then(null, onRejected);
       };
       Promise.prototype.then = function (onFulfilled, onRejected) {
@@ -7514,10 +7492,15 @@ var mobile = (function (domGlobals) {
         });
       };
       Promise.all = function () {
-        var args = Array.prototype.slice.call(arguments.length === 1 && isArray(arguments[0]) ? arguments[0] : arguments);
+        var values = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+          values[_i] = arguments[_i];
+        }
+        var args = Array.prototype.slice.call(values.length === 1 && isArray(values[0]) ? values[0] : values);
         return new Promise(function (resolve, reject) {
-          if (args.length === 0)
+          if (args.length === 0) {
             return resolve([]);
+          }
           var remaining = args.length;
           function res(i, val) {
             try {
@@ -7551,15 +7534,16 @@ var mobile = (function (domGlobals) {
           resolve(value);
         });
       };
-      Promise.reject = function (value) {
+      Promise.reject = function (reason) {
         return new Promise(function (resolve, reject) {
-          reject(value);
+          reject(reason);
         });
       };
       Promise.race = function (values) {
         return new Promise(function (resolve, reject) {
-          for (var i = 0, len = values.length; i < len; i++) {
-            values[i].then(resolve, reject);
+          for (var _i = 0, values_1 = values; _i < values_1.length; _i++) {
+            var value = values_1[_i];
+            value.then(resolve, reject);
           }
         });
       };
@@ -7567,158 +7551,6 @@ var mobile = (function (domGlobals) {
     };
     var Promise$1 = window.Promise ? window.Promise : promise();
 
-    function Blob (parts, properties) {
-      var f = Global$1.getOrDie('Blob');
-      return new f(parts, properties);
-    }
-
-    function FileReader () {
-      var f = Global$1.getOrDie('FileReader');
-      return new f();
-    }
-
-    function Uint8Array (arr) {
-      var f = Global$1.getOrDie('Uint8Array');
-      return new f(arr);
-    }
-
-    var requestAnimationFrame = function (callback) {
-      var f = Global$1.getOrDie('requestAnimationFrame');
-      f(callback);
-    };
-    var atob = function (base64) {
-      var f = Global$1.getOrDie('atob');
-      return f(base64);
-    };
-    var Window = {
-      atob: atob,
-      requestAnimationFrame: requestAnimationFrame
-    };
-
-    function imageToBlob(image) {
-      var src = image.src;
-      if (src.indexOf('data:') === 0) {
-        return dataUriToBlob(src);
-      }
-      return anyUriToBlob(src);
-    }
-    function blobToImage(blob) {
-      return new Promise$1(function (resolve, reject) {
-        var blobUrl = domGlobals.URL.createObjectURL(blob);
-        var image = new domGlobals.Image();
-        var removeListeners = function () {
-          image.removeEventListener('load', loaded);
-          image.removeEventListener('error', error);
-        };
-        function loaded() {
-          removeListeners();
-          resolve(image);
-        }
-        function error() {
-          removeListeners();
-          reject('Unable to load data of type ' + blob.type + ': ' + blobUrl);
-        }
-        image.addEventListener('load', loaded);
-        image.addEventListener('error', error);
-        image.src = blobUrl;
-        if (image.complete) {
-          loaded();
-        }
-      });
-    }
-    function anyUriToBlob(url) {
-      return new Promise$1(function (resolve, reject) {
-        var xhr = new domGlobals.XMLHttpRequest();
-        xhr.open('GET', url, true);
-        xhr.responseType = 'blob';
-        xhr.onload = function () {
-          if (this.status == 200) {
-            resolve(this.response);
-          }
-        };
-        xhr.onerror = function () {
-          var _this = this;
-          var corsError = function () {
-            var obj = new Error('No access to download image');
-            obj.code = 18;
-            obj.name = 'SecurityError';
-            return obj;
-          };
-          var genericError = function () {
-            return new Error('Error ' + _this.status + ' downloading image');
-          };
-          reject(this.status === 0 ? corsError() : genericError());
-        };
-        xhr.send();
-      });
-    }
-    function dataUriToBlobSync(uri) {
-      var data = uri.split(',');
-      var matches = /data:([^;]+)/.exec(data[0]);
-      if (!matches)
-        return Option.none();
-      var mimetype = matches[1];
-      var base64 = data[1];
-      var sliceSize = 1024;
-      var byteCharacters = Window.atob(base64);
-      var bytesLength = byteCharacters.length;
-      var slicesCount = Math.ceil(bytesLength / sliceSize);
-      var byteArrays = new Array(slicesCount);
-      for (var sliceIndex = 0; sliceIndex < slicesCount; ++sliceIndex) {
-        var begin = sliceIndex * sliceSize;
-        var end = Math.min(begin + sliceSize, bytesLength);
-        var bytes = new Array(end - begin);
-        for (var offset = begin, i = 0; offset < end; ++i, ++offset) {
-          bytes[i] = byteCharacters[offset].charCodeAt(0);
-        }
-        byteArrays[sliceIndex] = Uint8Array(bytes);
-      }
-      return Option.some(Blob(byteArrays, { type: mimetype }));
-    }
-    function dataUriToBlob(uri) {
-      return new Promise$1(function (resolve, reject) {
-        dataUriToBlobSync(uri).fold(function () {
-          reject('uri is not base64: ' + uri);
-        }, resolve);
-      });
-    }
-    function uriToBlob(url) {
-      if (url.indexOf('blob:') === 0) {
-        return anyUriToBlob(url);
-      }
-      if (url.indexOf('data:') === 0) {
-        return dataUriToBlob(url);
-      }
-      return null;
-    }
-    function canvasToBlob(canvas, type, quality) {
-      type = type || 'image/png';
-      if (domGlobals.HTMLCanvasElement.prototype.toBlob) {
-        return new Promise$1(function (resolve) {
-          canvas.toBlob(function (blob) {
-            resolve(blob);
-          }, type, quality);
-        });
-      } else {
-        return dataUriToBlob(canvas.toDataURL(type, quality));
-      }
-    }
-    function canvasToDataURL(getCanvas, type, quality) {
-      type = type || 'image/png';
-      return getCanvas.then(function (canvas) {
-        return canvas.toDataURL(type, quality);
-      });
-    }
-    function blobToCanvas(blob) {
-      return blobToImage(blob).then(function (image) {
-        revokeImageUrl(image);
-        var context, canvas;
-        canvas = Canvas.create(ImageSize.getWidth(image), ImageSize.getHeight(image));
-        context = Canvas.get2dContext(canvas);
-        context.drawImage(image, 0, 0);
-        return canvas;
-      });
-    }
     function blobToDataUri(blob) {
       return new Promise$1(function (resolve) {
         var reader = FileReader();
@@ -7728,65 +7560,18 @@ var mobile = (function (domGlobals) {
         reader.readAsDataURL(blob);
       });
     }
-    function blobToArrayBuffer(blob) {
-      return new Promise$1(function (resolve) {
-        var reader = FileReader();
-        reader.onloadend = function () {
-          resolve(reader.result);
-        };
-        reader.readAsArrayBuffer(blob);
-      });
-    }
     function blobToBase64(blob) {
       return blobToDataUri(blob).then(function (dataUri) {
         return dataUri.split(',')[1];
       });
     }
-    function revokeImageUrl(image) {
-      domGlobals.URL.revokeObjectURL(image.src);
-    }
-    var Conversions = {
-      blobToImage: blobToImage,
-      imageToBlob: imageToBlob,
-      blobToArrayBuffer: blobToArrayBuffer,
-      blobToDataUri: blobToDataUri,
-      blobToBase64: blobToBase64,
-      dataUriToBlobSync: dataUriToBlobSync,
-      canvasToBlob: canvasToBlob,
-      canvasToDataURL: canvasToDataURL,
-      blobToCanvas: blobToCanvas,
-      uriToBlob: uriToBlob
-    };
 
-    var blobToImage$1 = function (image) {
-      return Conversions.blobToImage(image);
-    };
-    var imageToBlob$1 = function (blob) {
-      return Conversions.imageToBlob(blob);
-    };
-    var blobToDataUri$1 = function (blob) {
-      return Conversions.blobToDataUri(blob);
-    };
     var blobToBase64$1 = function (blob) {
-      return Conversions.blobToBase64(blob);
-    };
-    var dataUriToBlobSync$1 = function (uri) {
-      return Conversions.dataUriToBlobSync(uri);
-    };
-    var uriToBlob$1 = function (uri) {
-      return Option.from(Conversions.uriToBlob(uri));
-    };
-    var BlobConversions = {
-      blobToImage: blobToImage$1,
-      imageToBlob: imageToBlob$1,
-      blobToDataUri: blobToDataUri$1,
-      blobToBase64: blobToBase64$1,
-      dataUriToBlobSync: dataUriToBlobSync$1,
-      uriToBlob: uriToBlob$1
+      return blobToBase64(blob);
     };
 
     var addImage = function (editor, blob) {
-      BlobConversions.blobToBase64(blob).then(function (base64) {
+      blobToBase64$1(blob).then(function (base64) {
         editor.undoManager.transact(function () {
           var cache = editor.editorUpload.blobCache;
           var info = cache.create(generate$1('mceu'), blob, base64);
@@ -11136,6 +10921,9 @@ var mobile = (function (domGlobals) {
       return hasCursorPosition || contains(elementsWithCursorPosition, name(elem));
     };
 
+    var create$3 = Immutable('start', 'soffset', 'finish', 'foffset');
+    var SimRange = { create: create$3 };
+
     var adt$4 = Adt.generate([
       { before: ['element'] },
       {
@@ -11163,7 +10951,7 @@ var mobile = (function (domGlobals) {
       getStart: getStart
     };
 
-    var type$1 = Adt.generate([
+    var adt$5 = Adt.generate([
       { domRange: ['rng'] },
       {
         relative: [
@@ -11180,21 +10968,37 @@ var mobile = (function (domGlobals) {
         ]
       }
     ]);
-    var range$2 = Immutable('start', 'soffset', 'finish', 'foffset');
-    var relative = type$1.relative;
-    var exact = type$1.exact;
-
-    var makeRange = function (start, soffset, finish, foffset) {
-      var doc = owner(start);
-      var rng = doc.dom().createRange();
-      rng.setStart(start.dom(), soffset);
-      rng.setEnd(finish.dom(), foffset);
-      return rng;
+    var exactFromRange = function (simRange) {
+      return adt$5.exact(simRange.start(), simRange.soffset(), simRange.finish(), simRange.foffset());
     };
-    var after$2 = function (start, soffset, finish, foffset) {
-      var r = makeRange(start, soffset, finish, foffset);
-      var same = eq(start, finish) && soffset === foffset;
-      return r.collapsed && !same;
+    var getStart$1 = function (selection) {
+      return selection.match({
+        domRange: function (rng) {
+          return Element.fromDom(rng.startContainer);
+        },
+        relative: function (startSitu, finishSitu) {
+          return Situ.getStart(startSitu);
+        },
+        exact: function (start, soffset, finish, foffset) {
+          return start;
+        }
+      });
+    };
+    var domRange = adt$5.domRange;
+    var relative = adt$5.relative;
+    var exact = adt$5.exact;
+    var getWin = function (selection) {
+      var start = getStart$1(selection);
+      return defaultView(start);
+    };
+    var range$2 = SimRange.create;
+    var Selection = {
+      domRange: domRange,
+      relative: relative,
+      exact: exact,
+      exactFromRange: exactFromRange,
+      getWin: getWin,
+      range: range$2
     };
 
     var setStart = function (rng, situ) {
@@ -11243,7 +11047,7 @@ var mobile = (function (domGlobals) {
       return rect.width > 0 || rect.height > 0 ? Option.some(rect).map(toRect) : Option.none();
     };
 
-    var adt$5 = Adt.generate([
+    var adt$6 = Adt.generate([
       {
         ltr: [
           'start',
@@ -11301,12 +11105,12 @@ var mobile = (function (domGlobals) {
           return rev.collapsed === false;
         });
         return reversed.map(function (rev) {
-          return adt$5.rtl(Element.fromDom(rev.endContainer), rev.endOffset, Element.fromDom(rev.startContainer), rev.startOffset);
+          return adt$6.rtl(Element.fromDom(rev.endContainer), rev.endOffset, Element.fromDom(rev.startContainer), rev.startOffset);
         }).getOrThunk(function () {
-          return fromRange(win, adt$5.ltr, rng);
+          return fromRange(win, adt$6.ltr, rng);
         });
       } else {
-        return fromRange(win, adt$5.ltr, rng);
+        return fromRange(win, adt$6.ltr, rng);
       }
     };
     var diagnose = function (win, selection) {
@@ -11510,7 +11314,20 @@ var mobile = (function (domGlobals) {
     var preprocessExact = function (start, soffset, finish, foffset) {
       var startSitu = beforeSpecial(start, soffset);
       var finishSitu = beforeSpecial(finish, foffset);
-      return relative(startSitu, finishSitu);
+      return Selection.relative(startSitu, finishSitu);
+    };
+
+    var makeRange = function (start, soffset, finish, foffset) {
+      var doc = owner(start);
+      var rng = doc.dom().createRange();
+      rng.setStart(start.dom(), soffset);
+      rng.setEnd(finish.dom(), foffset);
+      return rng;
+    };
+    var after$2 = function (start, soffset, finish, foffset) {
+      var r = makeRange(start, soffset, finish, foffset);
+      var same = eq(start, finish) && soffset === foffset;
+      return r.collapsed && !same;
     };
 
     var doSetNativeRange = function (win, rng) {
@@ -11556,7 +11373,7 @@ var mobile = (function (domGlobals) {
       if (selection.rangeCount > 0) {
         var firstRng = selection.getRangeAt(0);
         var lastRng = selection.getRangeAt(selection.rangeCount - 1);
-        return Option.some(range$2(Element.fromDom(firstRng.startContainer), firstRng.startOffset, Element.fromDom(lastRng.endContainer), lastRng.endOffset));
+        return Option.some(SimRange.create(Element.fromDom(firstRng.startContainer), firstRng.startOffset, Element.fromDom(lastRng.endContainer), lastRng.endOffset));
       } else {
         return Option.none();
       }
@@ -11564,7 +11381,7 @@ var mobile = (function (domGlobals) {
     var doGetExact = function (selection) {
       var anchor = Element.fromDom(selection.anchorNode);
       var focus = Element.fromDom(selection.focusNode);
-      return after$2(anchor, selection.anchorOffset, focus, selection.focusOffset) ? Option.some(range$2(anchor, selection.anchorOffset, focus, selection.focusOffset)) : readRange(selection);
+      return after$2(anchor, selection.anchorOffset, focus, selection.focusOffset) ? Option.some(SimRange.create(anchor, selection.anchorOffset, focus, selection.focusOffset)) : readRange(selection);
     };
     var getExact = function (win) {
       return Option.from(win.getSelection()).filter(function (sel) {
@@ -11573,7 +11390,7 @@ var mobile = (function (domGlobals) {
     };
     var get$d = function (win) {
       return getExact(win).map(function (range) {
-        return exact(range.start(), range.soffset(), range.finish(), range.foffset());
+        return Selection.exact(range.start(), range.soffset(), range.finish(), range.foffset());
       });
     };
     var getFirstRect$1 = function (win, selection) {
@@ -11612,7 +11429,7 @@ var mobile = (function (domGlobals) {
       } else {
         var start_1 = Element.fromDom(range.startContainer);
         return parent(start_1).bind(function (parent) {
-          var selection = exact(start_1, range.startOffset, parent, getEnd(parent));
+          var selection = Selection.exact(start_1, range.startOffset, parent, getEnd(parent));
           var optRect = getFirstRect$1(range.startContainer.ownerDocument.defaultView, selection);
           return optRect.map(collapsedRect).map(pure);
         }).getOr([]);
@@ -12110,6 +11927,7 @@ var mobile = (function (domGlobals) {
     var AndroidWebapp = { produce: produce };
 
     var schema$e = constant([
+      strict$1('dom'),
       defaulted$1('shell', true),
       field$1('toolbarBehaviours', [Replacing])
     ]);
@@ -12782,7 +12600,7 @@ var mobile = (function (domGlobals) {
       };
     };
 
-    var adt$6 = Adt.generate([
+    var adt$7 = Adt.generate([
       { stopped: [] },
       { resume: ['element'] },
       { complete: [] }
@@ -12792,24 +12610,24 @@ var mobile = (function (domGlobals) {
       var simulatedEvent = fromSource(rawEvent, source);
       return handler.fold(function () {
         logger.logEventNoHandlers(eventType, target);
-        return adt$6.complete();
+        return adt$7.complete();
       }, function (handlerInfo) {
         var descHandler = handlerInfo.descHandler();
         var eventHandler = getCurried(descHandler);
         eventHandler(simulatedEvent);
         if (simulatedEvent.isStopped()) {
           logger.logEventStopped(eventType, handlerInfo.element(), descHandler.purpose());
-          return adt$6.stopped();
+          return adt$7.stopped();
         } else if (simulatedEvent.isCut()) {
           logger.logEventCut(eventType, handlerInfo.element(), descHandler.purpose());
-          return adt$6.complete();
+          return adt$7.complete();
         } else {
           return parent(handlerInfo.element()).fold(function () {
             logger.logNoParent(eventType, handlerInfo.element(), descHandler.purpose());
-            return adt$6.complete();
+            return adt$7.complete();
           }, function (parent) {
             logger.logEventResponse(eventType, handlerInfo.element(), descHandler.purpose());
-            return adt$6.resume(parent);
+            return adt$7.resume(parent);
           });
         }
       });
@@ -14576,11 +14394,10 @@ var mobile = (function (domGlobals) {
         renderUI: renderUI
       };
     };
-    global$1.add('mobile', renderMobileTheme);
     function Theme () {
+      global$1.add('mobile', renderMobileTheme);
     }
 
-    return Theme;
+    Theme();
 
 }(window));
-})();

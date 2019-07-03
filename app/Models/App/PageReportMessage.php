@@ -8,8 +8,8 @@
 
 namespace App\Models\App;
 
-use App\Models\User;
 use App\Models\Vendor\BaseModel;
+use App\Models\Vendor\Facades\User;
 
 class PageReportMessage extends BaseModel
 {
@@ -36,15 +36,24 @@ class PageReportMessage extends BaseModel
         return $this->belongsTo('App\Models\User');
     }
 
-    public function rawFilters($query): void
+    protected function customQuerySelectList(): array
+    {
+        return [
+            'full_name' => 'CONCAT(users.first_name, " ", users.last_name)',
+            'gender' => 'users.gender',
+        ];
+    }
+
+    protected function customQueries($query): void
     {
         $query->join('users', 'page_report_messages.user_id', '=', 'users.id');
     }
 
     protected function dataFormatting($row)
     {
-        $row->user = (new User())->single($row->user_id);
+        $this->addDateFormatting($row);
 
+        $row->profile_picture = User::profilePicture($row->user_id, $row->gender);
         return $row;
     }
 }

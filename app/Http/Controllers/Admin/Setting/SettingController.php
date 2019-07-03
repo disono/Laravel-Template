@@ -12,16 +12,18 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Application\SaveSetting;
 use App\Http\Requests\Admin\Application\SettingStore;
 use App\Http\Requests\Admin\Application\SettingUpdate;
-use App\Models\Setting;
+use App\Models\Vendor\Facades\Setting;
 
 class SettingController extends Controller
 {
     protected $viewType = 'admin';
+    private $_setting;
 
     public function __construct()
     {
         parent::__construct();
         $this->theme = 'settings';
+        $this->_setting = Setting::self();
     }
 
     public function showAction()
@@ -34,11 +36,17 @@ class SettingController extends Controller
     {
         foreach (Setting::get() as $setting) {
             if ($request->has($setting->key)) {
-                $value = ($setting->input_type == 'checkbox') ?
-                    implode(',', $request->get($setting->key)) : $request->get($setting->key);
+                $value = $request->get($setting->key);
+                if ($setting->input_type === 'checkbox_multiple') {
+                    $value = implode(',', $request->get($setting->key));
+                }
 
                 Setting::where('key', $setting->key)->update([
                     'value' => $value
+                ]);
+            } else {
+                Setting::where('key', $setting->key)->update([
+                    'value' => NULL
                 ]);
             }
         }
@@ -53,22 +61,21 @@ class SettingController extends Controller
     public function indexAction()
     {
         $this->setHeader('title', 'Application Settings');
-        $settings = new Setting();
-        $settings->enableSearch = true;
-        return $this->view('setting.application.index', ['settings' => $settings->fetch(requestValues(
-            'search|pagination_show|name|description|value'
-        ))]);
+        $this->_setting->enableSearch = true;
+        return $this->view('setting.application.index', [
+            'settings' => $this->_setting->fetch(requestValues('search|pagination_show|name|description|value'))
+        ]);
     }
 
     public function createAction()
     {
         $this->setHeader('title', 'Add Application Settings');
-        return $this->view('setting.application.create');
+        return $this->view('setting.application.create', ['categories' => $this->_setting->categories()]);
     }
 
     public function storeAction(SettingStore $request)
     {
-        $setting = (new Setting())->store($request->all());
+        $setting = $this->_setting->store($request->all());
         if (!$setting) {
             return $this->json(['name' => 'Failed to crate a new setting.'], 422, false);
         }
@@ -79,23 +86,24 @@ class SettingController extends Controller
     public function editAction($id)
     {
         $this->setHeader('title', 'Edit Application Settings');
-        $this->content['setting'] = (new Setting())->single($id);
+        $this->content['setting'] = $this->_setting->single($id);
         if (!$this->content['setting']) {
             abort(404);
         }
 
+        $this->content['categories'] = $this->_setting->categories();
         return $this->view('setting.application.edit');
     }
 
     public function updateAction(SettingUpdate $request)
     {
-        (new Setting())->edit($request->get('id'), $request->all());
+        $this->_setting->edit($request->get('id'), $request->all());
         return $this->json('Setting is successfully updated.');
     }
 
     public function destroyAction($id)
     {
-        S(new Setting())->remove($id);
+        $this->_setting->remove($id);
         return $this->json('Setting is successfully deleted.');
     }
 }

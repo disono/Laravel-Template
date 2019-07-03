@@ -168,10 +168,12 @@ return [
         Jenssegers\Agent\AgentServiceProvider::class,
         Mews\Purifier\PurifierServiceProvider::class,
         HTMLMin\HTMLMin\HTMLMinServiceProvider::class,
-        Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class,
         LaravelFCM\FCMServiceProvider::class,
         Barryvdh\Cors\ServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
+
+        // Models
+        App\Models\Vendor\Facades\ModelServiceProvider::class,
 
     ],
 
@@ -230,8 +232,6 @@ return [
         'Agent' => Jenssegers\Agent\Facades\Agent::class,
         'Purifier' => Mews\Purifier\Facades\Purifier::class,
         'HTMLMin' => HTMLMin\HTMLMin\Facades\HTMLMin::class,
-        'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
-        'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
         'FCM' => LaravelFCM\Facades\FCM::class,
         'FCMGroup' => LaravelFCM\Facades\FCMGroup::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,

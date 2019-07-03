@@ -8,20 +8,20 @@
 @extends('admin.layouts.master')
 
 @section('content')
-     <div class="container-fluid shadow-sm p-3 bg-white">
+    <h3 class="mb-3 font-weight-bold">{{ $view_title }}</h3>
+
+    <div class="container-fluid shadow-sm p-3 bg-white">
         <div class="row">
             <div class="col">
                 <div class="row">
                     <div class="col">
-                        <h3>{{ $view_title }}</h3>
-                        <hr>
                         @include('admin.notification.fcm.menu')
                     </div>
                 </div>
 
                 <div class="row mt-3">
                     <div class="col">
-                        <form action="{{ route('admin.fcm.notification.store') }}" method="post"
+                        <form action="{{ route('admin.fcmNotification.store') }}" method="post"
                               v-on:submit.prevent="onFormUpload">
                             {{ csrf_field() }}
 
@@ -57,7 +57,9 @@
                                 <div class="col-md-4 col-sm-12 mb-3">
                                     <label for="type">Type <strong class="text-danger">*</strong></label>
 
-                                    <select name="type" id="type" class="form-control" v-model="frmAdminFCM.type"
+                                    <select name="type" id="type" class="form-control select_picker"
+                                            data-style="btn-blue-50"
+                                            v-model="frmAdminFCM.type"
                                             @change="frmAdminFCMOnTypeChange">
                                         <option value="">Select Type</option>
                                         <option value="topic">Topic</option>
@@ -70,14 +72,19 @@
                                 </div>
                             </div>
 
-                            <div class="row" v-if="frmAdminFCM.type == 'topic'">
+                            <div class="row" v-if="frmAdminFCM.type === 'topic'">
                                 <div class="col-md-4 col-sm-12 mb-3">
                                     <label for="topic_name">Topic Name <strong class="text-danger">*</strong></label>
 
-                                    <input id="topic_name" type="text"
-                                           class="form-control{{ hasInputError($errors, 'topic_name') }}"
-                                           name="topic_name" value="{{ old('topic_name') }}" data-validate="required"
-                                           v-model="frmAdminFCM.topic_name">
+                                    <select name="topic_name" id="topic_name"
+                                            data-style="btn-blue-50"
+                                            class="form-control select_picker"
+                                            data-validate="required">
+                                        <option value="">Select Type</option>
+                                        @foreach($fcm_topics as $topic)
+                                            <option value="{{ $topic }}">{{ ucfirst($topic) }}</option>
+                                        @endforeach
+                                    </select>
 
                                     @if ($errors->has('topic_name'))
                                         <div class="invalid-feedback">{{ $errors->first('topic_name') }}</div>
@@ -85,14 +92,20 @@
                                 </div>
                             </div>
 
-                            <div class="row" v-if="frmAdminFCM.type == 'token'">
+                            <div class="row" v-if="frmAdminFCM.type === 'token'">
                                 <div class="col-md-4 col-sm-12 mb-3">
                                     <label for="token">Token <strong class="text-danger">*</strong></label>
 
-                                    <input id="token" type="text"
-                                           class="form-control{{ hasInputError($errors, 'token') }}"
-                                           name="token" value="{{ old('token') }}" data-validate="required"
-                                           v-model="frmAdminFCM.token">
+                                    <select name="token" id="token"
+                                            data-style="btn-blue-50"
+                                            class="form-control select_picker"
+                                            data-live-search="true"
+                                            data-live-path="/admin/fcm-notification/tokens"
+                                            data-live-value="fcm_token"
+                                            data-live-text="full_name"
+                                            data-validate="required">
+                                        <option value="">Select Token</option>
+                                    </select>
 
                                     @if ($errors->has('token'))
                                         <div class="invalid-feedback">{{ $errors->first('token') }}</div>
@@ -100,6 +113,7 @@
                                 </div>
                             </div>
 
+                            <hr>
                             <button type="submit" class="btn btn-raised btn-primary">Send</button>
                         </form>
                     </div>

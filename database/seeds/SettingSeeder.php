@@ -17,6 +17,8 @@ class SettingSeeder extends Seeder
                 'key' => $value[1],
                 'value' => $value[2],
 
+                'description' => $value[6],
+
                 'input_type' => $value[3],
                 'input_value' => $value[4],
                 'category_setting_id' => $value[5],
@@ -28,35 +30,41 @@ class SettingSeeder extends Seeder
     private function _settings()
     {
         return [
-            ['Application Name', 'title', 'Webmons Development Studio', 'text', null, 1],
-            ['Default App URL', 'appUrl', 'http://domain.com', 'text', null, 1],
-            ['Description', 'description', 'Project Template', 'textarea', null, 1],
-            ['Author', 'author', 'Archie Disono', 'text', null, 1],
-            ['Keywords', 'keywords', 'webmons, project template, boiler plate', 'textarea', null, 1],
-            ['Theme Version', 'themeVersion', '1.0', 'text', null, 1],
-            ['Theme Name', 'theme', 'master', 'text', null, 1],
-            ['Subscriber Form', 'subscriberForm', 'enabled', 'select', 'enabled,disabled', 1],
-            ['Items per page(pagination)', 'pagination', '12', 'text', null, 1],
-            ['Chat/Messaging', 'chat', 'enabled', 'select', 'enabled,disabled', 1],
+            ['Application Name', 'title', 'Webmons Development Studio', 'text', NULL, 1, NULL],
+            ['Default App URL', 'appUrl', 'http://domain.com', 'text', NULL, 1, NULL],
+            ['Description', 'description', 'Project Template', 'textarea', NULL, 1, NULL],
+            ['Author', 'author', 'Archie Disono', 'text', NULL, 1, NULL],
+            ['Keywords', 'keywords', 'webmons, project template, boiler plate', 'textarea', NULL, 1, NULL],
+            ['Theme Version', 'themeVersion', '1.0', 'text', NULL, 1, NULL],
+            ['Theme Name', 'theme', 'master', 'text', NULL, 1, NULL],
+            ['Items per page(pagination)', 'pagination', '12', 'text', NULL, 1, NULL],
+            ['Subscriber Form', 'subscriberForm', 'enabled', 'checkbox_single', 'enabled', 1, NULL],
+            ['Chat/Messaging', 'chat', 'enabled', 'checkbox_single', 'enabled', 1, NULL],
 
-            ['Minimum age for registration', 'minimumAgeForRegistration', '13', 'text', null, 2],
-            ['Maximum age for registration', 'maximumAgeForRegistration', '120', 'text', null, 2],
+            ['Minimum age for registration', 'minimumAgeForRegistration', '13', 'text', NULL, 2, NULL],
+            ['Maximum age for registration', 'maximumAgeForRegistration', '120', 'text', NULL, 2, NULL],
 
-            ['File size limit(image)', 'fileSizeLimitImage', '3000', 'text', null, 3],
-            ['File size limit(default)', 'fileSizeLimit', '3000', 'text', null, 3],
+            ['File size limit(image)', 'fileSizeLimitImage', '3000', 'text', NULL, 3, NULL],
+            ['File size limit(default)', 'fileSizeLimit', '3000', 'text', NULL, 3, NULL],
 
-            ['Facebook Page', 'socialFacebook', '#', 'text', null, 4],
-            ['Twitter Page', 'socialTwitter', '#', 'text', null, 4],
-            ['IG Page', 'socialIG', '#', 'text', null, 4],
+            ['Facebook Page', 'socialFacebook', '#', 'text', NULL, 4, NULL],
+            ['Twitter Page', 'socialTwitter', '#', 'text', NULL, 4, NULL],
+            ['IG Page', 'socialIG', '#', 'text', NULL, 4, NULL],
 
-            ['Enable User Registration', 'authUserRegistration', 'enabled', 'select', 'enabled,disabled', 5],
-            ['Auth Facebook', 'authSocialFacebook', 'enabled', 'select', 'enabled,disabled', 5],
-            ['Email Verification', 'user_email_verification', 'enabled', 'select', 'enabled,disabled', 5],
-            ['Phone Verification', 'user_phone_verification', 'disabled', 'select', 'enabled,disabled', 5],
-            ['Account Enabled', 'user_account_enabled', 'enabled', 'select', 'enabled,disabled', 5],
+            ['Enable User Registration', 'authUserRegistration', 'enabled', 'checkbox_single', 'enabled', 5, NULL],
+            ['Auth Facebook', 'authSocialFacebook', 'enabled', 'checkbox_single', 'enabled', 5, NULL],
+            ['JWT Authentication', 'jwtAuthentication', 'enabled', 'checkbox_single', 'enabled', 5, NULL],
 
-            ['FCM', 'fcm', 'disabled', 'select', 'enabled,disabled', 6],
-            ['FCM Topics', 'fcm_topics', 'news', 'checkbox', 'news,marketing', 6],
+            ['Account Enabled', 'accountEnabled', 'enabled', 'checkbox_single', 'enabled', 5, NULL],
+            ['Email verification', 'emailVerification', 'enabled', 'checkbox_single', 'enabled', 5, NULL],
+            ['Phone verification', 'phoneVerification', NULL, 'checkbox_single', 'enabled', 5, NULL],
+            ['Address verification', 'addressVerification', NULL, 'checkbox_single', 'enabled', 5, NULL],
+            ['Threshold for address verification', 'addressVerificationThreshold', '3', 'text', NULL, 5, 'Zero means no threshold.'],
+            ['Threshold for phone verification', 'phoneVerificationThreshold', '3', 'text', NULL, 5, 'Zero means no threshold.'],
+            ['Threshold for email verification', 'emailVerificationThreshold', '0', 'text', NULL, 5, 'Zero means no threshold.'],
+
+            ['FCM', 'fcm', NULL, 'checkbox_single', 'enabled', 6, NULL],
+            ['FCM Topics', 'fcm_topics', 'news', 'checkbox_multiple', 'news,marketing', 6, NULL],
         ];
     }
 }

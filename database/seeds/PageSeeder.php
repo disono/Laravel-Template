@@ -22,7 +22,6 @@ class PageSeeder extends Seeder
     {
         foreach ($this->pages as $page) {
             DB::table('pages')->insert([
-                'page_category_id' => 1,
                 'user_id' => 1,
                 'name' => $page[0],
                 'content' => str_random(),

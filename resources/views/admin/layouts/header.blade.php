@@ -22,16 +22,16 @@
                 </a>
 
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item" href="{{ route('user.settings') }}">Account Settings</a>
-                    <a class="dropdown-item" href="{{ route('user.security') }}">Security</a>
+                    <a class="dropdown-item" href="{{ route('user.setting.general') }}">Account Settings</a>
+                    <a class="dropdown-item" href="{{ route('user.setting.security') }}">Security</a>
 
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="{{ route('auth.logout') }}">Logout</a>
                 </div>
             </li>
 
-            <li class="nav-item {{ isActiveMenu('user.dashboard.show') }}">
-                <a class="nav-link" href="{{ route('user.dashboard.show') }}">Dashboard</a>
+            <li class="nav-item {{ isActiveMenu('user.dashboard') }}">
+                <a class="nav-link" href="{{ route('user.dashboard') }}">Dashboard</a>
             </li>
         </ul>
     </div>

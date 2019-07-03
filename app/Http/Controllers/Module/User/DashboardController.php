@@ -28,7 +28,7 @@ class DashboardController extends Controller
      */
     public function showAction()
     {
-        if (__me()->role == 'client') {
+        if ($this->_isManagement()) {
             return $this->view('dashboard.client', $this->_client());
         } else {
             return $this->view('dashboard.admin', $this->_admin());
@@ -52,12 +52,22 @@ class DashboardController extends Controller
      */
     private function _admin()
     {
-        $this->addAppView('app_libraries', 'assets/js/lib/chart.js');
+        $this->addAppView('app_libraries', 'assets/js/lib/chart.min.js');
 
         return [
-            'latest_members' => (new User())->fetchAll(['is_latest' => 1, 'limit' => 3]),
+            'latest_members' => (new User())->fetchAll(['is_latest' => 1, 'limit_query' => 3]),
             'count_active_members' => (new User())->fetch(['object' => true, 'is_account_activated' => 1])->count(),
             'count_inactive_members' => (new User())->fetch(['object' => true, 'is_account_activated' => 0])->count()
         ];
+    }
+
+    /**
+     * Is management
+     *
+     * @return bool
+     */
+    private function _isManagement()
+    {
+        return in_array(__me()->role, ['client']);
     }
 }

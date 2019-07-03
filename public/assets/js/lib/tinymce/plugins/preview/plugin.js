@@ -4,10 +4,9 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.0.4 (2019-04-23)
+ * Version: 5.0.9 (2019-06-26)
  */
 (function () {
-var preview = (function () {
     'use strict';
 
     var global = tinymce.util.Tools.resolve('tinymce.PluginManager');
@@ -23,10 +22,14 @@ var preview = (function () {
     var getContentStyle = function (editor) {
       return editor.getParam('content_style', '');
     };
+    var shouldUseContentCssCors = function (editor) {
+      return editor.getParam('content_css_cors', false, 'boolean');
+    };
     var Settings = {
       getPreviewDialogWidth: getPreviewDialogWidth,
       getPreviewDialogHeight: getPreviewDialogHeight,
-      getContentStyle: getContentStyle
+      getContentStyle: getContentStyle,
+      shouldUseContentCssCors: shouldUseContentCssCors
     };
 
     var getPreviewHtml = function (editor) {
@@ -37,8 +40,9 @@ var preview = (function () {
       if (contentStyle) {
         headHtml += '<style type="text/css">' + contentStyle + '</style>';
       }
+      var cors = Settings.shouldUseContentCssCors(editor) ? ' crossorigin="anonymous"' : '';
       global$1.each(editor.contentCSS, function (url) {
-        headHtml += '<link type="text/css" rel="stylesheet" href="' + encode(editor.documentBaseURI.toAbsolute(url)) + '">';
+        headHtml += '<link type="text/css" rel="stylesheet" href="' + encode(editor.documentBaseURI.toAbsolute(url)) + '"' + cors + '>';
       });
       var bodyId = editor.settings.body_id || 'tinymce';
       if (bodyId.indexOf('=') !== -1) {
@@ -51,8 +55,9 @@ var preview = (function () {
         bodyClass = bodyClass[editor.id] || '';
       }
       var preventClicksOnLinksScript = '<script>' + 'document.addEventListener && document.addEventListener("click", function(e) {' + 'for (var elm = e.target; elm; elm = elm.parentNode) {' + 'if (elm.nodeName === "A") {' + 'e.preventDefault();' + '}' + '}' + '}, false);' + '</script> ';
-      var dirAttr = editor.settings.directionality ? ' dir="' + editor.settings.directionality + '"' : '';
-      var previewHtml = '<!DOCTYPE html>' + '<html>' + '<head>' + headHtml + '</head>' + '<body id="' + encode(bodyId) + '" class="mce-content-body ' + encode(bodyClass) + '"' + encode(dirAttr) + '>' + editor.getContent() + preventClicksOnLinksScript + '</body>' + '</html>';
+      var directionality = editor.getBody().dir;
+      var dirAttr = directionality ? ' dir="' + encode(directionality) + '"' : '';
+      var previewHtml = '<!DOCTYPE html>' + '<html>' + '<head>' + headHtml + '</head>' + '<body id="' + encode(bodyId) + '" class="mce-content-body ' + encode(bodyClass) + '"' + dirAttr + '>' + editor.getContent() + preventClicksOnLinksScript + '</body>' + '</html>';
       return previewHtml;
     };
     var IframeContent = { getPreviewHtml: getPreviewHtml };
@@ -106,14 +111,13 @@ var preview = (function () {
     };
     var Buttons = { register: register$1 };
 
-    global.add('preview', function (editor) {
-      Commands.register(editor);
-      Buttons.register(editor);
-    });
     function Plugin () {
+      global.add('preview', function (editor) {
+        Commands.register(editor);
+        Buttons.register(editor);
+      });
     }
 
-    return Plugin;
+    Plugin();
 
 }());
-})();

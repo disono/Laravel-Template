@@ -24,7 +24,11 @@ class PageCategoryUpdate extends AdminRequest
             'parent_id' => 'integer|exists:page_categories,id',
             'name' => 'required|max:100',
             'description' => 'max:100',
-            'slug' => 'required|alpha_dash|unique:page_categories,slug,' . request('id')
+            'slug' => 'required|alpha_dash|unique:page_categories,slug,' . request('id'),
+            'img_active' => 'image|max:' . __settings('fileSizeLimitImage')->value,
+            'img_inactive' => 'image|max:' . __settings('fileSizeLimitImage')->value,
+            'img_banner' => 'image|max:' . __settings('fileSizeLimitImage')->value,
+            'is_enabled' => 'in:0,1'
         ];
     }
 }

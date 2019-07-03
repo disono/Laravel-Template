@@ -30,7 +30,7 @@ class FacebookController extends Controller
         ]]);
 
         // check if facebook auth is enabled
-        if (__settings('authSocialFacebook')->value != 'enabled') {
+        if (__settings('authSocialFacebook')->value !== 'enabled') {
             abort(404);
         }
     }
@@ -42,8 +42,8 @@ class FacebookController extends Controller
      */
     public function facebookAction()
     {
-        if (__settings('authSocialFacebook')->value != 'enabled' ||
-            __settings('authUserRegistration')->value != 'enabled') {
+        if (__settings('authSocialFacebook')->value !== 'enabled' ||
+            __settings('authUserRegistration')->value !== 'enabled') {
             abort(404);
         }
 
@@ -82,7 +82,7 @@ class FacebookController extends Controller
 
         // login the user
         Auth::loginUsingId($social->user_id);
-        initialize_settings();
+        __initializeSettings();
         $this->_logAuthentication();
 
         return $this->redirect('dashboard');
@@ -127,7 +127,7 @@ class FacebookController extends Controller
 
             // login the user
             Auth::loginUsingId($create->id);
-            initialize_settings();
+            __initializeSettings();
 
             // user's Facebook avatar
             $this->_downloadAvatar($user->getId());

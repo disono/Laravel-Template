@@ -11,20 +11,23 @@ namespace App\Http\Controllers\Admin\Notification;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Notification\FCMStore;
 use App\Http\Requests\Admin\Notification\FCMUpdate;
-use App\Models\FirebaseNotification;
+use App\Models\Vendor\Facades\FirebaseNotification;
+use App\Models\Vendor\Facades\FirebaseToken;
 
 class FCMController extends Controller
 {
     protected $viewType = 'admin';
+    private $_firebaseNotification;
 
     public function __construct()
     {
         parent::__construct();
         $this->theme = 'notification.fcm';
+        $this->_firebaseNotification = FirebaseNotification::self();
 
         $this->middleware(function ($request, $next) {
             $this->setAppView('app_scripts', [
-                'assets/js/admin/fcm.js'
+                'assets/js/vue/fcm.admin.js'
             ]);
 
             return $next($request);
@@ -34,27 +37,39 @@ class FCMController extends Controller
     public function indexAction()
     {
         $this->setHeader('title', 'FCM Notifications');
-        $fcm = new FirebaseNotification();
-        $fcm->enableSearch = true;
-        $fcm->setNewWritableColumn('created_at');
+        $this->_firebaseNotification->enableSearch = true;
+        $this->_firebaseNotification->setWritableColumn('created_at');
         return $this->view('index', [
-            'notifications' => $fcm->fetch(requestValues('search|pagination_show|title|created_at'))
+            'notifications' => $this->_firebaseNotification->fetch(requestValues('search|pagination_show|title|created_at'))
         ]);
+    }
+
+    public function tokenListAction()
+    {
+        return $this->json(FirebaseToken::fetchAll(requestValues('search', ['limit' => 30, 'is_expired' => 0])));
     }
 
     public function createAction()
     {
+        if (__settings('fcm')->value !== 'enabled') {
+            abort(409);
+        }
+
         $this->setHeader('title', 'Send New FCM Notification');
-        return $this->view('create');
+        return $this->view('create', ['fcm_topics' => explode(',', __settings('fcm_topics')->input_value)]);
     }
 
     public function storeAction(FCMStore $request)
     {
+        if (__settings('fcm')->value !== 'enabled') {
+            abort(409);
+        }
+
         $inputs = $request->all();
         $inputs['user_id'] = __me()->id;
 
         try {
-            $fcm = (new FirebaseNotification())->store($inputs);
+            $fcm = $this->_firebaseNotification->store($inputs);
             if (!$fcm) {
                 return $this->json(['title' => 'Failed to crate a new FCM notification.'], 422, false);
             }
@@ -67,7 +82,11 @@ class FCMController extends Controller
 
     public function editAction($id)
     {
-        $fcm = (new FirebaseNotification())->single($id);
+        if (__settings('fcm')->value !== 'enabled') {
+            abort(409);
+        }
+
+        $fcm = $this->_firebaseNotification->single($id);
         if (!$fcm) {
             abort(404);
         }
@@ -78,8 +97,12 @@ class FCMController extends Controller
 
     public function updateAction(FCMUpdate $request)
     {
+        if (__settings('fcm')->value !== 'enabled') {
+            abort(409);
+        }
+
         try {
-            (new FirebaseNotification())->edit($request->get('id'), $request->all());
+            $this->_firebaseNotification->edit($request->get('id'), $request->all());
             return $this->json('FCM notification is successfully updated.');
         } catch (\Exception $e) {
             return $this->json(['title' => $e->getMessage()], 422, false);
@@ -88,7 +111,7 @@ class FCMController extends Controller
 
     public function destroyAction($id)
     {
-        (new FirebaseNotification())->remove($id);
+        $this->_firebaseNotification->remove($id);
         return $this->json('FCM notification is successfully deleted.');
     }
 }

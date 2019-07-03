@@ -4,19 +4,14 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.0.4 (2019-04-23)
+ * Version: 5.0.9 (2019-06-26)
  */
-(function () {
-var emoticons = (function (domGlobals) {
+(function (domGlobals) {
     'use strict';
 
     var global = tinymce.util.Tools.resolve('tinymce.PluginManager');
 
     var noop = function () {
-      var args = [];
-      for (var _i = 0; _i < arguments.length; _i++) {
-        args[_i] = arguments[_i];
-      }
     };
     var constant = function (value) {
       return function () {
@@ -180,6 +175,7 @@ var emoticons = (function (domGlobals) {
     };
     var isFunction = isType('function');
 
+    var slice = Array.prototype.slice;
     var exists = function (xs, pred) {
       return findIndex(xs, pred).isSome();
     };
@@ -201,7 +197,6 @@ var emoticons = (function (domGlobals) {
       }
       return Option.none();
     };
-    var slice = Array.prototype.slice;
     var from$1 = isFunction(Array.from) ? Array.from : function (x) {
       return slice.call(x);
     };
@@ -301,6 +296,10 @@ var emoticons = (function (domGlobals) {
         cancel: cancel,
         throttle: throttle
       };
+    };
+
+    var insertEmoticon = function (editor, ch) {
+      editor.insertContent(ch);
     };
 
     var Global = typeof domGlobals.window !== 'undefined' ? domGlobals.window : Function('return this;')();
@@ -432,9 +431,15 @@ var emoticons = (function (domGlobals) {
         toOption: Option.none
       };
     };
+    var fromOption = function (opt, err) {
+      return opt.fold(function () {
+        return error(err);
+      }, value);
+    };
     var Result = {
       value: value,
-      error: error
+      error: error,
+      fromOption: fromOption
     };
 
     var hasOwnProperty$1 = Object.prototype.hasOwnProperty;
@@ -593,27 +598,23 @@ var emoticons = (function (domGlobals) {
       };
     };
 
-    var insertEmoticon = function (editor, ch) {
-      editor.insertContent(ch);
-    };
-
     var patternName = 'pattern';
     var open = function (editor, database) {
       var initialState = {
         pattern: '',
         results: emojisFrom(database.listAll(), '', Option.some(300))
       };
-      var scan = function (dialogApi, category) {
+      var currentTab = Cell(ALL_CATEGORY);
+      var scan = function (dialogApi) {
         var dialogData = dialogApi.getData();
+        var category = currentTab.get();
         var candidates = database.listCategory(category);
         var results = emojisFrom(candidates, dialogData[patternName], category === ALL_CATEGORY ? Option.some(300) : Option.none());
         dialogApi.setData({ results: results });
       };
       var updateFilter = last(function (dialogApi) {
-        var category = currentTab.get();
-        scan(dialogApi, category);
+        scan(dialogApi);
       }, 200);
-      var currentTab = Cell(ALL_CATEGORY);
       var searchField = {
         label: 'Search',
         type: 'input',
@@ -629,6 +630,7 @@ var emoticons = (function (domGlobals) {
           tabs: map(database.listCategories(), function (cat) {
             return {
               title: cat,
+              name: cat,
               items: [
                 searchField,
                 resultsField
@@ -641,8 +643,8 @@ var emoticons = (function (domGlobals) {
           size: 'normal',
           body: body,
           initialData: initialState,
-          onTabChange: function (dialogApi, title) {
-            currentTab.set(title);
+          onTabChange: function (dialogApi, details) {
+            currentTab.set(details.newTabName);
             updateFilter.throttle(dialogApi);
           },
           onChange: updateFilter.throttle,
@@ -714,16 +716,15 @@ var emoticons = (function (domGlobals) {
     };
     var Buttons = { register: register };
 
-    global.add('emoticons', function (editor, pluginUrl) {
-      var databaseUrl = Settings.getEmoticonDatabaseUrl(editor, pluginUrl);
-      var database = initDatabase(editor, databaseUrl);
-      Buttons.register(editor, database);
-      init(editor, database);
-    });
     function Plugin () {
+      global.add('emoticons', function (editor, pluginUrl) {
+        var databaseUrl = Settings.getEmoticonDatabaseUrl(editor, pluginUrl);
+        var database = initDatabase(editor, databaseUrl);
+        Buttons.register(editor, database);
+        init(editor, database);
+      });
     }
 
-    return Plugin;
+    Plugin();
 
 }(window));
-})();

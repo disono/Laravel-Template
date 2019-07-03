@@ -9,13 +9,21 @@
 namespace App\Http\Controllers\API\V1\Page;
 
 use App\Http\Controllers\API\APIController;
-use App\Models\Page;
-use App\Models\PageView;
+use App\Models\Vendor\Facades\Page;
+use App\Models\Vendor\Facades\PageView;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 
 class PageController extends APIController
 {
+    private $_page;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->_page = Page::self();
+    }
+    
     /**
      * List by category page
      *
@@ -24,7 +32,7 @@ class PageController extends APIController
      */
     public function categoryAction($category)
     {
-        return $this->json((new Page())->fetch(['page_category_slug' => $category]));
+        return $this->json($this->_page->fetch(['page_category_slug' => $category, 'is_category_enabled' => 1]));
     }
 
     /**
@@ -36,7 +44,7 @@ class PageController extends APIController
      */
     public function archiveAction($year, $month)
     {
-        return $this->json((new Page())->fetch(['raw_year' => $year, 'raw_month' => $month]));
+        return $this->json($this->_page->fetch(['raw_year' => $year, 'raw_month' => $month]));
     }
 
     /**
@@ -47,7 +55,7 @@ class PageController extends APIController
      */
     public function showAction($slug)
     {
-        $page = (new Page())->single($slug, 'slug');
+        $page = $this->_page->single($slug, 'slug');
         if (!$page) {
             return $this->json(exceptionMessages('PAGE_NOT_FOUND'), 404);
         }
@@ -60,6 +68,6 @@ class PageController extends APIController
 
     private function _savePageView($page)
     {
-        (new PageView())->log($page);
+        PageView::log($page);
     }
 }

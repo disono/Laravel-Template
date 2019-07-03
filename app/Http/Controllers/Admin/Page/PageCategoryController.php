@@ -11,27 +11,33 @@ namespace App\Http\Controllers\Admin\Page;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Page\PageCategoryStore;
 use App\Http\Requests\Admin\Page\PageCategoryUpdate;
-use App\Models\PageCategory;
+use App\Models\Vendor\Facades\PageCategory;
 
 class PageCategoryController extends Controller
 {
     protected $viewType = 'admin';
+    private $_pageCategory;
 
     public function __construct()
     {
         parent::__construct();
-        $this->theme = 'page_category';
+        $this->theme = 'page.category';
+        $this->_pageCategory = PageCategory::self();
     }
 
     public function indexAction()
     {
         $this->setHeader('title', 'Page Categories');
-        $pageCategories = new PageCategory();
-        $pageCategories->enableSearch = true;
+
+        $defaults = [];
+        if (!$this->request->get('parent_id')) {
+            $defaults['parent_id'] = 0;
+        }
+
+        $this->_pageCategory->enableSearch = true;
         return $this->view('index', [
-            'page_categories' => $pageCategories->nestedToTabs(requestValues('search|name|pagination_show',
-                ['include_tab' => false, 'strong' => true]
-            ))
+            'parents' => $this->_pageCategory->parents($this->request->get('parent_id')),
+            'page_categories' => $this->_pageCategory->fetch(requestValues('search|name|pagination_show|parent_id|is_enabled', $defaults))
         ]);
     }
 
@@ -39,41 +45,62 @@ class PageCategoryController extends Controller
     {
         $this->setHeader('title', 'Create a New Page Category');
         return $this->view('create', [
-            'categories' => (new PageCategory())->fetchAll(),
+            'categories' => $this->_pageCategory->formattedCategories(['tab_in_name' => true, 'tab' => ' - - - ']),
         ]);
     }
 
     public function storeAction(PageCategoryStore $request)
     {
-        $c = (new PageCategory())->store($request->all());
+        $inputs = $request->all();
+        $this->_pageCategory->setFilesFromRequest($request, $inputs);
+        $c = $this->_pageCategory->store($inputs);
         if (!$c) {
             return $this->json(['name' => 'Failed to crate a new category.'], 422, false);
         }
 
-        return $this->json(['redirect' => '/admin/page-category/edit/' . $c->id]);
+        return $this->json(['redirect' => '/admin/page-categories']);
     }
 
     public function editAction($id)
     {
         $this->setHeader('title', 'Editing Page Category');
-        $this->content['category'] = (new PageCategory())->single($id);
+        $this->content['category'] = $this->_pageCategory->single($id);
         if (!$this->content['category']) {
             abort(404);
         }
 
-        $this->content['categories'] = (new PageCategory())->fetchAll();
+        $this->content['categories'] = $this->_pageCategory->formattedCategories(['tab_in_name' => true, 'tab' => ' - - - ']);
         return $this->view('edit');
     }
 
     public function updateAction(PageCategoryUpdate $request)
     {
-        (new PageCategory())->edit($request->get('id'), $request->all());
+        $inputs = $request->all();
+        $this->_pageCategory->setFilesFromRequest($request, $inputs);
+
+        if ($request->get('id') === $request->get('parent_id')) {
+            return $this->json(['parent_id' => 'Invalid parent category.'], 422, false);
+        }
+
+        $this->_pageCategory->edit($request->get('id'), $inputs);
         return $this->json('Category is successfully updated.');
+    }
+
+    public function updateStatusAction($column, $status, $id)
+    {
+        if (!in_array($column, ['is_enabled'])) {
+            return $this->error(499, 'Status not found.');
+        }
+
+        $this->_pageCategory->clearBoolean();
+        $this->_pageCategory->clearInteger();
+        $this->_pageCategory->edit($id, [$column => $status]);
+        return $this->json('Page Category is successfully updated.');
     }
 
     public function destroyAction($id)
     {
-        (new PageCategory())->remove($id);
+        $this->_pageCategory->remove($id);
         return $this->json('Category is successfully deleted.');
     }
 }

@@ -9,12 +9,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class BaseController extends Controller
 {
-
     protected $modelName;
     protected $dataName;
 
@@ -39,16 +37,16 @@ class BaseController extends Controller
     protected $allowEdit = false;
     protected $allowDelete = false;
 
-    protected $indexTitle = null;
-    protected $showTitle = null;
-    protected $createTitle = null;
-    protected $editTitle = null;
+    protected $indexTitle = NULL;
+    protected $showTitle = NULL;
+    protected $createTitle = NULL;
+    protected $editTitle = NULL;
 
     // redirect url after updating or creating a new data
     protected $afterRedirectUrl = '/';
 
     // adding user's id before storing new data (column name)
-    protected $hasOwner = null;
+    protected $hasOwner = NULL;
 
     public function __construct()
     {
@@ -88,7 +86,7 @@ class BaseController extends Controller
      * @param null $id
      * @return JsonResponse|Response
      */
-    public function showAction($id = null)
+    public function showAction($id = NULL)
     {
         if (!$this->allowShow) {
             abort(404);
@@ -147,14 +145,9 @@ class BaseController extends Controller
     /**
      * Store new data
      *
-     * @param Request $request
+     * @param $request
      * @return JsonResponse
      */
-    public function storeAction(Request $request)
-    {
-        return $this->processStore($request);
-    }
-
     protected function processStore($request)
     {
         if (!$this->allowCreate) {
@@ -164,7 +157,7 @@ class BaseController extends Controller
         $this->storeData = $request->all();
 
         // add the creator (User)
-        if ($this->hasOwner !== null) {
+        if ($this->hasOwner !== NULL) {
             $this->storeData[$this->hasOwner] = __me()->id;
         }
 
@@ -223,14 +216,9 @@ class BaseController extends Controller
     /**
      * Update data
      *
-     * @param Request $request
+     * @param $request
      * @return JsonResponse
      */
-    public function updateAction(Request $request)
-    {
-        return $this->processUpdate($request);
-    }
-
     protected function processUpdate($request)
     {
         if (!$this->allowEdit) {
@@ -286,5 +274,4 @@ class BaseController extends Controller
     {
         // after destroying the data
     }
-
 }

@@ -35,12 +35,12 @@ class City extends BaseModel
         return $this->belongsTo('App\Models\Country');
     }
 
-    public function rawFilters($query): void
+    protected function customQueries($query): void
     {
         $query->join('countries', 'cities.country_id', '=', 'countries.id');
     }
 
-    protected function rawQuerySelectList()
+    protected function customQuerySelectList(): array
     {
         return [
             'country_name' => 'countries.name',

@@ -11,25 +11,26 @@ namespace App\Http\Controllers\Admin\Setting\Location;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Application\Location\CountryStore;
 use App\Http\Requests\Admin\Application\Location\CountryUpdate;
-use App\Models\Country;
+use App\Models\Vendor\Facades\Country;
 
 class CountryController extends Controller
 {
     protected $viewType = 'admin';
+    private $_country;
 
     public function __construct()
     {
         parent::__construct();
         $this->theme = 'settings.location.country';
+        $this->_country = Country::self();
     }
 
     public function indexAction()
     {
         $this->setHeader('title', 'Countries');
-        $countries = new Country();
-        $countries->enableSearch = true;
+        $this->_country->enableSearch = true;
         return $this->view('index', [
-            'countries' => $countries->fetch(requestValues('search|pagination_show|name|code'))
+            'countries' => $this->_country->fetch(requestValues('search|pagination_show|name|code'))
         ]);
     }
 
@@ -41,7 +42,7 @@ class CountryController extends Controller
 
     public function storeAction(CountryStore $request)
     {
-        $country = (new Country())->store($request->all());
+        $country = $this->_country->store($request->all());
         if (!$country) {
             return $this->json(['name' => 'Failed to crate a new country.'], 422, false);
         }
@@ -51,7 +52,7 @@ class CountryController extends Controller
 
     public function editAction($id)
     {
-        $country = (new Country())->single($id);
+        $country = $this->_country->single($id);
         if (!$country) {
             abort(404);
         }
@@ -62,13 +63,13 @@ class CountryController extends Controller
 
     public function updateAction(CountryUpdate $request)
     {
-        (new Country())->edit($request->get('id'), $request->all());
+        $this->_country->edit($request->get('id'), $request->all());
         return $this->json('Country is successfully updated.');
     }
 
     public function destroyAction($id)
     {
-        (new Country())->remove($id);
+        $this->_country->remove($id);
         return $this->json('Country is successfully deleted.');
     }
 }

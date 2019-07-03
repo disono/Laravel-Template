@@ -4,10 +4,9 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.0.4 (2019-04-23)
+ * Version: 5.0.9 (2019-06-26)
  */
-(function () {
-var lists = (function (domGlobals) {
+(function (domGlobals) {
     'use strict';
 
     var global = tinymce.util.Tools.resolve('tinymce.PluginManager');
@@ -378,6 +377,7 @@ var lists = (function (domGlobals) {
     var isFunction = isType('function');
     var isNumber = isType('number');
 
+    var slice = Array.prototype.slice;
     var rawIndexOf = function () {
       var pIndexOf = Array.prototype.indexOf;
       var fastIndex = function (xs, x) {
@@ -408,7 +408,7 @@ var lists = (function (domGlobals) {
     var chunk = function (array, size) {
       var r = [];
       for (var i = 0; i < array.length; i += size) {
-        var s = array.slice(i, i + size);
+        var s = slice.call(array, i, i + size);
         r.push(s);
       }
       return r;
@@ -546,7 +546,6 @@ var lists = (function (domGlobals) {
         return x === a2[i];
       });
     };
-    var slice = Array.prototype.slice;
     var reverse = function (xs) {
       var r = slice.call(xs, 0);
       r.reverse();
@@ -2138,7 +2137,7 @@ var lists = (function (domGlobals) {
           }
           return true;
         } else if (!otherLi) {
-          if (!isForward) {
+          if (!isForward && rng.startOffset === 0 && rng.endOffset === 0) {
             flattenListSelection(editor);
             return true;
           }
@@ -2329,16 +2328,15 @@ var lists = (function (domGlobals) {
     };
     var Buttons = { register: register$1 };
 
-    global.add('lists', function (editor) {
-      Keyboard.setup(editor);
-      Buttons.register(editor);
-      Commands.register(editor);
-      return Api.get(editor);
-    });
     function Plugin () {
+      global.add('lists', function (editor) {
+        Keyboard.setup(editor);
+        Buttons.register(editor);
+        Commands.register(editor);
+        return Api.get(editor);
+      });
     }
 
-    return Plugin;
+    Plugin();
 
 }(window));
-})();

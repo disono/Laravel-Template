@@ -33,13 +33,13 @@ class MessageController extends Controller
         $this->chatGroupMember = new ChatGroupMember();
         $this->chatMessage = new ChatMessage();
 
-        if (__settings('chat')->value === 'disabled') {
+        if (__settings('chat')->value !== 'enabled') {
             abort(403);
         }
 
         $this->middleware(function ($request, $next) {
             $this->setAppView('app_scripts', [
-                'assets/js/app/chat.js'
+                'assets/js/vue/chat.js'
             ]);
 
             return $next($request);
@@ -58,13 +58,13 @@ class MessageController extends Controller
         if ($type === 'user') {
             if ($this->me->id == $id) {
                 // I'm messaging my self
-                $group = $this->chatGroup->fetch(['count_members' => 1, 'me_only' => $id, 'single' => true, 'is_deleted' => 0]);
+                $group = $this->chatGroup->fetch(['count_members' => 1, 'me_only' => 1, 'single' => true]);
             } else {
                 // messaging another person
                 $group = $this->chatGroup->fetch([
                     'count_members' => 2,
                     'private_message' => ['to' => $id, 'from' => $this->me->id], 'has_private_message' => 1, 'has_empty_name' => 1,
-                    'single' => true, 'is_deleted' => 0
+                    'single' => true
                 ]);
             }
 
@@ -87,7 +87,7 @@ class MessageController extends Controller
                         ]);
                     }
 
-                    $group = $this->chatGroup->fetch(['single' => true, 'id' => $group->id, 'is_deleted' => 0]);
+                    $group = $this->chatGroup->fetch(['single' => true, 'id' => $group->id]);
                 }
             }
         } else {
@@ -95,7 +95,7 @@ class MessageController extends Controller
                 return $this->error(404);
             }
 
-            $group = $this->chatGroup->fetch(['single' => true, 'id' => $id, 'is_deleted' => 0]);
+            $group = $this->chatGroup->fetch(['single' => true, 'id' => $id]);
         }
 
         if (!$group || !in_array($type, ['user', 'group'])) {
@@ -137,7 +137,7 @@ class MessageController extends Controller
     {
         $group = $this->chatGroup->fetch(requestValues(
             'search|has_unread|has_archive', [
-                'is_member' => $this->me->id, 'is_deleted' => 0, 'order_by_column' => 'latest_message_at'
+                'is_member' => $this->me->id, 'order_by_column' => 'latest_message_at'
             ]
         ));
 
@@ -196,8 +196,8 @@ class MessageController extends Controller
                 foreach ($members as $user) {
                     if (!$this->_checkIsMember($group->id, $user) && User::where('id', $user)->first()) {
                         $this->chatGroupMember->store([
-                                'chat_group_id' => $group->id, 'added_by_id' => $this->me->id, 'member_id' => $user]
-                        );
+                            'chat_group_id' => $group->id, 'added_by_id' => $this->me->id, 'member_id' => $user
+                        ]);
                     }
                 }
 
@@ -249,8 +249,10 @@ class MessageController extends Controller
             // new members (everyone can add new members)
             foreach ($members as $user) {
                 if (!$this->_checkIsMember($group->id, $user) && User::where('id', $user)->first()) {
-                    $this->chatGroupMember->store(['chat_group_id' => $group->id,
-                        'added_by_id' => $this->me->id, 'member_id' => $user]);
+                    $this->chatGroupMember->store([
+                        'chat_group_id' => $group->id,
+                        'added_by_id' => $this->me->id, 'member_id' => $user
+                    ]);
                 }
             }
 
@@ -267,7 +269,7 @@ class MessageController extends Controller
                     }
 
                     if ($isFound === false && $member->member_id !== $this->me->id) {
-                        $this->chatGroupMember->remove(null, ['member_id' => $member->member_id, 'chat_group_id' => $group->id]);
+                        $this->chatGroupMember->remove(['member_id' => $member->member_id, 'chat_group_id' => $group->id]);
                     }
                 }
             }
@@ -294,7 +296,7 @@ class MessageController extends Controller
 
         // leave a group
         return $this->_isMember($group_id,
-            $this->chatGroupMember->remove(null, ['chat_group_id' => $group_id, 'member_id' => $this->me->id]));
+            $this->chatGroupMember->remove(['chat_group_id' => $group_id, 'member_id' => $this->me->id]));
     }
 
     public function deleteConversation($group_id)
@@ -307,27 +309,35 @@ class MessageController extends Controller
 
         // delete messages
         return $this->_isMember($group_id,
-            $this->chatMessage->remove(null, ['chat_group_id' => $group_id, 'user_id' => $this->me->id]));
+            $this->chatMessage->remove(['chat_group_id' => $group_id, 'user_id' => $this->me->id]));
     }
 
     public function addToGroupAction($group_id, $member_id)
     {
         // add a new user to group
-        return $this->json($this->chatGroupMember->store(['chat_group_id' => $group_id, 'member_id' => $member_id,
-            'added_by_id' => $this->me->id]));
+        return $this->json($this->chatGroupMember->store([
+            'chat_group_id' => $group_id, 'member_id' => $member_id,
+            'added_by_id' => $this->me->id
+        ]));
     }
 
     public function makeAdminAction($group_id, $member_id)
     {
         // is member of this group if not add a new member
         if (!$this->_checkIsMember($group_id, $member_id)) {
-            return $this->json($this->chatGroupMember->store(['chat_group_id' => $group_id, 'member_id' => $member_id,
-                'added_by_id' => $this->me->id, 'is_admin' => 1]));
+            return $this->json($this->chatGroupMember->store([
+                'chat_group_id' => $group_id, 'member_id' => $member_id,
+                'added_by_id' => $this->me->id, 'is_admin' => 1
+            ]));
         }
 
         // update is admin
-        return $this->json($this->chatGroupMember->edit(null, ['is_admin' => 1],
-            ['chat_group_id' => $group_id, 'member_id' => $member_id]));
+        return $this->json($this->chatGroupMember->edit([
+            'chat_group_id' => $group_id,
+            'member_id' => $member_id
+        ], [
+            'is_admin' => 1
+        ]));
     }
 
     public function removeAdminAction($group_id, $member_id)
@@ -348,7 +358,11 @@ class MessageController extends Controller
             return $this->json('Only a group admin can remove another admin.', 422);
         }
 
-        return $this->_isMember($group_id, $this->chatGroupMember->edit(null, ['is_admin' => 0],
-            ['chat_group_id' => $group_id, 'member_id' => $member_id]));
+        return $this->_isMember($group_id, $this->chatGroupMember->edit([
+            'chat_group_id' => $group_id,
+            'member_id' => $member_id
+        ], [
+            'is_admin' => 0
+        ]));
     }
 }

@@ -25,19 +25,28 @@ class Token extends BaseModel
         parent::__construct($attributes);
     }
 
-    /**
-     * Remove any related data from user
-     *
-     * @param $query
-     * @return bool
-     */
-    public function actionRemoveBefore($query)
+    public function actionRemoveBefore($results)
     {
-        foreach ($query as $row) {
+        foreach ($results as $row) {
             FirebaseToken::where('token_id', $row->id)->delete();
         }
 
         return true;
+    }
+
+    protected function customQueries($query): void
+    {
+        $query->join('users', 'tokens.user_id', '=', 'users.id');
+    }
+
+    protected function customQuerySelectList(): array
+    {
+        return [
+            'full_name' => 'CONCAT(users.first_name, " ", users.last_name)',
+            'email' => 'users.email',
+            'username' => 'users.username',
+            'is_expired' => 'IF(tokens.expired_at >= DATE(NOW()), 0, 1)',
+        ];
     }
 
     public function user()

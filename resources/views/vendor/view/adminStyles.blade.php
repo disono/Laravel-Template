@@ -13,7 +13,6 @@
 @endif
 
 {{-- default admin theme --}}
-<link rel="stylesheet" href="{{ devAssets('assets/css/admin.css') }}"/>
 <link rel="stylesheet" href="{{ devAssets('assets/css/jro-admin.css') }}"/>
 
 {{-- controller defined styles (app/Http/Middleware/ViewVariables.php) --}}

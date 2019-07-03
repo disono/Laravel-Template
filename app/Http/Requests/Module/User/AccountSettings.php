@@ -8,20 +8,10 @@
 
 namespace App\Http\Requests\Module\User;
 
-use App\Http\Requests\BaseRequest;
+use App\Http\Requests\Module\ModuleRequest;
 
-class AccountSettings extends BaseRequest
+class AccountSettings extends ModuleRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
-    public function authorize()
-    {
-        return (__me()) ? true : false;
-    }
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -31,6 +21,7 @@ class AccountSettings extends BaseRequest
     {
         return [
             'first_name' => 'required|max:100',
+            'middle_name' => 'max:100',
             'last_name' => 'required|max:100',
             'profile_picture' => 'image|max:' . __settings('fileSizeLimitImage')->value,
 

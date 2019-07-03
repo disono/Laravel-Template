@@ -11,7 +11,7 @@ namespace App\Http\Controllers\Module\Application;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Module\Application\FileCreate;
 use App\Http\Requests\Module\Application\FileUpdate;
-use App\Models\File;
+use App\Models\Vendor\Facades\File;
 use Intervention\Image\Facades\Image;
 
 class FileController extends Controller
@@ -27,7 +27,8 @@ class FileController extends Controller
         if (__me()->role === 'client') {
             $default['user_id'] = __me()->id;
         }
-        return $this->json((new File())->fetch(requestValues('search|type', $default)));
+        
+        return $this->json(File::fetch(requestValues('search|type', $default)));
     }
 
     public function streamVideoAction($file)
@@ -53,8 +54,8 @@ class FileController extends Controller
                 $img->fit($this->_imageSize('width'), $this->_imageSize('height'));
             }
 
-            // send HTTP header and output image data
             if ($this->request->get('encode') === 'base64') {
+                // send HTTP header and output image data
                 return $img->encode('data-url', $this->_imageQuality());
             } else {
                 return $img->response('jpg', $this->_imageQuality());
@@ -62,25 +63,6 @@ class FileController extends Controller
         } catch (\Exception $e) {
             return abort(404);
         }
-    }
-
-    private function _imageSize($key)
-    {
-        return (int)$this->request->get($key);
-    }
-
-    private function _imageQuality()
-    {
-        $quality = $this->request->get('quality', 75);
-        if ($quality <= 0) {
-            return 45;
-        }
-
-        if ($quality > 100) {
-            return 100;
-        }
-
-        return $quality;
     }
 
     public function createAction(FileCreate $request)
@@ -93,9 +75,7 @@ class FileController extends Controller
         ]);
 
         if (!count($file)) {
-            if ($file[0]->db === null) {
-                return $this->json(['file_selected' => 'Failed to save the file.'], 422);
-            }
+            return $this->json(['file_selected' => 'Failed to save the file.'], 422, false);
         }
 
         return $this->json($file[0]->db);
@@ -103,7 +83,7 @@ class FileController extends Controller
 
     public function updateAction(FileUpdate $request)
     {
-        (new File())->edit($request->get('id'), $request->all());
+        File::edit($request->get('id'), $request->all());
         return $this->json('File is updated successfully.');
     }
 
@@ -111,5 +91,24 @@ class FileController extends Controller
     {
         File::destroy($id);
         return $this->json('File is deleted successfully.');
+    }
+
+    private function _imageSize($key)
+    {
+        return (int)$this->request->get($key);
+    }
+
+    private function _imageQuality()
+    {
+        $quality = $this->request->get('quality');
+        if ($quality <= 0) {
+            return 45;
+        }
+
+        if ($quality > 100) {
+            return 100;
+        }
+
+        return $quality ? $quality : 75;
     }
 }

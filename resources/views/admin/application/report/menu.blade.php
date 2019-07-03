@@ -7,12 +7,12 @@
 
 <ul class="nav nav-tabs mt-3">
     <li class="nav-item">
-        <a class="nav-link {{ isActiveMenu('admin.report.reason.list') }}"
-           href="{{ route('admin.report.reason.list') }}"><i class="fas fa-info"></i> Reasons</a>
+        <a class="nav-link {{ isActiveMenu('admin.reportReason.browse|admin.reportReason.create|admin.reportReason.edit') }}"
+           href="{{ route('admin.reportReason.browse') }}"><i class="fas fa-info"></i> Reasons</a>
     </li>
 
     <li class="nav-item">
-        <a class="nav-link {{ isActiveMenu('admin.submitted.report.list') }}"
-           href="{{ route('admin.submitted.report.list') }}"><i class="fas fa-paper-plane"></i> Submitted/Reported</a>
+        <a class="nav-link {{ isActiveMenu('admin.pageReport.browse|admin.pageReport.details') }}"
+           href="{{ route('admin.pageReport.browse') }}"><i class="fas fa-paper-plane"></i> Page Reports</a>
     </li>
 </ul>

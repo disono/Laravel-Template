@@ -14,9 +14,10 @@
 
     {{-- SEO variables --}}
     <title>{{ $page_title }}</title>
-    <meta name="description" content="{{ $page_description }}">
-    <meta name="keywords" content="{{ $page_keywords }}">
-    <meta name="author" content="{{ $page_author }}">
+    {!! html_meta_tag('description', $page_description) !!}
+    {!! html_meta_tag('keywords', $page_keywords) !!}
+    {!! html_meta_tag('author', $page_author) !!}
+    {!! html_meta_tag('robots', $seo_robots) !!}
 
     {{--  Meta og  --}}
     {!! html_meta_tag('og:url', $og_url) !!}
@@ -36,7 +37,7 @@
 
 <body>
 {{-- header --}}
-@include(currentTheme() . 'layouts.header')
+@includeTheme('layouts.header')
 
 {{-- contents --}}
 <div id="{{ $vue_app }}" v-cloak style="margin-top: 22px;">
@@ -44,10 +45,7 @@
 </div>
 
 {{-- footer --}}
-@include(currentTheme() . 'layouts.footer')
-
-{{-- loading --}}
-@include(currentTheme() . 'modals.loading')
+@includeTheme('layouts.footer')
 
 {{-- load all javascript --}}
 @include('vendor.view.javascript')

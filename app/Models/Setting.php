@@ -9,12 +9,13 @@
 namespace App\Models;
 
 use App\Models\Vendor\BaseModel;
+use App\Models\Vendor\Facades\SettingCategory;
 
 class Setting extends BaseModel
 {
     protected $tableName = 'settings';
     protected $writableColumns = [
-        // input_type: text, select, checkbox
+        // input_type: text, select, checkbox_multiple, checkbox_single
         'category_setting_id', 'name', 'key', 'value', 'description', 'input_type', 'input_value', 'attributes', 'is_disabled',
     ];
 
@@ -28,43 +29,52 @@ class Setting extends BaseModel
         parent::__construct($attributes);
     }
 
-    public function listColumns()
+    protected function customQueries($query): void
     {
-        return $this->writableColumns;
+        $query->join('setting_categories', 'settings.category_setting_id', '=', 'setting_categories.id');
     }
 
-    public function formatStore($tableName, $inputs)
+    protected function customQuerySelectList(): array
     {
-        return $this->formatInputs($inputs);
+        return [
+            'category_name' => 'setting_categories.name'
+        ];
     }
 
-    private function formatInputs($inputs)
+    protected function dataFormatting($row)
     {
-        $inputs['input_type'] = $inputs['input_type'] ?? 'text';
-        $inputs['input_value'] = $inputs['input_value'] ?? null;
+        $this->addDateFormatting($row);
 
-        if ($inputs['input_value']) {
-            if (in_array($inputs['input_type'], ['select', 'checkbox'])) {
-                $inputs['input_value'] = implode(',', $inputs['input_value']);
+        $row->original_value = $row->value;
+        if ($row->input_type == 'checkbox_multiple') {
+            if ($row->value) {
+                $row->value = explode(',', $row->value);
+            } else {
+                $row->value = [];
             }
         }
 
-        return $inputs;
-    }
+        $row->original_input_value = $row->input_value;
+        if (in_array($row->input_type, ['select', 'checkbox_multiple'])) {
+            if ($row->input_value) {
+                $row->input_value = explode(',', $row->input_value);
+            } else {
+                $row->input_value = [];
+            }
+        }
 
-    public function formatEdit($tableName, $inputs)
-    {
-        return $this->formatInputs($inputs);
+        if ($row->input_type == 'checkbox_single') {
+            if (!$row->value) {
+                $row->value = NULL;
+            }
+        }
+
+        return $row;
     }
 
     public function categories()
     {
         return SettingCategory::get();
-    }
-
-    public function rawFilters($query): void
-    {
-        $query->join('setting_categories', 'settings.category_setting_id', '=', 'setting_categories.id');
     }
 
     /**
@@ -88,35 +98,5 @@ class Setting extends BaseModel
         }
 
         return $values;
-    }
-
-    protected function rawQuerySelectList()
-    {
-        return [
-            'category_name' => 'setting_categories.name'
-        ];
-    }
-
-    protected function dataFormatting($row)
-    {
-        $row->original_value = $row->value;
-        if ($row->input_type == 'checkbox') {
-            if ($row->value) {
-                $row->value = explode(',', $row->value);
-            } else {
-                $row->value = [];
-            }
-        }
-
-        $row->original_input_value = $row->input_value;
-        if (in_array($row->input_type, ['select', 'checkbox'])) {
-            if ($row->input_value) {
-                $row->input_value = explode(',', $row->input_value);
-            } else {
-                $row->input_value = [];
-            }
-        }
-
-        return $row;
     }
 }

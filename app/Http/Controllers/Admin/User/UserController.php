@@ -95,7 +95,11 @@ class UserController extends Controller
             return $this->redirect();
         }
 
-        $this->_user->edit($id, [$column => (int)$value], null, false);
+        if (!in_array($column, ['is_email_verified', 'is_account_activated', 'is_account_enabled'])) {
+            return $this->redirect();
+        }
+
+        $this->_user->edit($id, [$column => (int)$value], false);
         return $this->redirect();
     }
 

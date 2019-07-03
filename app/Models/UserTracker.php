@@ -28,7 +28,7 @@ class UserTracker extends BaseModel
         parent::__construct($attributes);
     }
 
-    public function rawFilters($query): void
+    protected function customQueries($query): void
     {
         $query->join('users', 'user_trackers.user_id', '=', 'users.id');
     }
@@ -67,7 +67,7 @@ class UserTracker extends BaseModel
         return $this->belongsTo('App\Models\Page');
     }
 
-    protected function rawQuerySelectList()
+    protected function customQuerySelectList(): array
     {
         return [
             'full_name' => 'CONCAT(users.first_name, " ", users.last_name)',

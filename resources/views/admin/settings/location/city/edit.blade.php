@@ -8,20 +8,20 @@
 @extends('admin.layouts.master')
 
 @section('content')
+    <h3 class="mb-3 font-weight-bold">{{ $view_title }}</h3>
+
     <div class="container-fluid shadow-sm p-3 bg-white">
         <div class="row">
             <div class="col">
                 <div class="row">
                     <div class="col">
-                        <h3>{{ $view_title }}</h3>
-                        <hr>
                         @include('admin.settings.menu')
                     </div>
                 </div>
 
                 <div class="row mt-3">
                     <div class="col-sm-12 col-md-4">
-                        <form action="{{ route('admin.setting.city.update') }}" method="post"
+                        <form action="{{ route('admin.settingCity.update') }}" method="post"
                               v-on:submit.prevent="onFormUpload">
                             {{ csrf_field() }}
 
@@ -56,8 +56,9 @@
                             <div class="form-group">
                                 <label for="lat">Lat</label>
 
-                                <input id="lat" type="number"
+                                <input id="lat" type="text"
                                        class="form-control{{ hasInputError($errors, 'lat') }}"
+                                       data-validate="numeric"
                                        name="lat" value="{{ old('lat', $city->lat) }}">
 
                                 @if ($errors->has('lat'))
@@ -68,8 +69,9 @@
                             <div class="form-group">
                                 <label for="lng">Lng</label>
 
-                                <input id="lng" type="number"
+                                <input id="lng" type="text"
                                        class="form-control{{ hasInputError($errors, 'lng') }}"
+                                       data-validate="numeric"
                                        name="lng" value="{{ old('lng', $city->lng) }}">
 
                                 @if ($errors->has('lng'))
@@ -77,6 +79,7 @@
                                 @endif
                             </div>
 
+                            <hr>
                             <button type="submit" class="btn btn-raised btn-primary">Submit</button>
                         </form>
                     </div>

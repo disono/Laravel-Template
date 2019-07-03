@@ -8,26 +8,26 @@
 @extends('admin.layouts.master')
 
 @section('content')
+    <h3 class="mb-3 font-weight-bold">{{ $view_title }}</h3>
+
     <div class="container-fluid shadow-sm p-3 bg-white">
         <div class="row">
             <div class="col">
-                <h3>{{ $view_title }}</h3>
-                <hr>
                 @include('admin.application.report.menu')
-                @include('admin.layouts.toolbarList')
+                @include('vendor.app.toolbarButtons')
             </div>
         </div>
 
         <div class="row mt-3">
             <div class="col">
-                <form action="{{ route('admin.report.reason.list') }}" method="get" id="frmTableFilter">
+                <form action="{{ route('admin.reportReason.browse') }}" method="get" id="frmTableFilter">
                     <input type="submit" style="display: none;">
 
-                    @include('vendor.app.toolbar', ['createRoute' => 'admin.report.reason.create'])
+                    @include('vendor.app.toolbar', ['createRoute' => 'admin.reportReason.create'])
 
                     <div class="table-responsive-sm">
                         <table class="table table-bordered">
-                            <thead class="table-borderless">
+                            <thead class="table-borderless bg-light">
                             <tr>
                                 {!! thDelete() !!}
 

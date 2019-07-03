@@ -23,7 +23,7 @@ class ReportStore extends ModuleRequest
             'page_report_reason_id' => 'required|exists:page_report_reasons,id',
             'url' => 'required',
             'description' => 'required',
-            'screenshots' => 'image'
+            'screenshots' => 'image|max:' . __settings('fileSizeLimitImage')->value
         ];
     }
 }

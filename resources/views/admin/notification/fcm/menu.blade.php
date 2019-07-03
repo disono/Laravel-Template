@@ -7,7 +7,7 @@
 
 <ul class="nav nav-tabs">
     <li class="nav-item">
-        <a class="nav-link {{ isActiveMenu('admin.fcm.notification.list') }}"
-           href="{{ route('admin.fcm.notification.list') }}"><i class="fas fa-bell"></i> FCM Notifications</a>
+        <a class="nav-link {{ isActiveMenu('admin.fcmNotification.browse') }}"
+           href="{{ route('admin.fcmNotification.browse') }}"><i class="fas fa-bell"></i> FCM Notifications</a>
     </li>
 </ul>

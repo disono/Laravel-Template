@@ -9,7 +9,7 @@
 namespace App\Http\Controllers\Admin\Application;
 
 use App\Http\Controllers\Controller;
-use App\Models\File;
+use App\Models\Vendor\Facades\File;
 
 class FileController extends Controller
 {
@@ -23,16 +23,16 @@ class FileController extends Controller
 
     public function indexAction()
     {
-        $this->setHeader('title', 'Uploaded Files');
-        $file = new File();
+        $this->setHeader('title', 'Files');
+        $file = File::self();
         $file->enableSearch = true;
-        $file->setNewWritableColumn('created_at');
+        $file->setWritableColumn('created_at');
         return $this->view('index', ['files' => $file->fetch(requestValues('search|pagination_show|file_name|title|type|created_at'))]);
     }
 
     public function destroyAction($id)
     {
-        (new File())->remove($id);
+        File::remove($id);
         return $this->json('File is successfully deleted.');
     }
 }

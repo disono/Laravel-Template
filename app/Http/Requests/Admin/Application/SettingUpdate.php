@@ -23,9 +23,9 @@ class SettingUpdate extends AdminRequest
             'id' => 'required|integer|exists:settings,id',
             'name' => 'required|max:100',
             'key' => 'required|alpha_dash|unique:settings,key,' . request('id'),
-            'input_type' => 'required|in:text,select,checkbox',
+            'input_type' => 'required|in:text,select,checkbox_multiple,checkbox_single',
             'is_disabled' => 'in:0,1',
-            'setting_category_id' => 'required|exists:setting_categories,id'
+            'category_setting_id' => 'required|exists:setting_categories,id'
         ];
     }
 }

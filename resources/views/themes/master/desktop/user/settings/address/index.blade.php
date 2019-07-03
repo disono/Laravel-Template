@@ -11,11 +11,11 @@
     <div class="container">
         <div class="row">
             <div class="col-sm-12 col-lg-3">
-                @include(currentTheme() . 'user.settings.menu')
+                @includeTheme('user.settings.menu')
             </div>
 
             <div class="col-sm-12 col-lg-9">
-                <a class="btn btn-primary mb-3" href="{{ url('user/setting/address/create') }}"
+                <a class="btn btn-primary mb-3" href="{{ route('user.setting.address.create') }}"
                    role="button"><i class="fas fa-plus"></i> Add a New Address</a>
 
                 @if(count($addresses))
@@ -37,6 +37,15 @@
                                             {{ $row->city_name }}
                                         </p>
 
+                                        @if(__settings('addressVerification')->value === 'enabled')
+                                            @if($row->is_verified)
+                                                <p class="text-success"><i class="fas fa-check"></i> Verified</p>
+                                            @else
+                                                <p class="text-danger"><i class="fas fa-exclamation-triangle"></i>
+                                                    Unverified</p>
+                                            @endif
+                                        @endif
+
                                         <a href="{{ url('user/setting/addresses/edit/' . $row->id) }}"
                                            class="card-link">Edit</a>
                                         <a href="{{ url('user/setting/addresses/destroy/' . $row->id) }}"
@@ -52,7 +61,7 @@
                     {{ $addresses->appends($request->all())->render() }}
                 @else
                     <div class="p-3 shadow-sm rounded bg-white border-0">
-                        <h3 class="text-center"><i class="far fa-frown"></i> No Address Found.</h3>
+                        <h3 class="text-center"><i class="far fa-frown"></i> No Address Added.</h3>
                     </div>
                 @endif
             </div>

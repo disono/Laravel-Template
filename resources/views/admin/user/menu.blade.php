@@ -7,17 +7,22 @@
 
 <ul class="nav nav-tabs">
     <li class="nav-item">
-        <a class="nav-link {{ isActiveMenu('admin.user.list') }}"
-           href="{{ route('admin.user.list') }}"><i class="fas fa-user-friends"></i> Users</a>
+        <a class="nav-link {{ isActiveMenu('admin.user.browse|admin.user.create|admin.user.edit') }}"
+           href="{{ route('admin.user.browse') }}"><i class="fas fa-user-friends"></i> Users</a>
     </li>
 
     <li class="nav-item">
-        <a class="nav-link {{ isActiveMenu('admin.user.authentication.history') }}"
-           href="{{ route('admin.user.authentication.history') }}"><i class="fas fa-history"></i> Authentication History</a>
+        <a class="nav-link {{ isActiveMenu('admin.userAuthenticationHistory.browse') }}"
+           href="{{ route('admin.userAuthenticationHistory.browse') }}"><i class="fas fa-history"></i> Authentication Histories</a>
     </li>
 
     <li class="nav-item">
-        <a class="nav-link {{ isActiveMenu('admin.user.tracker.list') }}"
-           href="{{ route('admin.user.tracker.list') }}"><i class="fas fa-map"></i> Tracker</a>
+        <a class="nav-link {{ isActiveMenu('admin.userTracker.browse') }}"
+           href="{{ route('admin.userTracker.browse') }}"><i class="fas fa-map"></i> Location Logs</a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link {{ isActiveMenu('admin.activityLog.browse|admin.activityLog.details') }}"
+           href="{{ route('admin.activityLog.browse') }}"><i class="fas fa-list"></i> Activity Logs</a>
     </li>
 </ul>

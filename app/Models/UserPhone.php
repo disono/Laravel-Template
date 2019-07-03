@@ -15,7 +15,7 @@ class UserPhone extends BaseModel
     protected $tableName = 'user_phones';
     protected $writableColumns = [
         'user_id', 'ext', 'phone', 'is_verified',
-        'is_verified', 'verification_code', 'verification_expired_at'
+        'is_verified', 'verification_code', 'verification_expired_at', 'verification_tries'
     ];
 
     protected $columnHasRelations = ['user_id'];

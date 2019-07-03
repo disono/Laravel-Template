@@ -20,8 +20,12 @@
         </div>
 
         <div class="form-group">
-            <label for="page_report_reason_id_report">What's wrong with this?</label>
-            <select class="form-control" name="page_report_reason_id" id="page_report_reason_id_report">
+            <label for="page_report_reason_id_report">What's wrong with this? <strong class="text-danger">*</strong></label>
+            <select class="form-control select_picker"
+                    data-validate="required"
+                    data-style="btn-blue-50"
+                    name="page_report_reason_id"
+                    id="page_report_reason_id_report">
                 <option value="">Select your reason</option>
                 @foreach(\App\Models\App\PageReportReason::get() as $row)
                     <option value="{{ $row->id }}">{{ $row->name }}</option>
@@ -30,8 +34,9 @@
         </div>
 
         <div class="form-group">
-            <label for="description_report">Describe your reason for reporting?</label>
-            <textarea class="form-control" id="description_report" name="description" rows="3"></textarea>
+            <label for="description_report">Describe your reason for reporting? <strong class="text-danger">*</strong></label>
+            <textarea class="form-control" id="description_report" name="description" rows="3"
+                      data-validate="required"></textarea>
         </div>
 
         <div class="custom-file">

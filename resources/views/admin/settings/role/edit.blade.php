@@ -8,13 +8,13 @@
 @extends('admin.layouts.master')
 
 @section('content')
+    <h3 class="mb-3 font-weight-bold">{{ $view_title }}</h3>
+
     <div class="container-fluid shadow-sm p-3 bg-white">
         <div class="row">
             <div class="col">
                 <div class="row">
                     <div class="col">
-                        <h3>{{ $view_title }}</h3>
-                        <hr>
                         @include('admin.settings.menu')
                     </div>
                 </div>
@@ -62,6 +62,7 @@
                                 @endif
                             </div>
 
+                            <hr>
                             <button type="submit" class="btn btn-raised btn-primary">Submit</button>
                         </form>
                     </div>

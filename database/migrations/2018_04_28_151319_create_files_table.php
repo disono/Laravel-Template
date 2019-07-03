@@ -28,6 +28,10 @@ class CreateFilesTable extends Migration
             $table->string('table_name', 100)->nullable();
             $table->integer('table_id')->default(0);
             $table->string('tag', 100)->nullable();
+
+            $table->double('img_width')->default(0);
+            $table->double('img_height')->default(0);
+
             $table->timestamps();
         });
     }

@@ -21,25 +21,20 @@
 
     {{-- Search Messages --}}
     <div class="row no-gutters m-0">
-        <div class="col-9 m-0 p-0">
-            <div class="input-group input-group">
+        <div class="col m-0 p-0">
+            <div class="input-group">
                 <input type="text" class="form-control" placeholder="Search Messages"
                        aria-label="Search Messages" aria-describedby="button-search-message"
                        v-on:keyup="filterChatGroups($event)"
                        @keydown.enter.prevent
                        v-model="groupFilter.search">
-            </div>
-        </div>
 
-        <div class="col-3 m-0 p-0">
-            <div class="input-group-append float-right">
-                <div class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
-                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="fas fa-sliders-h"></i>
+                <div class="input-group-append">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false"><i class="fas fa-sliders-h"></i>
                     </button>
 
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <div class="dropdown-menu">
                         <a class="dropdown-item" href="#" v-on:click="setChatFilterGroups(null)" @click.prevent>
                             All Messages
                         </a>
@@ -66,7 +61,9 @@
                 <div class="media-body">
                     <h5 class="mt-0 mb-0">@{{ group.group_name }}</h5>
                     <p class="mb-0 mt-0 pb-0 text-muted"
-                       v-if="group.latest_message_at"><small style="font-size: 11px;">@{{ group.latest_message_at }}</small></p>
+                       v-if="group.latest_message_at">
+                        <small style="font-size: 11px;">@{{ group.latest_message_at }}</small>
+                    </p>
                     <p class="mt-0 pt-0" v-if="group.latest_message">@{{ group.latest_message_summary }}</p>
 
                     <span class="badge badge-warning" v-if="group.is_spam">Spam</span>
@@ -80,6 +77,6 @@
     </p>
 
     <div class="text-center mb-3" v-if="!groups.results.length">
-        <p>No Sent/Received Messages.</p>
+        <p>No Messages.</p>
     </div>
 </div>

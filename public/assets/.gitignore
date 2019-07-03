@@ -4,3 +4,5 @@ js/vendor.js
 webfonts/*
 !webfonts/.gitkeep
 css/vendor.css
+css/jro-admin.css
+css/theme.css

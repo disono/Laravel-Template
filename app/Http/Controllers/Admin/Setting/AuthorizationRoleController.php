@@ -9,31 +9,67 @@
 namespace App\Http\Controllers\Admin\Setting;
 
 use App\Http\Controllers\Controller;
-use App\Models\AuthorizationRole;
-use App\Models\Role;
+use App\Models\Vendor\Facades\AuthorizationRole;
+use App\Models\Vendor\Facades\Role;
 use Illuminate\Support\Facades\Route;
 
 class AuthorizationRoleController extends Controller
 {
     protected $viewType = 'admin';
+    protected $authorizationRoles;
 
     public function __construct()
     {
         parent::__construct();
         $this->theme = 'settings.authorization_role';
+
+        $this->authorizationRoles = AuthorizationRole::self();
     }
 
     public function editAction($role_id)
     {
-        $role = (new Role())->single($role_id);
+        $role = Role::single($role_id);
         if (!$role) {
             abort(404);
         }
 
-        $authorizations = $this->_routeNames((new AuthorizationRole())->fetchAll(['role_id' => $role->id]));
+        $authorizations = $this->_routeNames($this->authorizationRoles->fetchAll(['role_id' => $role->id]));
 
         $this->setHeader('title', 'Updating Authorization for ' . $role->name);
-        return $this->view('edit', ['role' => $role, 'authorizations' => $authorizations, 'routes' => $this->_routesName()]);
+        return $this->view('edit', ['role' => $role, 'authorizations' => $authorizations, 'routes' => collect($this->_routesInCategory())]);
+    }
+
+    public function updateAction()
+    {
+        $route_names = $this->request->get('route_name');
+        if (!is_array($route_names)) {
+            return $this->json('Invalid authentication names.', 422);
+        }
+
+        // is role exists
+        $role = Role::single($this->request->get('role_id'));
+        if (!$role) {
+            return $this->json('Invalid role.', 422);
+        }
+
+        // clear old auth access
+        if ($this->authorizationRoles->fetch(['object' => true, 'role_id' => $role->id])->count()) {
+            if (!$this->authorizationRoles->remove($role->id, 'role_id')) {
+                return $this->json('Failed to reset the authentication roles.', 422);
+            }
+        }
+
+        // save new auth access
+        $_insertNames = [];
+        $_names = $this->_routesName(true);
+        foreach ($route_names as $name) {
+            if (in_array($name, $_names)) {
+                $_insertNames[] = ['route' => $name, 'role_id' => $role->id];
+            }
+        }
+
+        $this->authorizationRoles->insert($_insertNames);
+        return $this->json('Save successfully.');
     }
 
     private function _routeNames($auth)
@@ -45,6 +81,18 @@ class AuthorizationRoleController extends Controller
         }
 
         return $names;
+    }
+
+    private function _routesInCategory()
+    {
+        $categories = [];
+
+        foreach ($this->_routesName() as $route) {
+            $categories[$route->category_slug]['category_name'] = ucwords($route->category_name);
+            $categories[$route->category_slug]['data'][] = $route;
+        }
+
+        return $categories;
     }
 
     private function _routesName($nameOnly = false)
@@ -60,8 +108,10 @@ class AuthorizationRoleController extends Controller
                 if ($_name[0] === 'admin') {
                     $data = new \stdClass();
                     $data->id = str_random(32);
-                    $data->name = ucwords(str_replace('.', ' ', str_replace('admin.', '', $action['as'])));
+                    $data->name = ucwords(str_replace('.', ' ', $this->_fromUcToSpace(str_replace('admin.', '', $action['as']))));
                     $data->value = $action['as'];
+                    $data->category_slug = $_name[1];
+                    $data->category_name = $this->_fromUcToSpace($_name[1]);
 
                     $names[] = ($nameOnly) ? $action['as'] : $data;
                 }
@@ -71,34 +121,8 @@ class AuthorizationRoleController extends Controller
         return $names;
     }
 
-    public function updateAction()
+    private function _fromUcToSpace($s)
     {
-        $route_names = $this->request->get('route_name');
-        if (!is_array($route_names)) {
-            return $this->json('Invalid authentication names.', 422);
-        }
-
-        // is role exists
-        $role = (new Role())->single($this->request->get('role_id'));
-        if (!$role) {
-            return $this->json('Invalid role.', 422);
-        }
-
-        // clear old auth access
-        if (!(new AuthorizationRole())->remove($role->id, 'role_id')) {
-            return $this->json('Failed to reset the authentication roles.', 422);
-        }
-
-        // save new auth access
-        $_insertNames = [];
-        $_names = $this->_routesName(true);
-        foreach ($route_names as $name) {
-            if (in_array($name, $_names)) {
-                $_insertNames[] = ['route' => $name, 'role_id' => $role->id];
-            }
-        }
-        AuthorizationRole::insert($_insertNames);
-
-        return $this->json('Save successfully.');
+        return preg_replace('/(?<!\ )[A-Z]/', ' $0', $s);
     }
 }

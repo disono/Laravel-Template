@@ -18,7 +18,7 @@ if (!function_exists('theme')) {
      * @param int $response
      * @return Response
      */
-    function theme($file = null, $data = [], $response = 200)
+    function theme($file = NULL, $data = [], $response = 200)
     {
         $currentTheme = currentTheme();
         return response()->view($currentTheme . trim($file, '/'), $data, $response);
@@ -92,7 +92,7 @@ if (!function_exists('getRouteName')) {
         }
 
         if (!request()->route()) {
-            return null;
+            return NULL;
         }
 
         return request()->route()->getName();
@@ -183,7 +183,7 @@ if (!function_exists('html_meta_tag')) {
     function html_meta_tag($property, $content)
     {
         if (!$property || !$content) {
-            return null;
+            return NULL;
         }
 
         return '<meta property="' . $property . '" content="' . $content . '" />';

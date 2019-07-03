@@ -4,10 +4,9 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.0.4 (2019-04-23)
+ * Version: 5.0.9 (2019-06-26)
  */
-(function () {
-var fullscreen = (function (domGlobals) {
+(function (domGlobals) {
     'use strict';
 
     var Cell = function (initial) {
@@ -47,25 +46,6 @@ var fullscreen = (function (domGlobals) {
     var Events = { fireFullscreenStateChanged: fireFullscreenStateChanged };
 
     var DOM = global$1.DOM;
-    var getWindowSize = function () {
-      var w;
-      var h;
-      var win = domGlobals.window;
-      var doc = domGlobals.document;
-      var body = doc.body;
-      if (body.offsetWidth) {
-        w = body.offsetWidth;
-        h = body.offsetHeight;
-      }
-      if (win.innerWidth && win.innerHeight) {
-        w = win.innerWidth;
-        h = win.innerHeight;
-      }
-      return {
-        w: w,
-        h: h
-      };
-    };
     var getScrollPos = function () {
       var vp = DOM.getViewPort();
       return {
@@ -82,12 +62,6 @@ var fullscreen = (function (domGlobals) {
       var editorContainerStyle;
       var editorContainer, iframe, iframeStyle;
       var fullscreenInfo = fullscreenState.get();
-      var resize = function () {
-        DOM.setStyle(iframe, 'height', getWindowSize().h - (editorContainer.clientHeight - iframe.clientHeight));
-      };
-      var removeResize = function () {
-        DOM.unbind(domGlobals.window, 'resize', resize);
-      };
       editorContainer = editor.getContainer();
       editorContainerStyle = editorContainer.style;
       iframe = editor.getContentAreaContainer().firstChild;
@@ -98,18 +72,13 @@ var fullscreen = (function (domGlobals) {
           containerWidth: editorContainerStyle.width,
           containerHeight: editorContainerStyle.height,
           iframeWidth: iframeStyle.width,
-          iframeHeight: iframeStyle.height,
-          resizeHandler: resize,
-          removeHandler: removeResize
+          iframeHeight: iframeStyle.height
         };
         iframeStyle.width = iframeStyle.height = '100%';
         editorContainerStyle.width = editorContainerStyle.height = '';
         DOM.addClass(body, 'tox-fullscreen');
         DOM.addClass(documentElement, 'tox-fullscreen');
         DOM.addClass(editorContainer, 'tox-fullscreen');
-        DOM.bind(domGlobals.window, 'resize', resize);
-        editor.on('remove', removeResize);
-        resize();
         fullscreenState.set(newFullScreenInfo);
         Events.fireFullscreenStateChanged(editor, true);
       } else {
@@ -125,8 +94,6 @@ var fullscreen = (function (domGlobals) {
         DOM.removeClass(documentElement, 'tox-fullscreen');
         DOM.removeClass(editorContainer, 'tox-fullscreen');
         setScrollPos(fullscreenInfo.scrollPos);
-        DOM.unbind(domGlobals.window, 'resize', fullscreenInfo.resizeHandler);
-        editor.off('remove', fullscreenInfo.removeHandler);
         fullscreenState.set(null);
         Events.fireFullscreenStateChanged(editor, false);
       }
@@ -172,20 +139,19 @@ var fullscreen = (function (domGlobals) {
     };
     var Buttons = { register: register$1 };
 
-    global.add('fullscreen', function (editor) {
-      var fullscreenState = Cell(null);
-      if (editor.settings.inline) {
-        return Api.get(fullscreenState);
-      }
-      Commands.register(editor, fullscreenState);
-      Buttons.register(editor, fullscreenState);
-      editor.addShortcut('Meta+Shift+F', '', 'mceFullScreen');
-      return Api.get(fullscreenState);
-    });
     function Plugin () {
+      global.add('fullscreen', function (editor) {
+        var fullscreenState = Cell(null);
+        if (editor.settings.inline) {
+          return Api.get(fullscreenState);
+        }
+        Commands.register(editor, fullscreenState);
+        Buttons.register(editor, fullscreenState);
+        editor.addShortcut('Meta+Shift+F', '', 'mceFullScreen');
+        return Api.get(fullscreenState);
+      });
     }
 
-    return Plugin;
+    Plugin();
 
 }(window));
-})();

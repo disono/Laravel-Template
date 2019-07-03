@@ -11,13 +11,13 @@
     <div class="container-fluid">
         <div class="row mb-3">
             <div class="col">
-                <h3>Dashboard</h3>
+                <h3 class="font-weight-bold">Dashboard</h3>
             </div>
         </div>
 
         <div class="row">
             <div class="col">
-                <div class="jumbotron shadow-sm p-3 bg-white">
+                <div class="jumbotron shadow-sm p-3 bg-white rounded-lg">
                     <h4 class="display-4">{{ $count_active_members }}</h4>
                     <p class="lead">Total number of activated accounts.</p>
                     <h2>Active Users</h2>
@@ -25,7 +25,7 @@
             </div>
 
             <div class="col">
-                <div class="jumbotron shadow-sm p-3 bg-white">
+                <div class="jumbotron shadow-sm p-3 bg-white rounded-lg">
                     <h4 class="display-4">{{ $count_inactive_members }}</h4>
                     <p class="lead">Total number of deactivated accounts.</p>
                     <h2>In-Active Users</h2>
@@ -33,14 +33,14 @@
             </div>
 
             <div class="col">
-                <div class="jumbotron shadow-sm p-3 bg-white">
+                <div class="jumbotron shadow-sm p-3 bg-white rounded-lg">
                     <h4>New Members</h4>
                     <hr>
 
                     @foreach($latest_members as $member)
                         <div class="media mb-3">
                             <img src="{{ $member->profile_picture }}"
-                                 class="mr-3 rounded-circle shadow-sm" style="width: 64px;"
+                                 class="mr-3 rounded-circle shadow-sm image-sm"
                                  alt="{{ $member->full_name }}">
                             <div class="media-body">
                                 <h5 class="mt-0">
@@ -60,7 +60,7 @@
 
         <div class="row">
             <div class="col">
-                <div class="jumbotron shadow-sm p-3 bg-white">
+                <div class="jumbotron shadow-sm p-3 bg-white rounded-lg">
                     <canvas id="myChart" width="100" height="40"></canvas>
                 </div>
             </div>
@@ -76,7 +76,7 @@
             data: {
                 labels: [],
                 datasets: [{
-                    label: '# of Members Growth',
+                    label: 'Member Growth',
                     data: [],
                     borderWidth: 1
                 }]

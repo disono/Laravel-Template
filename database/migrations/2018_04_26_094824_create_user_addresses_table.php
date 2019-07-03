@@ -29,9 +29,9 @@ class CreateUserAddressesTable extends Migration
             $table->foreign('city_id')->references('id')->on('cities');
 
             $table->boolean('is_verified')->default(0);
-
             $table->string('verification_code', 100)->nullable();
             $table->timestamp('verification_expired_at')->nullable();
+            $table->integer('verification_tries')->default(0);
 
             $table->timestamps();
         });

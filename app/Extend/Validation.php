@@ -25,7 +25,8 @@ class Validation extends Validator
         "current_password" => "The :attribute is not valid password.",
         "password_complex" => ":attribute must contain at least 8 alphanumeric characters, including an uppercase letter, and a special character.",
         "birthday" => "The :attribute must be a valid date.",
-        "is_owner" => "The :attribute must have a valid ownership."
+        "is_owner" => "The :attribute must have a valid ownership.",
+        "phone_number" => "The :attribute must be a valid."
     ];
 
     public function __construct($translator, $data, $rules, $messages)
@@ -284,5 +285,18 @@ class Validation extends Validator
         }
 
         return true;
+    }
+
+    /**
+     * Check if phone number is valid
+     *
+     * @param $attribute
+     * @param $value
+     * @param $parameters
+     * @return bool
+     */
+    protected function validatePhoneNumber($attribute, $value, $parameters)
+    {
+        return preg_match("/^[0-9]{7,15}$/", $value);
     }
 }

@@ -16,9 +16,6 @@ class CreatePagesTable extends Migration
         Schema::create('pages', function (Blueprint $table) {
             $table->increments('id');
 
-            $table->unsignedInteger('page_category_id');
-            $table->foreign('page_category_id')->references('id')->on('page_categories');
-
             $table->unsignedInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
 
@@ -30,6 +27,15 @@ class CreatePagesTable extends Migration
             $table->boolean('is_email_to_subscriber')->default(0);
             $table->dateTime('post_at')->nullable();
             $table->dateTime('expired_at')->nullable();
+
+            $table->text('seo_description')->nullable();
+            $table->text('seo_keywords')->nullable();
+            $table->string('seo_robots', 100)->nullable();
+            $table->string('og_url', 100)->nullable();
+            $table->string('og_type', 100)->nullable();
+            $table->string('og_title', 180)->nullable();
+            $table->string('og_description', 180)->nullable();
+
             $table->timestamps();
         });
     }

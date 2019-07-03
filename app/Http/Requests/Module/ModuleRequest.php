@@ -19,11 +19,7 @@ class ModuleRequest extends BaseRequest
      */
     public function authorize()
     {
-        if (!__me()) {
-            return false;
-        }
-
-        return true;
+        return __me() ? true: false;
     }
 }
 

@@ -19,19 +19,20 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
+    protected $me = NULL;
+    protected $request = NULL;
     protected $content = [];
-    protected $request = null;
-    protected $theme = null;
-    protected $me = null;
-    protected $view = null;
+
+    protected $view = NULL;
+    protected $theme = NULL;
     protected $viewType = 'guest';
 
     public function __construct()
     {
         $this->middleware(function ($request, $next) {
             $this->request = request();
-            $this->me = __me();
             $this->view = view();
+            $this->me = __me();
 
             return $next($request);
         });
@@ -50,7 +51,7 @@ class Controller extends BaseController
         // override the data for content
         $data = (count($this->content) > 0) ? $this->content : $data;
 
-        if ($this->request->ajax() || $this->request->get('response') === 'json' || $this->viewType === 'json') {
+        if ($this->isJSON()) {
             if ($response == 200) {
                 return successJSONResponse($data);
             }
@@ -59,7 +60,6 @@ class Controller extends BaseController
         }
 
         $data['request'] = $this->request;
-
         if ($this->viewType === 'admin') {
             if ($this->theme) {
                 return adminTheme($this->theme . '.' . $path, $data, $response);
@@ -76,6 +76,25 @@ class Controller extends BaseController
     }
 
     /**
+     * Redirect response
+     *
+     * @param null $uri
+     * @return bool|JsonResponse
+     */
+    protected function redirect($uri = NULL)
+    {
+        if ($this->isJSON()) {
+            return $this->json(['redirect' => $uri ? $uri : url()->previous()]);
+        }
+
+        if ($uri === NULL) {
+            return redirect()->back();
+        } else {
+            return redirect($uri);
+        }
+    }
+
+    /**
      * JSON response
      *
      * @param $data
@@ -86,9 +105,9 @@ class Controller extends BaseController
     protected function json($data, $response = 200, $default_message = true)
     {
         // override the data for content
-        $data = (count($this->content) > 0) ? $this->content : $data;
+        $data = count($this->content) > 0 ? $this->content : $data;
 
-        if ($response == 200) {
+        if ($response === 200) {
             return successJSONResponse($data);
         }
 
@@ -96,18 +115,20 @@ class Controller extends BaseController
     }
 
     /**
-     * Redirect response
+     * Response errors
      *
-     * @param null $uri
-     * @return bool
+     * @param $code
+     * @param null $message
+     * @return JsonResponse|void
      */
-    protected function redirect($uri = null)
+    protected function error($code, $message = NULL)
     {
-        if ($uri === null) {
-            return redirect()->back();
-        } else {
-            return redirect($uri);
+        if ($this->isJSON()) {
+            $message = ($message) ? $message : $code . ' response code.';
+            return failedJSONResponse($message, $code);
         }
+
+        abort($code);
     }
 
     /**
@@ -145,6 +166,7 @@ class Controller extends BaseController
     {
         $data = $this->getAppView($key);
         $data[] = $value;
+
         return $this->setAppView($key, $data);
     }
 
@@ -171,19 +193,16 @@ class Controller extends BaseController
     }
 
     /**
-     * Response errors
+     * Is response must be JSON
      *
-     * @param $code
-     * @param null $message
-     * @return JsonResponse|void
+     * @return bool
      */
-    protected function error($code, $message = null)
+    protected function isJSON(): bool
     {
         if ($this->request->ajax() || $this->viewType === 'json' || $this->request->get('response') === 'json') {
-            $message = ($message) ? $message : $code . ' response code.';
-            return failedJSONResponse($message, $code);
+            return true;
         }
 
-        abort($code);
+        return false;
     }
 }

@@ -17,7 +17,7 @@
                     </div>
                 @endif
 
-                <div class="alert alert-warning rounded shadow-sm" role="alert">
+                <div class="alert alert-light rounded shadow-sm" role="alert">
                     <form action="{{ route('auth.verify.resend', ['type' => $type]) }}" method="post">
                         {{ csrf_field() }}
 

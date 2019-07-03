@@ -132,7 +132,7 @@ class ResetController extends Controller
 
         // login the user
         Auth::loginUsingId($user->id);
-        initialize_settings();
+        __initializeSettings();
         $this->_logAuthentication();
 
         return successJSONResponse([

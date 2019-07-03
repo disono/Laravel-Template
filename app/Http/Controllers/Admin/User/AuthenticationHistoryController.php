@@ -9,26 +9,33 @@
 namespace App\Http\Controllers\Admin\User;
 
 use App\Http\Controllers\Controller;
-use App\Models\AuthenticationHistory;
+use App\Models\Vendor\Facades\AuthenticationHistory;
 
 class AuthenticationHistoryController extends Controller
 {
     protected $viewType = 'admin';
+    private $_authenticationHistory;
 
     public function __construct()
     {
         parent::__construct();
         $this->theme = 'user.history';
+        $this->_authenticationHistory = AuthenticationHistory::self();
     }
 
     public function indexAction()
     {
         $this->setHeader('title', 'Authentication Histories');
-        $authHistory = new AuthenticationHistory();
-        $authHistory->setNewWritableColumn('created_at');
-        $authHistory->enableSearch = true;
+        $this->_authenticationHistory->setWritableColumn('created_at');
+        $this->_authenticationHistory->enableSearch = true;
         return $this->view('index', [
-            'histories' => $authHistory->fetch(requestValues('search|pagination_show|user_id|ip|platform|type|lat|lng|created_at'))
+            'histories' => $this->_authenticationHistory->fetch(requestValues('search|pagination_show|user_id|ip|platform|type|lat|lng|created_at'))
         ]);
+    }
+
+    public function destroyAction($id)
+    {
+        $this->_authenticationHistory->remove($id);
+        return $this->json('Authentication history is successfully deleted.');
     }
 }

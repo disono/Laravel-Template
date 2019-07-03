@@ -8,8 +8,8 @@
 
 namespace App\Models\Chat;
 
-use App\Models\File;
-use App\Models\User;
+use App\Models\Vendor\Facades\File;
+use App\Models\Vendor\Facades\User;
 use App\Models\Vendor\BaseModel;
 
 class ChatMessage extends BaseModel
@@ -29,23 +29,13 @@ class ChatMessage extends BaseModel
         parent::__construct($attributes);
     }
 
-    /**
-     * Custom filters
-     *
-     * @param $query
-     */
-    public function rawFilters($query): void
+    protected function customQueries($query): void
     {
         $query->join('chat_groups', 'chat_messages.chat_group_id', '=', 'chat_groups.id');
         $query->join('users AS sender', 'chat_messages.user_id', '=', 'sender.id');
     }
 
-    /**
-     * List of select
-     *
-     * @return array
-     */
-    protected function rawQuerySelectList()
+    protected function customQuerySelectList(): array
     {
         $_me = __me() ? __me()->id : 0;
 
@@ -54,27 +44,23 @@ class ChatMessage extends BaseModel
             'sender_full_name' => 'CONCAT(sender.first_name, " ", sender.last_name)',
             'sender_first_name' => 'sender.first_name',
             'sender_last_name' => 'sender.last_name',
+            'sender_gender' => 'sender.gender',
             'is_me' => 'IF(chat_messages.user_id = ' . $_me . ', 1, 0)'
         ];
     }
 
-    /**
-     * Add formatting to data
-     *
-     * @param $row
-     * @return mixed
-     */
     protected function dataFormatting($row)
     {
+        $this->addDateFormatting($row);
+
         // file types
         $row->files = [];
-        foreach ((new File())->types() as $type) {
-            $row->files[$type] = (new File())->fetchAll(['table_name' => $this->tableName, 'table_id' => $row->id, 'type' => $type]);
+        foreach (File::types() as $type) {
+            $row->files[$type] = File::fetchAll(['table_name' => $this->tableName, 'table_id' => $row->id, 'type' => $type]);
         }
 
-        $row->profile_picture = (new User())->profilePicture($row->user_id);
-        $row->formatted_created_at = humanDate($row->created_at);
-
+        // profile picture
+        $row->profile_picture = User::profilePicture($row->user_id, $row->sender_gender);
         return $row;
     }
 }

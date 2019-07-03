@@ -22,7 +22,6 @@ class CreateChatGroupsTable extends Migration
 
             $table->string('name')->nullable();
 
-            $table->boolean('is_deleted')->default(0);
             $table->boolean('is_archived')->default(0);
             $table->boolean('is_spam')->default(0);
 

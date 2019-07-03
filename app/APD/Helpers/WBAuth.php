@@ -8,14 +8,12 @@
 
 use App\Models\AuthorizationRole;
 use App\Models\Token;
-use App\Models\User;
+use App\Models\Vendor\Facades\User;
+use Firebase\JWT\JWT;
+use Firebase\JWT\SignatureInvalidException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
-use Tymon\JWTAuth\Exceptions\JWTException;
-use Tymon\JWTAuth\Exceptions\TokenExpiredException;
-use Tymon\JWTAuth\Exceptions\TokenInvalidException;
-use Tymon\JWTAuth\Facades\JWTAuth;
 
 if (!function_exists('me')) {
     /**
@@ -27,13 +25,13 @@ if (!function_exists('me')) {
     function me($id = 0)
     {
         if ($id) {
-            return (new User())->single($id);
+            return User::single($id);
         }
 
         if (auth()->check()) {
-            return (new User())->single(auth()->user()->id);
-        } else if (authAPI()) {
-            return (new User())->single(authId());
+            return User::single(auth()->user()->id);
+        } else if (isAccountEnabled()) {
+            return User::single(authId());
         }
 
         return null;
@@ -48,33 +46,30 @@ if (!function_exists('authId')) {
      */
     function authId()
     {
-        $id = (__me()) ? __me()->id : 0;
-
-        return (int)(request()->header('authenticated_id')) ?
-            request()->header('authenticated_id') :
-            request('authenticated_id', $id);
+        $_r = request();
+        return $_r->header('uid') ? $_r->header('uid') : request('uid', __me() ? __me()->id : 0);
     }
 }
 
-if (!function_exists('authAPI')) {
+if (!function_exists('isAccountEnabled')) {
     /**
-     * Check the authenticated API
+     * Check if account is still valid
      *
      * @return null
      */
-    function authAPI()
+    function isAccountEnabled()
     {
         $user = User::find(authId());
-        if ($user) {
-            // check if account is enabled
-            if (!$user->is_account_enabled || $user->is_account_enabled == 0) {
-                return null;
-            }
-
-            return $user;
+        if (!$user) {
+            return NULL;
         }
 
-        return null;
+        // check if account is enabled
+        if (!$user->is_account_enabled) {
+            return null;
+        }
+
+        return $user;
     }
 }
 
@@ -82,60 +77,91 @@ if (!function_exists('jwt')) {
     /**
      * Check API JWT
      *
-     * @param bool $response
+     * iss: The issuer of the token = user_id
+     * sub: This holds the identifier for the token (defaults to user id) = 'uid'
+     * iat: When the token was issued (unix timestamp)
+     * exp: The token expiry date (unix timestamp)
+     * nbf: The earliest point in time that the token can be used (unix timestamp)
+     * jti: A unique identifier for the token (md5 of the sub and iat claims) = MD5("jti." + iss + "." + sub + "." + iat)
+     *
      * @return bool|JsonResponse|null
      */
-    function jwt($response = false)
+    function jwt()
     {
-        $user = null;
+        // authentication using jwt is not required
+        // good only for development purposes
+        if (__settings('jwtAuthentication')->value !== 'enabled') {
+            return true;
+        }
 
+        $jwt = request()->bearerToken();
+
+        // token is present in header
+        if (!$jwt) {
+            return failedJSONResponse('Token not found.');
+        }
+
+        // search token
+        $secret = getTokenSecretKey();
+        if (!$secret) {
+            return failedJSONResponse('Token not found base on your "tkey".');
+        }
+
+        // decode jwt
         try {
-            JWTInitializeTokenByKey();
+            $decoded = JWT::decode($jwt, $secret, ['HS256']);
             setTimezone();
-
-            $user = JWTAuth::parseToken()->authenticate();
-            if (!$user) {
-                return ($response) ? false : failedJSONResponse('Token not found.');
-            }
-        } catch (TokenExpiredException $e) {
-            return ($response) ? false : failedJSONResponse('Token is expired, ' . $e->getMessage());
-        } catch (TokenInvalidException $e) {
-            return ($response) ? false : failedJSONResponse('Token is invalid, ' . $e->getMessage());
-        } catch (JWTException $e) {
-            return ($response) ? false : failedJSONResponse('Token is absent, ' . $e->getMessage());
+        } catch (SignatureInvalidException $exception) {
+            return failedJSONResponse('Token failed to validate for the following reason ' . $exception->getMessage() . '.');
         }
 
-        if (!$user) {
-            return ($response) ? false : failedJSONResponse('User is not valid.');
+        // if token is expired
+        if (time() > $decoded->exp) {
+            return failedJSONResponse('Token is expired.');
         }
 
-        return $user;
+        // if token is too early to validate
+        if (time() < $decoded->nbf) {
+            return failedJSONResponse('Token is too early to validate.');
+        }
+
+        // token valid
+        if (md5("jti." . $decoded->iss . "." . $decoded->sub . "." . $decoded->iat) != $decoded->jti) {
+            return failedJSONResponse('Token jti is invalid.');
+        }
+
+        // lets check the user id
+        if (authId() != $decoded->iss || $decoded->sub != 'uid') {
+            return failedJSONResponse('Token has invalid user id.');
+        }
+
+        return true;
     }
 }
 
-if (!function_exists('JWTInitializeTokenByKey')) {
+if (!function_exists('getTokenSecretKey')) {
     /**
      * Initialize JWT token by key
      */
-    function JWTInitializeTokenByKey()
+    function getTokenSecretKey()
     {
         if (!Schema::hasTable('tokens')) {
-            return;
+            return NULL;
         }
 
         // token
-        $token = Token::where('key', request()->header('token_key'))->first();
+        $token = Token::where('key', request()->header('tkey'))->first();
         if (!$token) {
-            return;
+            return NULL;
         }
 
         // check if user id is correct
         if (authId() != $token->user_id) {
-            return;
+            return NULL;
         }
 
         // secret key
-        config(['jwt.secret' => $token->secret]);
+        return $token->secret;
     }
 }
 
@@ -150,9 +176,9 @@ if (!function_exists('isAuthorize')) {
      */
     function isAuthorize($roles = [], $boolean_only = false, $delimiter = '|')
     {
-        $auth_id = (auth()->check()) ? auth()->user()->id : 0;
-        $roles = (is_array($roles)) ? $roles : explode($delimiter, $roles);
-        $response = authorizeMe($roles, $auth_id, false);
+        $auth_id = auth()->check() ? auth()->user()->id : 0;
+        $roles = is_array($roles) ? $roles : explode($delimiter, $roles);
+        $response = authorizeMe($auth_id, $roles, false);
 
         if (!$response) {
             if ($boolean_only) {
@@ -174,12 +200,13 @@ if (!function_exists('authorizeMe')) {
     /**
      * Authorize user by route
      *
-     * @param array $roles
      * @param $user_id
+     * @param array $roles
      * @param bool $route_check
+     *
      * @return bool
      */
-    function authorizeMe($roles = [], $user_id, $route_check = true)
+    function authorizeMe($user_id, $roles = [], $route_check = true)
     {
         $user_role = User::find($user_id)->role;
 
@@ -192,11 +219,9 @@ if (!function_exists('authorizeMe')) {
         }
 
         if ($route_check) {
-            $authentication_role = AuthorizationRole::where('route', request()->route()->getName())
+            if (!AuthorizationRole::where('route', request()->route()->getName())
                 ->where('role_id', $user_role->id)
-                ->first();
-
-            if (!$authentication_role) {
+                ->first()) {
                 return false;
             }
         }
@@ -215,7 +240,7 @@ if (!function_exists('authorizeRoute')) {
     function authorizeRoute($user_id = 0)
     {
         if (!$user_id) {
-            if (auth()->check() && __me()) {
+            if (__me()) {
                 $user_id = __me()->id;
             } else if (authId()) {
                 $user_id = authId();
@@ -231,43 +256,13 @@ if (!function_exists('authorizeRoute')) {
             return false;
         }
 
-        $authentication_role = AuthorizationRole::where('route', request()->route()->getName())
+        if (!AuthorizationRole::where('route', request()->route()->getName())
             ->where('role_id', $user_role->id)
-            ->first();
-        if (!$authentication_role) {
+            ->first()) {
             return false;
         }
 
         return true;
-    }
-}
-
-if (!function_exists('setTimezone')) {
-    /**
-     * Set Timezone
-     */
-    function setTimezone()
-    {
-        try {
-            if (!fetchRequestValue('device_timezone')) {
-                return;
-            }
-
-            $collection = collect(timezone_identifiers_list());
-            $searchFor = fetchRequestValue('device_timezone');
-            $c = $collection->search(function ($item, $key) use ($searchFor) {
-                return strpos($item, $searchFor) !== false;
-            });
-            $timezone = $collection->get($c);
-            if (!$timezone) {
-                return;
-            }
-
-            // secret key
-            config(['timezone' => $timezone]);
-        } catch (Exception $e) {
-            logErrors('Error (App\APDApp\Helpers\WBAuth - setTimezone()): ' . $e->getMessage());
-        }
     }
 }
 

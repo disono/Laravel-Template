@@ -18,21 +18,21 @@ Route::post('v1/auth/verify/phone', 'API\V1\Authentication\VerifyController@veri
 Route::post('v1/auth/verify/resend/{type}', 'API\V1\Authentication\VerifyController@resendVerificationAction')->name('api.v1.auth.verify.resend');
 
 // profile
-Route::get('v1/u/{username}', 'API\V1\User\UserController@profileAction')->name('api.v1.user.show');
+Route::get('v1/u/{username}', 'API\V1\User\UserController@profileAction')->name('api.v1.user.details');
 
 // page
-Route::get('v1/p/{slug}', 'API\V1\Page\PageController@showAction')->name('api.v1.page.show');
+Route::get('v1/p/{slug}', 'API\V1\Page\PageController@showAction')->name('api.v1.page.details');
 Route::get('v1/p/category/{name}', 'API\V1\Page\PageController@categoryAction')->name('api.v1.page.category');
 Route::get('v1/p/archive/{year}/{month}', 'API\V1\Page\PageController@archiveAction')->name('api.v1.page.archive');
 
 // application settings
 Route::get('v1/application/settings', 'API\V1\Application\ApplicationController@settingsAction')->name('api.v1.application.settings');
 
-Route::group(['middleware' => ['api.auth']], function () {
+Route::group(['middleware' => ['api.auth', 'auth.checker']], function () {
     // user
     Route::get('v1/user/sync', 'API\V1\User\SettingController@syncAction')->name('api.v1.user.sync');
-    Route::post('v1/user/setting/update', 'API\V1\User\SettingController@settingsUpdateAction')->name('api.v1.user.settings.update');
-    Route::post('v1/user/security/update', 'API\V1\User\SettingController@securityUpdateAction')->name('api.v1.user.security.update');
+    Route::post('v1/user/setting/update', 'API\V1\User\SettingController@settingsUpdateAction')->name('api.v1.user.setting.general.update');
+    Route::post('v1/user/security/update', 'API\V1\User\SettingController@securityUpdateAction')->name('api.v1.user.setting.security.update');
 
     // FCM tokens
     Route::post('v1/user/fcm/store', 'API\V1\User\FCMController@storeAction')->name('api.v1.user.fcm.store');

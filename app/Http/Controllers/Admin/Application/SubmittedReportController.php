@@ -10,38 +10,47 @@ namespace App\Http\Controllers\Admin\Application;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Application\Report\ReportMessageStore;
-use App\Models\App\PageReport;
-use App\Models\App\PageReportMessage;
-use App\Models\App\PageReportReason;
+use App\Models\Vendor\Facades\PageReport;
+use App\Models\Vendor\Facades\PageReportMessage;
+use App\Models\Vendor\Facades\PageReportReason;
 
 class SubmittedReportController extends Controller
 {
     protected $viewType = 'admin';
-    private $pageReport = null;
-    private $pageReportMessage = null;
+    private $pageReport = NULL;
+    private $pageReportMessage = NULL;
 
     public function __construct()
     {
         parent::__construct();
         $this->theme = 'application.report.submitted';
-        $this->pageReport = new PageReport();
-        $this->pageReportMessage = new PageReportMessage();
+        $this->pageReport = PageReport::self();
+        $this->pageReportMessage = PageReportMessage::self();
     }
 
     public function indexAction()
     {
-        $this->setHeader('title', 'Reports');
+        $this->setHeader('title', 'Page Reports');
         $this->pageReport->enableSearch = true;
-        $this->pageReport->setNewWritableColumn('created_at');
+        $this->pageReport->setWritableColumn('created_at');
 
         return $this->view('index', [
-            'reports' => $this->pageReport->fetch(requestValues('search|pagination_show|page_report_reason_id|
-                responded_by_id|user_id|status|created_at')),
+            'reports' => $this->pageReport->fetch(requestValues(
+                'search|pagination_show|page_report_reason_id|responded_by_id|user_id|status|created_at'
+            )),
             'reasons' => PageReportReason::all(),
-            'submitted_by' => (new PageReport())->fetchAll(['groupBy' => 'user_id']),
-            'process_by' => (new PageReport())->fetchAll(['groupBy' => 'responded_by_id']),
-            'statuses' => (new PageReport())->statuses()
+            'statuses' => PageReport::statuses()
         ]);
+    }
+
+    public function searchSubmittedByAction()
+    {
+        return $this->json(PageReport::fetchAll(requestValues('search', ['groupBy' => 'user_id'])));
+    }
+
+    public function searchProcessedByAction()
+    {
+        return $this->json(PageReport::fetchAll(requestValues('search', ['groupBy' => 'responded_by_id'])));
     }
 
     public function showAction($id)
@@ -53,7 +62,8 @@ class SubmittedReportController extends Controller
 
         $this->setHeader('title', $data->page_report_reason_name);
         return $this->view('show', [
-            'report' => $data, 'statuses' => $this->pageReport->statuses(),
+            'report' => $data,
+            'statuses' => $this->pageReport->statuses(),
             'messages' => $this->pageReportMessage->fetch(['page_report_id' => $data->id])
         ]);
     }

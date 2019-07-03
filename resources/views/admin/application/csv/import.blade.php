@@ -8,14 +8,9 @@
 @extends('admin.layouts.master')
 
 @section('content')
-     <div class="container-fluid shadow-sm p-3 bg-white">
-        <div class="row">
-            <div class="col">
-                <h3>{{ $view_title }}</h3>
-                <hr>
-            </div>
-        </div>
+    <h3 class="mb-3 font-weight-bold">{{ $view_title }}</h3>
 
+    <div class="container-fluid shadow-sm p-3 bg-white">
         <div class="row">
             <div class="col-md-4 col-sm-12 mt-3">
                 @if(session()->has('success'))
@@ -30,7 +25,7 @@
                     </div>
                 @endif
 
-                <form action="{{ route('admin.csv.import.store') }}" method="post" enctype="multipart/form-data">
+                <form action="{{ route('admin.csvImport.store') }}" method="post" enctype="multipart/form-data">
                     {{ csrf_field() }}
                     <input type="hidden" name="source" value="{{ $request->get('source') }}">
 
@@ -52,6 +47,7 @@
                         </div>
                     </div>
 
+                    <hr>
                     <button type="submit" class="btn btn-primary">Import</button>
                     <a href="{{ $link }}" class="btn btn-light">Cancel</a>
                 </form>

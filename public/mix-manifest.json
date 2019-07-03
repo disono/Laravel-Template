@@ -1,8 +1,12 @@
 {
+    "/../resources/assets/css/bootstrap.css": "/../resources/assets/css/bootstrap.css",
+    "/../resources/assets/css/bootstrap-select.css": "/../resources/assets/css/bootstrap-select.css",
+    "/../resources/assets/css/_waves.css": "/../resources/assets/css/_waves.css",
+    "/assets/css/theme.css": "/assets/css/theme.css",
     "/assets/css/jro-admin.css": "/assets/css/jro-admin.css",
     "/assets/js/vendor.js": "/assets/js/vendor.js",
     "/assets/css/vendor.css": "/assets/css/vendor.css",
     "/assets/js/lib/tinymce/tinymce.min.js": "/assets/js/lib/tinymce/tinymce.min.js",
-    "/assets/js/lib/chart.js": "/assets/js/lib/chart.js",
+    "/assets/js/lib/chart.min.js": "/assets/js/lib/chart.min.js",
     "/assets/js/lib/moment.min.js": "/assets/js/lib/moment.min.js"
 }

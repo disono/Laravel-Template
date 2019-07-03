@@ -6,35 +6,42 @@
  * @license         Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
-use App\Models\File;
+use App\Models\Vendor\Facades\File;
+use Illuminate\Contracts\Routing\UrlGenerator;
 use Illuminate\Support\Facades\Log;
 use Intervention\Image\Facades\Image;
+use Spatie\ImageOptimizer\OptimizerChainFactory;
 
 if (!function_exists('fileUpload')) {
     /**
      * Upload file
      *
-     * @param $options = [file, filename, destination, options, title, desc, tableName, tableId]
+     * @param $params = [file, filename, destination, options, title, desc, tableName, tableId]
      *
      * @return array
      */
-    function fileUpload($options)
+    function fileUpload($params): array
     {
-        $file = $options['file'];
+        $file = $params['file'];
         $files = [];
 
         if (is_array($file)) {
             foreach ($file as $request) {
-                $uploaded = fileSave($request, $options);
-                if ($uploaded) {
-                    $files[] = $uploaded;
-                }
+                $files[] = __helperFileSave($files, $request, $params);
             }
         } else {
-            $uploaded = fileSave($file, $options);
-            if ($uploaded) {
-                $files[] = $uploaded;
-            }
+            $files = __helperFileSave($files, $file, $params);
+        }
+
+        return $files;
+    }
+
+    function __helperFileSave($files, $file, $params): array
+    {
+        $uploaded = fileSave($file, $params);
+
+        if ($uploaded) {
+            $files[] = $uploaded;
         }
 
         return $files;
@@ -55,63 +62,53 @@ if (!function_exists('fileSave')) {
         $destination = $options['destination'] ?? 'private';
         $title = $options['title'] ?? null;
         $description = $options['desc'] ?? null;
-        $fileOptions = $options['options'] ?? [];
         $tableName = $options['tableName'] ?? null;
         $tableId = $options['tableId'] ?? 0;
+        $fileOptions = $options['options'] ?? [];
 
         $file = processUpload($file, $destination, $title, $description);
         if ($file->fileName && $file->type) {
+            $tag = retrievedFileOption($options, 'tag');
+            $user_id = (__me()) ? __me()->id : 0;
+
             // process image
             if (count($fileOptions) && $file->type === 'photo') {
-                processImage($destination . '/' . $file->fileName, $fileOptions);
+                processImage($destination . '/' . $file->fileName, retrievedFileOption($options));
+            }
+
+            // optimized image
+            if ($file->type === 'photo') {
+                $optimizerChain = OptimizerChainFactory::create();
+                $optimizerChain->optimize($destination . '/' . $file->fileName);
+            }
+
+            // remove previous upload
+            if (retrievedFileOption($options, 'remove_previous') === true) {
+                File::remove(['user_id' => $user_id, 'table_name' => $tableName, 'table_id' => $tableId, 'tag' => $tag]);
             }
 
             // save to database
-            $user_id = (__me()) ? __me()->id : 0;
-            $fileSave = (new File())->store([
+            $fileSave = File::store([
                 'user_id' => $user_id,
+                'title' => $file->title,
+                'description' => $description,
                 'file_name' => $file->fileName,
                 'type' => $file->type,
                 'ext' => $file->ext,
-                'title' => $file->title,
-                'description' => $description,
+                'img_width' => $file->img_width,
+                'img_height' => $file->img_height,
                 'table_name' => $tableName,
                 'table_id' => $tableId,
-                'tag' => retrievedFileOption($options, 'tag')
+                'tag' => $tag
             ]);
 
             if ($fileSave) {
+                // database details
                 $file->db = $fileSave;
                 return $file;
             } else {
                 // delete if not successful saving to database
                 fileDestroy($destination . '/' . $file->fileName);
-            }
-        }
-
-        return null;
-    }
-}
-
-if (!function_exists('retrievedFileOption')) {
-    /**
-     * Options
-     *
-     * @param $options
-     * @param $key
-     * @return null
-     */
-    function retrievedFileOption($options, $key)
-    {
-        if (isset($options['options'])) {
-            $_options = $options['options'];
-
-            if (isset($_options[$options['filename']])) {
-                $_fileOptions = $_options[$options['filename']];
-
-                if (isset($_fileOptions[$key])) {
-                    return $_fileOptions[$key];
-                }
             }
         }
 
@@ -133,11 +130,13 @@ if (!function_exists('processUpload')) {
     function processUpload($file, $destinationPath = 'private', $title = null, $description = null)
     {
         $object = new stdClass();
+        $object->title = $title;
+        $object->description = $description;
         $object->fileName = null;
         $object->ext = null;
         $object->type = null;
-        $object->title = $title;
-        $object->description = $description;
+        $object->img_width = 0;
+        $object->img_height = 0;
         $object->db = null;
 
         if ($file) {
@@ -148,9 +147,46 @@ if (!function_exists('processUpload')) {
             $object->fileName = $uploadFilename;
             $object->ext = $extension;
             $object->type = getFileType($extension);
+
+            // get width and height
+            if ($object->type === 'photo') {
+                list($width, $height) = getimagesize($destinationPath . '/' . $uploadFilename);
+                $object->img_width = $width;
+                $object->img_height = $height;
+            }
         }
 
         return $object;
+    }
+}
+
+if (!function_exists('retrievedFileOption')) {
+    /**
+     * Options
+     *
+     * @param $options
+     * @param $key
+     * @return null
+     */
+    function retrievedFileOption($options, $key = NULL)
+    {
+        if (isset($options['options'])) {
+            $_options = $options['options'];
+
+            if (isset($_options[$options['filename']])) {
+                $_fileOptions = $_options[$options['filename']];
+
+                // get all options
+                if ($key === NULL) {
+                    return $_fileOptions;
+                }
+
+                // get options value
+                return $_fileOptions[$key] ?? NULL;
+            }
+        }
+
+        return null;
     }
 }
 
@@ -164,38 +200,61 @@ if (!function_exists('processImage')) {
     function processImage($path, $fileOptions = [])
     {
         $image = Image::make($path);
-        if ($image) {
-            // crop
-            if (isset($fileOptions['crop_width']) && isset($fileOptions['crop_height'])) {
-                $fileOptions->crop((int)$fileOptions['crop_width'], (int)$fileOptions['crop_height']);
-            } else if (isset($fileOptions['crop_auto'])) {
-                $height = $image->height() * 0.85;
-                $width = $height;
-                $image->crop((int)$width, (int)$height);
-            }
 
-            // resize
-            if (isset($fileOptions['width']) && isset($fileOptions['height'])) {
-                $image->resize((int)$fileOptions['width'], (int)$fileOptions['height']);
-            }
+        // crop
+        if (isset($fileOptions['crop_width']) && isset($fileOptions['crop_height'])) {
+            $fileOptions->crop((int)$fileOptions['crop_width'], (int)$fileOptions['crop_height']);
+        } else if (isset($fileOptions['crop_auto'])) {
+            $height = $image->height() * 0.85;
+            $width = $height;
+            $image->crop((int)$width, (int)$height);
+        }
 
-            // resize only the height of the image
-            if (isset($fileOptions['heightRatio'])) {
-                $image->resize(null, (int)$fileOptions['heightRatio'], function ($constraint) {
-                    $constraint->aspectRatio();
-                });
-            }
+        // resize
+        if (isset($fileOptions['width']) && isset($fileOptions['height'])) {
+            $image->resize((int)$fileOptions['width'], (int)$fileOptions['height']);
+        }
 
-            // resize only the width of the image
-            if (isset($fileOptions['widthRatio'])) {
-                $image->resize(null, (int)$fileOptions['widthRatio'], function ($constraint) {
-                    $constraint->aspectRatio();
-                });
-            }
+        // resize only the height of the image
+        if (isset($fileOptions['heightRatio'])) {
+            $image->resize(null, (int)$fileOptions['heightRatio'], function ($constraint) {
+                $constraint->aspectRatio();
+            });
+        }
 
-            // save
-            $quality = (isset($fileOptions['quality'])) ? $fileOptions['quality'] : 100;
-            $image->save(null, imageQuality($image->filesize(), $quality));
+        // resize only the width of the image
+        if (isset($fileOptions['widthRatio'])) {
+            $image->resize(null, (int)$fileOptions['widthRatio'], function ($constraint) {
+                $constraint->aspectRatio();
+            });
+        }
+
+        // save
+        $quality = isset($fileOptions['quality']) ? $fileOptions['quality'] : 100;
+        $image->save(null, imageQuality($image->filesize(), $quality));
+    }
+}
+
+if (!function_exists('imageQuality')) {
+    /**
+     * Reduce quality to 85% if file-size is more than 3MB
+     *
+     * @param $fileSize
+     *  Bytes
+     * @param int $quality
+     *  Integer form 1 to 100
+     *
+     * @return int|null
+     */
+    function imageQuality($fileSize, $quality = 85)
+    {
+        $default = __settings('fileSizeLimitImage')->value;
+        $default = ($default) ? ((int)$default * 1000) : 3000000;
+
+        if ($fileSize > $default) {
+            return $quality;
+        } else {
+            return 100;
         }
     }
 }
@@ -227,6 +286,32 @@ if (!function_exists('getFileType')) {
     }
 }
 
+if (!function_exists('imgPathToBase64')) {
+    /**
+     * Convert image path to base64 image
+     *
+     * @param $path
+     * @return string
+     */
+    function imgPathToBase64($path)
+    {
+        try {
+            // A few settings
+            $img_file = $path;
+
+            // Read image path, convert to base64 encoding
+            $imgData = base64_encode(file_get_contents($img_file));
+
+            // Format the image SRC:  data:{mime};base64,{data};
+            $src = 'data: ' . mime_content_type($img_file) . ';base64,' . $imgData;
+
+            return $src;
+        } catch (Exception $e) {
+            return $path;
+        }
+    }
+}
+
 if (!function_exists('fileDestroy')) {
     /**
      * Delete file
@@ -241,44 +326,20 @@ if (!function_exists('fileDestroy')) {
 
         if (count($file)) {
             $file_name = $file[count($file) - 1];
-            if ($file_name == null || $file_name == '') {
-                return false;
+            if ($file_name == NULL || $file_name == '') {
+                return FALSE;
             }
         }
 
         if (!file_exists($path)) {
-            return true;
+            return TRUE;
         }
 
         if (file_exists($path)) {
             return (bool)unlink($path);
         }
 
-        return false;
-    }
-}
-
-if (!function_exists('imageQuality')) {
-    /**
-     * Reduce quality to 85% if file-size is more than 3MB
-     *
-     * @param $fileSize
-     *  Bytes
-     * @param int $quality
-     *  Integer form 1 to 100
-     *
-     * @return int|null
-     */
-    function imageQuality($fileSize, $quality = 85)
-    {
-        $default = __settings('fileSizeLimitImage')->value;
-        $default = ($default) ? ((int)$default * 1000) : 3000000;
-
-        if ($fileSize > $default) {
-            return $quality;
-        } else {
-            return 100;
-        }
+        return FALSE;
     }
 }
 
@@ -305,28 +366,17 @@ if (!function_exists('fetchImage')) {
      * Get image
      *
      * @param $source
-     * @param null $default
+     * @param string $default
      * @param bool $pathOnly
      *
-     * @return \Illuminate\Contracts\Routing\UrlGenerator|null|string
+     * @return UrlGenerator|null|string
      */
-    function fetchImage($source, $default = null, $pathOnly = false)
+    function fetchImage($source, $default = NULL, $pathOnly = FALSE)
     {
-        $image = null;
-        $path = null;
-        if (is_numeric($source)) {
-            $image = File::find($source);
-        }
-
-        $filename = null;
-        if ($image) {
-            $filename = $image->file_name;
-        } else {
-            $filename = $source;
-        }
-
-        // complete path for image
-        $complete_path = 'private/' . $filename;
+        $image = NULL;
+        $path = NULL;
+        $filename = NULL;
+        $default = $default ? $default : iconPlaceholders();
 
         // check if folder exists
         if (!file_exists('private')) {
@@ -338,11 +388,31 @@ if (!function_exists('fetchImage')) {
             createFolder('private');
         }
 
+        // is source id or numeric
+        if (is_numeric($source)) {
+            $image = File::find($source);
+        }
+
+        // get the filename
+        if ($image) {
+            $filename = $image->file_name;
+        } else {
+            $filename = $source;
+        }
+
+        // complete path for image
+        $complete_path = 'private/' . $filename;
+
         // add the path
-        if (file_exists($complete_path) && $filename != null) {
+        if (file_exists($complete_path) && $filename != NULL) {
             $path = $complete_path;
         } else {
             $path = $default;
+        }
+
+        // our image is from URL
+        if (strpos($path, "http://") === TRUE || strpos($path, "https://") === TRUE) {
+            return $path;
         }
 
         return ($pathOnly) ? $path : url($path);
@@ -368,28 +438,44 @@ if (!function_exists('logErrors')) {
     }
 }
 
-if (!function_exists('imgPathToBase64')) {
+if (!function_exists('iconPlaceholders')) {
     /**
-     * Convert image path to base64 image
+     * Get icon default placeholder
      *
-     * @param $path
+     * @param null $icon
+     *
      * @return string
      */
-    function imgPathToBase64($path)
+    function iconPlaceholders($icon = NULL)
     {
-        try {
-            // A few settings
-            $img_file = $path;
-
-            // Read image path, convert to base64 encoding
-            $imgData = base64_encode(file_get_contents($img_file));
-
-            // Format the image SRC:  data:{mime};base64,{data};
-            $src = 'data: ' . mime_content_type($img_file) . ';base64,' . $imgData;
-
-            return $src;
-        } catch (Exception $e) {
-            return $path;
+        if ($icon === 'male') {
+            return 'assets/img/placeholders/profile_picture_male.png';
         }
+
+        if ($icon === 'female') {
+            return 'assets/img/placeholders/profile_picture_female.png';
+        }
+
+        if ($icon === 'audio') {
+            return 'assets/img/placeholders/audio.png';
+        }
+
+        if ($icon === 'document') {
+            return 'assets/img/placeholders/document.png';
+        }
+
+        if ($icon === 'file') {
+            return 'assets/img/placeholders/file.png';
+        }
+
+        if ($icon === 'image') {
+            return 'assets/img/placeholders/image.png';
+        }
+
+        if ($icon === 'video') {
+            return 'assets/img/placeholders/video.png';
+        }
+
+        return 'assets/img/placeholders/default.png';
     }
 }

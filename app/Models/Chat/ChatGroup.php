@@ -9,16 +9,18 @@
 namespace App\Models\Chat;
 
 use App\Models\Vendor\BaseModel;
+use App\Models\Vendor\Facades\ChatGroupMember;
+use App\Models\Vendor\Facades\ChatMessage;
 
 class ChatGroup extends BaseModel
 {
     protected $tableName = 'chat_groups';
     protected $writableColumns = [
         'created_by_id', 'name',
-        'is_deleted', 'is_archived', 'is_spam'
+        'is_archived', 'is_spam'
     ];
 
-    protected $inputBooleans = ['is_deleted', 'is_archived', 'is_spam'];
+    protected $inputBooleans = ['is_archived', 'is_spam'];
     protected $columnHasRelations = ['created_by_id'];
 
     public function __construct(array $attributes = [])
@@ -27,57 +29,66 @@ class ChatGroup extends BaseModel
         parent::__construct($attributes);
     }
 
-    /**
-     * List of select
-     *
-     * @return array
-     */
-    protected function rawQuerySelectList()
+    protected function customQuerySelectList(): array
     {
+        // count how many members
+        $count_participant = 'SELECT COUNT(*) FROM chat_group_members WHERE chat_groups.id = chat_group_members.chat_group_id';
+        // query chat member
+        $member = 'SELECT COUNT(*) FROM chat_group_members WHERE chat_groups.id = chat_group_members.chat_group_id AND chat_group_members.member_id = ';
+
+        // member id
         $member_id = $this->params['is_member'] ?? 0;
 
         // message one person (private message 1 to 1)
         $pm = $this->params['private_message'] ?? ['to' => 0, 'from' => 0];
 
-        // count how many members
-        $count_participant = 'SELECT COUNT(*) FROM chat_group_members WHERE chat_groups.id = chat_group_members.chat_group_id';
-
-        // query chat member
-        $member = 'SELECT COUNT(*) FROM chat_group_members WHERE chat_groups.id = chat_group_members.chat_group_id AND chat_group_members.member_id = ';
-
         // is two user is member of the group
         $pm_to = $member . ($pm['to'] ?? 0);
         $pm_from = $member . ($pm['from'] ?? 0);
 
-        // message self
-        $pm_me = $member . ($this->params['me_only'] ?? 0);
-
         // self
-        $me = (__me()) ? __me()->id : 0;
+        $me = __me() ? __me()->id : 0;
 
+        // queries
         $query = [
+            // did you sent a message for your self?
+            'me_only' => 'IF((' . $count_participant . ') = 1, IF((' . $member . $me . ') = 1, 1, 0), 0)',
+
+            // let's count member of this group
             'count_members' => '(' . $count_participant . ')',
 
+            // are you a member of this group?
             'is_member' => '(SELECT chat_group_members.member_id FROM chat_group_members WHERE 
                 chat_groups.id = chat_group_members.chat_group_id AND chat_group_members.member_id = ' . $member_id . ' LIMIT 1)',
 
-            'has_private_message' => 'IF((' . $count_participant . ') = 2, IF((' . $pm_to . ') > 0, 
-                IF((' . $pm_to . ') = 1, IF((' . $pm_from . ') > 0, IF((' . $pm_from . ') = 1, 1, 0), 0), 0), 0), 0)',
+            // do you have admin access?
+            'is_admin' => '(SELECT chat_group_members.is_admin FROM chat_group_members WHERE 
+                chat_groups.id = chat_group_members.chat_group_id AND chat_group_members.member_id = ' . $me . ' LIMIT 1)',
 
-            'me_only' => 'IF((' . $count_participant . ') = 1, IF((' . $pm_me . ') = 1, 1, 0), 0)',
-
-            'latest_message_at' => 'IF((SELECT COUNT(*) FROM chat_messages WHERE chat_messages.chat_group_id = chat_groups.id) > 0, 
-                (SELECT chat_messages.created_at FROM chat_messages WHERE chat_messages.chat_group_id = chat_groups.id ORDER BY chat_messages.created_at ASC LIMIT 1), 
-                chat_groups.created_at)',
-
+            // do you have any unread message?
             'has_unread' => 'IF((SELECT COUNT(*) FROM chat_group_members WHERE 
-                chat_groups.id = chat_group_members.chat_group_id AND chat_group_members.is_seen = 0 AND 
+                chat_groups.id = chat_group_members.chat_group_id AND 
+                chat_group_members.is_seen = 0 AND 
                 chat_group_members.member_id = ' . $me . ') > 0, 1, 0)',
 
+            // is some member mark this group archive?
             'has_archive' => 'IF((SELECT COUNT(*) FROM chat_group_members WHERE 
-                chat_groups.id = chat_group_members.chat_group_id AND chat_group_members.is_archive = 1 AND 
+                chat_groups.id = chat_group_members.chat_group_id AND 
+                chat_group_members.is_archive = 1 AND 
                 chat_group_members.member_id = ' . $me . ') > 0, 1, 0)',
 
+            // are message one person only?
+            'has_private_message' => 'IF((' . $count_participant . ') = 2, 
+                IF((' . $pm_to . ') > 0, 
+                    IF((' . $pm_to . ') = 1, 
+                        IF((' . $pm_from . ') > 0, 
+                            IF((' . $pm_from . ') = 1, 1, 0), 
+                        0), 
+                    0), 
+                0), 
+            0)',
+
+            // this group name has empty name
             'has_empty_name' => 'IF(IFNULL(chat_groups.name, 1) = 1, 1, 0)',
         ];
 
@@ -113,27 +124,19 @@ class ChatGroup extends BaseModel
         return $query;
     }
 
-    /**
-     * Add formatting to data
-     *
-     * @param $row
-     * @return mixed
-     */
     protected function dataFormatting($row)
     {
-        $row->members = (new ChatGroupMember())->fetchAll(['chat_group_id' => $row->id]);
+        $this->addDateFormatting($row);
+
+        $row->messages = ChatMessage::fetchAll(['chat_group_id' => $row->id, 'limit_query' => (int)__settings('pagination')->value]);
+
+        $row->members = ChatGroupMember::fetchAll(['chat_group_id' => $row->id]);
         $row->count_members = count($row->members);
 
-        $row->messages = (new ChatMessage())->fetchAll(['chat_group_id' => $row->id, 'limit' => (int)__settings('pagination')->value]);
-
-        $row->latest_message = (new ChatMessage())->fetch(['single' => true, 'chat_group_id' => $row->id, 'order_by_column' => 'created_at']);
-        $row->latest_message_at = ($row->latest_message_at) ? humanDate($row->latest_message_at) : humanDate($row->created_at);
-        $row->latest_message_summary = ($row->latest_message) ? str_limit($row->latest_message->message, 22) : null;
-        $row->photo = ($row->latest_message) ? $row->latest_message->profile_picture : url('assets/img/placeholders/profile_picture.png');
-
-        $me = __me() ? __me()->id : 0;
-        $row->is_admin = (new ChatGroupMember())->where('chat_group_id', $row->id)
-            ->where('member_id', $me)->where('is_admin', 1)->first() ? 1 : 0;
+        $row->latest_message = ChatMessage::fetch(['single' => true, 'chat_group_id' => $row->id, 'order_by_column' => 'updated_at']);
+        $row->latest_message_at = $row->latest_message ? humanDate($row->latest_message->updated_at) : humanDate($row->updated_at);
+        $row->latest_message_summary = $row->latest_message ? str_limit($row->latest_message->message, 22) : NULL;
+        $row->photo = $row->latest_message ? $row->latest_message->profile_picture : url('assets/img/placeholders/profile_picture_male.png');
 
         $row->group_name = $row->name;
         $this->_cleanGroupName($row);

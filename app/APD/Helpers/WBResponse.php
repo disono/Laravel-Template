@@ -7,6 +7,7 @@
  */
 
 use App\APDApp\Helpers\libs\VideoStream;
+use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -15,6 +16,8 @@ use LaravelFCM\Facades\FCM;
 use LaravelFCM\Message\OptionsBuilder;
 use LaravelFCM\Message\PayloadNotificationBuilder;
 use LaravelFCM\Message\Topics;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 if (!function_exists('successJSONResponse')) {
     /**
@@ -301,7 +304,7 @@ if (!function_exists('videoStream')) {
      * Stream video file
      *
      * @param null $file_path
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response|\Symfony\Component\HttpFoundation\StreamedResponse
+     * @return ResponseFactory|Response|StreamedResponse
      */
     function videoStream($file_path = null)
     {

@@ -8,30 +8,44 @@
 @extends('admin.layouts.master')
 
 @section('content')
-     <div class="container-fluid shadow-sm p-3 bg-white">
+    <h3 class="mb-3 font-weight-bold">{{ $view_title }}</h3>
+
+    <div class="container-fluid shadow-sm p-3 bg-white">
         <div class="row mb-3">
             <div class="col">
-                <h3>{{ $view_title }}</h3>
-                <hr>
                 @include('admin.settings.menu')
             </div>
         </div>
 
         <div class="row">
             <div class="col">
-                <form action="{{ route('admin.auth.role.update') }}" method="post" v-on:submit.prevent="onFormUpload">
+                <form action="{{ route('admin.authRole.update') }}" method="post" v-on:submit.prevent="onFormUpload">
                     <input type="hidden" name="role_id" value="{{ $role->id }}">
 
-                    @foreach($routes as $route)
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input" name="route_name[]"
-                                   value="{{ $route->value }}"
-                                   id="{{ $route->id }}" {{ frmIsChecked('route_name', $route->value, $authorizations) }}>
-                            <label class="custom-control-label" for="{{ $route->id }}">{{ $route->name }}</label>
+                    @foreach($routes->chunk(3) as $category)
+                        <div class="row mb-3">
+                            @foreach($category as $row)
+                                <div class="col-md-4 col-sm-12">
+                                    <h5>{{ $row['category_name'] }}</h5>
+                                    <hr>
+
+                                    @foreach($row['data'] as $route)
+                                        <label class="custom-control border-switch">
+                                            <input type="checkbox" class="border-switch-control-input"
+                                                   name="route_name[]"
+                                                   {{ frmIsChecked('route_name', $route->value, $authorizations) }}
+                                                   value="{{ $route->value }}">
+                                            <span class="border-switch-control-indicator"></span>
+                                            <span class="border-switch-control-description">{{ $route->name }}</span>
+                                        </label>
+                                    @endforeach
+                                </div>
+                            @endforeach
                         </div>
                     @endforeach
 
-                    <button class="btn btn-primary mt-3" type="submit">Save Changes</button>
+                    <hr>
+                    <button class="btn btn-primary" type="submit">Save Changes</button>
                 </form>
             </div>
         </div>

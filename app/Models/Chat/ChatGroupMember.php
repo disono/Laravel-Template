@@ -8,8 +8,8 @@
 
 namespace App\Models\Chat;
 
-use App\Models\User;
 use App\Models\Vendor\BaseModel;
+use App\Models\Vendor\Facades\User;
 
 class ChatGroupMember extends BaseModel
 {
@@ -29,44 +29,30 @@ class ChatGroupMember extends BaseModel
         parent::__construct($attributes);
     }
 
-    /**
-     * Custom filters
-     *
-     * @param $query
-     */
-    public function rawFilters($query): void
+    protected function customQueries($query): void
     {
         $query->join('chat_groups', 'chat_group_members.chat_group_id', '=', 'chat_groups.id');
         $query->join('users AS member', 'chat_group_members.member_id', '=', 'member.id');
         $query->join('users AS creator', 'chat_group_members.added_by_id', '=', 'creator.id');
     }
 
-    /**
-     * List of select
-     *
-     * @return array
-     */
-    protected function rawQuerySelectList()
+    protected function customQuerySelectList(): array
     {
         $me = (__me()) ? __me()->id : 0;
 
         return [
             'group_chat_name' => 'chat_groups.name',
             'full_name' => 'CONCAT(member.first_name, " ", member.last_name)',
+            'member_gender' => 'member.gender',
             'creator_full_name' => 'CONCAT(creator.first_name, " ", creator.last_name)',
             'is_me' => 'IF(chat_group_members.member_id = ' . $me . ', 1, 0)',
         ];
     }
 
-    /**
-     * Add formatting to data
-     *
-     * @param $row
-     * @return mixed
-     */
     protected function dataFormatting($row)
     {
-        $row->profile_picture = (new User())->profilePicture($row->id);
+        $this->addDateFormatting($row);
+        $row->profile_picture = User::profilePicture($row->member_id, $row->member_gender);
 
         return $row;
     }

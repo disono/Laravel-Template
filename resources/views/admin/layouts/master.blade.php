@@ -37,9 +37,6 @@
     @include('admin.layouts.footer')
 </main>
 
-{{-- loading modal --}}
-@include(currentTheme() . 'modals.loading')
-
 {{-- load all javascript --}}
 @include('vendor.view.javascript')
 </body>

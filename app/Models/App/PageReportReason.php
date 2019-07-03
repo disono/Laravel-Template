@@ -23,9 +23,9 @@ class PageReportReason extends BaseModel
         parent::__construct($attributes);
     }
 
-    public function actionRemoveBefore($query)
+    public function actionRemoveBefore($results)
     {
-        foreach ($query as $row) {
+        foreach ($results as $row) {
             // is reason used by reported pages
             if (PageReport::where('page_report_reason_id', $row->id)->first()) {
                 return false;

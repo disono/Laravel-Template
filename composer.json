@@ -13,6 +13,7 @@
     "brozot/laravel-fcm": "^1.2",
     "facebook/graph-sdk": "^5.6",
     "fideloper/proxy": "^4.0",
+    "firebase/php-jwt": "^5.0",
     "htmlmin/htmlmin": "^5.6",
     "intervention/image": "^2.4",
     "jenssegers/agent": "^2.6",
@@ -21,7 +22,7 @@
     "laravel/tinker": "^1.0",
     "maatwebsite/excel": "^3.1",
     "mews/purifier": "^2.1",
-    "tymon/jwt-auth": "^0.5.12"
+    "spatie/image-optimizer": "^1.1"
   },
   "require-dev": {
     "beyondcode/laravel-dump-server": "^1.0",
@@ -34,7 +35,8 @@
   "autoload": {
     "classmap": [
       "database/seeds",
-      "database/factories"
+      "database/factories",
+      "app/Models/Vendor/Facades"
     ],
     "psr-4": {
       "App\\": "app/"

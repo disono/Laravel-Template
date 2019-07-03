@@ -15,10 +15,9 @@
                     <h2 class="text-center">Join Today.</h2>
                     <p class="text-muted text-center">Fill in the form below to get instant access.</p>
 
-                    @if(__settings('authSocialFacebook')->value == 'enabled')
-                        <a href="{{ route('auth.facebook') }}" class="btn btn-block btn-facebook btn-lg mt-3">
-                            <i class="fab fa-facebook-square fa-lg"></i>
-                            Continue with Facebook
+                    @if(__settings('authSocialFacebook')->value === 'enabled')
+                        <a href="{{ route('auth.facebook') }}" class="btn btn-block btn-facebook btn-lg mt-3 rounded-lg">
+                            <i class="fab fa-facebook-square fa-lg"></i>&nbsp;Continue with Facebook
                         </a>
 
                         <p class="hr-line-word mt-3"><span>OR</span></p>
@@ -86,9 +85,16 @@
                             <div class="col-sm-12 col-md-6">
                                 <div class="form-group">
                                     <label for="password">Password</label>
-                                    <input id="password" type="password"
-                                           class="form-control{{ $errors->has('password') ? ' is-invalid invalid' : '' }}"
-                                           name="password" data-validate="required|min:4|max:100">
+                                    <div class="input-group">
+                                        <input type="password"
+                                               class="form-control{{ $errors->has('password') ? ' is-invalid invalid' : '' }}"
+                                               name="password"
+                                               id="password" data-validate="required|min:4|max:100">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-blue-50-append btn-show-password" data-pass-to="password"
+                                                    type="button"><i class="far fa-eye"></i></button>
+                                        </div>
+                                    </div>
 
                                     @if ($errors->has('password'))
                                         <div class="invalid-feedback">{{ $errors->first('password') }}</div>
@@ -98,10 +104,17 @@
 
                             <div class="col-sm-12 col-md-6">
                                 <div class="form-group">
-                                    <label for="password-confirm">Confirm Password</label>
-                                    <input id="password-confirm" type="password"
-                                           class="form-control{{ $errors->has('password_confirmation') ? ' is-invalid invalid' : '' }}"
-                                           name="password_confirmation" data-validate="required|same:password">
+                                    <label for="password_confirmation">Confirm Password</label>
+                                    <div class="input-group">
+                                        <input type="password"
+                                               class="form-control{{ $errors->has('password_confirmation') ? ' is-invalid invalid' : '' }}"
+                                               name="password_confirmation"
+                                               id="password_confirmation" data-validate="required|min:4|max:100">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-blue-50-append btn-show-password" data-pass-to="password_confirmation"
+                                                    type="button"><i class="far fa-eye"></i></button>
+                                        </div>
+                                    </div>
 
                                     @if ($errors->has('password_confirmation'))
                                         <div class="invalid-feedback">{{ $errors->first('password_confirmation') }}</div>
@@ -111,7 +124,7 @@
                         </div>
 
                         <div class="form-group">
-                            <button type="submit" class="btn blue btn-block btn-primary">Register</button>
+                            <button type="submit" class="btn blue btn-block btn-primary rounded-lg">Register</button>
                         </div>
                     </form>
 

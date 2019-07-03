@@ -15,11 +15,10 @@
                     <h2>Log In</h2>
 
                     {{-- Facebook login --}}
-                    @if(__settings('authSocialFacebook')->value == 'enabled')
+                    @if(__settings('authSocialFacebook')->value === 'enabled')
                         <a href="{{ route('auth.facebook') }}"
-                           class="btn btn-block btn-facebook btn-lg mt-3">
-                            <i class="fab fa-facebook-square fa-lg"></i>
-                            Continue with Facebook
+                           class="btn btn-block btn-facebook btn-lg mt-3 rounded-lg">
+                            <i class="fab fa-facebook-square fa-lg"></i>&nbsp;Continue with Facebook
                         </a>
 
                         <p class="hr-line-word mt-3"><span>OR</span></p>
@@ -45,9 +44,14 @@
                         <div class="form-group">
                             <label for="password">Password</label>
 
-                            <input id="password" type="password"
-                                   class="form-control{{ $errors->has('password') ? ' is-invalid invalid' : '' }}"
-                                   name="password" data-validate="required">
+                            <div class="input-group">
+                                <input type="password" class="form-control" name="password"
+                                       id="password" data-validate="required">
+                                <div class="input-group-append">
+                                    <button class="btn btn-blue-50-append btn-show-password" data-pass-to="password"
+                                            type="button"><i class="far fa-eye"></i></button>
+                                </div>
+                            </div>
 
                             @if ($errors->has('password'))
                                 <div class="invalid-feedback">{{ $errors->first('password') }}</div>
@@ -63,7 +67,7 @@
                         </div>
 
                         <div class="form-group">
-                            <button type="submit" class="btn btn-block btn-primary">Login</button>
+                            <button type="submit" class="btn btn-block btn-primary rounded-lg">Login</button>
                         </div>
                     </form>
 

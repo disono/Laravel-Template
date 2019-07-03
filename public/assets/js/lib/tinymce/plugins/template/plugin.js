@@ -4,10 +4,9 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.0.4 (2019-04-23)
+ * Version: 5.0.9 (2019-06-26)
  */
 (function () {
-var template = (function () {
     'use strict';
 
     var global = tinymce.util.Tools.resolve('tinymce.PluginManager');
@@ -353,6 +352,7 @@ var template = (function () {
     };
     var isFunction = isType('function');
 
+    var slice = Array.prototype.slice;
     var map = function (xs, f) {
       var len = xs.length;
       var r = new Array(len);
@@ -371,7 +371,6 @@ var template = (function () {
       }
       return Option.none();
     };
-    var slice = Array.prototype.slice;
     var from$1 = isFunction(Array.from) ? Array.from : function (x) {
       return slice.call(x);
     };
@@ -410,7 +409,10 @@ var template = (function () {
           bodyClass = editor.getParam('body_class', '', 'hash');
           bodyClass = bodyClass[editor.id] || '';
         }
-        html = '<!DOCTYPE html>' + '<html>' + '<head>' + contentCssLinks_1 + '</head>' + '<body class="' + bodyClass + '">' + html + '</body>' + '</html>';
+        var encode = editor.dom.encode;
+        var directionality = editor.getBody().dir;
+        var dirAttr = directionality ? ' dir="' + encode(directionality) + '"' : '';
+        html = '<!DOCTYPE html>' + '<html>' + '<head>' + contentCssLinks_1 + '</head>' + '<body class="' + encode(bodyClass) + '"' + dirAttr + '>' + html + '</body>' + '</html>';
       }
       return Templates.replaceTemplateValues(html, Settings.getPreviewReplaceValues(editor));
     };
@@ -580,15 +582,14 @@ var template = (function () {
     };
     var Buttons = { register: register$1 };
 
-    global.add('template', function (editor) {
-      Buttons.register(editor);
-      Commands.register(editor);
-      FilterContent.setup(editor);
-    });
     function Plugin () {
+      global.add('template', function (editor) {
+        Buttons.register(editor);
+        Commands.register(editor);
+        FilterContent.setup(editor);
+      });
     }
 
-    return Plugin;
+    Plugin();
 
 }());
-})();

@@ -9,9 +9,9 @@
 namespace App\Http\Controllers\API\V1\Authentication;
 
 use App\Http\Controllers\API\APIController;
-use App\Models\AuthenticationHistory;
-use App\Models\Token;
-use App\Models\User;
+use App\Models\Vendor\Facades\AuthenticationHistory;
+use App\Models\Vendor\Facades\Token;
+use App\Models\Vendor\Facades\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
@@ -61,7 +61,7 @@ class LoginController extends APIController
         try {
             if (__me()) {
                 $userAgent = userAgent();
-                (new AuthenticationHistory())->store([
+                AuthenticationHistory::store([
                     'user_id' => __me()->id,
                     'ip' => ipAddress(),
                     'platform' => $userAgent->platform . ', ' . $userAgent->browserName,
@@ -81,7 +81,7 @@ class LoginController extends APIController
      */
     private function _profile($username = 'email')
     {
-        return (new User())->crateToken((new User())->single($this->request->get('username'), $username));
+        return User::crateToken(User::single($this->request->get('username'), $username));
     }
 
     /**
@@ -93,6 +93,6 @@ class LoginController extends APIController
     public function logoutAction($id)
     {
         $this->_logAuthentication('logout');
-        return $this->json((new Token())->remove($id));
+        return $this->json(Token::remove($id));
     }
 }

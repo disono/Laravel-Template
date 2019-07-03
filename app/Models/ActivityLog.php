@@ -26,6 +26,31 @@ class ActivityLog extends BaseModel
         parent::__construct($attributes);
     }
 
+    protected function customQueries($query): void
+    {
+        $query->join('users', 'activity_logs.user_id', '=', 'users.id');
+    }
+
+    protected function customQuerySelectList(): array
+    {
+        return [
+            'full_name' => 'CONCAT(users.first_name, " ", users.last_name)',
+        ];
+    }
+
+    protected function dataFormatting($row)
+    {
+        $this->addDateFormatting($row);
+
+        if ($row->content) {
+            $row->content = json_decode($row->content, true);
+        } else {
+            $row->content = [];
+        }
+
+        return $row;
+    }
+
     /**
      * Store activity mostly used for updates on database
      *
@@ -97,22 +122,5 @@ class ActivityLog extends BaseModel
             logErrors('Activity Log Failed: ' . $e->getMessage());
             return false;
         }
-    }
-
-    /**
-     * Add formatting to data
-     *
-     * @param $row
-     * @return mixed
-     */
-    protected function dataFormatting($row)
-    {
-        if ($row->content) {
-            $row->content = json_decode($row->content, true);
-        } else {
-            $row->content = [];
-        }
-
-        return $row;
     }
 }

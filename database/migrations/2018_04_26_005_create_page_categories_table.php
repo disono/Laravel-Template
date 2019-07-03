@@ -15,10 +15,12 @@ class CreatePageCategoriesTable extends Migration
     {
         Schema::create('page_categories', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('position')->default(0);
             $table->integer('parent_id')->default(0);
             $table->string('name', 100);
             $table->string('description', 100)->nullable();
             $table->string('slug', 100)->unique();
+            $table->boolean('is_enabled')->default(1);
             $table->timestamps();
         });
     }

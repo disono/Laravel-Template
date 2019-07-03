@@ -4,10 +4,9 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.0.4 (2019-04-23)
+ * Version: 5.0.9 (2019-06-26)
  */
-(function () {
-var autosave = (function (domGlobals) {
+(function (domGlobals) {
     'use strict';
 
     var Cell = function (initial) {
@@ -162,20 +161,22 @@ var autosave = (function (domGlobals) {
 
     var global$4 = tinymce.util.Tools.resolve('tinymce.EditorManager');
 
-    global$4._beforeUnloadHandler = function () {
-      var msg;
-      global$3.each(global$4.get(), function (editor) {
-        if (editor.plugins.autosave) {
-          editor.plugins.autosave.storeDraft();
-        }
-        if (!msg && editor.isDirty() && shouldAskBeforeUnload(editor)) {
-          msg = editor.translate('You have unsaved changes are you sure you want to navigate away?');
+    var setup = function (editor) {
+      editor.editorManager.on('BeforeUnload', function (e) {
+        var msg;
+        global$3.each(global$4.get(), function (editor) {
+          if (editor.plugins.autosave) {
+            editor.plugins.autosave.storeDraft();
+          }
+          if (!msg && editor.isDirty() && shouldAskBeforeUnload(editor)) {
+            msg = editor.translate('You have unsaved changes are you sure you want to navigate away?');
+          }
+        });
+        if (msg) {
+          e.preventDefault();
+          e.returnValue = msg;
         }
       });
-      return msg;
-    };
-    var setup = function (editor) {
-      domGlobals.window.onbeforeunload = global$4._beforeUnloadHandler;
     };
 
     var makeSetupHandler = function (editor, started) {
@@ -210,21 +211,20 @@ var autosave = (function (domGlobals) {
       });
     };
 
-    global.add('autosave', function (editor) {
-      var started = Cell(false);
-      setup(editor);
-      register(editor, started);
-      editor.on('init', function () {
-        if (shouldRestoreWhenEmpty(editor) && editor.dom.isEmpty(editor.getBody())) {
-          restoreDraft(editor);
-        }
-      });
-      return get(editor);
-    });
     function Plugin () {
+      global.add('autosave', function (editor) {
+        var started = Cell(false);
+        setup(editor);
+        register(editor, started);
+        editor.on('init', function () {
+          if (shouldRestoreWhenEmpty(editor) && editor.dom.isEmpty(editor.getBody())) {
+            restoreDraft(editor);
+          }
+        });
+        return get(editor);
+      });
     }
 
-    return Plugin;
+    Plugin();
 
 }(window));
-})();

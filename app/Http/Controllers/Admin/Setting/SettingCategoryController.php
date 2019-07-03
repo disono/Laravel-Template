@@ -9,7 +9,9 @@
 namespace App\Http\Controllers\Admin\Setting;
 
 use App\Http\Controllers\BaseController;
-use App\Models\SettingCategory;
+use App\Http\Requests\Admin\Setting\CategoryStore;
+use App\Http\Requests\Admin\Setting\CategoryUpdate;
+use App\Models\Vendor\Facades\SettingCategory;
 
 class SettingCategoryController extends BaseController
 {
@@ -30,11 +32,23 @@ class SettingCategoryController extends BaseController
     protected $afterRedirectUrl = '/admin/setting/categories';
 
     protected $indexTitle = 'Setting Categories';
+    protected $createTitle = 'Creating New Setting Category';
+    protected $editTitle = 'Updating Setting Category';
 
     public function __construct()
     {
         parent::__construct();
         $this->theme = 'settings.setting.category';
-        $this->modelName = new SettingCategory();
+        $this->modelName = SettingCategory::self();
+    }
+
+    public function storeAction(CategoryStore $request)
+    {
+        return $this->processStore($request);
+    }
+
+    public function updateAction(CategoryUpdate $request)
+    {
+        return $this->processUpdate($request);
     }
 }

@@ -8,11 +8,11 @@
 @extends('admin.layouts.master')
 
 @section('content')
+    <h3 class="mb-3 font-weight-bold">{{ $view_title }}</h3>
+
     <div class="container-fluid shadow-sm p-3 bg-white">
         <div class="row">
             <div class="col">
-                <h3>{{ $view_title }}</h3>
-                <hr>
                 @include('admin.user.menu')
 
                 <div class="row mt-3">
@@ -25,7 +25,7 @@
                                 <img src="{{ $user->profile_picture }}" alt="{{ $user->first_name }}"
                                      style="height: 164px; width: 164px;" id="img_profile"
                                      class="mb-3 rounded-circle shadow-sm"
-                                     v-on:click="imgSelect('#profile_picture', '#img_profile')">
+                                     v-on:click="onImageSelect('#profile_picture', '#img_profile')">
 
                                 <div class="form-group">
                                     <label for="profile_picture" class="d-none">Profile Picture</label>
@@ -37,7 +37,7 @@
 
                             <div class="row">
                                 <div class="col-md-4 col-sm-12 mb-3">
-                                    <h5><i class="fas fa-user"></i> Profile</h5>
+                                    <h5 class="font-weight-bold"><i class="fas fa-user"></i> Personal Information</h5>
                                     <hr>
 
                                     <div class="form-group">
@@ -83,7 +83,9 @@
                                         <label for="gender">Gender <strong class="text-danger">*</strong></label>
 
                                         <select class="form-control select_picker{{ hasInputError($errors, 'gender') }}"
-                                                name="gender" id="gender" data-validate="required">
+                                                data-style="btn-blue-50"
+                                                name="gender" id="gender"
+                                                data-validate="required">
                                             <option value="">Select Gender</option>
                                             <option value="Male" {{ frmIsSelected('gender', 'Male', $user->gender) }}>
                                                 Male
@@ -104,7 +106,7 @@
                                         <input id="birthday" type="text"
                                                class="form-control date-picker-no-future{{ hasInputError($errors, 'birthday') }}"
                                                name="birthday"
-                                               value="{{ old('birthday', humanDate($user->birthday, true)) }}"
+                                               value="{{ old('birthday', $user->formatted_birthday) }}"
                                                data-validate="required">
 
                                         @if ($errors->has('birthday'))
@@ -114,7 +116,7 @@
                                 </div>
 
                                 <div class="col-md-4 col-sm-12 mb-3">
-                                    <h5><i class="fas fa-building"></i> Location</h5>
+                                    <h5 class="font-weight-bold"><i class="fas fa-building"></i> Contact Information</h5>
                                     <hr>
 
                                     <div class="form-group">
@@ -147,10 +149,13 @@
                                         <label for="country_id">Country</label>
 
                                         <select class="form-control select_picker" name="country_id" id="country_id"
+                                                data-style="btn-blue-50"
+                                                data-live-search="true"
                                                 data-input-country-id="{{ $user->country_id }}"
                                                 v-model="location.country_id"
                                                 @change="onCountrySelect($event, location.country_id)">
                                             <option value="">Select Country</option>
+
                                             @foreach($countries as $country)
                                                 <option value="{{ $country->id }}"
                                                         {{ frmIsSelected('country_id', $country->id, $user->country_id) }}>
@@ -167,7 +172,10 @@
                                     <div class="form-group">
                                         <label for="city_id">City</label>
 
-                                        <select class="form-control select_picker" name="city_id" id="city_id">
+                                        <select class="form-control select_picker"
+                                                data-style="btn-blue-50"
+                                                data-live-search="true"
+                                                name="city_id" id="city_id">
                                             <option value="">Select City</option>
 
                                             @foreach((new \App\Models\City())->fetchAll(['country_id' => $user->country_id]) as $city)
@@ -186,17 +194,31 @@
                                             <div class="invalid-feedback">{{ $errors->first('city_id') }}</div>
                                         @endif
                                     </div>
+
+                                    <div class="form-group">
+                                        <label for="phone">Phone Number</label>
+
+                                        <input id="phone" type="text"
+                                               class="form-control{{ hasInputError($errors, 'phone') }}"
+                                               name="phone" value="{{ old('phone', $user->phone) }}">
+
+                                        @if ($errors->has('phone'))
+                                            <div class="invalid-feedback">{{ $errors->first('phone') }}</div>
+                                        @endif
+                                    </div>
                                 </div>
 
                                 <div class="col-md-4 col-sm-12 mb-3">
-                                    <h5><i class="fas fa-key"></i> Security</h5>
+                                    <h5 class="font-weight-bold"><i class="fas fa-key"></i> Account Information</h5>
                                     <hr>
 
                                     <div class="form-group">
                                         <label for="role_id">Role <strong class="text-danger">*</strong></label>
 
                                         <select class="form-control select_picker{{ hasInputError($errors, 'role_id') }}"
-                                                name="role_id" id="role_id" data-validate="required">
+                                                data-style="btn-blue-50"
+                                                name="role_id" id="role_id"
+                                                data-validate="required">
                                             <option value="">Select Role</option>
                                             @foreach($roles as $role)
                                                 <option value="{{ $role->id }}" {{ frmIsSelected('role_id', $role->id, $user->role_id) }}>
@@ -229,7 +251,7 @@
                                         <input id="email" type="text"
                                                class="form-control{{ hasInputError($errors, 'email') }}"
                                                name="email" value="{{ old('email', $user->email) }}"
-                                               data-validate="required">
+                                               data-validate="required|email">
 
                                         @if ($errors->has('email'))
                                             <div class="invalid-feedback">{{ $errors->first('email') }}</div>
@@ -306,6 +328,7 @@
                                 </div>
                             </div>
 
+                            <hr>
                             <button type="submit" class="btn btn-primary">Save Changes</button>
                         </form>
                     </div>

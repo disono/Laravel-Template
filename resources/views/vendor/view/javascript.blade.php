@@ -19,8 +19,8 @@
     <script src="{{ devAssets('assets/js/app/initialize.js') }}"></script>
     <script src="{{ devAssets('assets/js/app/services.js') }}"></script>
 
-    <script src="{{ devAssets('assets/js/plugins/providers.js') }}"></script>
-    <script src="{{ devAssets('assets/js/plugins/toolbar.js') }}"></script>
+    <script src="{{ devAssets('assets/js/vue/providers.js') }}"></script>
+    <script src="{{ devAssets('assets/js/vue/toolbar.js') }}"></script>
 @endif
 
 {{-- controller defined javascript (app/Http/Middleware/ViewVariables.php) --}}

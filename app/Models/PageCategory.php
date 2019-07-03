@@ -8,19 +8,31 @@
 
 namespace App\Models;
 
+use App\Models\Vendor\Facades\Page;
 use App\Models\Vendor\BaseModel;
+use App\Models\Vendor\Facades\File;
 
 class PageCategory extends BaseModel
 {
     protected $tableName = 'page_categories';
     protected $writableColumns = [
-        'parent_id', 'name', 'description', 'slug'
+        'position', 'parent_id', 'name', 'description', 'slug',
+        'is_enabled'
     ];
 
-    protected $inputIntegers = ['parent_id'];
+    protected $inputIntegers = ['parent_id', 'position'];
     protected $columnHasRelations = ['parent_id'];
+    protected $inputBooleans = ['is_enabled'];
 
-    private $list = [];
+    protected $files = ['img_active', 'img_inactive', 'img_banner'];
+    protected $fileOptions = [
+        'img_active' => ['tag' => 'active', 'width' => 64, 'height' => 64, 'remove_previous' => true],
+        'img_inactive' => ['tag' => 'inactive', 'width' => 64, 'height' => 64, 'remove_previous' => true],
+        'img_banner' => ['tag' => 'banner', 'width' => 640, 'height' => 360, 'remove_previous' => true]
+    ];
+
+    private $_categoryList = [];
+    private $_categoryParentList = [];
 
     public function __construct(array $attributes = [])
     {
@@ -28,14 +40,13 @@ class PageCategory extends BaseModel
         parent::__construct($attributes);
     }
 
-    /**
-     * Custom method for editing
-     *
-     * @param $tableName
-     * @param $query
-     * @param $inputs
-     * @return bool
-     */
+    protected function customQuerySelectList(): array
+    {
+        return [
+            'count_sub' => 'SELECT COUNT(*) FROM page_categories AS sub WHERE sub.parent_id = page_categories.id'
+        ];
+    }
+
     public function actionEditBefore($tableName, $query, $inputs)
     {
         if (!$query) {
@@ -52,50 +63,83 @@ class PageCategory extends BaseModel
         return true;
     }
 
-    /**
-     * Custom action remove
-     *
-     * @param $query
-     * @return bool
-     */
-    public function actionRemoveBefore($query)
+    public function actionRemoveBefore($results)
     {
-        foreach ($query as $row) {
-            Page::where('page_category_id', $row->id)->delete();
-
-            // delete the pages using the parent id
-            foreach (PageCategory::where('parent_id', $row->id)->get() as $sub) {
-                Page::where('page_category_id', $sub->id)->delete();
-            }
-
-            PageCategory::where('parent_id', $row->id)->delete();
+        foreach ($results as $row) {
+            Page::remove($row->id, 'page_category_id');
+            $this->remove(['parent_id' => $row->id]);
         }
 
         return true;
     }
 
-    /**
-     * Nested to ul
-     *
-     * @param $data
-     * @return string
-     */
-    public function nested2ul($data)
+    protected function dataFormatting($row)
     {
-        $result = array();
-        if (sizeof($data) > 0) {
-            $result[] = '<ul style="list-style-type: none;">';
-            foreach ($data as $row) {
-                $result[] = sprintf(
-                    '<li><a href="' . url('p/category/' . $row['slug']) . '">%s</a> %s</li>',
-                    $row['name'],
-                    $this->nested2ul($row['sub_categories'])
-                );
-            }
-            $result[] = '</ul>';
+        $this->addDateFormatting($row);
+
+        $row->img_active = File::lookForFile($row->id, 'page_categories', 'active');
+        $row->img_inactive = File::lookForFile($row->id, 'page_categories', 'inactive');
+        $row->img_banner = File::lookForFile($row->id, 'page_categories', 'banner');
+
+        return $row;
+    }
+
+    public function parents($parent_id)
+    {
+        if (!$parent_id) {
+            return [];
         }
 
-        return implode($result);
+        $category = self::where('id', $parent_id)->first();
+        if ($category) {
+            $category->is_active = count($this->_categoryParentList) ? 0 : 1;
+            $this->_categoryParentList[] = $category;
+            $this->parents($category->parent_id);
+        }
+
+        return array_reverse($this->_categoryParentList);
+    }
+
+    /**
+     * Categories with sub
+     *
+     * @param array $params
+     * @return array
+     */
+    public function categories($params = [])
+    {
+        $categories = [];
+
+        $mainParams = $params;
+        $mainParams['parent_id'] = 0;
+        foreach ($this->fetchAll($mainParams) as $category) {
+            $subParams = $params;
+            $subParams['parent_id'] = $category->id;
+            $category->sub = $this->subCategories($subParams);
+            $categories[] = $category;
+        }
+
+        return $categories;
+    }
+
+    /**
+     * Subcategories
+     *
+     * @param $params
+     * @return array
+     */
+    public function subCategories($params)
+    {
+        $categories = [];
+
+        foreach ($this->fetchAll($params) as $category) {
+            $subParams = $params;
+            $subParams['parent_id'] = $category->id;
+            $category->sub = $this->subCategories($subParams);
+            $categories[] = $category;
+        }
+
+        return $categories;
     }
 
     /**
@@ -104,115 +148,39 @@ class PageCategory extends BaseModel
      * @param array $params
      * @return mixed
      */
-    public function nestedToTabs($params = [])
+    public function formattedCategories($params = [])
     {
-        $include_tab = true;
-        if (isset($params['include_tab'])) {
-            $include_tab = $params['include_tab'];
-        }
-
-        $strong = false;
-        if (isset($params['strong'])) {
-            $strong = $params['strong'];
-        }
-
         // query sub categories (counting)
-        $data = $this->print_ar($this->fetchTree($params), 0, $include_tab, $strong);
-        $query = [
-            'all' => true
-        ];
-
-        if (isset($params['exclude'])) {
-            $query = array_merge($query, $params['exclude']);
-        }
-
-        $count_cat = count($this->fetch($query));
-        $query = [];
-        $num = 0;
-        foreach ($data as $row) {
-            if ($num < $count_cat) {
-                $query[] = $row;
-            }
-            $num++;
-        }
-
-        return $query;
-    }
-
-    /**
-     * Add formatting
-     *
-     * @param array $array
-     * @param int $count
-     * @param bool $include_tab
-     * @param bool $strong
-     * @param string $_tab
-     * @return array
-     */
-    public function print_ar($array = [], $count = 0, $include_tab = true, $strong = false, $_tab = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;")
-    {
-        $i = 0;
-        $tab = '';
-        while ($i != $count) {
-            $i++;
-            $tab .= $_tab;
-        }
-
-        foreach ($array as $key) {
-            $tab_primary = substr($tab, 0, -12);
-            if ($strong) {
-                if ($include_tab) {
-                    $key['name'] = $tab_primary . (($tab === '') ? '<strong>' . $key['name'] . '</strong>' : $key['name']);
-                } else {
-                    $key['name'] = (($tab === '') ? '<strong>' . $key['name'] . '</strong>' : $key['name']);
-                }
-            } else {
-                if ($include_tab) {
-                    $key['name'] = $tab_primary . (($tab === '') ? $key['name'] : $key['name']);
-                } else {
-                    $key['name'] = (($tab === '') ? $key['name'] : $key['name']);
-                }
-            }
-
-            $key['tab'] = $tab;
-            $this->list[] = (object)$key;
-            if (count($key['sub_categories']) > 0) {
-                $count++;
-                $this->print_ar($key['sub_categories'], $count, $include_tab);
-                $count--;
-            }
-        }
-
-        return $this->list;
+        return $this->formattingTree($params, $this->fetchTree($params), 0);
     }
 
     /**
      * Category tree
      *
      * @param array $params
+     *
      * @return mixed
      */
     public function fetchTree($params = [])
     {
-        $params['all'] = true;
-        $query = $this->fetch($params);
         $categories = [];
+        $map = [0 => ['sub_categories' => []]];
+        $query = $this->fetchAll($params);
 
         foreach ($query as $category) {
             $categories[] = [
                 'id' => $category->id,
+                'position' => $category->position,
+                'parent_id' => $category->parent_id,
                 'name' => $category->name,
                 'description' => $category->description,
-                'parent_id' => $category->parent_id
+                'is_enabled' => $category->is_enabled,
+                'count_sub' => $category->count_sub
             ];
         }
 
-        $map = array(
-            0 => array('sub_categories' => array())
-        );
-
         foreach ($categories as &$category) {
-            $category['sub_categories'] = array();
+            $category['sub_categories'] = [];
             $map[$category['id']] = &$category;
         }
 
@@ -221,6 +189,54 @@ class PageCategory extends BaseModel
         }
 
         return $map[0]['sub_categories'];
+    }
+
+    /**
+     * Add formatting
+     *
+     * @param array $params
+     * @param array $data
+     * @param int $count
+     *
+     * @return array
+     */
+    public function formattingTree($params = [], $data = [], $count = 0)
+    {
+        $addTab = '';
+        $tab_in_name = $params['tab_in_name'] ?? false;
+        $tab_only = $params['tab_only'] ?? false;
+        $tab_numeric = $params['tab_numeric'] ?? 0;
+        $tab = $params['tab'] ?? "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+
+        if ($tab_numeric) {
+            $addTab = 0;
+        }
+
+        $i = 0;
+        while ($i != $count) {
+            $i++;
+
+            if ($tab_numeric) {
+                $addTab += $tab_numeric;
+            } else {
+                $addTab .= $tab;
+            }
+        }
+
+        foreach ($data as $row) {
+            // add tab or spacing
+            $row['name'] = !$tab_in_name ? $row['name'] : $addTab . $row['name'];
+            $row['tab'] = $tab_only || $tab_numeric ? $addTab : NULL;
+
+            $this->_categoryList[] = (object)$row;
+            if (count($row['sub_categories']) > 0) {
+                $count++;
+                $this->formattingTree($params, $row['sub_categories'], $count);
+                $count--;
+            }
+        }
+
+        return $this->_categoryList;
     }
 
     public function page()

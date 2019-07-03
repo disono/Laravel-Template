@@ -15,10 +15,9 @@ class File extends BaseModel
     protected $tableName = 'files';
     protected $writableColumns = [
         'user_id', 'file_name',
-
-        // types: video, photo, doc, file, audio
         'type', 'ext', 'title', 'description',
-        'table_name', 'table_id', 'tag'
+        'table_name', 'table_id', 'tag',
+        'img_width', 'img_height'
     ];
 
     protected $columnHasRelations = ['user_id', 'table_id'];
@@ -29,54 +28,30 @@ class File extends BaseModel
         parent::__construct($attributes);
     }
 
-    public function types()
-    {
-        return ['video', 'photo', 'doc', 'file', 'audio'];
-    }
-
-    /**
-     * Delete data
-     *
-     * @param $id
-     * @param null $columnName
-     *
-     * @return bool
-     */
     public function remove($id, $columnName = null)
     {
         $query = $this->rawFetch($id, $columnName);
 
         // check if exists or tried to delete the users authorization
-        $_r = $query->first();
-        if (!$_r) {
+        $file = $query->first();
+        if (!$file) {
             return false;
         }
 
-        $save = false;
-
         // delete the file
-        if (fileDestroy('private/' . $_r->file_name)) {
-            $save = (bool)$query->delete();
+        if (fileDestroy('private/' . $file->file_name)) {
+            return (bool)$query->delete();
         }
 
-        return $save;
+        return true;
     }
 
-    public function user()
-    {
-        return $this->belongsTo('App\Models\User');
-    }
-
-    /**
-     * Add formatting to data
-     *
-     * @param $row
-     * @return mixed
-     */
     protected function dataFormatting($row)
     {
+        $this->addDateFormatting($row);
+
         if ($row->type === 'photo') {
-            $row->cover = fetchImage($row->file_name, 'assets/img/placeholders/no_image.png');
+            $row->cover = fetchImage($row->file_name);
             $row->icon = url('assets/img/placeholders/image.png');
         } else if ($row->type === 'video') {
             $row->cover = url('assets/img/placeholders/video.png');
@@ -92,12 +67,72 @@ class File extends BaseModel
             $row->path = url('stream/video/' . $row->file_name);
         } else if ($row->type === 'audio') {
             $row->path = url('stream/audio/' . $row->file_name);
-        } else if ($row->type === 'photo' && $this->hasParams('to_base64_img')) {
+        } else if ($row->type === 'photo' && $this->hasParams('to_base64_img') == 1) {
             $row->path = imgPathToBase64('private/' . $row->file_name);
         } else {
             $row->path = url('private/' . $row->file_name);
         }
 
         return $row;
+    }
+
+    /**
+     * File types
+     *
+     * @return array
+     */
+    public function types()
+    {
+        return ['video', 'photo', 'doc', 'file', 'audio'];
+    }
+
+    /**
+     * Helper: Get file details
+     *
+     * @param $id
+     * @param $table
+     * @param null $tag
+     *
+     * @param null $default
+     * @return mixed
+     */
+    public function lookForFile($id, $table, $tag = NULL, $default = NULL)
+    {
+        $file = File::where('table_name', $table)->where('table_id', $id);
+
+        if ($tag) {
+            $file->where('tag', $tag);
+        }
+
+        $file = $file->orderBy('created_at', 'DESC')->first();
+        if ($file) {
+            $this->dataFormatting($file);
+        }
+
+        $object = new \stdClass();
+        $object->exists = $file ? TRUE : FALSE;
+        $object->primary = $file ? $file->path : ($default ? fetchImage(NULL, $default) : fetchImage(NULL));
+        $object->meta = $file;
+        return $object;
+    }
+
+    /**
+     * Helper: Get filename
+     *
+     * @param $id
+     * @param $table
+     * @param null $tag
+     *
+     * @return null
+     */
+    public function lookForFilename($id, $table, $tag = NULL)
+    {
+        $file = $this->lookForFile($id, $table, $tag);
+        return $file->exists ? $file->info->file_name : null;
+    }
+
+    public function user()
+    {
+        return $this->belongsTo('App\Models\User');
     }
 }

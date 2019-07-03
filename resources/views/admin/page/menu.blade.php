@@ -7,19 +7,19 @@
 
 <ul class="nav nav-tabs">
     <li class="nav-item">
-        <a class="nav-link {{ isActiveMenu('admin.page.list') }}"
-           href="{{ route('admin.page.list') }}"><i class="fas fa-newspaper"></i> Pages</a>
+        <a class="nav-link {{ isActiveMenu('admin.page.browse|admin.page.create|admin.page.edit') }}"
+           href="{{ route('admin.page.browse') }}"><i class="fas fa-paperclip"></i> Pages</a>
     </li>
 
     <li class="nav-item">
-        <a class="nav-link {{ isActiveMenu('admin.page.category.list') }}"
-           href="{{ route('admin.page.category.list') }}"><i class="fas fa-list-ul"></i> Page Categories</a>
+        <a class="nav-link {{ isActiveMenu('admin.pageCategory.browse|admin.pageCategory.create|admin.pageCategory.edit') }}"
+           href="{{ route('admin.pageCategory.browse') }}"><i class="fas fa-list-ul"></i> Page Categories</a>
     </li>
 
     <li class="nav-item">
-        <a class="nav-link {{ isActiveMenu('admin.page.view') }}"
-           href="{{ route('admin.page.view') }}"><i class="fas fa-eye"></i> Page Views</a>
+        <a class="nav-link {{ isActiveMenu('admin.pageView.browse') }}"
+           href="{{ route('admin.pageView.browse') }}"><i class="fas fa-eye"></i> Page Views</a>
     </li>
 </ul>
 
-@include('admin.layouts.toolbarList')
+@include('vendor.app.toolbarButtons')

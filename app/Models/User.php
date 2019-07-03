@@ -9,12 +9,21 @@
 namespace App\Models;
 
 use App\Models\Vendor\BaseUser;
+use App\Models\Vendor\Facades\AuthenticationHistory;
+use App\Models\Vendor\Facades\FirebaseNotification;
+use App\Models\Vendor\Facades\Page;
+use App\Models\Vendor\Facades\PageView;
+use App\Models\Vendor\Facades\Token;
+use App\Models\Vendor\Facades\UserAddress;
+use App\Models\Vendor\Facades\UserPhone;
+use App\Models\Vendor\Facades\Verification;
 use App\Notifications\RegisterNotification;
 use Exception;
 use Illuminate\Contracts\Routing\UrlGenerator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
+use App\Models\Vendor\Facades\File;
 
 class User extends BaseUser
 {
@@ -29,7 +38,9 @@ class User extends BaseUser
     ];
 
     protected $files = ['profile_picture'];
-    protected $fileOptions = ['profile_picture' => ['tag' => 'profile_picture']];
+    protected $fileOptions = [
+        'profile_picture' => ['tag' => 'profile_picture', 'width' => 360, 'height' => 360, 'remove_previous' => true]
+    ];
 
     protected $inputDates = ['birthday'];
     protected $inputDateTimes = ['active_at'];
@@ -48,221 +59,46 @@ class User extends BaseUser
         parent::__construct($attributes);
     }
 
-    /**
-     * Remove any related data from user
-     *
-     * @param $query
-     * @return bool
-     */
-    public function actionRemoveBefore($query)
+    protected function customQuerySelectList(): array
     {
-        if (!$query) {
-            return false;
-        }
+        return [
+            'full_name' => 'CONCAT(users.first_name, " ", users.last_name)',
+            'role' => '(SELECT slug FROM roles WHERE users.role_id = roles.id LIMIT 1)',
+            'country' => '(SELECT name FROM countries WHERE users.country_id = countries.id LIMIT 1)',
+            'city' => '(SELECT name FROM cities WHERE users.city_id = cities.id LIMIT 1)',
+            'is_online' => 'IF(DATE_ADD(users.active_at, INTERVAL 60 MINUTE) >= NOW(), 1, 0)',
+            'is_latest' => 'IF(DATE_ADD(users.created_at, INTERVAL 10 DAY) >= CURDATE(), 1, 0)'
+        ];
+    }
 
-        foreach ($query as $row) {
-            Page::where('user_id', $row->id)->delete();
-            Token::where('user_id', $row->id)->delete();
-            UserAddress::where('user_id', $row->id)->delete();
-            UserPhone::where('user_id', $row->id)->delete();
-            Verification::where('user_id', $row->id)->delete();
-            AuthenticationHistory::where('user_id', $row->id)->delete();
-            FirebaseNotification::where('user_id', $row->id)->delete();
-            PageView::where('user_id', $row->id)->delete();
+    protected function dataFormatting($row)
+    {
+        $this->addDateFormatting($row);
+
+        $row->profile_picture = $this->profilePicture($row->id, $row->gender);
+        $row->birthday = ($row->birthday) ? humanDate($row->birthday, true) : NULL;
+        $row->server_timestamp = sqlDate();
+
+        // remove sensitive data
+        $this->_unsetHidden($row);
+
+        return $row;
+    }
+
+    public function actionRemoveBefore($results)
+    {
+        foreach ($results as $row) {
+            Page::remove($row->id, 'user_id');
+            Token::remove($row->id, 'user_id');
+            UserAddress::remove($row->id, 'user_id');
+            UserPhone::remove($row->id, 'user_id');
+            Verification::remove($row->id, 'user_id');
+            AuthenticationHistory::remove($row->id, 'user_id');
+            FirebaseNotification::remove($row->id, 'user_id');
+            PageView::remove($row->id, 'user_id');
         }
 
         return true;
-    }
-
-    /**
-     * Register new user
-     *
-     * @param array $data
-     * @return null
-     */
-    public function register(array $data)
-    {
-        // create new user
-        $user = self::create([
-            'first_name' => ucfirst($data['first_name']),
-            'last_name' => ucfirst($data['last_name']),
-
-            'username' => $data['username'],
-            'email' => $data['email'],
-            'password' => bcrypt($data['password']),
-
-            'role_id' => 3,
-            'is_account_enabled' => 1,
-            'is_account_activated' => 1
-        ]);
-
-        $this->_resendEmail($user);
-
-        return $this->single($user->id);
-    }
-
-    /**
-     * Resend verification to email email
-     *
-     * @param $user
-     */
-    private function _resendEmail($user)
-    {
-        // send email for email verification
-        Notification::send($user, new RegisterNotification($user));
-    }
-
-    /**
-     * Crate a token for user
-     *
-     * @param $user
-     * @return null
-     */
-    public function crateToken($user)
-    {
-        if (!$user) {
-            return null;
-        }
-
-        $user->server_timestamp = sqlDate();
-        $user->token = (new Token())->store([
-            'user_id' => $user->id,
-            'token' => str_random(64),
-            'key' => str_random(64),
-            'secret' => str_random(64),
-            'source' => 'mobile',
-            'expired_at' => expiredAt(21600)
-        ]);
-
-        return $user;
-    }
-
-    /**
-     * Verify phone or email
-     *
-     * @param $type
-     * @return mixed
-     * @throws Exception
-     */
-    public function verify($type)
-    {
-        // verifications
-        $verification = Verification::where('token', request('token'))
-            ->where('value', request($type))
-            ->where('type', $type)
-            ->first();
-
-        // check if token is valid
-        if (!$verification) {
-            throwError('TOKEN_NOT_FOUND');
-        }
-
-        // check if token is not expired
-        if (strtotime($verification->expired_at) <= time()) {
-            throwError('TOKEN_IS_EXPIRED');
-        }
-
-        // get user
-        $user = self::where($type, $verification->value)->first();
-        if (!$user) {
-            throwError('INVALID_RAW', $type . '.');
-        }
-
-        // update user is verified
-        if ($type === 'email') {
-            self::where('id', $user->id)->update([
-                'is_email_verified' => 1
-            ]);
-        } else if ($type === 'phone') {
-            self::where('id', $user->id)->update([
-                'is_phone_verified' => 1
-            ]);
-        }
-
-        // clean all verification token
-        Verification::where('value', $user->$type)->where('type', $type)->delete();
-
-        // login user
-        Auth::loginUsingId($user->id);
-        initialize_settings();
-
-        return $type;
-    }
-
-    /**
-     * Resend verification for email and phone
-     *
-     * @param $type
-     * @return array|Request|string
-     * @throws Exception
-     */
-    public function resendVerification($type)
-    {
-        $value = request('type_value');
-
-        // do we have a value to search for
-        if (!$value) {
-            throwError('RAW', $type . ' is required.');
-        }
-
-        // did the phone or email exists
-        $user = User::where($type, $value)->first();
-        if (!$user) {
-            throwError('RAW', $type . ' is not registered.');
-        }
-
-        // did the old verification exists
-        $verification = Verification::where('value', $value)->where('type', $type)->first();
-        $user->renew_code = true;
-        if ($verification) {
-            // is expired
-            if (strtotime($verification->expired_at) > time()) {
-                $user->renew_code = false;
-                $user->verification_code = $verification->token;
-                $this->_resendCode($type, $user);
-            } else {
-                $this->_resendCode($type, $user);
-            }
-        } else {
-            $this->_resendCode($type, $user);
-        }
-
-        return $value;
-    }
-
-    /**
-     * Resend the verification code
-     *
-     * @param $type
-     * @param $user
-     */
-    private function _resendCode($type, $user)
-    {
-        if ($type == 'phone') {
-            $this->_resendPhone($user);
-        } else if ($type == 'email') {
-            $this->_resendEmail($user);
-        }
-    }
-
-    /**
-     * Resend verification to phone
-     *
-     * @param $user
-     */
-    private function _resendPhone($user)
-    {
-        // clean all verification before saving new
-        Verification::where('value', $user->phone)->where('type', 'phone')->delete();
-
-        // create token
-        Verification::create([
-            'user_id' => $user->id,
-            'token' => ucwords(str_random(6)),
-            'value' => $user->phone,
-            'type' => 'phone',
-            'expired_at' => expiredAt(1440)
-        ]);
     }
 
     public function role()
@@ -321,63 +157,201 @@ class User extends BaseUser
     }
 
     /**
-     * List of select
+     * Register new user
      *
-     * @return array
+     * @param array $data
+     * @return null
      */
-    protected function rawQuerySelectList()
+    public function register(array $data)
     {
-        return [
-            'full_name' => 'CONCAT(users.first_name, " ", users.last_name)',
-            'role' => '(SELECT name FROM roles WHERE users.role_id = roles.id LIMIT 1)',
-            'country' => '(SELECT name FROM countries WHERE users.country_id = countries.id LIMIT 1)',
-            'city' => '(SELECT name FROM cities WHERE users.city_id = cities.id LIMIT 1)',
-            'is_online' => 'IF(DATE_ADD(users.active_at, INTERVAL 60 MINUTE) >= NOW(), 1, 0)',
-            'is_latest' => 'IF(DATE_ADD(users.created_at, INTERVAL 10 DAY) >= CURDATE(), 1, 0)'
-        ];
+        // create new user
+        $user = self::create([
+            'first_name' => ucfirst($data['first_name']),
+            'last_name' => ucfirst($data['last_name']),
+
+            'username' => $data['username'],
+            'email' => $data['email'],
+            'password' => bcrypt($data['password']),
+
+            'role_id' => 3,
+            'is_account_enabled' => 1,
+            'is_account_activated' => 1
+        ]);
+
+        $this->_resendEmail($user);
+        return $this->single($user->id);
     }
 
     /**
-     * Add formatting to data
+     * Crate a token for user
      *
-     * @param $row
-     * @return mixed
+     * @param $user
+     * @return null
      */
-    protected function dataFormatting($row)
+    public function crateToken($user)
     {
-        $row->profile_picture = $this->profilePicture($row->id);
-        $row->birthday = ($row->birthday) ? humanDate($row->birthday, true) : null;
-        $row->server_timestamp = sqlDate();
+        if (!$user) {
+            return NULL;
+        }
 
-        $this->_unsetHidden($row);
+        $user->server_timestamp = sqlDate();
+        $user->token = Token::store([
+            'user_id' => $user->id,
+            'token' => str_random(64),
+            'key' => str_random(64),
+            'secret' => str_random(64),
+            'source' => 'mobile',
+            'expired_at' => expiredAt(21600)
+        ]);
 
-        return $row;
+        return $user;
+    }
+
+    /**
+     * Verify phone or email
+     *
+     * @param $type
+     * @return mixed
+     * @throws Exception
+     */
+    public function verify($type)
+    {
+        // verifications
+        $verification = Verification::where('token', request('token'))
+            ->where('value', request($type))
+            ->where('type', $type)
+            ->first();
+
+        // check if token is valid
+        if (!$verification) {
+            throwError('TOKEN_NOT_FOUND');
+        }
+
+        // check if token is not expired
+        if (strtotime($verification->expired_at) <= time()) {
+            throwError('TOKEN_IS_EXPIRED');
+        }
+
+        // get user
+        $user = self::where($type, $verification->value)->first();
+        if (!$user) {
+            throwError('INVALID_RAW', $type . '.');
+        }
+
+        // update user is verified
+        if ($type === 'email') {
+            self::where('id', $user->id)->update(['is_email_verified' => 1]);
+        } else if ($type === 'phone') {
+            self::where('id', $user->id)->update(['is_phone_verified' => 1]);
+        }
+
+        // clean all verification token
+        Verification::where('value', $user->$type)->where('type', $type)->delete();
+
+        // login user
+        Auth::loginUsingId($user->id);
+
+        return $type;
+    }
+
+    /**
+     * Resend verification for email and phone
+     *
+     * @param $type
+     * @return array|Request|string
+     * @throws Exception
+     */
+    public function resendVerification($type)
+    {
+        $value = request('type_value');
+
+        // do we have a value to search for
+        if (!$value) {
+            throwError('RAW', $type . ' is required.');
+        }
+
+        // did the phone or email exists
+        $user = User::where($type, $value)->first();
+        if (!$user) {
+            throwError('RAW', $type . ' is not registered.');
+        }
+
+        // did the old verification exists
+        $verification = Verification::where('value', $value)->where('type', $type)->first();
+        $user->renew_code = true;
+        if ($verification) {
+            // is expired
+            if (strtotime($verification->expired_at) > time()) {
+                $user->renew_code = false;
+                $user->verification_code = $verification->token;
+                $this->_resendCode($type, $user);
+            } else {
+                $this->_resendCode($type, $user);
+            }
+        } else {
+            $this->_resendCode($type, $user);
+        }
+
+        return $value;
     }
 
     /**
      * Get profile photo
      *
      * @param $id
+     * @param string $gender
+     *
      * @return UrlGenerator|string|null |null
      */
-    public function profilePicture($id)
+    public function profilePicture($id, $gender = 'male')
     {
-        return fetchImage($this->_profilePicture($id), 'assets/img/placeholders/profile_picture.png');
+        return File::lookForFile($id, 'users', 'profile_picture', iconPlaceholders($gender ? strtolower($gender) : 'male'))->primary;
     }
 
     /**
-     * Get profile picture
+     * Resend the verification code
      *
-     * @param $id
-     * @return null
+     * @param $type
+     * @param $user
      */
-    private function _profilePicture($id)
+    private function _resendCode($type, $user)
     {
-        $file = File::where('table_name', 'users')
-            ->where('table_id', $id)->where('tag', 'profile_picture')
-            ->orderBy('created_at', 'DESC')->first();
+        if ($type == 'phone') {
+            $this->_resendPhone($user);
+        } else if ($type == 'email') {
+            $this->_resendEmail($user);
+        }
+    }
 
-        return ($file) ? $file->file_name : null;
+    /**
+     * Resend verification to email email
+     *
+     * @param $user
+     */
+    private function _resendEmail($user)
+    {
+        // send email for email verification
+        Notification::send($user, new RegisterNotification($user));
+    }
+
+    /**
+     * Resend verification to phone
+     *
+     * @param $user
+     */
+    private function _resendPhone($user)
+    {
+        // clean all verification before saving new
+        Verification::where('value', $user->phone)->where('type', 'phone')->delete();
+
+        // create token
+        Verification::create([
+            'user_id' => $user->id,
+            'token' => ucwords(str_random(6)),
+            'value' => $user->phone,
+            'type' => 'phone',
+            'expired_at' => expiredAt(1440)
+        ]);
     }
 
     /**
@@ -387,7 +361,7 @@ class User extends BaseUser
      */
     private function _unsetHidden($row)
     {
-        foreach ((new User())->hidden as $item) {
+        foreach ($this->hidden as $item) {
             unset($row->$item);
         }
     }

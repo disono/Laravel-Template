@@ -9,27 +9,35 @@
 namespace App\Http\Controllers\Admin\Page;
 
 use App\Http\Controllers\Controller;
-use App\Models\PageView;
+use App\Models\Vendor\Facades\PageView;
 
 class PageViewController extends Controller
 {
     protected $viewType = 'admin';
+    private $pageView;
 
     public function __construct()
     {
         parent::__construct();
-        $this->theme = 'page.page_views';
+        $this->theme = 'page.views';
+
+        $this->pageView = PageView::self();
     }
 
     public function indexAction()
     {
         $this->setHeader('title', 'Page Views');
-        $pageView = new PageView();
-        $pageView->enableSearch = true;
-        $pageView->setNewWritableColumn('created_at');
+        $this->pageView->enableSearch = true;
+        $this->pageView->setWritableColumn('created_at');
         return $this->view('index', [
-            'page_views' => $pageView->fetch(requestValues('search|pagination_show|page_id|page_name|
+            'page_views' => $this->pageView->fetch(requestValues('search|pagination_show|page_id|page_name|
                 http_referrer|current_url|ip_address|platform|browser|created_at'))
         ]);
+    }
+
+    public function destroyAction($id)
+    {
+        $this->pageView->remove($id);
+        return $this->json('Page view is successfully deleted.');
     }
 }

@@ -53,7 +53,7 @@ class CSVController extends Controller
     private function _linkCreator()
     {
         if ($this->request->get('source') === 'users') {
-            return route('admin.user.list');
+            return route('admin.user.browse');
         }
 
         return null;

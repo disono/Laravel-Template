@@ -9,16 +9,25 @@
 namespace App\Http\Controllers\API\V1\Authentication\Social;
 
 use App\Http\Controllers\API\APIController;
-use App\Models\File;
 use App\Models\SocialAuthentication;
-use App\Models\User;
+use App\Models\Vendor\Facades\File;
+use App\Models\Vendor\Facades\User;
 use Facebook\Exceptions\FacebookSDKException;
+use Facebook\Facebook;
 
 class FacebookController extends APIController
 {
+    private $_user;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->_user = User::self();
+    }
+    
     public function loginAction()
     {
-        if (__settings('authSocialFacebook')->value != 'enabled') {
+        if (__settings('authSocialFacebook')->value !== 'enabled') {
             return $this->json('Facebook authentication is not allowed, please try again later.');
         }
 
@@ -58,10 +67,12 @@ class FacebookController extends APIController
         $token = $this->request->get('social_token');
         $app_access_token = $FB_ID . "|" . $FB_SECRET;
         try {
-            $fb = new \Facebook\Facebook(['app_id' => $FB_ID,
+            $fb = new Facebook([
+                'app_id' => $FB_ID,
                 'app_secret' => $FB_SECRET,
                 'default_graph_version' => 'v2.8',
-                'default_access_token' => $app_access_token]);
+                'default_access_token' => $app_access_token
+            ]);
 
             $oauth = $fb->getOAuth2Client();
             $meta = $oauth->debugToken($app_access_token);
@@ -98,7 +109,7 @@ class FacebookController extends APIController
      */
     private function _profile($id)
     {
-        return (new User())->crateToken((new User())->single($id));
+        return $this->_user->crateToken($this->_user->single($id));
     }
 
     /**
@@ -112,7 +123,7 @@ class FacebookController extends APIController
             urlTitle(__settings('title')->value, '.') . time() . str_random(4) . '@' . env('APP_DOMAIN');
         $username = str_random(8) . time();
 
-        $create = (new User())->store([
+        $create = $this->_user->store([
             'first_name' => $this->request->get('first_name'),
             'last_name' => $this->request->get('last_name'),
 
@@ -151,7 +162,7 @@ class FacebookController extends APIController
             'http://graph.facebook.com/' . $this->request->get('social_id') . '/picture?type=large');
 
         if (!$filename) {
-            (new File())->store([
+            File::store([
                 'user_id' => $user->id,
                 'file_name' => $filename,
                 'type' => 'photo',

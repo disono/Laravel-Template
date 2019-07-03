@@ -10,7 +10,7 @@
 @section('content')
     <div class="container-fluid">
         <div class="row">
-            <h1>Dashboard Client</h1>
+            <h1 class="text-center w-100">Dashboard Client</h1>
         </div>
     </div>
 @endsection

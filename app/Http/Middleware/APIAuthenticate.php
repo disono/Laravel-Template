@@ -2,27 +2,25 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\User;
 use Closure;
-use Tymon\JWTAuth\Middleware\BaseMiddleware;
+use Illuminate\Http\Request;
 
-class APIAuthenticate extends BaseMiddleware
+class APIAuthenticate
 {
     /**
      * Handle an incoming request.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param Request $request
      * @param \Closure $next
      * @return mixed
      */
     public function handle($request, Closure $next)
     {
         $jwt = jwt();
-        if ($jwt && !($jwt instanceof User)) {
+        if ($jwt !== true) {
             return $jwt;
         }
 
-        $this->events->fire('tymon.jwt.valid', $jwt);
         return $next($request);
     }
 }

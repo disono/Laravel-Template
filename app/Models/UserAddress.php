@@ -15,7 +15,7 @@ class UserAddress extends BaseModel
     protected $tableName = 'user_addresses';
     protected $writableColumns = [
         'user_id', 'address', 'postal_code', 'country_id', 'city_id',
-        'is_verified', 'verification_code', 'verification_expired_at'
+        'is_verified', 'verification_code', 'verification_expired_at', 'verification_tries'
     ];
 
     protected $inputDates = ['verification_expired_at'];
@@ -42,17 +42,18 @@ class UserAddress extends BaseModel
         return $this->belongsTo('App\Models\City');
     }
 
-    public function rawFilters($query): void
+    protected function customQueries($query): void
     {
         $query->join('countries', 'user_addresses.country_id', '=', 'countries.id');
         $query->join('cities', 'user_addresses.city_id', '=', 'cities.id');
     }
 
-    protected function rawQuerySelectList()
+    protected function customQuerySelectList(): array
     {
         return [
             'country_name' => 'countries.name',
             'city_name' => 'cities.name',
+            'is_verification_expired' => 'IF(user_addresses.verification_expired_at IS NOT NULL, IF(user_addresses.verification_expired_at < DATE(NOW()), 1, 0), 0)',
         ];
     }
 }

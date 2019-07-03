@@ -8,30 +8,34 @@
 @extends('admin.layouts.master')
 
 @section('content')
+    <h3 class="mb-3 font-weight-bold">{{ $view_title }}</h3>
+
     <div class="container-fluid shadow-sm p-3 bg-white">
         <div class="row">
             <div class="col">
-                <h3>{{ $view_title }}</h3>
-                <hr>
                 @include('admin.application.report.menu')
             </div>
         </div>
 
         <div class="row mt-3">
             <div class="col">
-                <form action="{{ route('admin.submitted.report.list') }}" method="get" id="frmTableFilter">
+                <form action="{{ route('admin.pageReport.browse') }}" method="get" id="frmTableFilter">
                     <input type="submit" style="display: none;">
 
                     @include('vendor.app.toolbar')
 
                     <div class="table-responsive-sm">
                         <table class="table table-bordered">
-                            <thead class="table-borderless">
+                            <thead class="table-borderless bg-light">
                             <tr>
+                                {!! thDelete() !!}
+
                                 <th>#</th>
                                 <th>
                                     <select class="form-control form-control-sm select_picker"
-                                            name="page_report_reason_id" data-style="btn-gray"
+                                            data-style="btn-blue-50"
+                                            name="page_report_reason_id"
+                                            data-live-search="true"
                                             @change="onSelectChangeSubmitForm($event, '#frmTableFilter')">
                                         <option value="">Reason (All)</option>
                                         @foreach($reasons as $row)
@@ -41,27 +45,34 @@
                                 </th>
                                 <th>
                                     <select class="form-control form-control-sm select_picker"
-                                            name="responded_by_id" data-style="btn-gray"
+                                            data-style="btn-blue-50"
+                                            name="user_id"
+                                            id="select_picker_submitted_by"
+                                            data-live-search="true"
+                                            data-live-path="{{ route('admin.pageReport.searchSubmittedBy.browse') }}"
+                                            data-live-value="user_id"
+                                            data-live-text="submitted_by"
                                             @change="onSelectChangeSubmitForm($event, '#frmTableFilter')">
                                         <option value="">Submitted by (All)</option>
-                                        @foreach($submitted_by as $row)
-                                            <option value="{{ $row->responded_by_id }}" {{ frmIsSelected('responded_by_id', $row->responded_by_id) }}>{{ $row->submitted_by }}</option>
-                                        @endforeach
                                     </select>
                                 </th>
                                 <th>
                                     <select class="form-control form-control-sm select_picker"
-                                            name="user_id" data-style="btn-gray"
+                                            data-style="btn-blue-50"
+                                            name="responded_by_id"
+                                            id="select_picker_process_by"
+                                            data-live-search="true"
+                                            data-live-path="{{ route('admin.pageReport.searchProcessedBy.browse') }}"
+                                            data-live-value="responded_by_id"
+                                            data-live-text="process_by"
                                             @change="onSelectChangeSubmitForm($event, '#frmTableFilter')">
                                         <option value="">Processed by (All)</option>
-                                        @foreach($process_by as $row)
-                                            <option value="{{ $row->user_id }}" {{ frmIsSelected('user_id', $row->user_id) }}>{{ $row->process_by }}</option>
-                                        @endforeach
                                     </select>
                                 </th>
                                 <th>
                                     <select class="form-control form-control-sm select_picker"
-                                            name="status" data-style="btn-gray"
+                                            data-style="btn-blue-50"
+                                            name="status"
                                             @change="onSelectChangeSubmitForm($event, '#frmTableFilter')">
                                         <option value="">Status (All)</option>
                                         @foreach($statuses as $row)
@@ -82,12 +93,14 @@
                             <tbody>
                             @foreach($reports as $row)
                                 <tr id="parent_tr_{{ $row->id }}">
+                                    {!! tdDelete($row->id) !!}
+
                                     <th>{{ $row->id }}</th>
                                     <td>{{ $row->page_report_reason_name }}</td>
                                     <td>{{ $row->submitted_by }}</td>
                                     <td>{{ ($row->process_by) }}</td>
                                     <td>{{ $row->status }}</td>
-                                    <td>{{ humanDate($row->created_at) }}</td>
+                                    <td>{{ $row->formatted_created_at }}</td>
                                     <td>
                                         <div class="btn-group">
                                             <button type="button" class="btn btn-light btn-sm dropdown-toggle"
@@ -101,6 +114,7 @@
 
                                                 <a class="dropdown-item"
                                                    href="{{ url('admin/submitted-report/destroy/' . $row->id) }}"
+                                                   id="parent_tr_del_{{ $row->id }}"
                                                    v-on:click.prevent="onDeleteResource($event, '#parent_tr_{{$row->id}}')">Delete</a>
                                             </div>
                                         </div>

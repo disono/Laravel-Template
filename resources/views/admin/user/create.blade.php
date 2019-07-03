@@ -8,21 +8,21 @@
 @extends('admin.layouts.master')
 
 @section('content')
+    <h3 class="mb-3 font-weight-bold">{{ $view_title }}</h3>
+
     <div class="container-fluid shadow-sm p-3 bg-white">
         <div class="row">
             <div class="col">
-                <h3>{{ $view_title }}</h3>
-                <hr>
                 @include('admin.user.menu')
 
                 <form action="{{ route('admin.user.store') }}" method="post" v-on:submit.prevent="onFormUpload">
                     <div class="row mt-3">
                         <div class="col">
                             <div class="text-center">
-                                <img src="/assets/img/placeholders/profile_picture.png" alt="Profile Picture"
+                                <img src="/assets/img/placeholders/profile_picture_male.png" alt="Profile Picture"
                                      style="height: 164px; width: 164px;" id="img_profile"
                                      class="mb-3 rounded-circle shadow-sm"
-                                     v-on:click="imgSelect('#profile_picture', '#img_profile')">
+                                     v-on:click="onImageSelect('#profile_picture', '#img_profile')">
 
                                 <div class="form-group">
                                     <label for="profile_picture" class="d-none">Profile Picture</label>
@@ -34,7 +34,7 @@
 
                             <div class="row">
                                 <div class="col-md-4 col-sm-12 mb-3">
-                                    <h5><i class="fas fa-user"></i> Profile</h5>
+                                    <h5 class="font-weight-bold"><i class="fas fa-user"></i> Personal Information</h5>
                                     <hr>
 
                                     <div class="form-group">
@@ -79,7 +79,10 @@
                                         <label for="gender">Gender <strong class="text-danger">*</strong></label>
 
                                         <select class="form-control select_picker{{ hasInputError($errors, 'gender') }}"
-                                                name="gender" id="gender" data-validate="required">
+                                                name="gender"
+                                                data-style="btn-blue-50"
+                                                id="gender"
+                                                data-validate="required">
                                             <option value="">Select Gender</option>
                                             <option value="Male">Male</option>
                                             <option value="Female">Female</option>
@@ -104,7 +107,7 @@
                                 </div>
 
                                 <div class="col-md-4 col-sm-12 mb-3">
-                                    <h5><i class="fas fa-building"></i> Location</h5>
+                                    <h5 class="font-weight-bold"><i class="fas fa-building"></i> Contact Information</h5>
                                     <hr>
 
                                     <div class="form-group">
@@ -136,7 +139,11 @@
                                     <div class="form-group">
                                         <label for="country_id">Country</label>
 
-                                        <select class="form-control select_picker" name="country_id" id="country_id"
+                                        <select class="form-control select_picker"
+                                                data-style="btn-blue-50"
+                                                name="country_id"
+                                                id="country_id"
+                                                data-live-search="true"
                                                 v-model="location.country_id"
                                                 @change="onCountrySelect($event, location.country_id)">
                                             <option value="">Select Country</option>
@@ -153,11 +160,14 @@
                                     <div class="form-group">
                                         <label for="city_id">City</label>
 
-                                        <select class="form-control select_picker" data-live-search="true"
-                                                name="city_id" id="city_id">
+                                        <select class="form-control select_picker"
+                                                data-style="btn-blue-50"
+                                                data-live-search="true"
+                                                name="city_id"
+                                                id="city_id">
                                             <option value="">Select City</option>
-                                            <option v-for="city in location.cities" v-bind:value="city.id">@{{ city.name
-                                                }}
+                                            <option v-for="city in location.cities" v-bind:value="city.id">
+                                                @{{ city.name }}
                                             </option>
                                         </select>
 
@@ -165,16 +175,29 @@
                                             <div class="invalid-feedback">{{ $errors->first('city_id') }}</div>
                                         @endif
                                     </div>
+
+                                    <div class="form-group">
+                                        <label for="phone">Phone Number</label>
+
+                                        <input id="phone" type="text"
+                                               class="form-control{{ hasInputError($errors, 'phone') }}"
+                                               name="phone" value="{{ old('phone') }}">
+
+                                        @if ($errors->has('phone'))
+                                            <div class="invalid-feedback">{{ $errors->first('phone') }}</div>
+                                        @endif
+                                    </div>
                                 </div>
 
                                 <div class="col-md-4 col-sm-12 mb-3">
-                                    <h5><i class="fas fa-key"></i> Security</h5>
+                                    <h5 class="font-weight-bold"><i class="fas fa-key"></i> Account Information</h5>
                                     <hr>
 
                                     <div class="form-group">
                                         <label for="role_id">Role <strong class="text-danger">*</strong></label>
 
                                         <select class="form-control select_picker{{ hasInputError($errors, 'role_id') }}"
+                                                data-style="btn-blue-50"
                                                 name="role_id" id="role_id" data-validate="required">
                                             <option value="">Select Role</option>
                                             @foreach($roles as $role)
@@ -204,7 +227,7 @@
 
                                         <input id="email" type="text"
                                                class="form-control{{ hasInputError($errors, 'email') }}"
-                                               name="email" value="{{ old('email') }}" data-validate="required">
+                                               name="email" value="{{ old('email') }}" data-validate="required|email">
 
                                         @if ($errors->has('email'))
                                             <div class="invalid-feedback">{{ $errors->first('email') }}</div>
@@ -283,7 +306,8 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="btn btn-raised btn-primary">Submit</button>
+                    <hr>
+                    <button type="submit" class="btn btn-raised btn-primary">Create new account</button>
                 </form>
             </div>
         </div>

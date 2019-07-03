@@ -8,25 +8,25 @@
 @extends('admin.layouts.master')
 
 @section('content')
+    <h3 class="mb-3 font-weight-bold">{{ $view_title }}</h3>
+
     <div class="container-fluid shadow-sm p-3 bg-white">
         <div class="row">
             <div class="col">
-                <h3>{{ $view_title }}</h3>
-                <hr>
                 @include('admin.page.menu')
             </div>
         </div>
 
         <div class="row mt-3">
             <div class="col">
-                <form action="{{ route('admin.page.list') }}" method="get" id="frmTableFilter">
+                <form action="{{ route('admin.page.browse') }}" method="get" id="frmTableFilter">
                     <input type="submit" style="display: none;">
 
                     @include('vendor.app.toolbar', ['createRoute' => 'admin.page.create', 'toolbarHasDel' => true])
 
                     <div class="table-responsive-sm">
                         <table class="table table-bordered">
-                            <thead class="table-borderless">
+                            <thead class="table-borderless bg-light">
                             <tr>
                                 {!! thDelete() !!}
 
@@ -37,13 +37,34 @@
                                            placeholder="Slug" value="{{ $request->get('slug') }}"></th>
                                 <th>
                                     <select class="form-control form-control-sm select_picker"
-                                            name="page_category_id" data-style="btn-gray"
+                                            data-style="btn-blue-50"
+                                            name="page_category_id"
                                             @change="onSelectChangeSubmitForm($event, '#frmTableFilter')">
                                         <option value="">Category (All)</option>
                                         @foreach($categories as $category)
                                             <option value="{{ $category->id }}"
                                                     {{ frmIsSelected('page_category_id', $category->id) }}>{{ $category->name }}</option>
                                         @endforeach
+                                    </select>
+                                </th>
+                                <th>
+                                    <select class="form-control form-control-sm select_picker"
+                                            data-style="btn-blue-50"
+                                            name="is_draft"
+                                            @change="onSelectChangeSubmitForm($event, '#frmTableFilter')">
+                                        <option value="">Draft (All)</option>
+                                        <option value="1" {{ frmIsSelected('is_draft', 1) }}>Yes</option>
+                                        <option value="0" {{ frmIsSelected('is_draft', 0) }}>No</option>
+                                    </select>
+                                </th>
+                                <th>
+                                    <select class="form-control form-control-sm select_picker"
+                                            data-style="btn-blue-50"
+                                            name="is_email_to_subscriber"
+                                            @change="onSelectChangeSubmitForm($event, '#frmTableFilter')">
+                                        <option value="">Email to subscriber (All)</option>
+                                        <option value="1" {{ frmIsSelected('is_email_to_subscriber', 1) }}>Yes</option>
+                                        <option value="0" {{ frmIsSelected('is_email_to_subscriber', 0) }}>No</option>
                                     </select>
                                 </th>
                                 <th>Action</th>
@@ -58,7 +79,41 @@
                                     <td>{{ $row->id }}</td>
                                     <td>{{ $row->name }}</td>
                                     <td>{{ $row->slug }}</td>
-                                    <td>{{ $row->page_category_slug }}</td>
+                                    <td>
+                                        @php $_c = []; @endphp
+
+                                        @foreach($row->categories as $category)
+                                            @php $_c[] = $category->name; @endphp
+                                        @endforeach
+
+                                        @php echo implode(', ', $_c); @endphp
+                                    </td>
+                                    <td>
+                                        <label class="custom-control material-switch">
+                                            <span class="material-switch-control-description">&nbsp;</span>
+                                            <input type="checkbox"
+                                                   class="material-switch-control-input is-checkbox-change"
+                                                   name="status_is_draft"
+                                                   {{ $row->is_draft ? 'checked' : '' }}
+                                                   data-is-redirect="no"
+                                                   data-uri="{{ url('admin/page/update/is_draft/' . ($row->is_draft ? 0 : 1) . '/' . $row->id) }}">
+                                            <span class="material-switch-control-indicator"></span>
+                                            <span class="material-switch-control-description">&nbsp;</span>
+                                        </label>
+                                    </td>
+                                    <td>
+                                        <label class="custom-control material-switch">
+                                            <span class="material-switch-control-description">&nbsp;</span>
+                                            <input type="checkbox"
+                                                   class="material-switch-control-input is-checkbox-change"
+                                                   name="status_is_email_to_subscriber"
+                                                   {{ $row->is_email_to_subscriber ? 'checked' : '' }}
+                                                   data-is-redirect="no"
+                                                   data-uri="{{ url('admin/page/update/is_email_to_subscriber/' . ($row->is_email_to_subscriber ? 0 : 1) . '/' . $row->id) }}">
+                                            <span class="material-switch-control-indicator"></span>
+                                            <span class="material-switch-control-description">&nbsp;</span>
+                                        </label>
+                                    </td>
                                     <td>
                                         <div class="btn-group">
                                             <button type="button" class="btn btn-light btn-sm dropdown-toggle"
@@ -71,7 +126,7 @@
                                                    href="{{ url('admin/page/edit/' . $row->id) }}">Edit</a>
 
                                                 <a class="dropdown-item"
-                                                   href="{{ route('admin.page.view', ['page_id' => $row->id]) }}">Views</a>
+                                                   href="{{ route('admin.pageView.browse', ['page_id' => $row->id]) }}">Views</a>
 
                                                 <div class="dropdown-divider"></div>
 

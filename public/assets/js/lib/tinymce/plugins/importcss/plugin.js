@@ -4,10 +4,9 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.0.4 (2019-04-23)
+ * Version: 5.0.9 (2019-06-26)
  */
 (function () {
-var importcss = (function () {
     'use strict';
 
     var global = tinymce.util.Tools.resolve('tinymce.PluginManager');
@@ -135,6 +134,7 @@ var importcss = (function () {
     };
     var isFunction = isType('function');
 
+    var slice = Array.prototype.slice;
     var map = function (xs, f) {
       var len = xs.length;
       var r = new Array(len);
@@ -158,7 +158,6 @@ var importcss = (function () {
       var output = map(xs, f);
       return flatten(output);
     };
-    var slice = Array.prototype.slice;
     var from = isFunction(Array.from) ? Array.from : function (x) {
       return slice.call(x);
     };
@@ -401,14 +400,13 @@ var importcss = (function () {
     };
     var Api = { get: get };
 
-    global.add('importcss', function (editor) {
-      ImportCss.setup(editor);
-      return Api.get(editor);
-    });
     function Plugin () {
+      global.add('importcss', function (editor) {
+        ImportCss.setup(editor);
+        return Api.get(editor);
+      });
     }
 
-    return Plugin;
+    Plugin();
 
 }());
-})();

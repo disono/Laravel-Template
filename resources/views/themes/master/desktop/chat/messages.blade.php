@@ -5,7 +5,8 @@
  * @copyright   Webmons Development Studio
 --}}
 
-<div class="m-xs-0 m-sm-0 ml-md-0 ml-lg-3 ml-xl-3 rounded shadow-sm bg-white p-3">
+<div class="m-xs-0 m-sm-0 ml-md-0 ml-lg-3 ml-xl-3 rounded shadow-sm bg-white p-3"
+     xmlns:v-on="http://www.w3.org/1999/xhtml">
     {{-- Profile & Group Details --}}
     <div class="row mb-3" v-if="group">
         <div class="col-md-6 col-sm-12">
@@ -32,13 +33,13 @@
 
                             <div class="input-group-append">
                                 {{-- Clear Input --}}
-                                <button class="btn btn-outline-secondary" type="button" v-if="profileSearch.keyword"
+                                <button class="btn btn-blue-50" type="button" v-if="profileSearch.keyword"
                                         v-on:click="btnChatSearchProfileClear()">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
 
                                 {{-- Search --}}
-                                <button class="btn btn-outline-secondary" type="button"
+                                <button class="btn btn-primary" type="button"
                                         v-on:click="btnChatSearchProfile()"><i class="fas fa-search"></i>
                                 </button>
                             </div>
@@ -86,7 +87,7 @@
                      v-bind:alt="msg.sender_full_name">
 
                 <div class="media-body mb-3">
-                    <div class="alert alert-chat border-0 shadow-sm mb-3">
+                    <div class="alert chat-alert border-0 shadow-sm mb-3">
                         <h6 class="mt-0 mb-0">@{{ msg.sender_full_name }}</h6>
 
                         <div class="mb-0">
@@ -97,7 +98,7 @@
 
                     <div class="p-0 m-0">
                         <div class="row" v-for="msgFile in WBHelper.arrays.chunk(msg.files.photo, 2)">
-                            <div class="col-2" v-for="imgFile in msgFile">
+                            <div class="col-md-4 col-sm-12 mb-3" v-for="imgFile in msgFile">
                                 <a v-bind:href="msgFile.path" target="_blank">
                                     <img v-bind:src="imgFile.cover" class="h-100 w-100 rounded">
                                 </a>
@@ -114,7 +115,8 @@
         </div>
 
         {{-- Form for sending messages --}}
-        <form method="POST" class="p-3 shadow-sm rounded m-0 fixed-bottom rounded shadow-sm bg-white" action="{{ route('module.chat.send') }}"
+        <form method="POST" class="p-0 pr-3 pl-3 shadow-sm rounded m-0 fixed-bottom rounded shadow-sm bg-white"
+              action="{{ route('module.chat.send') }}"
               v-on:submit.prevent="btnChatSend($event)" style="background-color: #F8F9FA;">
             <input type="file" id="chat_file_msg" name="file_msg[]" multiple style="display: none !important;">
             <input type="hidden" value="@{{ group.id }}" v-model="group.id" name="chat_group_id">
@@ -122,11 +124,61 @@
             <div class="row mt-3">
                 <div class="col">
                     <div class="form-group">
-                        <input type="text" class="form-control"
-                               name="message" id="chatMessageInput"
-                               v-model="writeMessage.message" data-validate="required"
-                               @keyup.enter.native="btnChatSend($event)"
-                               placeholder="Type a message...">
+                        <div class="input-group mb-3">
+                            <input type="text"
+                                   class="form-control"
+                                   placeholder="Type a message..."
+                                   aria-label="Type a message..."
+                                   aria-describedby="sendButton"
+                                   name="message"
+                                   id="chatMessageInput"
+                                   data-validate="required"
+                                   v-model="writeMessage.message"
+                                   @keyup.enter.native="btnChatSend($event)"
+                                   style="margin-right: 1px !important;">
+
+                            <div class="input-group-append">
+                                <button class="btn btn-blue-50" type="button" id="chatDropdownMenuCog"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fas fa-cog"></i>
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="chatDropdownMenuCog">
+                                    <a class="dropdown-item" href="#" v-on:click="btnChatEditGroup()" @click.prevent>
+                                        <i class="fas fa-users"></i> Members
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="#" v-on:click="btnChatLeaveGroup()" @click.prevent>
+                                        <i class="fas fa-sign-out-alt"></i> Leave Group
+                                    </a>
+                                    <a class="dropdown-item" href="#" v-on:click="btnChatDeleteConversation()"
+                                       @click.prevent>
+                                        <i class="fas fa-trash-alt"></i> Delete Conversation
+                                    </a>
+
+                                    <a class="dropdown-item" href="#" v-if="!group.has_archive"
+                                       v-on:click="btnChatArchiveGroup(1)" @click.prevent>
+                                        <i class="fas fa-archive"></i> Archive
+                                    </a>
+                                    <a class="dropdown-item" href="#" v-if="group.has_archive"
+                                       v-on:click="btnChatArchiveGroup(0)" @click.prevent>
+                                        <i class="fas fa-file-archive"></i> Unarchived
+                                    </a>
+
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="#" v-on:click="onReportResource()" @click.prevent>
+                                        <i class="fas fa-exclamation-triangle"></i> Report
+                                    </a>
+                                </div>
+
+                                <button class="btn btn-blue-50" type="button"
+                                        v-on:click="btnChatSelectFile()" @click.prevent><i class="fas fa-paperclip"></i>
+                                </button>
+
+                                <button class="btn btn-blue-50" id="sendButton" type="submit">
+                                    <i class="fas fa-paper-plane"></i> Send
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -145,55 +197,6 @@
                             KB
                         </small>
                     </div>
-                </div>
-
-                <div class="col-6">
-                    <div class="btn-group" role="group" aria-label="Toolbar">
-                        <div class="dropdown">
-                            <button class="btn btn-secondary" type="button" id="chatDropdownMenuCog"
-                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-cog"></i>
-                            </button>
-
-                            <div class="dropdown-menu" aria-labelledby="chatDropdownMenuCog">
-                                <a class="dropdown-item" href="#" v-on:click="btnChatEditGroup()" @click.prevent>
-                                    <i class="fas fa-users"></i> Members
-                                </a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#" v-on:click="btnChatLeaveGroup()" @click.prevent>
-                                    <i class="fas fa-sign-out-alt"></i> Leave Group
-                                </a>
-                                <a class="dropdown-item" href="#" v-on:click="btnChatDeleteConversation()"
-                                   @click.prevent>
-                                    <i class="fas fa-trash-alt"></i> Delete Conversation
-                                </a>
-
-                                <a class="dropdown-item" href="#" v-if="!group.has_archive"
-                                   v-on:click="btnChatArchiveGroup(1)" @click.prevent>
-                                    <i class="fas fa-archive"></i> Archive
-                                </a>
-                                <a class="dropdown-item" href="#" v-if="group.has_archive"
-                                   v-on:click="btnChatArchiveGroup(0)" @click.prevent>
-                                    <i class="fas fa-file-archive"></i> Unarchived
-                                </a>
-
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#" v-on:click="onReportResource()" @click.prevent>
-                                    <i class="fas fa-exclamation-triangle"></i> Report
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="btn-group" role="group" aria-label="Toolbar">
-                        <button class="btn btn-secondary" type="button"
-                                v-on:click="btnChatSelectFile()" @click.prevent><i class="fas fa-paperclip"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="col-6">
-                    <button class="btn btn-primary float-right" type="submit">Send</button>
                 </div>
             </div>
         </form>

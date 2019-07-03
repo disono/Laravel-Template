@@ -11,7 +11,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-4 col-sm-12 mr-auto ml-auto">
-                <div class="alert alert-warning rounded shadow-sm" role="alert">
+                <div class="alert alert-light rounded shadow-sm" role="alert">
                     <form action="{{ route('auth.verify.phone.process') }}" method="post">
                         {{ csrf_field() }}
 
@@ -32,12 +32,12 @@
                             <input type="hidden" value="{{ __me()->phone }}" name="phone">
                         @endif
 
-                        <button type="submit" class="btn btn-primary">Verify</button>
+                        <button type="submit" class="btn btn-primary">Submit & Verify</button>
 
                         {{-- show link to resend code --}}
-                        @if((new \App\Models\Verification())->isExpired('phone') || !__me())
+                        @if(\App\Models\Vendor\Facades\Verification::isExpired('phone') || !__me())
                             <a href="{{ route('auth.verify.resend.view', ['type' => 'phone']) }}"
-                               class="btn btn-warning">Resend Code</a>
+                               class="btn btn-link">Resend Code</a>
                         @endif
                     </form>
                 </div>

@@ -25,6 +25,22 @@ class FirebaseToken extends BaseModel
         parent::__construct($attributes);
     }
 
+    protected function customQueries($query): void
+    {
+        $query->join('tokens', 'firebase_tokens.token_id', '=', 'tokens.id');
+        $query->join('users', 'tokens.user_id', '=', 'users.id');
+    }
+
+    protected function customQuerySelectList(): array
+    {
+        return [
+            'full_name' => 'CONCAT(users.first_name, " ", users.last_name)',
+            'email' => 'users.email',
+            'username' => 'users.username',
+            'is_expired' => 'IF(tokens.expired_at >= DATE(NOW()), 0, 1)',
+        ];
+    }
+
     public function token()
     {
         return $this->belongsTo('App\Models\Token');

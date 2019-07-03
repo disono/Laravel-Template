@@ -9,25 +9,32 @@
 namespace App\Http\Controllers\Admin\User;
 
 use App\Http\Controllers\Controller;
-use App\Models\UserTracker;
+use App\Models\Vendor\Facades\UserTracker;
 
 class TrackerController extends Controller
 {
     protected $viewType = 'admin';
+    private $_userTracker;
 
     public function __construct()
     {
         parent::__construct();
         $this->theme = 'user.tracker';
+        $this->_userTracker = UserTracker::self();
     }
 
     public function indexAction()
     {
         $this->setHeader('title', 'Users Location');
-        $tacker = new UserTracker();
-        $tacker->enableSearch = true;
+        $this->_userTracker->enableSearch = true;
         return $this->view('index', [
-            'tracks' => $tacker->fetch(requestValues('search|pagination_show|full_name|ip_address|location'))
+            'tracks' => $this->_userTracker->fetch(requestValues('search|pagination_show|full_name|ip_address|location'))
         ]);
+    }
+
+    public function destroyAction($id)
+    {
+        $this->_userTracker->remove($id);
+        return $this->json('User location log is successfully deleted.');
     }
 }

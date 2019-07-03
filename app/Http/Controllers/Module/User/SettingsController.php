@@ -11,9 +11,9 @@ namespace App\Http\Controllers\Module\User;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Module\User\AccountSecurity;
 use App\Http\Requests\Module\User\AccountSettings;
-use App\Models\City;
-use App\Models\Country;
-use App\Models\User;
+use App\Models\Vendor\Facades\City;
+use App\Models\Vendor\Facades\Country;
+use App\Models\Vendor\Facades\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 
@@ -25,7 +25,7 @@ class SettingsController extends Controller
     {
         parent::__construct();
         $this->theme = 'user.settings';
-        $this->_user = new User();
+        $this->_user = User::self();
     }
 
     /**
@@ -33,9 +33,15 @@ class SettingsController extends Controller
      *
      * @return JsonResponse|Response
      */
-    public function settingsAction()
+    public function generalAction()
     {
-        return $this->view('settings', ['user' => __me(), 'countries' => Country::get(), 'cities' => City::get()]);
+        return $this->view('general', [
+            'user' => __me(),
+            'countries' => Country::get(),
+            'cities' => function ($country_id) {
+                return City::fetchAll(['country_id' => $country_id]);
+            }
+        ]);
     }
 
     /**
@@ -44,10 +50,10 @@ class SettingsController extends Controller
      * @param AccountSettings $request
      * @return bool|JsonResponse
      */
-    public function settingsUpdateAction(AccountSettings $request)
+    public function generalUpdateAction(AccountSettings $request)
     {
         $inputs = $request->only([
-            'first_name', 'last_name', 'phone', 'gender', 'birthday', 'address', 'country_id', 'city_id'
+            'first_name', 'middle_name', 'last_name', 'phone', 'gender', 'birthday', 'address', 'country_id', 'city_id'
         ]);
         $inputs['profile_picture'] = $request->file('profile_picture');
 

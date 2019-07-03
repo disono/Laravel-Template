@@ -8,20 +8,20 @@
 @extends('admin.layouts.master')
 
 @section('content')
-     <div class="container-fluid shadow-sm p-3 bg-white">
+    <h3 class="mb-3 font-weight-bold">{{ $view_title }}</h3>
+
+    <div class="container-fluid shadow-sm p-3 bg-white">
         <div class="row">
             <div class="col">
                 <div class="row">
                     <div class="col">
-                        <h3>{{ $view_title }}</h3>
-                        <hr>
                         @include('admin.application.report.menu')
                     </div>
                 </div>
 
                 <div class="row mt-3">
                     <div class="col-md-4 col-sm-12">
-                        <form action="{{ route('admin.report.reason.store') }}" method="post"
+                        <form action="{{ route('admin.reportReason.store') }}" method="post"
                               v-on:submit.prevent="onFormUpload">
                             {{ csrf_field() }}
 
@@ -37,6 +37,7 @@
                                 @endif
                             </div>
 
+                            <hr>
                             <button type="submit" class="btn btn-raised btn-primary">Submit</button>
                         </form>
                     </div>

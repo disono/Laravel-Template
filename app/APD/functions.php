@@ -15,3 +15,4 @@ include_once 'Helpers/WBException.php';
 include_once 'Helpers/WBFile.php';
 include_once 'Helpers/WBRoute.php';
 include_once 'Helpers/WBForm.php';
+include_once 'Helpers/WBDatabase.php';

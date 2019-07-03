@@ -14,102 +14,86 @@
     <div class="icon-nav-slider">
         <ul class="nav nav-pills iconav-nav flex-md-column">
             <li class="nav-item">
-                <div data-toggle="modal" data-target="#profileSettingsModal">
+                <div id="profileSettingsModal">
                     <a class="nav-link" href="#" title="Signed in as {{ me()->first_name }}">
-                        <img src="{{ me()->profile_picture }}" alt="" class="rounded-circle img-fluid nav-avatar">
+                        <img src="{{ me()->profile_picture }}" alt="Profile"
+                             class="rounded-circle img-fluid nav-avatar"
+                             style="height: 32px; width: 32px;">
                         <small class="iconav-nav-label d-md-none">{{ me()->first_name }}</small>
                     </a>
                 </div>
             </li>
 
             <li class="nav-item">
-                <a class="nav-link {{ isActiveMenu('user.dashboard.show') }}" href="{{ route('user.dashboard.show') }}"
-                   title="Overview">
+                <a class="nav-link {{ isActiveMenu('user.dashboard') }}" href="{{ route('user.dashboard') }}"
+                   title="Dashboard" data-toggle="tooltip" data-placement="right">
                     <span data-feather="monitor"></span>
-                    <small class="iconav-nav-label d-md-none">Overview</small>
+                    <small class="iconav-nav-label d-md-none">Dashboard</small>
                 </a>
             </li>
 
             <li class="nav-item">
-                <a class="nav-link {{ isActiveMenu('admin.user.list|admin.user.create|admin.user.edit|
-                admin.user.tracker.list|admin.user.authentication.history') }}"
-                   href="{{ route('admin.user.list') }}" title="Users">
+                <a class="nav-link {{ isActiveMenu('admin.user.browse|admin.user.create|admin.user.edit|
+                admin.userTracker.browse|admin.userAuthenticationHistory.browse|admin.activityLog.browse|admin.activityLog.details') }}"
+                   href="{{ route('admin.user.browse') }}" title="Manage Users" data-toggle="tooltip" data-placement="right">
                     <span data-feather="users"></span>
-                    <small class="iconav-nav-label d-md-none">Users</small>
+                    <small class="iconav-nav-label d-md-none">Manage Users</small>
                 </a>
             </li>
 
             <li class="nav-item">
-                <a class="nav-link {{ isActiveMenu('admin.page.list|admin.page.category.list|
-                admin.page.category.create|admin.page.category.edit|admin.page.view|admin.page.create|
+                <a class="nav-link {{ isActiveMenu('admin.page.browse|admin.pageCategory.browse|
+                admin.pageCategory.create|admin.pageCategory.edit|admin.pageView.browse|admin.page.create|
                 admin.page.edit') }}"
-                   href="{{ route('admin.page.list') }}" title="Pages" data-container="body">
+                   href="{{ route('admin.page.browse') }}" title="Manage Pages" data-container="body" data-toggle="tooltip"
+                   data-placement="right">
                     <span data-feather="layout"></span>
-                    <small class="iconav-nav-label d-md-none">Pages</small>
+                    <small class="iconav-nav-label d-md-none">Manage Pages</small>
                 </a>
             </li>
 
             <li class="nav-item">
-                <a class="nav-link {{ isActiveMenu('admin.fcm.notification.list|admin.fcm.notification.create|
-                admin.fcm.notification.edit') }}"
-                   href="{{ route('admin.fcm.notification.list') }}" title="FCM Notifications">
+                <a class="nav-link {{ isActiveMenu('admin.fcmNotification.browse|admin.fcmNotification.create|
+                admin.fcmNotification.edit') }}"
+                   href="{{ route('admin.fcmNotification.browse') }}" title="Manage Notifications" data-toggle="tooltip"
+                   data-placement="right">
                     <span data-feather="bell"></span>
-                    <small class="iconav-nav-label d-md-none">Notifications</small>
+                    <small class="iconav-nav-label d-md-none">Manage Notifications</small>
                 </a>
             </li>
 
             <li class="nav-item">
-                <a class="nav-link {{ isActiveMenu('admin.file.list') }}" href="{{ route('admin.file.list') }}"
-                   title="Files">
+                <a class="nav-link {{ isActiveMenu('admin.file.browse') }}" href="{{ route('admin.file.browse') }}"
+                   title="Manage Files" data-toggle="tooltip" data-placement="right">
                     <span data-feather="upload"></span>
-                    <small class="iconav-nav-label d-md-none">Files</small>
+                    <small class="iconav-nav-label d-md-none">Manage Files</small>
                 </a>
             </li>
 
             <li class="nav-item">
-                <a class="nav-link {{ isActiveMenu('admin.submitted.report.list|admin.submitted.report.show|
-                admin.submitted.report.store|admin.report.reason.list|admin.report.reason.create|
-                admin.report.reason.edit') }}"
-                   href="{{ route('admin.submitted.report.list') }}"
-                   title="Reports">
+                <a class="nav-link {{ isActiveMenu('admin.pageReport.browse|admin.pageReport.details|
+                admin.submitted.report.store|admin.reportReason.browse|admin.reportReason.create|
+                admin.reportReason.edit') }}"
+                   href="{{ route('admin.pageReport.browse') }}"
+                   title="Manage Reports" data-toggle="tooltip" data-placement="right">
                     <span data-feather="flag"></span>
-                    <small class="iconav-nav-label d-md-none">Reports</small>
+                    <small class="iconav-nav-label d-md-none">Manage Reports</small>
                 </a>
             </li>
 
             <li class="nav-item">
-                <a class="nav-link {{ isActiveMenu('admin.setting.show|admin.setting.list|admin.setting.create|
-                admin.setting.edit|admin.setting.category.list|admin.setting.category.create|
-                admin.setting.category.edit|admin.role.list|admin.role.create|admin.role.edit|
-                admin.auth.role.edit|admin.activityLog.list|admin.setting.country.list|admin.setting.country.create|
-                admin.setting.country.edit|admin.setting.city.list|admin.setting.city.create|admin.setting.city.edit') }}"
-                   href="{{ route('admin.setting.show') }}" title="Settings">
+                <a class="nav-link {{ isActiveMenu('admin.setting.details|admin.setting.browse|admin.setting.create|
+                admin.setting.edit|admin.settingCategory.browse|admin.settingCategory.create|
+                admin.settingCategory.edit|admin.role.browse|admin.role.create|admin.role.edit|
+                admin.authRole.edit|admin.settingCountry.browse|
+                admin.settingCountry.create|admin.settingCountry.edit|admin.settingCity.browse|
+                admin.settingCity.create|admin.settingCity.edit') }}"
+                   href="{{ route('admin.setting.details') }}" title="Application Settings" data-toggle="tooltip"
+                   data-placement="right">
                     <span data-feather="settings"></span>
-                    <small class="iconav-nav-label d-md-none">Settings</small>
+                    <small class="iconav-nav-label d-md-none">Application Settings</small>
                 </a>
             </li>
         </ul>
     </div>
 </nav>
-
-<!-- Account Settings Modal -->
-<div class="modal fade" id="profileSettingsModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-     aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Account</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-
-            <div class="modal-body">
-                <a href="{{ route('user.settings') }}" class="btn btn-block btn-outline-secondary">General Settings</a>
-                <a href="{{ route('user.security') }}" class="btn btn-block btn-outline-secondary">Security Settings</a>
-                <a href="{{ route('module.chat.show') }}" class="btn btn-block btn-outline-secondary">Inbox</a>
-                <a href="{{ route('auth.logout') }}" class="btn btn-block btn-danger">Log out</a>
-            </div>
-        </div>
-    </div>
-</div>

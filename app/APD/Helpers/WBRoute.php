@@ -6,7 +6,8 @@
  * @license         Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
-use App\Models\User;
+use App\Models\Vendor\Facades\User;
+use Illuminate\Support\Facades\Route;
 
 if (!function_exists('urlId')) {
     /**
@@ -44,13 +45,13 @@ if (!function_exists('profileUrl')) {
      */
     function profileUrl($id)
     {
-        $user = (new User())->single($id);
+        $user = User::single($id);
 
         if ($user) {
             return url('u/' . urlTitle($user->username));
         }
 
-        return null;
+        return NULL;
     }
 }
 
@@ -90,5 +91,22 @@ if (!function_exists('urlTitle')) {
         }
 
         return trim($str, $separator);
+    }
+}
+
+if (!function_exists('hasRoute')) {
+    /**
+     * Check if route name exists
+     *
+     * @param $name
+     * @return bool
+     */
+    function hasRoute($name)
+    {
+        if (Route::has($name)) {
+            return true;
+        }
+
+        return false;
     }
 }

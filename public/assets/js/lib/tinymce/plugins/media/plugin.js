@@ -4,10 +4,9 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.0.4 (2019-04-23)
+ * Version: 5.0.9 (2019-06-26)
  */
 (function () {
-var media = (function () {
     'use strict';
 
     var global = tinymce.util.Tools.resolve('tinymce.PluginManager');
@@ -199,6 +198,7 @@ var media = (function () {
       return hasOwnProperty$1.call(obj, key);
     };
 
+    var slice = Array.prototype.slice;
     var each = function (xs, f) {
       for (var i = 0, len = xs.length; i < len; i++) {
         var x = xs[i];
@@ -215,7 +215,6 @@ var media = (function () {
       }
       return r;
     };
-    var slice = Array.prototype.slice;
     var from$1 = isFunction(Array.from) ? Array.from : function (x) {
       return slice.call(x);
     };
@@ -375,6 +374,7 @@ var media = (function () {
     var guess = function (url) {
       var mimes = {
         mp3: 'audio/mpeg',
+        m4a: 'audio/x-m4a',
         wav: 'audio/wav',
         mp4: 'video/mp4',
         webm: 'video/webm',
@@ -908,6 +908,7 @@ var media = (function () {
         }];
       var generalTab = {
         title: 'General',
+        name: 'general',
         items: flatten([
           mediaInput,
           sizeInput
@@ -941,6 +942,7 @@ var media = (function () {
       }
       var advancedTab = {
         title: 'Advanced',
+        name: 'advanced',
         items: advancedFormItems
       };
       var tabs = [
@@ -1330,18 +1332,17 @@ var media = (function () {
     };
     var Buttons = { register: register$1 };
 
-    global.add('media', function (editor) {
-      Commands.register(editor);
-      Buttons.register(editor);
-      ResolveName.setup(editor);
-      FilterContent.setup(editor);
-      Selection.setup(editor);
-      return Api.get(editor);
-    });
     function Plugin () {
+      global.add('media', function (editor) {
+        Commands.register(editor);
+        Buttons.register(editor);
+        ResolveName.setup(editor);
+        FilterContent.setup(editor);
+        Selection.setup(editor);
+        return Api.get(editor);
+      });
     }
 
-    return Plugin;
+    Plugin();
 
 }());
-})();

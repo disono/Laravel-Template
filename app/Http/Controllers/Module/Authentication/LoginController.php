@@ -12,6 +12,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Module\Auth\LoginRequest;
 use App\Models\AuthenticationHistory;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\URL;
 
 class LoginController extends Controller
@@ -32,7 +33,7 @@ class LoginController extends Controller
     /**
      * Show the application's login form.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function loginAction()
     {
@@ -96,9 +97,7 @@ class LoginController extends Controller
     private function _authenticationError($request, $error)
     {
         if ($request->ajax()) {
-            return failedJSONResponse([
-                'username' => $error
-            ], 422, false);
+            return failedJSONResponse(['username' => $error], 422, false);
         } else {
             return $this->redirect()->withErrors([
                 'username' => $error,
@@ -150,7 +149,7 @@ class LoginController extends Controller
     {
         $request->session()->regenerate();
         $this->clearLoginAttempts($request);
-        initialize_settings();
+        __initializeSettings();
 
         // login history
         $this->_logAuthentication();
@@ -188,7 +187,7 @@ class LoginController extends Controller
     /**
      * Log the user out of the application.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function logoutAction()
     {

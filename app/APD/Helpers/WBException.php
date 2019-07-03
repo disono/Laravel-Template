@@ -13,25 +13,26 @@ if (!function_exists('exceptionMessages')) {
      * @param null $key
      * @return array|mixed
      */
-    function exceptionMessages($key = null)
+    function exceptionMessages($key = NULL)
     {
         $_exceptionsMessages = [
             'RAW' => '',
             'INVALID_RAW' => 'Invalid',
-            'UNKNOWN' => 'Unknown error occurred or invalid response.',
+            'UNKNOWN' => 'Unknown error occurred.',
             'AUTH_DENIED_ACCESS' => 'You are not authorize to access this route.',
             'AUTH_FORBIDDEN_ACCESS' => 'You are not allowed to access this route (FORBIDDEN).',
-
-            'PAGE_NOT_FOUND' => '404 Page not found.',
-            'METHOD_NOT_ALLOWED' => '402 HTTP Method not allowed.',
-            'BAD_REQUEST' => '400 Bad Request, can not process your request or token expired.',
 
             'TOKEN_NOT_FOUND' => 'Token or code is not found.',
             'TOKEN_IS_EXPIRED' => 'Token is expired please resend another verification token. To resend another token please login.',
 
             'USER_NOT_FOUND' => 'User is not found, profile not exists.',
 
-            'DB_INVALID_TABLE' => 'Invalid table name.'
+            'DB_INVALID_TABLE' => 'Invalid table name.',
+
+            'PAGE_NOT_FOUND' => '404 Page not found.',
+            'METHOD_NOT_ALLOWED' => '405 HTTP Method not allowed.',
+            'BAD_REQUEST' => '400 Bad Request, can not process your request or token expired.',
+            'CONFLICT' => '409 The request could not be completed due to a conflict with the current state of the target resource (TARGET RESOURCE IS DISABLED).',
         ];
 
         if ($key) {
@@ -54,7 +55,7 @@ if (!function_exists('throwError')) {
      * @param null $custom_message
      * @throws Exception
      */
-    function throwError($index = null, $custom_message = null)
+    function throwError($index = NULL, $custom_message = NULL)
     {
         $message = $custom_message;
         if ($index) {
@@ -62,6 +63,6 @@ if (!function_exists('throwError')) {
             $message = exceptionMessages($index) . $custom_message;
         }
 
-        throw new \Exception($message);
+        throw new Exception($message);
     }
 }

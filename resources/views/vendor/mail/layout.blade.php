@@ -16,7 +16,7 @@
 </head>
 
 {{-- styles --}}
-<?php
+@php
 $style = [
     /* Layout */
     'body' => 'margin: 0; padding: 0; width: 100%; background-color: #F2F4F6;',
@@ -52,7 +52,7 @@ $style = [
 ];
 
 $fontFamily = 'font-family: Arial, \'Helvetica Neue\', Helvetica, sans-serif;';
-?>
+@endphp
 
 <body style="{{ $style['body'] }}">
 <table width="100%" cellpadding="0" cellspacing="0">
@@ -96,7 +96,7 @@ $fontFamily = 'font-family: Arial, \'Helvetica Neue\', Helvetica, sans-serif;';
                                                cellpadding="0" cellspacing="0">
                                             <tr>
                                                 <td align="center">
-                                                    <?php
+                                                    @php
                                                     switch (isset($level)) {
                                                         case 'success':
                                                             $actionColor = 'button--green';
@@ -107,7 +107,7 @@ $fontFamily = 'font-family: Arial, \'Helvetica Neue\', Helvetica, sans-serif;';
                                                         default:
                                                             $actionColor = 'button--blue';
                                                     }
-                                                    ?>
+                                                    @endphp
 
                                                     <a href="{{ $actionUrl }}"
                                                        style="{{ $fontFamily }} {{ $style['button'] }} {{ $style[$actionColor] }}"

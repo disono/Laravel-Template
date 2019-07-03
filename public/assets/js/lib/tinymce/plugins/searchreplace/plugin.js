@@ -4,10 +4,9 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.0.4 (2019-04-23)
+ * Version: 5.0.9 (2019-06-26)
  */
 (function () {
-var searchreplace = (function () {
     'use strict';
 
     var Cell = function (initial) {
@@ -507,16 +506,18 @@ var searchreplace = (function () {
     };
     var isFunction = isType('function');
 
+    var slice = Array.prototype.slice;
     var each = function (xs, f) {
       for (var i = 0, len = xs.length; i < len; i++) {
         var x = xs[i];
         f(x, i, xs);
       }
     };
-    var slice = Array.prototype.slice;
     var from = isFunction(Array.from) ? Array.from : function (x) {
       return slice.call(x);
     };
+
+    var global$2 = tinymce.util.Tools.resolve('tinymce.util.I18n');
 
     var open = function (editor, currentIndexState) {
       var last = {}, selectedText;
@@ -639,7 +640,7 @@ var searchreplace = (function () {
             name: 'prev',
             text: 'Previous',
             align: 'end',
-            icon: 'arrow-left',
+            icon: global$2.isRtl() ? 'arrow-right' : 'arrow-left',
             disabled: true
           },
           {
@@ -647,7 +648,7 @@ var searchreplace = (function () {
             name: 'next',
             text: 'Next',
             align: 'end',
-            icon: 'arrow-right',
+            icon: global$2.isRtl() ? 'arrow-left' : 'arrow-right',
             disabled: true
           }
         ],
@@ -720,16 +721,15 @@ var searchreplace = (function () {
     };
     var Buttons = { register: register$1 };
 
-    global.add('searchreplace', function (editor) {
-      var currentIndexState = Cell(-1);
-      Commands.register(editor, currentIndexState);
-      Buttons.register(editor, currentIndexState);
-      return Api.get(editor, currentIndexState);
-    });
     function Plugin () {
+      global.add('searchreplace', function (editor) {
+        var currentIndexState = Cell(-1);
+        Commands.register(editor, currentIndexState);
+        Buttons.register(editor, currentIndexState);
+        return Api.get(editor, currentIndexState);
+      });
     }
 
-    return Plugin;
+    Plugin();
 
 }());
-})();

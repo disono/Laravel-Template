@@ -9,24 +9,36 @@
 namespace App\Models;
 
 use App\Models\Vendor\BaseModel;
+use App\Models\Vendor\Facades\File;
+use App\Models\Vendor\Facades\PageClassification;
+use App\Models\Vendor\Facades\PageCategory;
+use App\Models\Vendor\Facades\PageView;
 
 class Page extends BaseModel
 {
     protected $tableName = 'pages';
     protected $writableColumns = [
-        'page_category_id', 'user_id',
+        'user_id',
         'name', 'content', 'slug', 'template',
         'is_draft', 'is_email_to_subscriber',
+
+        'seo_description', 'seo_keywords', 'seo_robots', 'og_url', 'og_type', 'og_title', 'og_description',
+
         'post_at', 'expired_at',
     ];
 
-    protected $columnHasRelations = ['page_category_id', 'user_id'];
+    protected $columnHasRelations = ['user_id'];
 
     protected $inputDates = ['post_at', 'expired_at'];
     protected $inputBooleans = ['is_draft', 'is_email_to_subscriber'];
 
-    protected $files = ['cover_photo'];
-    protected $fileOptions = ['cover_photo' => ['tag' => 'cover_photo']];
+    protected $files = ['cover_photo', 'og_image'];
+    protected $fileOptions = [
+        'cover_photo' => ['tag' => 'cover_photo', 'width' => 640, 'height' => 360, 'remove_previous' => true],
+        'og_image' => ['tag' => 'og_image', 'width' => 1200, 'height' => 627, 'remove_previous' => true]
+    ];
+
+    protected $unClean = ['content'];
 
     public function __construct(array $attributes = [])
     {
@@ -34,19 +46,53 @@ class Page extends BaseModel
         parent::__construct($attributes);
     }
 
-    /**
-     * Remove any related data from user
-     *
-     * @param $query
-     * @return bool
-     */
-    public function actionRemoveBefore($query)
+    public function actionRemoveBefore($results)
     {
-        foreach ($query as $row) {
-            PageView::where('page_id', $row->id)->delete();
+        foreach ($results as $row) {
+            PageView::remove(['page_id' => $row->id]);
+            PageClassification::remove(['page_id' => $row->id]);
         }
 
         return true;
+    }
+
+    protected function customQueries($query): void
+    {
+        $query->join('users', 'pages.user_id', '=', 'users.id');
+    }
+
+    protected function customQuerySelectList(): array
+    {
+        $_param_page_category = $this->_lookForCategory();
+        $_param_related_category = $this->_lookForRelatedCategory();
+        $category = 'SELECT COUNT(*) FROM page_classifications JOIN page_categories ON page_classifications.page_category_id = page_categories.id WHERE page_classifications.page_id = pages.id';
+
+        return [
+            'author' => 'CONCAT(users.first_name, " ", users.last_name)',
+            'author_username' => 'users.username',
+            'count_category' => '(' . $category . ')',
+            'has_category' => $_param_page_category ? 'IF((' . $category . ' AND page_categories.' . $_param_page_category['column'] . ' = "' . $_param_page_category['data'] . '") > 0, 1, 0)' : '0',
+            'is_category_enabled' => $_param_page_category ? 'IF((' . $category . ' AND page_categories.' . $_param_page_category['column'] . ' = "' . $_param_page_category['data'] . '" AND page_categories.is_enabled = 1) > 0, 1, 0)' : '0',
+            'is_category_related' => $_param_related_category ? 'IF((' . $category . ' AND page_categories.id IN (' . $_param_related_category . ')) > 0, 1, 0)' : '0',
+            'is_expired' => 'IF(pages.expired_at IS NOT NULL, IF(pages.expired_at < DATE(NOW()), 1, 0), 0)',
+            'is_posted' => 'IF(pages.post_at IS NOT NULL, IF(DATE(NOW()) >= pages.post_at, 1, 0), 0)',
+        ];
+    }
+
+    protected function dataFormatting($row)
+    {
+        $this->addDateFormatting($row);
+
+        $row->url = url('p/' . $row->slug);
+
+        $row->cover_photo = File::lookForFile($row->id, 'pages', 'cover_photo');
+        $row->og_image = File::lookForFile($row->id, 'pages', 'og_image');
+
+        $row->categories = PageCategory::fetchAll([
+            'include' => ['id' => dbArrayColumns(PageClassification::fetchAll(['page_id' => $row->id]), 'page_category_id')]
+        ]);
+
+        return $row;
     }
 
     public function pageCategory()
@@ -59,49 +105,28 @@ class Page extends BaseModel
         return $this->belongsTo('App\Models\User');
     }
 
-    /**
-     * List of select
-     *
-     * @return array
-     */
-    protected function rawQuerySelectList()
+    private function _lookForCategory()
     {
-        return [
-            'page_category_slug' => '(SELECT name FROM page_categories WHERE pages.page_category_id = page_categories.id LIMIT 1)'
-        ];
+        if ($this->hasParams('page_category_slug')) {
+            $this->params['has_category'] = 1;
+            return ['data' => $this->hasParams('page_category_slug'), 'column' => 'slug'];
+        }
+
+        if ($this->hasParams('page_category_id')) {
+            $this->params['has_category'] = 1;
+            return ['data' => $this->hasParams('page_category_id'), 'column' => 'id'];
+        }
+
+        return NULL;
     }
 
-    /**
-     * Add formatting to data
-     *
-     * @param $row
-     * @return mixed
-     */
-    protected function dataFormatting($row)
+    private function _lookForRelatedCategory()
     {
-        $row->small_content = str_limit(strip_tags($row->content), 22);
-        $row->url = url('p/' . $row->slug);
+        if ($this->hasParams('related_category')) {
+            $this->params['is_category_related'] = 1;
+            return implode(",", dbCleanInput($this->hasParams('related_category')));
+        }
 
-        $row->formatted_created_at = humanDate($row->created_at, true);
-        $row->post_at = ($row->post_at) ? humanDate($row->post_at, true) : null;
-        $row->expired_at = ($row->expired_at) ? humanDate($row->expired_at, true) : null;
-
-        $row->has_cover = $this->coverPhoto($row->id);
-        $row->cover = fetchImage($row->has_cover, 'assets/img/placeholders/no_image.png');
-
-        return $row;
-    }
-
-    /**
-     * Get avatar
-     *
-     * @param $page_id
-     * @return null
-     */
-    private function coverPhoto($page_id)
-    {
-        $file = File::where('table_name', 'pages')->where('table_id', $page_id)->where('tag', 'cover_photo')
-            ->orderBy('created_at', 'DESC')->first();
-        return ($file) ? $file->file_name : null;
+        return NULL;
     }
 }

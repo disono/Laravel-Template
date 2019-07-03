@@ -8,20 +8,10 @@
 
 namespace App\Http\Requests\Module\User;
 
-use App\Http\Requests\BaseRequest;
+use App\Http\Requests\Module\ModuleRequest;
 
-class AccountSecurity extends BaseRequest
+class AccountSecurity extends ModuleRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
-    public function authorize()
-    {
-        return (__me()) ? true : false;
-    }
-
     /**
      * Get the validation rules that apply to the request.
      *

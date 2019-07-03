@@ -23,15 +23,15 @@
     RewriteCond %{HTTP:Authorization} ^(.*)
     RewriteRule .* - [e=HTTP_AUTHORIZATION:%1]
 
-    RewriteCond %{HTTP:authenticated_id} ^(.*)
-    RewriteRule .* - [e=HTTP_authenticated_id:%1]
+    RewriteCond %{HTTP:uid} ^(.*)
+    RewriteRule .* - [e=HTTP_auth_id:%1]
 
-    RewriteCond %{HTTP:device_id} ^(.*)
-    RewriteRule .* - [e=HTTP_device_id:%1]
-
-    RewriteCond %{HTTP:token_key} ^(.*)
+    RewriteCond %{HTTP:token} ^(.*)
     RewriteRule .* - [e=HTTP_token_key:%1]
 
-    RewriteCond %{HTTP:device_timezone} ^(.*)
+    RewriteCond %{HTTP:dtm} ^(.*)
     RewriteRule .* - [e=HTTP_device_timezone:%1]
+
+    RewriteCond %{HTTP:did} ^(.*)
+    RewriteRule .* - [e=HTTP_device_id:%1]
 </IfModule>

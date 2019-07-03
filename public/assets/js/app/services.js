@@ -14,12 +14,12 @@ let WBServices = (function () {
         return WBServices.view;
     };
 
-    let _error = function () {
-        return WBServices.error;
-    };
-
     let _form = function () {
         return WBServices.form;
+    };
+
+    let _error = function () {
+        return WBServices.error;
     };
 
     let _helpers = {
@@ -55,13 +55,22 @@ let WBServices = (function () {
             removeDialogContainer(_dialogContainer) {
                 jQ('#' + _dialogContainer).modal('toggle');
                 jQ('#' + _dialogContainer).remove();
-            }
+            },
+
+            createModalContainer(content) {
+                if (jQ('.modal').length) {
+                    jQ('.modal').last().before(content);
+                } else {
+                    jQ('#WBApp').append(content);
+                }
+            },
         },
 
         form: {
             validation(formAction, options) {
                 let self = this;
 
+                // save content
                 if (typeof tinymce !== 'undefined') {
                     tinymce.triggerSave();
                 }
@@ -90,7 +99,7 @@ let WBServices = (function () {
                 // options
                 if (_options.showErrors === true) {
                     for (let key in inputData) {
-                        self.formValid(formAction.find('[name=' + key + ']'), validation.errors.first(key));
+                        self.formInValid(formAction.find('[name=' + key + ']'), validation.errors.first(key));
                     }
                 }
 
@@ -99,7 +108,11 @@ let WBServices = (function () {
 
             processResponse(formAction, response) {
                 let self = this;
+                console.table(response);
                 if (response.success === true) {
+                    // remove all error messages
+                    self.formValid(formAction);
+
                     // data
                     if (typeof response.data !== 'undefined') {
                         // redirect
@@ -116,47 +129,238 @@ let WBServices = (function () {
                     if (typeof response.errors === 'object') {
                         jQ.each(response.errors, function (name, error) {
                             WBHelper.console.error(error);
-                            self.formValid(formAction.find('[name=' + name + ']'), error);
+                            self.formInValid(formAction.find('[name=' + name + ']'), error);
                         });
-                    } else {
-                        if (typeof response.errors === 'string') {
-                            jQ.snackbar({content: response.errors});
-
-                            swal("Oops!", response.data, "error");
-                            setTimeout(function () {
-                                swal.close();
-                            }, 3000);
-                        }
+                    } else if (typeof response.errors === 'string') {
+                        swal("Oops!", response.errors, "error");
                     }
                 }
             },
 
-            formValid(input, msg) {
-                if (input.hasClass('select_picker')) {
-                    input.parent().parent().find('.select_picker').parent().find('.invalid-feedback').remove();
+            formValid(formAction) {
+                // remove all error messages
+                formAction.find('.invalid-feedback').remove();
+                formAction.find('.custom-control-checkbox-invalid').remove();
 
+                // remove error classes
+                jQ.each(formAction[0].elements, function (index, elem) {
+                    let input = jQ(this);
+
+                    if (!input.length) {
+                        swal("Validation Error", msg, "error");
+                        return;
+                    }
+
+                    // custom checkbox (switch)
+                    let materialInputs = ['material-switch'];
+                    for (let i = 0; i < materialInputs.length; i++) {
+                        if (input.hasClass(materialInputs[i] + '-control-input')) {
+                            input.parent().parent().find('.' + materialInputs[i]).parent().find('.custom-control-checkbox-invalid').remove();
+                            input.parent().parent().find('.' + materialInputs[i]).parent().find('.' + materialInputs[i] + '-control-indicator').removeClass('material-switch-danger');
+                            input.parent().parent().find('.' + materialInputs[i]).parent().find('.' + materialInputs[i] + '-control-description').removeClass('text-danger');
+                            return;
+                        }
+                    }
+
+                    // material input checkbox
+                    if (input.hasClass('material-control-input')) {
+                        input.parent().parent().find('.material-control-input').parent().find('.custom-control-checkbox-invalid').remove();
+                        input.parent().parent().find('.material-control-input').parent().find('.material-control-indicator').removeClass('material-control-indicator-danger');
+                        input.parent().parent().find('.material-control-input').parent().find('.material-control-description').removeClass('text-danger');
+                        return;
+                    }
+
+                    // select picker
+                    input.parent().parent().find('.select_picker').parent().find('.invalid-feedback').remove();
+                    if (input.hasClass('select_picker')) {
+                        input.removeClass('is-invalid');
+                        input.parent().parent().find('.btn.dropdown-toggle').removeClass('btn-toggle-danger');
+                        input.parent().parent().find('.select_picker').removeClass('is-invalid');
+                        jQ('.select_picker').selectpicker('refresh');
+                        return;
+                    }
+
+                    // tiny mce
+                    input.parent().parent().find('.tiny').parent().find('.invalid-feedback').remove();
+                    if (input.hasClass('tiny')) {
+                        input.parent().parent().find('.tiny').removeClass('is-invalid');
+                        return;
+                    }
+
+                    // group input append
+                    if (input.parent().find('.input-group-append').length) {
+                        input.parent().find('.input-group-append').find('.btn').removeClass('input-group-append-danger');
+                        input.parent().find('.input-group-append').next().remove();
+                    }
+
+                    // group input prepend
+                    if (input.parent().find('.input-group-prepend').length) {
+                        input.parent().find('.input-group-prepend').find('.btn').removeClass('input-group-prepend-danger');
+                        input.parent().find('.input-group-prepend').next().remove();
+                    }
+
+                    // group input prepend
+                    if (input.hasClass('custom-file-input')) {
+                        input.parent().find('.custom-file-label').next().remove();
+                    }
+
+                    if (input.hasClass('custom-file-input')) {
+                        input.parent().find('.custom-file-label').text('Choose file');
+                        input.parent().find('.custom-file-label').removeClass('custom-file-label-danger');
+                    }
+
+                    if (input.hasClass('picker__input')) {
+                        input.removeClass('input--danger');
+                    }
+
+                    input.removeClass('is-invalid');
+                });
+            },
+
+            formInValid(input, msg) {
+                if (!input.length) {
+                    swal("Validation Error", msg, "error");
+                    return;
+                }
+
+                // custom checkbox (switch)
+                let materialInputs = ['material-switch'];
+                for (let i = 0; i < materialInputs.length; i++) {
+                    input.parent().parent().find('.' + materialInputs[i]).parent().find('.custom-control-checkbox-invalid').not('.form-text').remove();
+                    if (input.hasClass(materialInputs[i] + '-control-input')) {
+                        if (msg) {
+                            input.parent().parent().find('.' + materialInputs[i]).parent().find('.' + materialInputs[i] + '-control-description').addClass('text-danger');
+                            input.parent().parent().find('.' + materialInputs[i]).parent().find('.' + materialInputs[i] + '-control-indicator').addClass('material-switch-danger');
+                            input.parent().parent().find('.' + materialInputs[i]).after('<div class="custom-control-checkbox-invalid">' + msg + '</div>');
+                        } else {
+                            input.parent().parent().find('.' + materialInputs[i]).parent().find('.' + materialInputs[i] + '-control-indicator').removeClass('material-switch-danger');
+                            input.parent().parent().find('.' + materialInputs[i]).parent().find('.' + materialInputs[i] + '-control-description').removeClass('text-danger');
+                        }
+
+                        return;
+                    }
+                }
+
+                // material input checkbox
+                input.parent().parent().find('.material-control-input').parent().find('.custom-control-checkbox-invalid').not('.form-text').remove();
+                if (input.hasClass('material-control-input')) {
                     if (msg) {
-                        input.removeClass('is-valid');
+                        input.parent().parent().find('.material-control-input').parent().find('.material-control-indicator').addClass('material-control-indicator-danger');
+                        input.parent().parent().find('.material-control-input').parent().find('.material-control-description').addClass('text-danger');
+                        input.parent().parent().find('.material-control-input').parent().find('.material-control-description').after('<div class="custom-control-checkbox-invalid">' + msg + '</div>');
+                    } else {
+                        input.parent().parent().find('.material-control-input').parent().find('.material-control-indicator').removeClass('material-control-indicator-danger');
+                        input.parent().parent().find('.material-control-input').parent().find('.material-control-description').removeClass('text-danger');
+                    }
+
+                    return;
+                }
+
+                // select picker
+                input.parent().parent().find('.select_picker').parent().find('.invalid-feedback').not('.form-text').remove();
+                if (input.hasClass('select_picker')) {
+                    if (msg) {
                         input.addClass('is-invalid');
+                        input.parent().parent().find('.btn.dropdown-toggle').addClass('btn-toggle-danger');
                         input.parent().parent().find('.select_picker').parent().after('<div class="invalid-feedback">' + msg + '</div>');
                     } else {
+                        input.removeClass('is-invalid');
+                        input.parent().parent().find('.btn.dropdown-toggle').removeClass('btn-toggle-danger');
                         input.parent().parent().find('.select_picker').removeClass('is-invalid');
                     }
 
                     jQ('.select_picker').selectpicker('refresh');
-                } else {
-                    input.next().not('.custom-file-input').not('.custom-file-label').not('.custom-control-label')
-                        .not('form-text').not('.picker')
-                        .not('.dropdown-toggle').not('.dropdown-menu')
-                        .not('.select_picker')
-                        .remove();
+                    return;
+                }
 
+                // tiny mce
+                input.parent().parent().find('.tiny').parent().find('.invalid-feedback').not('.form-text').remove();
+                if (input.hasClass('tiny')) {
                     if (msg) {
-                        input.removeClass('is-valid');
                         input.addClass('is-invalid');
-                        input.after('<div class="invalid-feedback">' + msg + '</div>');
+                        input.parent().parent().find('.tiny').parent().find('.tox-tinymce').after('<div class="invalid-feedback">' + msg + '</div>');
                     } else {
-                        input.removeClass('is-invalid');
+                        input.parent().parent().find('.tiny').removeClass('is-invalid');
+                    }
+                    return;
+                }
+
+                // remove error messages (bottom)
+                input.next()
+                    .not('.form-text')
+                    .not('.custom-control-label')
+                    .not('.custom-file-input')
+                    .not('.custom-file-label')
+                    .not('.dropdown-toggle')
+                    .not('.dropdown-menu')
+                    .not('.select_picker')
+                    .not('.picker')
+                    .not('.input-group-append')
+                    .not('.input-group-prepend')
+                    .remove();
+
+                // group input append
+                if (input.parent().find('.input-group-append').length) {
+                    input.parent().find('.input-group-append').next().not('.form-text').remove();
+                }
+
+                // group input prepend
+                if (input.parent().find('.input-group-prepend').length) {
+                    input.parent().find('.input-group-prepend').next().not('.form-text').remove();
+                }
+
+                // group input prepend
+                if (input.hasClass('custom-file-input')) {
+                    input.parent().find('.custom-file-label').next().not('.form-text').remove();
+                }
+
+                if (msg) {
+                    input.addClass('is-invalid');
+
+                    if (input.hasClass('picker__input')) {
+                        input.addClass('input--danger');
+                    }
+
+                    if (input.hasClass('custom-file-input')) {
+                        input.parent().find('.custom-file-label').addClass('custom-file-label-danger');
+                        input.parent().find('.custom-file-label').after('<div class="invalid-feedback">' + msg + '</div>');
+                        return;
+                    }
+
+                    if (input.parent().find('.input-group-append').length) {
+                        input.parent().find('.input-group-append').after('<div class="invalid-feedback">' + msg + '</div>');
+
+                        if (input.parent().find('.input-group-append').find('.btn').length === 1) {
+                            input.parent().find('.input-group-append').find('.btn').addClass('input-group-append-danger');
+                        }
+
+                        return;
+                    }
+
+                    if (input.parent().find('.input-group-prepend').length) {
+                        input.parent().find('.input-group-prepend').after('<div class="invalid-feedback">' + msg + '</div>');
+                        input.parent().find('.input-group-prepend').find('.btn').addClass('input-group-prepend-danger');
+                        return;
+                    }
+
+                    input.after('<div class="invalid-feedback">' + msg + '</div>');
+                } else {
+                    input.removeClass('is-invalid');
+
+                    if (input.parent().find('.input-group-append').length) {
+                        input.parent().find('.input-group-append').find('.btn').removeClass('input-group-append-danger');
+                    }
+
+                    if (input.parent().find('.input-group-prepend').length) {
+                        input.parent().find('.input-group-prepend').find('.btn').removeClass('input-group-prepend-danger');
+                    }
+
+                    if (input.hasClass('custom-file-input')) {
+                        input.parent().find('.custom-file-label').removeClass('custom-file-label-danger');
+                    }
+
+                    if (input.hasClass('picker__input')) {
+                        input.removeClass('input--danger');
                     }
                 }
             },
@@ -287,12 +491,30 @@ let WBServices = (function () {
             loading(show, msg) {
                 if (!show) {
                     jQ('#loadingModal').modal('hide');
+                    jQ('#loadingModal').remove();
                     return;
                 }
 
                 if (typeof msg === 'undefined') {
                     msg = 'Please wait...';
                 }
+
+                _helpers.view.createModalContainer(
+                    '<div class="modal" role="dialog" id="loadingModal" data-backdrop="static">' +
+                    '    <div class="modal-dialog modal-dialog-centered" role="document">' +
+                    '        <div class="modal-content">' +
+                    '            <div class="modal-body text-center rounded shadow-sm">' +
+                    '                <div class="d-flex justify-content-center">' +
+                    '                    <div class="spinner-border text-primary" role="status">' +
+                    '                        <span class="sr-only">Loading...</span>' +
+                    '                    </div>' +
+                    '                </div>' +
+                    '                <h6 id="loadingModalMessage" class="mt-2">' + msg + '</h6>' +
+                    '            </div>' +
+                    '        </div>' +
+                    '    </div>' +
+                    '</div>'
+                );
 
                 jQ('#loadingModalMessage').html(msg);
                 jQ('#loadingModal').modal({
@@ -342,16 +564,16 @@ let WBServices = (function () {
                 };
 
                 // views
-                jQ('#WBApp').append(
-                    '<div class="modal" data-keyboard="false" tabindex="-1" role="dialog" id="' + _dialogContainer + '" style="z-index: 100000 !important;">' +
-                    '<div class="modal-dialog modal-lg" role="document">' +
-                    '<div class="modal-content" id="content_' + _dialogContainer + '">' +
-                    '<div class="modal-body">' +
-                    '<div class="d-flex justify-content-center"><div class="spinner-border text-primary" role="status">' +
-                    '<span class="sr-only">Loading...</span></div></div><p class="text-center mt-3">Loading...</p>' +
-                    '</div>' +
-                    '</div>' +
-                    '</div>' +
+                _helpers.view.createModalContainer(
+                    '<div class="modal" data-keyboard="false" role="dialog" id="' + _dialogContainer + '">' +
+                    '   <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">' +
+                    '       <div class="modal-content" id="content_' + _dialogContainer + '">' +
+                    '           <div class="modal-body">' +
+                    '               <div class="d-flex justify-content-center"><div class="spinner-border text-primary" role="status">' +
+                    '               <span class="sr-only">Loading...</span></div></div><p class="text-center mt-3">Loading...</p>' +
+                    '           </div>' +
+                    '       </div>' +
+                    '   </div>' +
                     '</div>'
                 );
 
@@ -407,6 +629,7 @@ let WBServices = (function () {
                             if (jQ('.' + cartList).length === 0) {
                                 location.reload();
                             }
+
                             return;
                         }
 
@@ -423,6 +646,9 @@ let WBServices = (function () {
                 let href = window.location.href;
 
                 _view().dialogs('reportPage', function (views) {
+                    // initialize JS libraries
+                    WBJSOnInit();
+
                     jQ('#url_report').val(href);
 
                     jQ('#frmPageReport').submit(function (e) {
@@ -445,6 +671,55 @@ let WBServices = (function () {
         },
 
         form: {
+            selectPickerSearch() {
+                jQ('.select_picker').selectpicker('destroy');
+                jQ('.select_picker').selectpicker('render');
+
+                jQ('.select_picker').each(function (i, obj) {
+                    let self = jQ(obj);
+
+                    if (self.attr('data-live-search') === 'true' && self.attr('data-live-path') && self.attr('id')) {
+                        let id = jQ('#' + self.attr('id'));
+                        let path = self.attr('data-live-path');
+                        let ajaxMethod = self.attr('data-live-method') ? self.attr('data-live-method') : 'GET';
+                        let dataValue = self.attr('data-live-value') ? self.attr('data-live-value') : 'id';
+                        let dataText = self.attr('data-live-text') ? self.attr('data-live-text') : 'name';
+
+                        id.selectpicker()
+                            .ajaxSelectPicker({
+                                ajax: {
+                                    url: path,
+                                    method: ajaxMethod,
+                                    beforeSend: function (attribute, form, options) {
+
+                                    },
+                                    data: function () {
+                                        return {
+                                            search: '{{{q}}}'
+                                        };
+                                    }
+                                },
+                                preprocessData: function (response) {
+                                    let data = [];
+
+                                    response.data.forEach(function (val, i) {
+                                        data.push({
+                                            'value': val[dataValue],
+                                            'text': val[dataText],
+                                            'disabled': false
+                                        });
+                                    });
+
+                                    return data;
+                                },
+                                preserveSelected: false
+                            });
+                    } else {
+                        self.selectpicker();
+                    }
+                });
+            },
+
             onUpload(e, success, failed) {
                 let formAction = jQ(e.target);
                 let btnSubmit = null;
@@ -460,7 +735,7 @@ let WBServices = (function () {
                     btnSubmit = formAction.find(':submit');
                     if (btnSubmit) {
                         if (btnSubmit.attr('data-show-loading') !== 'no') {
-                            let loadingTxt = (btnSubmit.attr('data-loading-txt')) ? btnSubmit.attr('data-loading-txt') : 'Loading...';
+                            let loadingTxt = btnSubmit.attr('data-loading-txt') ? btnSubmit.attr('data-loading-txt') : 'Loading...';
                             btnSubmitDefaultTxt = btnSubmit.html();
                             btnSubmit.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + loadingTxt);
                         }
@@ -483,6 +758,7 @@ let WBServices = (function () {
                         }
 
                         _helpers.form.enable();
+
                         let _error = null;
                         if (typeof error.response !== 'undefined') {
                             _error = error.response.data;
@@ -495,6 +771,7 @@ let WBServices = (function () {
                     }).finally(function () {
                         if (btnSubmitDefaultTxt) {
                             btnSubmit.html(btnSubmitDefaultTxt);
+                            btnSubmit.find('.waves-ripple').remove();
                         }
                     });
                 }
@@ -511,7 +788,7 @@ let WBServices = (function () {
                     btnSubmit = formAction.find(':submit');
                     if (btnSubmit) {
                         if (btnSubmit.attr('data-show-loading') !== 'no') {
-                            let loadingTxt = (btnSubmit.attr('data-loading-txt')) ? btnSubmit.attr('data-loading-txt') : 'Loading...';
+                            let loadingTxt = btnSubmit.attr('data-loading-txt') ? btnSubmit.attr('data-loading-txt') : 'Loading...';
                             btnSubmitDefaultTxt = btnSubmit.html();
                             btnSubmit.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + loadingTxt);
                         }
@@ -537,6 +814,7 @@ let WBServices = (function () {
                     }).finally(function () {
                         if (btnSubmitDefaultTxt) {
                             btnSubmit.html(btnSubmitDefaultTxt);
+                            btnSubmit.find('.waves-ripple').remove();
                         }
                     });
                 }
@@ -551,7 +829,7 @@ let WBServices = (function () {
                     btnSubmit = formAction.find(':submit');
                     if (btnSubmit) {
                         if (btnSubmit.attr('data-show-loading') !== 'no') {
-                            let loadingTxt = (btnSubmit.attr('data-loading-txt')) ? btnSubmit.attr('data-loading-txt') : 'Loading...';
+                            let loadingTxt = btnSubmit.attr('data-loading-txt') ? btnSubmit.attr('data-loading-txt') : 'Loading...';
                             btnSubmitDefaultTxt = btnSubmit.html();
                             btnSubmit.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + loadingTxt);
                         }
@@ -574,6 +852,7 @@ let WBServices = (function () {
                     }).finally(function () {
                         if (btnSubmitDefaultTxt) {
                             btnSubmit.html(btnSubmitDefaultTxt);
+                            btnSubmit.find('.waves-ripple').remove();
                         }
                     });
                 }
@@ -589,6 +868,8 @@ let WBServices = (function () {
                     timeout: 3000
                 });
             }
-        }
+        },
+
+        helpers: _helpers
     };
 }());

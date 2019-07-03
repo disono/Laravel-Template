@@ -4,10 +4,9 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.0.4 (2019-04-23)
+ * Version: 5.0.9 (2019-06-26)
  */
 (function () {
-var autoresize = (function () {
     'use strict';
 
     var Cell = function (initial) {
@@ -33,6 +32,11 @@ var autoresize = (function () {
     var global$1 = tinymce.util.Tools.resolve('tinymce.Env');
 
     var global$2 = tinymce.util.Tools.resolve('tinymce.util.Delay');
+
+    var fireResizeEditor = function (editor) {
+      return editor.fire('ResizeEditor');
+    };
+    var Events = { fireResizeEditor: fireResizeEditor };
 
     var getAutoResizeMinHeight = function (editor) {
       return editor.getParam('min_height', editor.getElement().offsetHeight, 'number');
@@ -94,11 +98,12 @@ var autoresize = (function () {
         toggleScrolling(editor, true);
         return;
       }
-      var body = doc.body;
+      var docEle = doc.documentElement;
+      var resizeBottomMargin = Settings.getAutoResizeBottomMargin(editor);
       resizeHeight = Settings.getAutoResizeMinHeight(editor);
-      var marginTop = parseCssValueToInt(dom, body, 'margin-top', true);
-      var marginBottom = parseCssValueToInt(dom, body, 'margin-bottom', true);
-      contentHeight = body.offsetHeight + marginTop + marginBottom;
+      var marginTop = parseCssValueToInt(dom, docEle, 'margin-top', true);
+      var marginBottom = parseCssValueToInt(dom, docEle, 'margin-bottom', true);
+      contentHeight = docEle.offsetHeight + marginTop + marginBottom + resizeBottomMargin;
       if (contentHeight < 0) {
         contentHeight = 0;
       }
@@ -119,6 +124,7 @@ var autoresize = (function () {
         deltaSize = resizeHeight - oldSize.get();
         dom.setStyle(editor.getContainer(), 'height', resizeHeight + 'px');
         oldSize.set(resizeHeight);
+        Events.fireResizeEditor(editor);
         if (global$1.webkit && deltaSize < 0) {
           resize(editor, oldSize);
         }
@@ -127,16 +133,14 @@ var autoresize = (function () {
     var setup = function (editor, oldSize) {
       editor.on('init', function () {
         var overflowPadding = Settings.getAutoResizeOverflowPadding(editor);
-        var bottomMargin = Settings.getAutoResizeBottomMargin(editor);
         var dom = editor.dom;
         dom.setStyles(editor.getBody(), {
           'paddingLeft': overflowPadding,
           'paddingRight': overflowPadding,
-          'paddingBottom': bottomMargin,
           'min-height': 0
         });
       });
-      editor.on('NodeChange SetContent keyup FullscreenStateChanged', function (e) {
+      editor.on('NodeChange SetContent keyup FullscreenStateChanged ResizeContent', function (e) {
         resize(editor, oldSize);
       });
       if (Settings.shouldAutoResizeOnInit(editor)) {
@@ -159,20 +163,19 @@ var autoresize = (function () {
     };
     var Commands = { register: register };
 
-    global.add('autoresize', function (editor) {
-      if (!editor.settings.hasOwnProperty('resize')) {
-        editor.settings.resize = false;
-      }
-      if (!editor.inline) {
-        var oldSize = Cell(0);
-        Commands.register(editor, oldSize);
-        Resize.setup(editor, oldSize);
-      }
-    });
     function Plugin () {
+      global.add('autoresize', function (editor) {
+        if (!editor.settings.hasOwnProperty('resize')) {
+          editor.settings.resize = false;
+        }
+        if (!editor.inline) {
+          var oldSize = Cell(0);
+          Commands.register(editor, oldSize);
+          Resize.setup(editor, oldSize);
+        }
+      });
     }
 
-    return Plugin;
+    Plugin();
 
 }());
-})();

@@ -12,63 +12,8 @@
         <div class="row p-3 rounded shadow-sm bg-white">
             <div class="col">
                 <div class="container">
-                    <div class="custom-controls-stacked d-block my-3">
-                        <label class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input">
-                            <span class="custom-control-indicator"></span>
-                            <span class="custom-control-description">Custom checkbox</span>
-                        </label>
-                    </div>
-
-                    <div class="custom-controls-stacked d-block my-3">
-                        <label class="custom-control material-checkbox">
-                            <input type="checkbox" class="material-control-input">
-                            <span class="material-control-indicator"></span>
-                            <span class="material-control-description">Material checkbox</span>
-                        </label>
-
-                        <label class="custom-control fill-checkbox">
-                            <input type="checkbox" class="fill-control-input">
-                            <span class="fill-control-indicator"></span>
-                            <span class="fill-control-description">Fill checkbox</span>
-                        </label>
-
-                        <label class="custom-control overflow-checkbox">
-                            <input type="checkbox" class="overflow-control-input">
-                            <span class="overflow-control-indicator"></span>
-                            <span class="overflow-control-description">Overflow checkbox</span>
-                        </label>
-                    </div>
-
-                    <div class="custom-controls-stacked d-block my-3">
-                        <label class="custom-control material-switch">
-                            <span class="material-switch-control-description">Off</span>
-                            <input type="checkbox" class="material-switch-control-input">
-                            <span class="material-switch-control-indicator"></span>
-                            <span class="material-switch-control-description">On</span>
-                        </label>
-
-                        <label class="custom-control ios-switch">
-                            <span class="ios-switch-control-description">Off</span>
-                            <input type="checkbox" class="ios-switch-control-input">
-                            <span class="ios-switch-control-indicator"></span>
-                            <span class="ios-switch-control-description">On</span>
-                        </label>
-
-                        <label class="custom-control border-switch">
-                            <span class="border-switch-control-description">Off</span>
-                            <input type="checkbox" class="border-switch-control-input">
-                            <span class="border-switch-control-indicator"></span>
-                            <span class="border-switch-control-description">On</span>
-                        </label>
-
-                        <label class="custom-control teleport-switch">
-                            <span class="teleport-switch-control-description">Off</span>
-                            <input type="checkbox" class="teleport-switch-control-input">
-                            <span class="teleport-switch-control-indicator"></span>
-                            <span class="teleport-switch-control-description">On</span>
-                        </label>
-                    </div>
+                    @includeTheme('docs.html')
+                    @includeTheme('docs.laravel')
                 </div>
             </div>
         </div>

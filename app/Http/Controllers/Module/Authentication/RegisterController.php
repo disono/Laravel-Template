@@ -11,8 +11,11 @@ namespace App\Http\Controllers\Module\Authentication;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Module\Auth\RegisterRequest;
 use App\Models\User;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 
 class RegisterController extends Controller
 {
@@ -29,11 +32,11 @@ class RegisterController extends Controller
     /**
      * Show the application registration form.
      *
-     * @return bool|\Illuminate\Contracts\View\Factory|\Illuminate\Http\JsonResponse|\Illuminate\View\View
+     * @return bool|Factory|JsonResponse|View
      */
     public function showAction()
     {
-        if (__settings('authUserRegistration')->value != 'enabled') {
+        if (__settings('authUserRegistration')->value !== 'enabled') {
             abort(404);
         }
 
@@ -44,11 +47,11 @@ class RegisterController extends Controller
      * Process the registration
      *
      * @param RegisterRequest $request
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
      */
     public function processAction(RegisterRequest $request)
     {
-        if (__settings('authUserRegistration')->value != 'enabled') {
+        if (__settings('authUserRegistration')->value !== 'enabled') {
             abort(404);
         }
 

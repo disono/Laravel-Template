@@ -9,9 +9,9 @@
 use App\Models\Setting;
 
 $GLOBALS['_app_settings'] = [];
-$GLOBALS['_me'] = null;
+$GLOBALS['_me'] = NULL;
 
-function initialize_settings()
+function __initializeSettings()
 {
     $set_app_settings = Setting::all();
     $clean = [];
@@ -35,8 +35,15 @@ function __settings($key = null)
     }
 
     return (object)[
-        'name' => null, 'key' => null, 'value' => null, 'description' => null, 'input_type' => 'text', 'input_value' => null,
-        'attributes' => null, 'is_disabled' => 0
+        'category_setting_id' => null,
+        'name' => null,
+        'key' => null,
+        'value' => null,
+        'description' => null,
+        'input_type' => 'text',
+        'input_value' => null,
+        'attributes' => null,
+        'is_disabled' => 0
     ];
 }
 

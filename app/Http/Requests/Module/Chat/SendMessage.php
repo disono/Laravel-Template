@@ -2,20 +2,10 @@
 
 namespace App\Http\Requests\Module\Chat;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\Module\ModuleRequest;
 
-class SendMessage extends FormRequest
+class SendMessage extends ModuleRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
-    public function authorize()
-    {
-        return (__me()) ? true : false;
-    }
-
     /**
      * Get the validation rules that apply to the request.
      *

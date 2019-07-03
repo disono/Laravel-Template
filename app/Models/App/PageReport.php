@@ -8,9 +8,9 @@
 
 namespace App\Models\App;
 
-use App\Models\File;
-use App\Models\User;
 use App\Models\Vendor\BaseModel;
+use App\Models\Vendor\Facades\File;
+use App\Models\Vendor\Facades\User;
 
 class PageReport extends BaseModel
 {
@@ -41,44 +41,42 @@ class PageReport extends BaseModel
         return $this->belongsTo('App\Models\User');
     }
 
-    public function rawFilters($query): void
+    protected function customQueries($query): void
     {
         $query->join('users', 'page_reports.user_id', '=', 'users.id');
         $query->join('page_report_reasons', 'page_reports.page_report_reason_id', '=', 'page_report_reasons.id');
     }
 
-    public function statuses()
-    {
-        return ['Pending', 'Processing', 'Reopened', 'Denied', 'Closed'];
-    }
-
-    /**
-     * List of select
-     *
-     * @return array
-     */
-    protected function rawQuerySelectList()
+    protected function customQuerySelectList(): array
     {
         return [
             'submitted_by' => 'CONCAT(users.first_name, " ", users.last_name)',
-            'process_by' => 'IF(page_reports.responded_by_id = 0, "n/a", (SELECT CONCAT(first_name, " ", last_name) AS 
-                name FROM users AS process WHERE process.id = page_reports.responded_by_id))',
+            'submitted_by_gender' => 'users.gender',
+
+            'process_by' => 'IF(page_reports.responded_by_id = 0, 
+                "n/a", 
+                (SELECT CONCAT(first_name, " ", last_name) AS name FROM users AS process 
+                WHERE process.id = page_reports.responded_by_id))',
+            'process_by_gender' => 'IF(page_reports.responded_by_id = 0, 
+                "Male", (SELECT gender FROM users AS process WHERE process.id = page_reports.responded_by_id))',
+
             'page_report_reason_name' => 'page_report_reasons.name',
         ];
     }
 
-    /**
-     * Add formatting to data
-     *
-     * @param $row
-     * @return mixed
-     */
     protected function dataFormatting($row)
     {
-        $row->user = (new User())->single($row->user_id);
-        $row->reason = (new PageReportReason())->single($row->page_report_reason_id);
-        $row->screenshots = (new File())->fetchAll(['table_name' => 'page_reports', 'table_id' => $row->id]);
+        $this->addDateFormatting($row);
+
+        $row->screenshots = File::fetchAll(['table_name' => 'page_reports', 'table_id' => $row->id]);
+        $row->submitted_by_profile_picture = User::profilePicture($row->user_id, $row->submitted_by_gender);
+        $row->process_by_profile_picture = User::profilePicture($row->responded_by_id, $row->process_by_gender);
 
         return $row;
+    }
+
+    public function statuses()
+    {
+        return ['Pending', 'Processing', 'Reopened', 'Denied', 'Closed'];
     }
 }

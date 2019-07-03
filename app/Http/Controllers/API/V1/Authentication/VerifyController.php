@@ -9,11 +9,19 @@
 namespace App\Http\Controllers\API\V1\Authentication;
 
 use App\Http\Controllers\API\APIController;
-use App\Models\User;
+use App\Models\Vendor\Facades\User;
 use Illuminate\Http\JsonResponse;
 
 class VerifyController extends APIController
 {
+    private $_user;
+    
+    public function __construct()
+    {
+        parent::__construct();
+        $this->_user = User::self();
+    }
+    
     /**
      * Verify phone
      *
@@ -24,7 +32,7 @@ class VerifyController extends APIController
     public function verifyPhoneAction()
     {
         try {
-            return $this->json((new User())->verify('phone'));
+            return $this->json($this->_user->verify('phone'));
         } catch (\Exception $e) {
             return $this->json($e->getMessage(), 422);
         }
@@ -41,7 +49,7 @@ class VerifyController extends APIController
     public function resendVerificationAction($type)
     {
         try {
-            $value = (new User())->resendVerification($type);
+            $value = $this->_user->resendVerification($type);
 
             if ($type == 'email') {
                 return $this->json('We already sent you a verification link for ' . $value . '. Thank You.');

@@ -8,25 +8,22 @@
 @extends('admin.layouts.master')
 
 @section('content')
-    <div class="container-fluid shadow-sm p-3 bg-white">
-        <div class="row mb-3">
-            <div class="col">
-                <h3>{{ $view_title }}</h3>
-                <hr>
-            </div>
-        </div>
+    <h3 class="mb-3 font-weight-bold">{{ $view_title }}</h3>
 
+    <div class="container-fluid shadow-sm p-3 bg-white">
         <div class="row mt-3">
             <div class="col">
-                <form action="{{ route('admin.file.list') }}" method="get" id="frmTableFilter">
+                <form action="{{ route('admin.file.browse') }}" method="get" id="frmTableFilter">
                     <input type="submit" style="display: none;">
 
                     @include('vendor.app.toolbar')
 
                     <div class="table-responsive-sm">
                         <table class="table table-bordered">
-                            <thead class="table-borderless">
+                            <thead class="table-borderless bg-light">
                             <tr>
+                                {!! thDelete() !!}
+
                                 <th>#</th>
                                 <th><input type="text" class="form-control form-control-sm" name="file_name"
                                            placeholder="Filename" value="{{ $request->get('file_name') }}"></th>
@@ -34,7 +31,8 @@
                                            placeholder="Title" value="{{ $request->get('title') }}"></th>
                                 <th>
                                     <select class="form-control form-control-sm select_picker"
-                                            name="type" data-style="btn-gray"
+                                            data-style="btn-blue-50"
+                                            name="type"
                                             @change="onSelectChangeSubmitForm($event, '#frmTableFilter')">
                                         <option value="">Type (All)</option>
                                         <option value="video" {{ frmIsSelected('type', 'video') }}>Video</option>
@@ -44,8 +42,10 @@
                                         <option value="audio" {{ frmIsSelected('type', 'audio') }}>Audio</option>
                                     </select>
                                 </th>
-                                <th><input type="text" class="form-control form-control-sm date-picker-no-future" name="created_at"
-                                           placeholder="Date" data-form-submit="#frmTableFilter"
+                                <th><input type="text" class="form-control form-control-sm date-picker-no-future"
+                                           name="created_at"
+                                           placeholder="Date"
+                                           data-form-submit="#frmTableFilter"
                                            value="{{ $request->get('created_at') }}"></th>
                                 <th>Action</th>
                             </tr>
@@ -54,11 +54,13 @@
                             <tbody>
                             @foreach($files as $row)
                                 <tr id="parent_tr_{{$row->id}}">
+                                    {!! tdDelete($row->id) !!}
+
                                     <td>{{ $row->id }}</td>
                                     <td><a href="{{ $row->path }}" target="_blank">{{ $row->file_name }}</a></td>
                                     <td>{{ $row->title }}</td>
                                     <td>{{ $row->type }}</td>
-                                    <td>{{ humanDate($row->created_at) }}</td>
+                                    <td>{{ $row->formatted_created_at }}</td>
                                     <td>
                                         <div class="btn-group">
                                             <button type="button" class="btn btn-light btn-sm dropdown-toggle"
@@ -69,6 +71,7 @@
                                             <div class="dropdown-menu">
                                                 <a class="dropdown-item"
                                                    href="{{ url('admin/file/destroy/' . $row->id) }}"
+                                                   id="parent_tr_del_{{ $row->id }}"
                                                    v-on:click.prevent="onDeleteResource($event, '#parent_tr_{{$row->id}}')">Delete</a>
                                             </div>
                                         </div>

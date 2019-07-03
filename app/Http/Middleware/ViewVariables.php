@@ -24,8 +24,7 @@ class ViewVariables
      */
     public function handle($request, Closure $next)
     {
-        initialize_settings();
-        JWTInitializeTokenByKey();
+        __initializeSettings();
         $this->_setViewVariables();
 
         return $next($request);
@@ -49,20 +48,21 @@ class ViewVariables
         $view = view();
 
         // SEO
-        $view->share('view_title', null);
+        $view->share('view_title', NULL);
         $view->share('page_title', $_var['title']);
         $view->share('page_description', $_var['description']);
         $view->share('page_keywords', $_var['keywords']);
         $view->share('page_author', $_var['author']);
+        $view->share('seo_robots', NULL);
 
         // Meta og
-        $view->share('og_url', null);
-        $view->share('og_type', null);
-        $view->share('og_title', null);
-        $view->share('og_description', null);
-        $view->share('og_image', null);
-        $view->share('og_image_width', null);
-        $view->share('og_image_height', null);
+        $view->share('og_url', NULL);
+        $view->share('og_type', NULL);
+        $view->share('og_title', NULL);
+        $view->share('og_description', NULL);
+        $view->share('og_image', NULL);
+        $view->share('og_image_width', NULL);
+        $view->share('og_image_height', NULL);
 
         // others
         $view->share('token', csrf_token());
@@ -75,7 +75,7 @@ class ViewVariables
     private function _setDefaultAppScripts()
     {
         return [
-            'assets/js/app/application.js'
+            'assets/js/vue/application.js'
         ];
     }
 

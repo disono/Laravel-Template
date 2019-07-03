@@ -5,11 +5,11 @@
  * @copyright   Webmons Development Studio
 --}}
 
-<?php
+@php
 if (isset($request)) {
     $_toTotalPage = $request->get('page') + $request->get('pagination_show');
 }
-?>
+@endphp
 
 @if(count($_lists))
     <div class="row">

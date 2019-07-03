@@ -30,7 +30,7 @@ class UserStore extends AdminRequest
             'country_id' => 'exists:countries,id',
             'city_id' => 'exists:cities,id',
             'phone' => 'numeric',
-            'profile_picture' => 'image',
+            'profile_picture' => 'image|max:' . __settings('fileSizeLimitImage')->value,
             'role_id' => 'required|exists:roles,id',
             'username' => 'required|max:64|unique:users,username',
             'email' => 'required|email|unique:users,email',

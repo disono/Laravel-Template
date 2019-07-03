@@ -4,10 +4,9 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.0.4 (2019-04-23)
+ * Version: 5.0.9 (2019-06-26)
  */
-(function () {
-var charmap = (function (domGlobals) {
+(function (domGlobals) {
     'use strict';
 
     var global = tinymce.util.Tools.resolve('tinymce.PluginManager');
@@ -190,6 +189,7 @@ var charmap = (function (domGlobals) {
     };
     var isFunction = isType('function');
 
+    var slice = Array.prototype.slice;
     var map = function (xs, f) {
       var len = xs.length;
       var r = new Array(len);
@@ -228,7 +228,6 @@ var charmap = (function (domGlobals) {
       var output = map(xs, f);
       return flatten(output);
     };
-    var slice = Array.prototype.slice;
     var from$1 = isFunction(Array.from) ? Array.from : function (x) {
       return slice.call(x);
     };
@@ -1581,11 +1580,11 @@ var charmap = (function (domGlobals) {
         return map(charMap, function (charGroup) {
           return {
             title: charGroup.name,
+            name: charGroup.name,
             items: makeGroupItems()
           };
         });
       };
-      var currentTab = charMap.length === 1 ? Cell(UserDefined) : Cell('All');
       var makePanel = function () {
         return {
           type: 'panel',
@@ -1598,6 +1597,7 @@ var charmap = (function (domGlobals) {
           tabs: makeTabs()
         };
       };
+      var currentTab = charMap.length === 1 ? Cell(UserDefined) : Cell('All');
       var scanAndSet = function (dialogApi, pattern) {
         find(charMap, function (group) {
           return group.name === currentTab.get();
@@ -1633,8 +1633,8 @@ var charmap = (function (domGlobals) {
             api.close();
           }
         },
-        onTabChange: function (dialogApi, title) {
-          currentTab.set(title);
+        onTabChange: function (dialogApi, details) {
+          currentTab.set(details.newTabName);
           updateFilter.throttle(dialogApi);
         },
         onChange: function (dialogApi, changeData) {
@@ -1692,17 +1692,16 @@ var charmap = (function (domGlobals) {
     };
     var Buttons = { register: register$1 };
 
-    global.add('charmap', function (editor) {
-      var charMap = CharMap.getCharMap(editor);
-      Commands.register(editor, charMap);
-      Buttons.register(editor);
-      init(editor, charMap[0]);
-      return Api.get(editor);
-    });
     function Plugin () {
+      global.add('charmap', function (editor) {
+        var charMap = CharMap.getCharMap(editor);
+        Commands.register(editor, charMap);
+        Buttons.register(editor);
+        init(editor, charMap[0]);
+        return Api.get(editor);
+      });
     }
 
-    return Plugin;
+    Plugin();
 
 }(window));
-})();

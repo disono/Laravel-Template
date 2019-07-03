@@ -11,6 +11,7 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpFoundation\Response;
 
 class BaseRequest extends FormRequest
 {
@@ -48,7 +49,7 @@ class BaseRequest extends FormRequest
     /**
      * Handle a failed validation attempt.
      *
-     * @param Validator|\Illuminate\Contracts\Validation\Validator $validator
+     * @param Validator|Validator $validator
      * @return void
      * @throws ValidationException
      */
@@ -63,7 +64,7 @@ class BaseRequest extends FormRequest
      * Get the proper failed validation response for the request.
      *
      * @param array $errors
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      */
     public function response(array $errors)
     {
@@ -79,7 +80,7 @@ class BaseRequest extends FormRequest
     /**
      * Format the errors from the given Validator instance.
      *
-     * @param \Illuminate\Contracts\Validation\Validator $validator
+     * @param Validator $validator
      * @return array
      */
     protected function formatErrors(Validator $validator)

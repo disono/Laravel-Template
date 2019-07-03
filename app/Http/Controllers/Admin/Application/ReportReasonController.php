@@ -11,26 +11,26 @@ namespace App\Http\Controllers\Admin\Application;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Application\Report\ReportReasonStore;
 use App\Http\Requests\Admin\Application\Report\ReportReasonUpdate;
-use App\Models\App\PageReportReason;
+use App\Models\Vendor\Facades\PageReportReason;
 
 class ReportReasonController extends Controller
 {
     protected $viewType = 'admin';
-    private $reportReason;
+    private $_reportReason;
 
     public function __construct()
     {
         parent::__construct();
         $this->theme = 'application.report.reasons';
-        $this->reportReason = new PageReportReason();
+        $this->_reportReason = PageReportReason::self();
     }
 
     public function indexAction()
     {
         $this->setHeader('title', 'Report Reasons');
-        $this->reportReason->enableSearch = true;
+        $this->_reportReason->enableSearch = true;
         return $this->view('index', [
-            'reasons' => $this->reportReason->fetch(requestValues('search|pagination_show|name'))
+            'reasons' => $this->_reportReason->fetch(requestValues('search|pagination_show|name'))
         ]);
     }
 
@@ -42,8 +42,8 @@ class ReportReasonController extends Controller
 
     public function storeAction(ReportReasonStore $request)
     {
-        $role = $this->reportReason->store($request->all());
-        if (!$role) {
+        $reason = $this->_reportReason->store($request->all());
+        if (!$reason) {
             return $this->json(['name' => 'Failed to crate a new role.'], 422, false);
         }
 
@@ -52,7 +52,7 @@ class ReportReasonController extends Controller
 
     public function editAction($id)
     {
-        $reason = $this->reportReason->single($id);
+        $reason = $this->_reportReason->single($id);
         if (!$reason) {
             abort(404);
         }
@@ -63,13 +63,13 @@ class ReportReasonController extends Controller
 
     public function updateAction(ReportReasonUpdate $request)
     {
-        $this->reportReason->edit($request->get('id'), $request->all());
+        $this->_reportReason->edit($request->get('id'), $request->all());
         return $this->json('Report Reason is successfully updated.');
     }
 
     public function destroyAction($id)
     {
-        if (!$this->reportReason->remove($id)) {
+        if (!$this->_reportReason->remove($id)) {
             return $this->json('Unable to remove report reason because is already used.', 422);
         }
 

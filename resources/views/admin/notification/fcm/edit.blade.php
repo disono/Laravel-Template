@@ -8,20 +8,20 @@
 @extends('admin.layouts.master')
 
 @section('content')
-     <div class="container-fluid shadow-sm p-3 bg-white">
+    <h3 class="mb-3 font-weight-bold">{{ $view_title }}</h3>
+
+    <div class="container-fluid shadow-sm p-3 bg-white">
         <div class="row">
             <div class="col">
                 <div class="row">
                     <div class="col">
-                        <h3>{{ $view_title }}</h3>
-                        <hr>
                         @include('admin.notification.fcm.menu')
                     </div>
                 </div>
 
                 <div class="row mt-3">
                     <div class="col">
-                        <form action="{{ route('admin.fcm.notification.update') }}" method="post"
+                        <form action="{{ route('admin.fcmNotification.update') }}" method="post"
                               v-on:submit.prevent="onFormUpload">
                             {{ csrf_field() }}
 
@@ -59,7 +59,9 @@
                                 <div class="col-md-4 col-sm-12 mb-3">
                                     <label for="type">Type <strong class="text-danger">*</strong></label>
 
-                                    <select name="type" id="type" class="form-control" v-model="frmAdminFCM.type"
+                                    <select name="type" id="type" class="form-control select_picker"
+                                            data-style="btn-blue-50"
+                                            v-model="frmAdminFCM.type"
                                             @change="frmAdminFCMOnTypeChange">
                                         <option value="">Select Type</option>
                                         <option value="topic" {{ ($notification->type == 'topic') ? 'selected' : '' }}>
@@ -108,6 +110,7 @@
                                 </div>
                             </div>
 
+                            <hr>
                             <button type="submit" class="btn btn-raised btn-primary">Send</button>
                         </form>
                     </div>

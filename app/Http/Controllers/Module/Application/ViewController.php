@@ -21,14 +21,16 @@ class ViewController extends Controller
     {
         if ($type == 'delete') {
             return theme('modals.delete');
-        } else if ($type == 'fileSelector') {
-            return theme('modals.mediaSelector');
+        } else if ($type == 'fileExplorer') {
+            return theme('modals.fileExplorer');
         } else if ($type == 'chatLeaveGroup') {
             return theme('modals.chatLeaveGroup');
         } else if ($type == 'chatDeleteConversation') {
             return theme('modals.chatDeleteConversation');
         } else if ($type == 'reportPage') {
             return theme('modals.reportPage');
+        } else if ($type == 'profileMenu') {
+            return theme('modals.profileMenu');
         }
 
         return abort(404);

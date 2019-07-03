@@ -37,7 +37,7 @@
 
                                         <div class="input-group-append">
                                             {{-- Search --}}
-                                            <button class="btn btn-outline-secondary" type="button"
+                                            <button class="btn btn-primary" type="button"
                                                     v-on:click="btnChatGroupSearchProfile()"><i
                                                         class="fas fa-search"></i>
                                             </button>
@@ -110,7 +110,7 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-light" data-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-primary"
                         v-on:click="btnChatCreateGroupChat()"
                         @click.prevent>@{{ createGroup.btnName }}
