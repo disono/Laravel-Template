@@ -22,7 +22,8 @@
     "laravel/tinker": "^1.0",
     "maatwebsite/excel": "^3.1",
     "mews/purifier": "^2.1",
-    "spatie/image-optimizer": "^1.1"
+    "spatie/image-optimizer": "^1.1",
+    "wisembly/elephant.io": "^3.3"
   },
   "require-dev": {
     "beyondcode/laravel-dump-server": "^1.0",

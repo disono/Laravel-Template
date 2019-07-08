@@ -22,6 +22,7 @@ class CreatePagesTable extends Migration
             $table->string('name', 100);
             $table->text('content')->nullable();
             $table->string('slug', 100)->unique();
+            $table->text('tags')->nullable();
             $table->string('template', 100)->nullable();
             $table->boolean('is_draft')->default(0);
             $table->boolean('is_email_to_subscriber')->default(0);

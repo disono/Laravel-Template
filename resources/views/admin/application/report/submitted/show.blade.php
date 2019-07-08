@@ -19,34 +19,30 @@
 
         <div class="row mt-3">
             <div class="col-md-6 col-sm-12">
-                <div class="row mb-3 p-3">
-                    <div class="col text-center p-0">
-                        <img class="rounded-circle shadow-sm" style="width: 92px;"
-                             src="{{ $report->submitted_by_profile_picture }}" alt="{{ $report->submitted_by }}">
+                <img class="rounded-circle shadow-sm" style="width: 92px;"
+                     src="{{ $report->submitted_by_profile_picture }}" alt="{{ $report->submitted_by }}">
 
-                        <h4 class="font-weight-bold">{{ $report->submitted_by }}</h4>
+                <h4 class="font-weight-bold">{{ $report->submitted_by }}</h4>
 
-                        <div class="dropdown mt-3 mb-3">
-                            <button class="btn btn-primary dropdown-toggle btn-sm" type="button"
-                                    id="dropdownMenuButton"
-                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                {{ $report->status }}
-                            </button>
+                <div class="dropdown mt-3 mb-3">
+                    <button class="btn btn-primary dropdown-toggle btn-sm" type="button"
+                            id="dropdownMenuButton"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        {{ $report->status }}
+                    </button>
 
-                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                @foreach($statuses as $status)
-                                    <a class="dropdown-item"
-                                       href="{{ url('admin/submitted-report/status/' . $report->id . '/' . $status) }}">
-                                        {{ $status }}
-                                    </a>
-                                @endforeach
-                            </div>
-                        </div>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        @foreach($statuses as $status)
+                            <a class="dropdown-item"
+                               href="{{ url('admin/page-report/status/' . $report->id . '/' . $status) }}">
+                                {{ $status }}
+                            </a>
+                        @endforeach
                     </div>
                 </div>
 
                 <p class="m-0"><u>Date:</u></p>
-                <p class="m-0">{{ $row->formatted_created_at }}</p>
+                <p class="m-0">{{ $report->formatted_created_at }}</p>
 
                 <p class="m-0 mt-3"><u>URL:</u></p>
                 <p class="m-0">
@@ -63,14 +59,17 @@
                 <p class="m-0 mt-3"><u>Reviewed & Processed by:</u></p>
                 <p class="m-0 mb-3">{{ $report->process_by != 'n/a' && $report->process_by ? $report->process_by : 'Pending' }}</p>
 
-                <p class="m-0 mt-3"><u>Screenshots:</u></p>
-                <div class="m-0 mb-3 p-3">
-                    <div class="row">
-                        @foreach($report->screenshots as $img)
-                            <img src="{{ $img->path }}" alt="{{ $img->file_name }}" class="img-thumbnail col-md-6 col-sm-12">
-                        @endforeach
+                @if(count($report->screenshots))
+                    <p class="m-0 mt-3"><u>Screenshots:</u></p>
+                    <div class="m-0 mb-3 p-3">
+                        <div class="row">
+                            @foreach($report->screenshots as $img)
+                                <img src="{{ $img->path }}" alt="{{ $img->file_name }}"
+                                     class="img-thumbnail col-md-4 col-sm-12 border-0 m-0 p-0">
+                            @endforeach
+                        </div>
                     </div>
-                </div>
+                @endif
             </div>
 
             <div class="col-md-6 col-sm-12">
@@ -81,7 +80,8 @@
 
                         <div class="form-group">
                             <textarea name="message" id="message" class="form-control"
-                                      placeholder="Post your message..."></textarea>
+                                      placeholder="Post your message..."
+                                      data-validate="required"></textarea>
                         </div>
 
                         <div class="form-group text-right">
@@ -108,7 +108,7 @@
                                     <strong>{{ $msg->full_name }}</strong>
                                 </h5>
 
-                                <p class="m-0">{{ $row->formatted_created_at }}</p>
+                                <p class="m-0">{{ $msg->formatted_created_at }}</p>
                                 <p class="m-0">{{ $msg->message }}</p>
                             </div>
                         </div>

@@ -7,7 +7,7 @@
  */
 
 use App\Models\AuthorizationRole;
-use App\Models\Token;
+use App\Models\Vendor\Facades\Token;
 use App\Models\Vendor\Facades\User;
 use Firebase\JWT\JWT;
 use Firebase\JWT\SignatureInvalidException;
@@ -73,9 +73,44 @@ if (!function_exists('isAccountEnabled')) {
     }
 }
 
+if (!function_exists('jwtEncode')) {
+    /**
+     * Encode jwt
+     *
+     * @param string $exp
+     * @return string|null
+     */
+    function jwtEncode($exp = '+ 8 hours')
+    {
+        if (!__me()) {
+            return NULL;
+        }
+
+        $sub = 'uid';
+        $iss = __me()->id;
+        $iat = time();
+        $tokenLog = Token::fetchAll(['single' => true, 'user_id' => __me()->id, 'token' => session()->getId(), 'source' => 'client']);
+
+        if (!$tokenLog) {
+            return NULL;
+        }
+
+        $token = array(
+            "iss" => $iss,
+            "sub" => $sub,
+            "iat" => $iat,
+            "exp" => strtotime($exp, time()),
+            "nbf" => strtotime('- 1 minutes', time()),
+            "jti" => md5("jti." . $iss . "." . $sub . "." . $iat . '.' . $tokenLog->token)
+        );
+
+        return JWT::encode($token, $tokenLog->secret, 'HS256');
+    }
+}
+
 if (!function_exists('jwt')) {
     /**
-     * Check API JWT
+     * Decode jwt
      *
      * iss: The issuer of the token = user_id
      * sub: This holds the identifier for the token (defaults to user id) = 'uid'
@@ -86,7 +121,7 @@ if (!function_exists('jwt')) {
      *
      * @return bool|JsonResponse|null
      */
-    function jwt()
+    function jwtDecode()
     {
         // authentication using jwt is not required
         // good only for development purposes
@@ -102,14 +137,14 @@ if (!function_exists('jwt')) {
         }
 
         // search token
-        $secret = getTokenSecretKey();
-        if (!$secret) {
+        $tokenLog = getTokenLog();
+        if (!$tokenLog) {
             return failedJSONResponse('Token not found base on your "tkey".');
         }
 
         // decode jwt
         try {
-            $decoded = JWT::decode($jwt, $secret, ['HS256']);
+            $decoded = JWT::decode($jwt, $tokenLog->secret, ['HS256']);
             setTimezone();
         } catch (SignatureInvalidException $exception) {
             return failedJSONResponse('Token failed to validate for the following reason ' . $exception->getMessage() . '.');
@@ -126,7 +161,7 @@ if (!function_exists('jwt')) {
         }
 
         // token valid
-        if (md5("jti." . $decoded->iss . "." . $decoded->sub . "." . $decoded->iat) != $decoded->jti) {
+        if (md5("jti." . $decoded->iss . "." . $decoded->sub . "." . $decoded->iat . '.' . $tokenLog->token) != $decoded->jti) {
             return failedJSONResponse('Token jti is invalid.');
         }
 
@@ -139,29 +174,24 @@ if (!function_exists('jwt')) {
     }
 }
 
-if (!function_exists('getTokenSecretKey')) {
+if (!function_exists('getTokenLog')) {
     /**
      * Initialize JWT token by key
      */
-    function getTokenSecretKey()
+    function getTokenLog()
     {
-        if (!Schema::hasTable('tokens')) {
+        if (!Schema::hasTable('tokens') && !authId()) {
             return NULL;
         }
 
         // token
-        $token = Token::where('key', request()->header('tkey'))->first();
+        $token = Token::where('key', request()->header('tkey'))->where('user_id', authId())->first();
         if (!$token) {
             return NULL;
         }
 
-        // check if user id is correct
-        if (authId() != $token->user_id) {
-            return NULL;
-        }
-
         // secret key
-        return $token->secret;
+        return $token;
     }
 }
 
@@ -259,6 +289,36 @@ if (!function_exists('authorizeRoute')) {
         if (!AuthorizationRole::where('route', request()->route()->getName())
             ->where('role_id', $user_role->id)
             ->first()) {
+            return false;
+        }
+
+        return true;
+    }
+}
+
+if (!function_exists('destroySomeoneSession')) {
+    /**
+     * Delete someones session via session id
+     *
+     * @param null $id
+     * @return bool
+     */
+    function destroySomeoneSession($id = NULL)
+    {
+        if (!$id) {
+            return false;
+        }
+
+        $sessionFile = '../storage/framework/sessions/' . $id;
+        if (!file_exists($sessionFile)) {
+            return false;
+        }
+
+        if (!file_put_contents($sessionFile, 'n/a')) {
+            return false;
+        }
+
+        if (!unlink($sessionFile)) {
             return false;
         }
 

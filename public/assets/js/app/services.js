@@ -146,11 +146,6 @@ let WBServices = (function () {
                 jQ.each(formAction[0].elements, function (index, elem) {
                     let input = jQ(this);
 
-                    if (!input.length) {
-                        swal("Validation Error", msg, "error");
-                        return;
-                    }
-
                     // custom checkbox (switch)
                     let materialInputs = ['material-switch'];
                     for (let i = 0; i < materialInputs.length; i++) {
@@ -199,6 +194,11 @@ let WBServices = (function () {
                         input.parent().find('.input-group-prepend').next().remove();
                     }
 
+                    // selectize
+                    if (input.parent().find('.selectize').length) {
+                        input.parent().find('.selectize').find('.selectize-input').removeClass('input--danger');
+                    }
+
                     // group input prepend
                     if (input.hasClass('custom-file-input')) {
                         input.parent().find('.custom-file-label').next().remove();
@@ -218,9 +218,15 @@ let WBServices = (function () {
             },
 
             formInValid(input, msg) {
+                // no input found
                 if (!input.length) {
                     swal("Validation Error", msg, "error");
                     return;
+                }
+
+                // hidden fields
+                if (input.attr('type') === 'hidden') {
+                    swal("Validation Error", msg, "error");
                 }
 
                 // custom checkbox (switch)
@@ -286,7 +292,7 @@ let WBServices = (function () {
                 }
 
                 // remove error messages (bottom)
-                input.next()
+                input.parent().parent()
                     .not('.form-text')
                     .not('.custom-control-label')
                     .not('.custom-file-input')
@@ -297,6 +303,8 @@ let WBServices = (function () {
                     .not('.picker')
                     .not('.input-group-append')
                     .not('.input-group-prepend')
+                    .not('.selectize')
+                    .find('.invalid-feedback')
                     .remove();
 
                 // group input append
@@ -312,6 +320,11 @@ let WBServices = (function () {
                 // group input prepend
                 if (input.hasClass('custom-file-input')) {
                     input.parent().find('.custom-file-label').next().not('.form-text').remove();
+                }
+
+                // selectize
+                if (input.hasClass('selectize')) {
+                    input.parent().find('.selectize-control').next().not('.form-text').remove();
                 }
 
                 if (msg) {
@@ -339,7 +352,18 @@ let WBServices = (function () {
 
                     if (input.parent().find('.input-group-prepend').length) {
                         input.parent().find('.input-group-prepend').after('<div class="invalid-feedback">' + msg + '</div>');
-                        input.parent().find('.input-group-prepend').find('.btn').addClass('input-group-prepend-danger');
+
+                        if (input.parent().find('.input-group-prepend').find('.btn').length === 1) {
+                            input.parent().find('.input-group-prepend').find('.btn').addClass('input-group-prepend-danger');
+                        }
+
+                        return;
+                    }
+
+                    if (input.parent().find('.selectize').length) {
+                        input.parent().find('.selectize-control').after('<div class="invalid-feedback">' + msg + '</div>');
+                        input.parent().find('.selectize').find('.selectize-input').addClass('input--danger');
+
                         return;
                     }
 
@@ -357,6 +381,10 @@ let WBServices = (function () {
 
                     if (input.hasClass('custom-file-input')) {
                         input.parent().find('.custom-file-label').removeClass('custom-file-label-danger');
+                    }
+
+                    if (input.parent().find('.selectize').length) {
+                        input.parent().find('.selectize').find('.selectize-input').removeClass('input--danger');
                     }
 
                     if (input.hasClass('picker__input')) {

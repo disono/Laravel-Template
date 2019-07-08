@@ -38,6 +38,18 @@ class LoginController extends APIController
     }
 
     /**
+     * Logout user delete token
+     *
+     * @param $id
+     * @return JsonResponse
+     */
+    public function logoutAction($id)
+    {
+        $this->_logAuthentication('logout');
+        return $this->json(Token::remove($id));
+    }
+
+    /**
      * Default request inputs
      *
      * @param string $username
@@ -58,18 +70,21 @@ class LoginController extends APIController
      */
     private function _logAuthentication($type = 'login')
     {
+        if (!__me()) {
+            return;
+        }
+
         try {
-            if (__me()) {
-                $userAgent = userAgent();
-                AuthenticationHistory::store([
-                    'user_id' => __me()->id,
-                    'ip' => ipAddress(),
-                    'platform' => $userAgent->platform . ', ' . $userAgent->browserName,
-                    'type' => $type
-                ]);
-            }
+            $userAgent = userAgent();
+
+            AuthenticationHistory::store([
+                'user_id' => __me()->id,
+                'ip' => ipAddress(),
+                'platform' => $userAgent->platform . ', ' . $userAgent->browserName,
+                'type' => $type
+            ]);
         } catch (\Exception $e) {
-            logErrors('Logging Auth (API V1): ' . $e->getMessage());
+            logErrors('LoginController._logAuthentication (V1): ' . $e->getMessage());
         }
     }
 
@@ -82,17 +97,5 @@ class LoginController extends APIController
     private function _profile($username = 'email')
     {
         return User::crateToken(User::single($this->request->get('username'), $username));
-    }
-
-    /**
-     * Logout user delete token
-     *
-     * @param $id
-     * @return JsonResponse
-     */
-    public function logoutAction($id)
-    {
-        $this->_logAuthentication('logout');
-        return $this->json(Token::remove($id));
     }
 }

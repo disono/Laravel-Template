@@ -31,7 +31,7 @@
 
                                             <div class="row">
                                                 <div class="col">
-                                                    <a href="{{ $page->url }}" class="btn btn-outline-info">Read
+                                                    <a href="{{ $page->url }}" class="btn btn-outline-primary">Read
                                                         more...</a>
                                                 </div>
                                                 <div class="col">

@@ -92,8 +92,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="img_active">Active Icon</label>
-                        <br>
+                        <label for="img_active" class="w-100">Active Icon</label>
 
                         <img src="/assets/img/placeholders/default.png" alt="Active Icon"
                              style="height: 64px; width: 64px;" id="_img_active"
@@ -112,8 +111,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="img_inactive">InActive Icon</label>
-                        <br>
+                        <label for="img_inactive" class="w-100">InActive Icon</label>
 
                         <img src="/assets/img/placeholders/default.png" alt="Inactive Icon"
                              style="height: 64px; width: 64px;" id="_img_inactive"
@@ -132,8 +130,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="img_banner">Banner</label>
-                        <br>
+                        <label for="img_banner" class="w-100">Banner</label>
 
                         <img src="/assets/img/placeholders/default.png" alt="Banner"
                              style="height: 180px; width: 100%;" id="_img_banner"

@@ -23,6 +23,7 @@ class CreateSettingsTable extends Migration
             $table->text('input_value')->nullable();
             $table->text('attributes')->nullable();
             $table->boolean('is_disabled')->default(0);
+            $table->boolean('is_public')->default(1);
 
             $table->unsignedInteger('category_setting_id')->nullable();
             $table->foreign('category_setting_id')->references('id')->on('setting_categories');

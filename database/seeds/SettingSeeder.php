@@ -22,6 +22,8 @@ class SettingSeeder extends Seeder
                 'input_type' => $value[3],
                 'input_value' => $value[4],
                 'category_setting_id' => $value[5],
+
+                'is_public' => $value[7],
                 'created_at' => sqlDate()
             ]);
         }
@@ -30,41 +32,48 @@ class SettingSeeder extends Seeder
     private function _settings()
     {
         return [
-            ['Application Name', 'title', 'Webmons Development Studio', 'text', NULL, 1, NULL],
-            ['Default App URL', 'appUrl', 'http://domain.com', 'text', NULL, 1, NULL],
-            ['Description', 'description', 'Project Template', 'textarea', NULL, 1, NULL],
-            ['Author', 'author', 'Archie Disono', 'text', NULL, 1, NULL],
-            ['Keywords', 'keywords', 'webmons, project template, boiler plate', 'textarea', NULL, 1, NULL],
-            ['Theme Version', 'themeVersion', '1.0', 'text', NULL, 1, NULL],
-            ['Theme Name', 'theme', 'master', 'text', NULL, 1, NULL],
-            ['Items per page(pagination)', 'pagination', '12', 'text', NULL, 1, NULL],
-            ['Subscriber Form', 'subscriberForm', 'enabled', 'checkbox_single', 'enabled', 1, NULL],
-            ['Chat/Messaging', 'chat', 'enabled', 'checkbox_single', 'enabled', 1, NULL],
+            ['Application Name', 'title', 'Webmons Development Studio', 'text', NULL, 1, NULL, 1],
+            ['Default App URL', 'appUrl', 'http://domain.com', 'text', NULL, 1, NULL, 1],
+            ['Description', 'description', 'Project Template', 'textarea', NULL, 1, NULL, 0],
+            ['Author', 'author', 'Archie Disono', 'text', NULL, 1, NULL, 0],
+            ['Keywords', 'keywords', 'webmons, project template, boiler plate', 'textarea', NULL, 1, NULL, 0],
+            ['Theme Version', 'themeVersion', '1.0', 'text', NULL, 1, NULL, 0],
+            ['Theme Name', 'theme', 'master', 'text', NULL, 1, NULL, 0],
+            ['Items per page(pagination)', 'pagination', '12', 'text', NULL, 1, NULL, 1],
+            ['Subscriber Form', 'subscriberForm', 'enabled', 'checkbox_single', 'enabled', 1, NULL, 0],
+            ['Chat/Messaging', 'chat', 'enabled', 'checkbox_single', 'enabled', 1, NULL, 1],
+            ['Allow user to delete page reports', 'allowDelPageReport', 'enabled', 'checkbox_single', 'enabled', 1, NULL, 1],
 
-            ['Minimum age for registration', 'minimumAgeForRegistration', '13', 'text', NULL, 2, NULL],
-            ['Maximum age for registration', 'maximumAgeForRegistration', '120', 'text', NULL, 2, NULL],
+            ['Minimum age for registration', 'minimumAgeForRegistration', '13', 'text', NULL, 2, NULL, 1],
+            ['Maximum age for registration', 'maximumAgeForRegistration', '120', 'text', NULL, 2, NULL, 1],
 
-            ['File size limit(image)', 'fileSizeLimitImage', '3000', 'text', NULL, 3, NULL],
-            ['File size limit(default)', 'fileSizeLimit', '3000', 'text', NULL, 3, NULL],
+            ['File size limit(image)', 'fileSizeLimitImage', '3000', 'text', NULL, 3, NULL, 1],
+            ['File size limit(default)', 'fileSizeLimit', '3000', 'text', NULL, 3, NULL, 1],
 
-            ['Facebook Page', 'socialFacebook', '#', 'text', NULL, 4, NULL],
-            ['Twitter Page', 'socialTwitter', '#', 'text', NULL, 4, NULL],
-            ['IG Page', 'socialIG', '#', 'text', NULL, 4, NULL],
+            ['Facebook Page', 'socialFacebook', '#', 'text', NULL, 4, NULL, 1],
+            ['Twitter Page', 'socialTwitter', '#', 'text', NULL, 4, NULL, 1],
+            ['IG Page', 'socialIG', '#', 'text', NULL, 4, NULL, 1],
 
-            ['Enable User Registration', 'authUserRegistration', 'enabled', 'checkbox_single', 'enabled', 5, NULL],
-            ['Auth Facebook', 'authSocialFacebook', 'enabled', 'checkbox_single', 'enabled', 5, NULL],
-            ['JWT Authentication', 'jwtAuthentication', 'enabled', 'checkbox_single', 'enabled', 5, NULL],
+            ['Enable User Registration', 'authUserRegistration', 'enabled', 'checkbox_single', 'enabled', 5, NULL, 1],
+            ['Auth Facebook', 'authSocialFacebook', 'enabled', 'checkbox_single', 'enabled', 5, NULL, 1],
+            ['JWT Authentication', 'jwtAuthentication', 'enabled', 'checkbox_single', 'enabled', 5, NULL, 0],
 
-            ['Account Enabled', 'accountEnabled', 'enabled', 'checkbox_single', 'enabled', 5, NULL],
-            ['Email verification', 'emailVerification', 'enabled', 'checkbox_single', 'enabled', 5, NULL],
-            ['Phone verification', 'phoneVerification', NULL, 'checkbox_single', 'enabled', 5, NULL],
-            ['Address verification', 'addressVerification', NULL, 'checkbox_single', 'enabled', 5, NULL],
-            ['Threshold for address verification', 'addressVerificationThreshold', '3', 'text', NULL, 5, 'Zero means no threshold.'],
-            ['Threshold for phone verification', 'phoneVerificationThreshold', '3', 'text', NULL, 5, 'Zero means no threshold.'],
-            ['Threshold for email verification', 'emailVerificationThreshold', '0', 'text', NULL, 5, 'Zero means no threshold.'],
+            ['Account Enabled', 'accountEnabled', 'enabled', 'checkbox_single', 'enabled', 5, NULL, 1],
+            ['Email verification', 'emailVerification', 'enabled', 'checkbox_single', 'enabled', 5, NULL, 1],
+            ['Phone verification', 'phoneVerification', NULL, 'checkbox_single', 'enabled', 5, NULL, 1],
+            ['Address verification', 'addressVerification', NULL, 'checkbox_single', 'enabled', 5, NULL, 1],
+            ['Threshold for address verification', 'addressVerificationThreshold', '3', 'text', NULL, 5, 'Zero means no threshold.', 0],
+            ['Threshold for phone verification', 'phoneVerificationThreshold', '3', 'text', NULL, 5, 'Zero means no threshold.', 0],
+            ['Threshold for email verification', 'emailVerificationThreshold', '0', 'text', NULL, 5, 'Zero means no threshold.', 0],
 
-            ['FCM', 'fcm', NULL, 'checkbox_single', 'enabled', 6, NULL],
-            ['FCM Topics', 'fcm_topics', 'news', 'checkbox_multiple', 'news,marketing', 6, NULL],
+            ['FCM', 'fcm', NULL, 'checkbox_single', 'enabled', 6, NULL, 1],
+            ['FCM Topics', 'fcm_topics', 'news', 'checkbox_multiple', 'news,marketing', 6, NULL, 1],
+
+            ['SocketIO', 'socketIO', NULL, 'checkbox_single', 'enabled', 6, NULL, 1],
+            ['SocketIO App Name', 'socketIOAppName', 'appName', 'text', NULL, 6, NULL, 1],
+            ['SocketIO Server', 'socketIOServer', 'http://localhost:4000', 'text', NULL, 6, NULL, 1],
+            ['SocketIO Secret Key', 'socketIOSecretKey', '*TWsJFnA6wvJr-K3hzzqZn%A-W!2mKWw', 'text', NULL, 6, NULL, 0],
+            ['SocketIO Key Expiration', 'socketIOExpiration', '1', 'text', NULL, 6, 'Expired in minutes.', 1],
         ];
     }
 }

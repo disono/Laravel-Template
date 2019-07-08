@@ -24,6 +24,7 @@ class PageUpdate extends AdminRequest
             'page_category_id' => 'required|exists:page_categories,id',
             'name' => 'required|max:100',
             'content' => 'required|max:100000',
+            'tags' => 'string_list',
             'slug' => 'required|alpha_dash|unique:pages,slug,' . request('id'),
             'template' => 'max:100',
             'is_draft' => 'in:0,1',

@@ -11,8 +11,8 @@ namespace App\Http\Controllers\API\V1\User;
 use App\Http\Controllers\API\APIController;
 use App\Http\Requests\API\V1\User\AccountSecurity;
 use App\Http\Requests\API\V1\User\AccountSettings;
-use App\Models\Setting;
-use App\Models\User;
+use App\Models\Vendor\Facades\Setting;
+use App\Models\Vendor\Facades\User;
 use Illuminate\Http\JsonResponse;
 
 class SettingController extends APIController
@@ -22,7 +22,7 @@ class SettingController extends APIController
     public function __construct()
     {
         parent::__construct();
-        $this->_user = new User();
+        $this->_user = User::self();
     }
 
     /**
@@ -33,8 +33,8 @@ class SettingController extends APIController
     public function syncAction()
     {
         return $this->json([
-            'profile' => (new User())->single(authId()),
-            'setting' => (new Setting())->keyValuePair()
+            'profile' => $this->_user::single(authId()),
+            'setting' => Setting::keyValuePair()
         ]);
     }
 
@@ -51,9 +51,8 @@ class SettingController extends APIController
         ]);
         $inputs['profile_picture'] = $request->file('profile_picture');
 
-        $this->_user->clearBoolean();
-        $this->_user->edit(__me()->id, $inputs);
-
+        $this->_user::clearBoolean();
+        $this->_user::edit(__me()->id, $inputs);
         return $this->json((new User())->single(__me()->id));
     }
 
@@ -65,9 +64,8 @@ class SettingController extends APIController
      */
     public function securityUpdateAction(AccountSecurity $request)
     {
-        $this->_user->clearBoolean();
-        $this->_user->edit(__me()->id, $request->only(['email', 'password']));
-
-        return $this->json((new User())->single(__me()->id));
+        $this->_user::clearBoolean();
+        $this->_user::edit(__me()->id, $request->only(['email', 'password']));
+        return $this->json($this->_user::single(__me()->id));
     }
 }

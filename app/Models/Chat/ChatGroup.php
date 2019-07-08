@@ -71,6 +71,11 @@ class ChatGroup extends BaseModel
                 chat_group_members.is_seen = 0 AND 
                 chat_group_members.member_id = ' . $me . ') > 0, 1, 0)',
 
+            // latest date of message received
+            'latest_message_at' => '(SELECT chat_messages.created_at FROM chat_messages WHERE 
+                chat_messages.chat_group_id = chat_groups.id AND chat_messages.user_id = ' . $me . ' 
+                ORDER BY chat_messages.created_at DESC)',
+
             // is some member mark this group archive?
             'has_archive' => 'IF((SELECT COUNT(*) FROM chat_group_members WHERE 
                 chat_groups.id = chat_group_members.chat_group_id AND 

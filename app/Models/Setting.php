@@ -16,10 +16,13 @@ class Setting extends BaseModel
     protected $tableName = 'settings';
     protected $writableColumns = [
         // input_type: text, select, checkbox_multiple, checkbox_single
-        'category_setting_id', 'name', 'key', 'value', 'description', 'input_type', 'input_value', 'attributes', 'is_disabled',
+
+        'category_setting_id', 'name', 'key', 'value', 'description',
+        'input_type', 'input_value', 'attributes',
+        'is_disabled', 'is_public',
     ];
 
-    protected $inputBooleans = ['is_disabled'];
+    protected $inputBooleans = ['is_disabled', 'is_public'];
 
     protected $columnHasRelations = ['category_setting_id'];
 
@@ -72,6 +75,11 @@ class Setting extends BaseModel
         return $row;
     }
 
+    /**
+     * Setting categories
+     *
+     * @return mixed
+     */
     public function categories()
     {
         return SettingCategory::get();
@@ -86,15 +94,13 @@ class Setting extends BaseModel
     {
         $values = [];
 
-        foreach ((new Setting())->fetchAll() as $row) {
-            if (!$row->is_disabled) {
-                $values[$row->key] = [
-                    'name' => $row->name,
-                    'value' => $row->value,
-                    'description' => $row->description,
-                    'input_type' => $row->input_type
-                ];
-            }
+        foreach ($this->fetchAll(['is_public' => 1, 'is_disabled' => 0]) as $row) {
+            $values[$row->key] = [
+                'name' => $row->name,
+                'value' => $row->value,
+                'description' => $row->description,
+                'input_type' => $row->input_type
+            ];
         }
 
         return $values;

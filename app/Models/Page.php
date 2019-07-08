@@ -19,7 +19,7 @@ class Page extends BaseModel
     protected $tableName = 'pages';
     protected $writableColumns = [
         'user_id',
-        'name', 'content', 'slug', 'template',
+        'name', 'content', 'slug', 'tags', 'template',
         'is_draft', 'is_email_to_subscriber',
 
         'seo_description', 'seo_keywords', 'seo_robots', 'og_url', 'og_type', 'og_title', 'og_description',
@@ -31,6 +31,7 @@ class Page extends BaseModel
 
     protected $inputDates = ['post_at', 'expired_at'];
     protected $inputBooleans = ['is_draft', 'is_email_to_subscriber'];
+    protected $findInSetList = ['tags'];
 
     protected $files = ['cover_photo', 'og_image'];
     protected $fileOptions = [

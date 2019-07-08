@@ -26,7 +26,8 @@ class Validation extends Validator
         "password_complex" => ":attribute must contain at least 8 alphanumeric characters, including an uppercase letter, and a special character.",
         "birthday" => "The :attribute must be a valid date.",
         "is_owner" => "The :attribute must have a valid ownership.",
-        "phone_number" => "The :attribute must be a valid."
+        "phone_number" => "The :attribute must be valid.",
+        "string_list" => "The :attribute is invalid format."
     ];
 
     public function __construct($translator, $data, $rules, $messages)
@@ -95,10 +96,10 @@ class Validation extends Validator
     protected function validateCheckDate($attribute, $value, $parameters)
     {
         if (strtotime($parameters[0]) > strtotime($parameters[1])) {
-            return false;
+            return FALSE;
         }
 
-        return true;
+        return TRUE;
     }
 
     /**
@@ -111,21 +112,22 @@ class Validation extends Validator
      */
     protected function validateCurrentPassword($attribute, $value, $parameters)
     {
-        $user = (__me()) ? User::find(__me()->id) : User::find(authId());
+        $user = __me() ? User::find(__me()->id) : NULL;
 
         if (!$user) {
-            return false;
+            return FALSE;
         }
 
         if (!Hash::check($value, $user->password)) {
-            return false;
+            return FALSE;
         }
 
-        return true;
+        return TRUE;
     }
 
     /**
      * Allow only if current password match against provided password
+     * password_complex:max,min
      *
      * @param string $attribute
      * @param mixed $value
@@ -158,35 +160,35 @@ class Validation extends Validator
                 ((isset($parameters[1])) ? $parameters[1] : 8) .
                 ' alphanumeric characters, including an uppercase letter, and a special character.';
             $this->setCustomMessages($this->_custom_messages);
-            return false;
+            return FALSE;
         }
 
         // upper case
         if (!preg_match_all($r1, $value, $found)) {
             $this->_custom_messages['password_complex'] = 'The :attribute must contain uppercase letter.';
             $this->setCustomMessages($this->_custom_messages);
-            return false;
+            return FALSE;
         }
 
         // lower case
         if (!preg_match_all($r2, $value, $found)) {
             $this->_custom_messages['password_complex'] = 'The :attribute must contain lowercase letter.';
             $this->setCustomMessages($this->_custom_messages);
-            return false;
+            return FALSE;
         }
 
         // special characters
         if (!preg_match_all($r3, $value, $found)) {
             $this->_custom_messages['password_complex'] = 'The :attribute must contain special characters.';
             $this->setCustomMessages($this->_custom_messages);
-            return false;
+            return FALSE;
         }
 
         // numbers
         if (!preg_match_all($r4, $value, $found)) {
             $this->_custom_messages['password_complex'] = 'The :attribute must contain numbers.';
             $this->setCustomMessages($this->_custom_messages);
-            return false;
+            return FALSE;
         }
 
         // check if password max length is valid
@@ -194,7 +196,7 @@ class Validation extends Validator
             if (strlen($value) > $parameters[0]) {
                 $this->_custom_messages['password_complex'] = 'The :attribute must have maximum length of ' . $parameters[0] . ' characters.';
                 $this->setCustomMessages($this->_custom_messages);
-                return false;
+                return FALSE;
             }
         }
 
@@ -203,11 +205,11 @@ class Validation extends Validator
             if (strlen($value) < $parameters[1]) {
                 $this->_custom_messages['password_complex'] = 'The :attribute must have at least ' . $parameters[1] . ' characters in length.';
                 $this->setCustomMessages($this->_custom_messages);
-                return false;
+                return FALSE;
             }
         }
 
-        return true;
+        return TRUE;
     }
 
     /**
@@ -226,7 +228,7 @@ class Validation extends Validator
         $is_valid_date = $d && $d->format('Y-m-d') == $date;
 
         if (!$is_valid_date) {
-            return false;
+            return FALSE;
         }
 
         // check if min age is not valid
@@ -234,7 +236,7 @@ class Validation extends Validator
             if (countYears($value) < $parameters[0]) {
                 $this->_custom_messages['birthday'] = 'The :attribute is not allowed age.';
                 $this->setCustomMessages($this->_custom_messages);
-                return false;
+                return FALSE;
             }
         }
 
@@ -243,15 +245,16 @@ class Validation extends Validator
             if (countYears($value) > $parameters[0]) {
                 $this->_custom_messages['birthday'] = 'The :attribute is too old.';
                 $this->setCustomMessages($this->_custom_messages);
-                return false;
+                return FALSE;
             }
         }
 
-        return true;
+        return TRUE;
     }
 
     /**
      * Check if resource is owned by the user
+     * is_owner:table_name,column_name_owner(optional),column_name_search(optional),column_name_search_value(optional),owner_id(optional)
      *
      * @param $attribute
      * @param $value
@@ -260,31 +263,54 @@ class Validation extends Validator
      */
     protected function validateIsOwner($attribute, $value, $parameters)
     {
-        if (Auth::check()) {
-            $user_id = (int)Auth::user()->id;
-        } else if (isset($parameters[1])) {
-            $user_id = (int)$parameters[1];
-        } else {
-            $user_id = (int)authId();
-        }
-
         if (!isset($parameters[0])) {
-            $this->_custom_messages['is_owner'] = 'The :attribute must have a valid table name.';
+            $this->_custom_messages['is_owner'] = 'The :attribute must have a valid table name to validate.';
             $this->setCustomMessages($this->_custom_messages);
-            return false;
+            return FALSE;
         }
 
-        $column_name = null;
+        $column_name_owner = 'user_id';
+        if (isset($parameters[1])) {
+            if ($parameters[1] !== NULL) {
+                $column_name_owner = $parameters[1];
+            }
+        }
+
+        $column_name_search = $attribute;
         if (isset($parameters[2])) {
-            $column_name = $parameters[2];
+            if ($parameters[2] !== NULL) {
+                $column_name_search = $parameters[2];
+            }
         }
 
-        $query = DB::table($parameters[0])->where($column_name, $user_id);
-        if (!$query->count()) {
-            return false;
+        if (isset($parameters[3])) {
+            if ($parameters[3] !== NULL) {
+                $value = $parameters[3];
+            }
         }
 
-        return true;
+        $user_id = 0;
+        if (isset($parameters[4])) {
+            $user_id = $parameters[4];
+        } else if (__me()) {
+            $user_id = __me()->id;
+        }
+
+        if ($value === NULL) {
+            return TRUE;
+        }
+
+        if (!$user_id) {
+            $this->_custom_messages['is_owner'] = 'The :attribute must have a valid authenticated user.';
+            $this->setCustomMessages($this->_custom_messages);
+            return FALSE;
+        }
+
+        if (!DB::table($parameters[0])->where($column_name_owner, $user_id)->where($column_name_search, $value)->count()) {
+            return FALSE;
+        }
+
+        return TRUE;
     }
 
     /**
@@ -298,5 +324,28 @@ class Validation extends Validator
     protected function validatePhoneNumber($attribute, $value, $parameters)
     {
         return preg_match("/^[0-9]{7,15}$/", $value);
+    }
+
+    /**
+     * Validate tags e.g. tag1, tag2, tag3
+     *
+     * @param $attribute
+     * @param $value
+     * @param $parameters
+     * @return bool
+     */
+    protected function validateStringList($attribute, $value, $parameters)
+    {
+        if ($value) {
+            foreach (explode(',', $value) as $tag) {
+                if (!preg_match("/^[a-zA-Z0-9\s]+$/", $tag)) {
+                    $this->_custom_messages['tags'] = 'The :attribute must be alphabet, number and spaces only.';
+                    $this->setCustomMessages($this->_custom_messages);
+                    return FALSE;
+                }
+            }
+        }
+
+        return TRUE;
     }
 }

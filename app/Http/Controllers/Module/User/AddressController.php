@@ -73,21 +73,21 @@ class AddressController extends Controller
 
     public function updateAction(AddressUpdate $request)
     {
-        $this->_userAddress->edit(['id' => $request->get('id'), 'user_id' => $this->me->id], $request->only([
-            'address', 'postal_code', 'country_id', 'city_id'
-        ]));
-
         $error = $this->_checkVerification($request);
         if ($error !== true) {
             return failedJSONResponse(['verify_code' => $error], 422, false);
         }
+
+        $this->_userAddress->edit(['id' => $request->get('id'), 'user_id' => $this->me->id], $request->only([
+            'address', 'postal_code', 'country_id', 'city_id'
+        ]));
 
         return $this->json('Address is successfully updated.');
     }
 
     public function destroyAction($id)
     {
-        $this->_userAddress->remove($id);
+        $this->_userAddress->remove(['id' => $id, 'user_id' => __me()->id]);
         return $this->json('Address is successfully deleted.');
     }
 

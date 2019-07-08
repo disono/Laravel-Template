@@ -186,22 +186,27 @@ class User extends BaseUser
      * Crate a token for user
      *
      * @param $user
+     * @param string $source sources: mobile, client, server
+     * @param null $token random alphanumeric
+     * @param int $expiredAt expired in 15 days by default
+     *
      * @return null
      */
-    public function crateToken($user)
+    public function crateToken($user, $source = 'mobile', $token = NULL, $expiredAt = 21600)
     {
         if (!$user) {
             return NULL;
         }
 
+        $token = $token ? $token : str_random(64);
         $user->server_timestamp = sqlDate();
         $user->token = Token::store([
             'user_id' => $user->id,
-            'token' => str_random(64),
+            'token' => $token,
             'key' => str_random(64),
             'secret' => str_random(64),
-            'source' => 'mobile',
-            'expired_at' => expiredAt(21600)
+            'source' => $source,
+            'expired_at' => expiredAt($expiredAt)
         ]);
 
         return $user;
@@ -293,6 +298,17 @@ class User extends BaseUser
         }
 
         return $value;
+    }
+
+    /**
+     * Set the current time user last session
+     */
+    public function setActiveAt()
+    {
+        $this->clearBoolean()
+            ->clearInteger()
+            ->clearNumeric()
+            ->edit(__me()->id, ['active_at' => sqlDate()], TRUE, FALSE);
     }
 
     /**

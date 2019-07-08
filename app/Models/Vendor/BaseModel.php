@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\DB;
 
 class BaseModel extends Model
 {
-    public $enableSearch = false;
+    public $enableSearch = FALSE;
     protected $writableColumns = [];
     protected $tableName = NULL;
 
@@ -40,8 +40,9 @@ class BaseModel extends Model
 
     protected $columnHasRelations = [];
     protected $columnWhere = [];
+    protected $findInSetList = [];
 
-    protected $hasTimestamp = true;
+    protected $hasTimestamp = TRUE;
 
     // do not sanitize HTML codes
     protected $unClean = [];
@@ -141,7 +142,7 @@ class BaseModel extends Model
      * Get data
      *
      * @param array $params
-     * @return null
+     * @return NULL
      */
     public function fetch($params = [])
     {
@@ -175,11 +176,11 @@ class BaseModel extends Model
      * Get all data no pagination
      *
      * @param array $params
-     * @return null
+     * @return NULL
      */
     public function fetchAll($params = [])
     {
-        $params['all'] = true;
+        $params['all'] = TRUE;
         $this->params = $params;
         return $this->fetch($params);
     }
@@ -189,7 +190,7 @@ class BaseModel extends Model
      *
      * @param $id
      * @param string $column
-     * @return null
+     * @return NULL
      */
     public function single($id, $column = 'id')
     {
@@ -197,10 +198,18 @@ class BaseModel extends Model
             return NULL;
         }
 
-        return $this->fetch([
-            'single' => true,
-            $column => $id
-        ]);
+        if (is_array($id)) {
+            $inputs = array_merge($id, [
+                'single' => TRUE
+            ]);
+        } else {
+            $inputs = [
+                'single' => TRUE,
+                $column => $id
+            ];
+        }
+
+        return $this->fetch($inputs);
     }
 
     /**
@@ -226,12 +235,12 @@ class BaseModel extends Model
     protected function rawWhere($query): void
     {
         // do not continue if search is enabled
-        if ($this->enableSearch === true) {
+        if ($this->enableSearch === TRUE) {
             return;
         }
 
         // format table name
-        $tableName = ($this->tableName) ? $this->tableName . '.' : '';
+        $tableName = $this->tableName ? $this->tableName . '.' : '';
 
         // current id of the table index
         if (is_numeric($this->hasParams('id'))) {
@@ -241,23 +250,32 @@ class BaseModel extends Model
         // equal fetch
         foreach ($this->writableColumns as $row) {
             // writable columns (non-custom)
-            if (key_exists($row, $this->params)) {
-                if ($this->_allowNull($row) === true) {
+            if (key_exists($row, $this->params) && !in_array($row, $this->findInSetList)) {
+                if ($this->_allowNull($row) === TRUE) {
                     $query->where($tableName . $row, $this->params[$row]);
                 }
             }
 
             // custom columns
             $defaultCustomColumn = $this->_fetchSelect($row);
-            if ($this->_allowNullToVal($defaultCustomColumn) === true) {
+            if ($this->_allowNullToVal($defaultCustomColumn) === TRUE) {
                 $query->where(DB::raw($defaultCustomColumn), $this->params[$row]);
             }
         }
 
         // custom search
         foreach ($this->customQuerySelectList() as $key => $value) {
-            if ($this->_allowNullToVal($value) === true && $this->hasParams($key) !== NULL) {
+            if ($this->_allowNullToVal($value) === TRUE && $this->hasParams($key) !== NULL) {
                 $query->where(DB::raw($value), $this->params[$key]);
+            }
+        }
+
+        // FIND_IN_SET() Function
+        if ($this->hasParams('find_in_set') === TRUE) {
+            foreach ($this->findInSetList as $key) {
+                if ($this->hasParams($key)) {
+                    $query->whereRaw('FIND_IN_SET(?, ' . $tableName . $key . ')', [$this->hasParams($key)]);
+                }
             }
         }
 
@@ -273,7 +291,7 @@ class BaseModel extends Model
      */
     protected function rawExcludeInclude($query): void
     {
-        $tableName = ($this->tableName) ? $this->tableName . '.' : '';
+        $tableName = $this->tableName ? $this->tableName . '.' : '';
         $columns = $this->writableColumns;
         $columns[] = 'id';
 
@@ -304,13 +322,14 @@ class BaseModel extends Model
     protected function rawSearch($query): void
     {
         $num = 0;
+        $tableName = $this->tableName ? $this->tableName . '.' : '';
 
         if ($this->hasParams('search')) {
             // always check for values
-            $query->where(function ($query) use ($num) {
+            $query->where(function ($query) use ($num, $tableName) {
                 // default columns table search
                 foreach ($this->writableColumns as $row) {
-                    $column_name = $this->tableName . '.' . $row;
+                    $column_name = $tableName . $row;
                     $this->_searchQuery($num, $query, $column_name, $this->params['search']);
                     $num++;
                 }
@@ -326,12 +345,12 @@ class BaseModel extends Model
             $search_column = $this->params['search_column'];
 
             if (is_array($search_column)) {
-                $query->where(function ($query) use ($num, $search_column) {
+                $query->where(function ($query) use ($num, $search_column, $tableName) {
                     // custom search parameters
                     $customSearch = $this->customQuerySelectList();
 
                     foreach ($search_column as $column_name => $value) {
-                        $column = $this->tableName . $column_name;
+                        $column = $tableName . $column_name;
 
                         // default columns
                         if (in_array($column_name, $this->writableColumns)) {
@@ -346,20 +365,20 @@ class BaseModel extends Model
                     }
                 });
             }
-        } else if ($this->enableSearch === true) {
-            $query->where(function ($query) {
+        } else if ($this->enableSearch === TRUE) {
+            $query->where(function ($query) use ($tableName) {
                 // default columns table search
                 foreach ($this->writableColumns as $row) {
-                    if (key_exists($row, $this->params)) {
+                    if (key_exists($row, $this->params) && !in_array($row, $this->findInSetList)) {
                         if ($this->params[$row] !== NULL && $this->params[$row] !== '') {
-                            $column_name = $this->tableName . '.' . $row;
+                            $column_name = $tableName . $row;
 
                             if (in_array($row, $this->inputBooleans) || in_array($row, $this->columnHasRelations) || in_array($row, $this->columnWhere)) {
                                 // do not use LIKE search for booleans and join data
                                 $query->where($column_name, $this->params[$row]);
                             } else if (in_array($row, $this->inputDateTimes) || in_array($row, $this->inputDates) ||
                                 $row === 'created_at' || $row === 'updated_at') {
-                                $this->_searchQuery(0, $query, 'DATE(' . $column_name . ')', sqlDate($this->params[$row], true));
+                                $this->_searchQuery(0, $query, 'DATE(' . $column_name . ')', sqlDate($this->params[$row], TRUE));
                             } else {
                                 $this->_searchQuery(0, $query, $column_name, $this->params[$row]);
                             }
@@ -372,6 +391,15 @@ class BaseModel extends Model
                     if (key_exists($key, $this->params)) {
                         if ($this->params[$key] !== NULL && $this->params[$key] !== '') {
                             $this->_searchQuery(0, $query, DB::raw('(' . $column_name . ')'), $this->params[$key]);
+                        }
+                    }
+                }
+
+                // FIND_IN_SET() Function
+                if ($this->hasParams('find_in_set') === TRUE) {
+                    foreach ($this->findInSetList as $key) {
+                        if ($this->hasParams($key)) {
+                            $query->whereRaw('FIND_IN_SET(?, ' . $tableName . $key . ')', [$this->hasParams($key)]);
                         }
                     }
                 }
@@ -470,13 +498,13 @@ class BaseModel extends Model
      * @param bool $checkDefaults
      * @return bool
      */
-    public function store($inputs = [], $checkDefaults = true)
+    public function store($inputs = [], $checkDefaults = TRUE)
     {
         // clean inputs
         $store = $this->_cleanInputs($inputs);
 
         // add defaults
-        if ($checkDefaults === true) {
+        if ($checkDefaults === TRUE) {
             $store = $this->_defaultInputs($store);
         }
 
@@ -516,7 +544,7 @@ class BaseModel extends Model
      */
     public function actionStoreBefore($tableName, $inputs)
     {
-        return true;
+        return TRUE;
     }
 
     /**
@@ -548,32 +576,33 @@ class BaseModel extends Model
      * @param $id
      * @param array $inputs
      * @param bool $checkDefaults
+     * @param bool $log
      * @return bool
      */
-    public function edit($id, $inputs = [], $checkDefaults = true)
+    public function edit($id, $inputs = [], $checkDefaults = TRUE, $log = TRUE)
     {
         // clean inputs
         $update = $this->_cleanInputs($inputs);
 
         $query = $this->rawFetch($id);
         if (!$query) {
-            return false;
+            return FALSE;
         }
 
         if (!$query->first()) {
-            return false;
+            return FALSE;
         }
 
         $_data = $query->first();
 
         // add default values
-        if ($checkDefaults === true) {
+        if ($checkDefaults === TRUE) {
             $update = $this->_defaultInputs($update);
         }
 
         // before updating
         if (!$this->actionEditBefore($this->tableName, $_data, $inputs)) {
-            return false;
+            return FALSE;
         }
 
         // formatting before saving
@@ -584,7 +613,9 @@ class BaseModel extends Model
         $results = (bool)$query->update($update);
 
         // save activity logs
-        ActivityLog::log($id, $this->tableName, $this->writableColumns, $_data, $update);
+        if ($log) {
+            ActivityLog::log($id, $this->tableName, $this->writableColumns, $_data, $update);
+        }
 
         // process files
         $this->_processEditFiles($inputs, $update, $this->single($query->first()->id));
@@ -602,7 +633,7 @@ class BaseModel extends Model
      */
     protected function actionEditBefore($tableName, $query, $inputs)
     {
-        return true;
+        return TRUE;
     }
 
     /**
@@ -634,7 +665,7 @@ class BaseModel extends Model
      * @param $id
      * integer or array
      *
-     * @param null $columnName
+     * @param NULL $columnName
      * @return boolean
      */
     public function remove($id, $columnName = NULL)
@@ -642,12 +673,12 @@ class BaseModel extends Model
         // check if exists or tried to delete the users authorization
         $query = $this->rawFetch($id, $columnName);
         if (!$query) {
-            return false;
+            return FALSE;
         }
 
         // before removing
         if (!$this->actionRemoveBefore($query->get())) {
-            return false;
+            return FALSE;
         }
 
         // remove in db
@@ -669,7 +700,7 @@ class BaseModel extends Model
      */
     protected function actionRemoveBefore($results)
     {
-        return true;
+        return TRUE;
     }
 
     /**
@@ -686,7 +717,7 @@ class BaseModel extends Model
      * Get parameters
      *
      * @param $key
-     * @return mixed|null
+     * @return mixed|NULL
      */
     protected function hasParams($key)
     {
@@ -697,8 +728,8 @@ class BaseModel extends Model
      * Raw fetch
      *
      * @param $id
-     * @param null $columnName
-     * @return bool|Builder|null
+     * @param NULL $columnName
+     * @return bool|Builder|NULL
      */
     protected function rawFetch($id, $columnName = NULL)
     {
@@ -715,7 +746,7 @@ class BaseModel extends Model
             $i = 0;
             foreach ($id as $key => $value) {
                 if (!in_array($key, $this->writableColumns) && $key !== 'id') {
-                    return false;
+                    return FALSE;
                 }
 
                 if (!$i) {
@@ -744,7 +775,7 @@ class BaseModel extends Model
             $rowDate = $row->$date ?? NULL;
             $dateName = 'formatted_' . $date;
             if ($rowDate) {
-                $row->{$dateName} = humanDate($row->$date, true);
+                $row->{$dateName} = humanDate($row->$date, TRUE);
             } else {
                 $row->{$dateName} = NULL;
             }
@@ -775,7 +806,7 @@ class BaseModel extends Model
      * Custom queries
      *
      * @param $key
-     * @return mixed|null
+     * @return mixed|NULL
      */
     private function _fetchSelect($key = NULL)
     {
@@ -870,7 +901,7 @@ class BaseModel extends Model
      *
      * @param $query
      * @param int $count
-     * @return null
+     * @return NULL
      */
     private function _formatting($query, $count = 0)
     {
@@ -907,8 +938,8 @@ class BaseModel extends Model
             $date_name = $this->params['date_range_name'] ?? ($tableName . 'created_at');
 
             $query->whereBetween(DB::raw('DATE(' . $date_name . ')'), [
-                sqlDate($this->params['date_range_from'], true),
-                sqlDate($this->params['date_range_to'], true)
+                sqlDate($this->params['date_range_from'], TRUE),
+                sqlDate($this->params['date_range_to'], TRUE)
             ]);
         }
 
@@ -916,9 +947,9 @@ class BaseModel extends Model
         // if fetch_today is boolean get the data today unless specify the date
         if ($this->hasParams('fetch_today')) {
             $data_name_today = $this->params['fetch_today_name'] ?? ($tableName . 'created_at');
-            $current_date = $this->params['fetch_today'] === true || is_numeric($this->params['fetch_today']) ?
+            $current_date = $this->params['fetch_today'] === TRUE || is_numeric($this->params['fetch_today']) ?
                 'CURDATE()' :
-                sqlDate($this->params['fetch_today'], true);
+                sqlDate($this->params['fetch_today'], TRUE);
 
             $query->whereRaw('DATE(' . $data_name_today . ') = ' . $current_date);
         }
@@ -977,7 +1008,7 @@ class BaseModel extends Model
     }
 
     /**
-     * Check if we allow null on filters
+     * Check if we allow NULL on filters
      *
      * @param $row
      * @return bool
@@ -985,30 +1016,30 @@ class BaseModel extends Model
     private function _allowNull($row): bool
     {
         $_val = $this->params[$row] ?? NULL;
-        $_allowNull = $this->params['allow_null'] ?? false;
+        $_allowNull = $this->params['allow_null'] ?? FALSE;
 
-        if ($_val === null && $_allowNull === false) {
-            return false;
+        if ($_val === NULL && $_allowNull === FALSE) {
+            return FALSE;
         }
 
-        return true;
+        return TRUE;
     }
 
     /**
-     * Check if we allow null on filters with defined value
+     * Check if we allow NULL on filters with defined value
      *
      * @param $val
      * @return bool
      */
     private function _allowNullToVal($val): bool
     {
-        $_allowNull = $this->params['allow_null'] ?? false;
+        $_allowNull = $this->params['allow_null'] ?? FALSE;
 
-        if ($val === NULL && $_allowNull === false) {
-            return false;
+        if ($val === NULL && $_allowNull === FALSE) {
+            return FALSE;
         }
 
-        return true;
+        return TRUE;
     }
 
     /**
@@ -1024,7 +1055,7 @@ class BaseModel extends Model
             $_date = $inputs[$key] ?? NULL;
             if ($_date) {
                 if ($_date !== NULL && $_date !== '') {
-                    $inputs[$key] = sqlDate($_date, true);
+                    $inputs[$key] = sqlDate($_date, TRUE);
                 } else {
                     unset($inputs[$key]);
                 }

@@ -108,6 +108,12 @@ let WBJSOnInit = function () {
             onOpen: _datePickerEvents.onOpenEvent,
         });
 
+       jQ('.selectize').selectize({
+           persist: false,
+           createOnBlur: true,
+           create: true
+       });
+
         // on checkbox change redirect to uri
         jQ('.is-checkbox-change').off().on('change', function (e) {
             let self = jQ(this);

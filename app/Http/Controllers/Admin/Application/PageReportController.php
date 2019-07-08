@@ -14,7 +14,7 @@ use App\Models\Vendor\Facades\PageReport;
 use App\Models\Vendor\Facades\PageReportMessage;
 use App\Models\Vendor\Facades\PageReportReason;
 
-class SubmittedReportController extends Controller
+class PageReportController extends Controller
 {
     protected $viewType = 'admin';
     private $pageReport = NULL;
@@ -73,7 +73,7 @@ class SubmittedReportController extends Controller
         $inputs = $request->all();
         $inputs['user_id'] = __me()->id;
         $this->pageReportMessage->store($inputs);
-        return $this->json(['redirect' => '/admin/submitted-report/show/' . $request->get('page_report_id')]);
+        return $this->json(['redirect' => '/admin/page-report/show/' . $request->get('page_report_id')]);
     }
 
     public function statusAction($id, $status)

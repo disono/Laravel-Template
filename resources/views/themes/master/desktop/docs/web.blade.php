@@ -14,6 +14,7 @@
                 <div class="container">
                     @includeTheme('docs.html')
                     @includeTheme('docs.laravel')
+                    @includeTheme('docs.socket')
                 </div>
             </div>
         </div>

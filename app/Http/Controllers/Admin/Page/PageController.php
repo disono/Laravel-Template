@@ -42,9 +42,14 @@ class PageController extends Controller
     public function indexAction()
     {
         $this->setHeader('title', 'Pages');
+
+        $defaults = [
+            'find_in_set' => true
+        ];
+
         $this->_page->enableSearch = true;
         return $this->view('index', [
-            'pages' => $this->_page->fetch(requestValues('name|slug|page_category_id|is_draft|is_email_to_subscriber')),
+            'pages' => $this->_page->fetch(requestValues('name|slug|search|page_category_id|is_draft|is_email_to_subscriber|tags', $defaults)),
             'categories' => PageCategory::formattedCategories(['tab_in_name' => true, 'tab' => ' - - - '])
         ]);
     }

@@ -136,7 +136,7 @@ if (!function_exists('setTimezone')) {
             }
 
             // secret key
-            config(['timezone' => $collection[$c]]);
+            config(['app.timezone' => $collection[$c]]);
         } catch (Exception $e) {
             logErrors('Error (App\APDApp\Helpers\WBAuth - setTimezone()): ' . $e->getMessage());
         }

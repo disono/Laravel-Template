@@ -10,8 +10,11 @@ namespace App\Http\Controllers\Module\Authentication;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Module\Auth\LoginRequest;
-use App\Models\AuthenticationHistory;
+use App\Models\Vendor\Facades\AuthenticationHistory;
+use App\Models\Vendor\Facades\Token;
+use App\Models\Vendor\Facades\User;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\URL;
 
@@ -27,7 +30,10 @@ class LoginController extends Controller
     {
         parent::__construct();
         $this->middleware('guest')->except('logoutAction');
-        $this->previousRouteName = app('router')->getRoutes()->match(app('request')->create(URL::previous()))->getName();
+        $this->previousRouteName = app('router')
+            ->getRoutes()
+            ->match(app('request')->create(URL::previous()))
+            ->getName();
     }
 
     /**
@@ -53,7 +59,7 @@ class LoginController extends Controller
      * Handle a login request to the application.
      *
      * @param LoginRequest $request
-     * @return bool|\Illuminate\Http\RedirectResponse
+     * @return bool|RedirectResponse
      */
     public function processAction(LoginRequest $request)
     {
@@ -71,8 +77,10 @@ class LoginController extends Controller
                 $this->throttleKey($request)
             );
 
-            return $this->_authenticationError($request, 'Too many attempts to login, please try again later after ' .
-                $seconds . ' seconds.');
+            return $this->_authenticationError(
+                $request,
+                'Too many attempts to login, please try again later after ' . $seconds . ' seconds.'
+            );
         }
 
         // authenticate
@@ -88,11 +96,27 @@ class LoginController extends Controller
     }
 
     /**
+     * Log the user out of the application.
+     *
+     * @return Response
+     */
+    public function logoutAction()
+    {
+        // login history
+        $this->_logAuthentication('logout');
+
+        // destroy token log
+        $this->_destroyTokenLog();
+
+        return $this->logout($this->request);
+    }
+
+    /**
      * Authentication error
      *
      * @param $request
      * @param $error
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
     private function _authenticationError($request, $error)
     {
@@ -135,8 +159,12 @@ class LoginController extends Controller
      */
     private function _requestInputs($request, $type = 'email')
     {
-        return [$type => $request->get('username'), 'password' => $request->get('password'),
-            'is_email_verified' => 1, 'is_account_enabled' => 1];
+        return [
+            $type => $request->get('username'),
+            'password' => $request->get('password'),
+            'is_email_verified' => 1,
+            'is_account_enabled' => 1
+        ];
     }
 
     /**
@@ -154,6 +182,9 @@ class LoginController extends Controller
         // login history
         $this->_logAuthentication();
 
+        // create session log
+        $this->_createTokenLog();
+
         if ($this->request->ajax()) {
             return successJSONResponse([
                 'redirect' => $this->redirectPath()
@@ -169,30 +200,41 @@ class LoginController extends Controller
      */
     private function _logAuthentication($type = 'login')
     {
+        if (!__me()) {
+            return;
+        }
+
         try {
-            if (__me()) {
-                $userAgent = userAgent();
-                (new AuthenticationHistory())->store([
-                    'user_id' => __me()->id,
-                    'ip' => ipAddress(),
-                    'platform' => $userAgent->platform . ', ' . $userAgent->browserName,
-                    'type' => $type
-                ]);
-            }
+            $userAgent = userAgent();
+
+            AuthenticationHistory::store([
+                'user_id' => __me()->id,
+                'ip' => ipAddress(),
+                'platform' => $userAgent->platform . ', ' . $userAgent->browserName,
+                'type' => $type
+            ]);
         } catch (\Exception $e) {
-            logErrors('Logging Auth: ' . $e->getMessage());
+            logErrors('LoginController._logAuthentication: ' . $e->getMessage());
         }
     }
 
     /**
-     * Log the user out of the application.
-     *
-     * @return Response
+     * Create token log
      */
-    public function logoutAction()
+    private function _createTokenLog()
     {
-        // login history
-        $this->_logAuthentication('logout');
-        return $this->logout($this->request);
+        User::crateToken(__me(), 'client', session()->getId(), config('session.lifetime'));
+    }
+
+    /**
+     * Delete the current token log
+     */
+    private function _destroyTokenLog()
+    {
+        Token::remove([
+            'user_id' => __me()->id,
+            'token' => session()->getId(),
+            'source' => 'client'
+        ]);
     }
 }

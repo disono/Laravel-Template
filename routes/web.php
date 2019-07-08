@@ -2,9 +2,10 @@
 
 // page
 Route::get('/', 'Module\Page\PageController@homeAction')->name('page.home');
-Route::get('p/{slug}', 'Module\Page\PageController@showAction')->name('page.show');
-Route::get('p/category/{slug}', 'Module\Page\PageController@categoryAction')->name('page.category');
-Route::get('p/archive/{year}/{month}', 'Module\Page\PageController@archiveAction')->name('page.archive');
+Route::get('p/{slug}', 'Module\Page\PageController@showAction')->name('page.show.browse');
+Route::get('p/category/{slug}', 'Module\Page\PageController@categoryAction')->name('page.category.browse');
+Route::get('p/tag/{tag}', 'Module\Page\PageController@tagAction')->name('page.tag.browse');
+Route::get('p/archive/{year}/{month}', 'Module\Page\PageController@archiveAction')->name('page.archive.browse');
 
 // login
 Route::get('login', 'Module\Authentication\LoginController@loginAction')->name('auth.login');
@@ -115,6 +116,13 @@ Route::group(['middleware' => ['auth', 'auth.checker']], function () {
     // application features
     Route::post('application/report', 'Module\Application\ReportController@storeAction')->name('module.report.store');
 
+    // page reports
+    Route::get('page-reports', 'Module\User\PageReportController@indexAction')->name('module.pageReport.browse');
+    Route::get('page-report/show/{id}', 'Module\User\PageReportController@showAction')->name('module.pageReport.details');
+    Route::post('page-report/message/store', 'Module\User\PageReportController@messageAction')->name('module.pageReport.sendMessage.store');
+    Route::get('page-report/status/{id}', 'Module\User\PageReportController@statusAction')->name('module.pageReport.status.update');
+    Route::delete('page-report/destroy/{id}', 'Module\User\PageReportController@destroyAction')->name('module.pageReport.destroy');
+
     /*
      * ------------------------------------
      * Administrator
@@ -174,13 +182,13 @@ Route::group(['middleware' => ['auth', 'auth.checker']], function () {
         Route::delete('admin/report-reason/destroy/{id}', 'Admin\Application\ReportReasonController@destroyAction')->name('admin.reportReason.destroy');
 
         // page reports
-        Route::get('admin/submitted-reports', 'Admin\Application\SubmittedReportController@indexAction')->name('admin.pageReport.browse');
-        Route::get('admin/submitted-report/submitted/by', 'Admin\Application\SubmittedReportController@searchSubmittedByAction')->name('admin.pageReport.searchSubmittedBy.browse');
-        Route::get('admin/submitted-report/processed/by', 'Admin\Application\SubmittedReportController@searchProcessedByAction')->name('admin.pageReport.searchProcessedBy.browse');
-        Route::get('admin/submitted-report/show/{id}', 'Admin\Application\SubmittedReportController@showAction')->name('admin.pageReport.details');
-        Route::post('admin/submitted-report/message/store', 'Admin\Application\SubmittedReportController@messageAction')->name('admin.pageReport.sendMessage.store');
-        Route::get('admin/submitted-report/status/{id}/{status}', 'Admin\Application\SubmittedReportController@statusAction')->name('admin.pageReport.status.update');
-        Route::delete('admin/submitted-report/destroy/{id}', 'Admin\Application\SubmittedReportController@destroyAction')->name('admin.pageReport.destroy');
+        Route::get('admin/page-reports', 'Admin\Application\PageReportController@indexAction')->name('admin.pageReport.browse');
+        Route::get('admin/page-report/submitted/by', 'Admin\Application\PageReportController@searchSubmittedByAction')->name('admin.pageReport.searchSubmittedBy.browse');
+        Route::get('admin/page-report/processed/by', 'Admin\Application\PageReportController@searchProcessedByAction')->name('admin.pageReport.searchProcessedBy.browse');
+        Route::get('admin/page-report/show/{id}', 'Admin\Application\PageReportController@showAction')->name('admin.pageReport.details');
+        Route::post('admin/page-report/message/store', 'Admin\Application\PageReportController@messageAction')->name('admin.pageReport.sendMessage.store');
+        Route::get('admin/page-report/status/{id}/{status}', 'Admin\Application\PageReportController@statusAction')->name('admin.pageReport.status.update');
+        Route::delete('admin/page-report/destroy/{id}', 'Admin\Application\PageReportController@destroyAction')->name('admin.pageReport.destroy');
 
         // files
         Route::get('admin/files', 'Admin\Application\FileController@indexAction')->name('admin.file.browse');

@@ -25,7 +25,8 @@
         <i class="fas fa-phone"></i> Contact Number
     </a>
 
-    <a class="nav-link" href="" role="tab">
+    <a class="nav-link {{ isActiveMenu('module.pageReport.browse|module.pageReport.details') }}"
+       href="{{ route('module.pageReport.browse') }}" role="tab">
         <i class="fas fa-exclamation-triangle"></i> My Reports
     </a>
 </div>

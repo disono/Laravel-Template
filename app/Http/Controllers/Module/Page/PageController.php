@@ -51,6 +51,14 @@ class PageController extends Controller
         ]);
     }
 
+    public function tagAction($tag)
+    {
+        $this->setHeader('title', '#' . $tag);
+        return $this->view('list', [
+            'pages' => $this->_page->fetch(['find_in_set' => true, 'tags' => preg_replace('/-/', ' ', $tag)])
+        ]);
+    }
+
     /**
      * List old pages
      *

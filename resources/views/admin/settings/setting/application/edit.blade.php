@@ -172,6 +172,20 @@
                                 @endif
                             </div>
 
+                            <div class="form-group">
+                                <label class="custom-control material-checkbox">
+                                    <input type="checkbox" class="material-control-input"
+                                           value="1"
+                                           name="is_public" {{ frmIsChecked('is_public', 1, $setting->is_public) }}>
+                                    <span class="material-control-indicator"></span>
+                                    <span class="material-control-description">Public</span>
+                                </label>
+
+                                @if ($errors->has('is_public'))
+                                    <div class="invalid-feedback">{{ $errors->first('is_public') }}</div>
+                                @endif
+                            </div>
+
                             <hr>
                             <button type="submit" class="btn btn-raised btn-primary">Submit</button>
                         </form>

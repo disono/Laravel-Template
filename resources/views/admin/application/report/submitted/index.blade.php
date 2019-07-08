@@ -22,7 +22,7 @@
                 <form action="{{ route('admin.pageReport.browse') }}" method="get" id="frmTableFilter">
                     <input type="submit" style="display: none;">
 
-                    @include('vendor.app.toolbar')
+                    @include('vendor.app.toolbar', ['toolbarHasDel' => true])
 
                     <div class="table-responsive-sm">
                         <table class="table table-bordered">
@@ -110,10 +110,10 @@
 
                                             <div class="dropdown-menu">
                                                 <a class="dropdown-item"
-                                                   href="{{ url('admin/submitted-report/show/' . $row->id) }}">View</a>
+                                                   href="{{ url('admin/page-report/show/' . $row->id) }}">View</a>
 
                                                 <a class="dropdown-item"
-                                                   href="{{ url('admin/submitted-report/destroy/' . $row->id) }}"
+                                                   href="{{ url('admin/page-report/destroy/' . $row->id) }}"
                                                    id="parent_tr_del_{{ $row->id }}"
                                                    v-on:click.prevent="onDeleteResource($event, '#parent_tr_{{$row->id}}')">Delete</a>
                                             </div>

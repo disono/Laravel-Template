@@ -11,7 +11,8 @@
     <div class="container">
         <div class="row shadow bg-white mb-5 m-0">
             <div class="col-12 p-0 m-0">
-                <div class="img-fluid col-12 p-0" style="background-image: url('{{ $page->cover_photo->primary }}'); background-position: center top; background-size: 100% auto; height: 16rem;"></div>
+                <div class="img-fluid col-12 p-0"
+                     style="background-image: url('{{ $page->cover_photo->primary }}'); background-position: center top; background-size: 100% auto; height: 16rem;"></div>
 
                 <div class="p-3 m-3">
                     <h5 class="card-subtitle text-muted mb-3">
@@ -21,6 +22,12 @@
                     <article>
                         {!! $page->content !!}
                     </article>
+
+                    <p>
+                        @foreach(explode(',', $page->tags) as $tag)
+                            <a href="{{ route('page.tag.browse', ['tag' => urlTitle($tag)]) }}" class="btn btn-light btn-sm">#{{ $tag }}</a>
+                        @endforeach
+                    </p>
                 </div>
             </div>
         </div>
@@ -34,7 +41,8 @@
                         @foreach ($chunk as $page)
                             <div class="col-md-4">
                                 <div class="card mb-5 rounded-lg shadow bg-white border-0">
-                                    <img src="{{ $page->cover_photo->primary }}" class="card-img-top" alt="{{ $page->name }}">
+                                    <img src="{{ $page->cover_photo->primary }}" class="card-img-top"
+                                         alt="{{ $page->name }}">
 
                                     <div class="card-body">
                                         <h2 class="card-title font-weight-bold">

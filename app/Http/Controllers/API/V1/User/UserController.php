@@ -9,7 +9,7 @@
 namespace App\Http\Controllers\API\V1\User;
 
 use App\Http\Controllers\API\APIController;
-use App\Models\User;
+use App\Models\Vendor\Facades\User;
 use Illuminate\Http\JsonResponse;
 
 class UserController extends APIController
@@ -21,7 +21,7 @@ class UserController extends APIController
      */
     public function syncAction()
     {
-        return $this->json((new User())->single(__me()->id));
+        return $this->json(User::single(__me()->id));
     }
 
     /**
@@ -32,7 +32,7 @@ class UserController extends APIController
      */
     public function profileAction($username)
     {
-        $user = (new User())->single($username, 'username');
+        $user = User::single($username, 'username');
         if (!$user) {
             return $this->json(exceptionMessages('USER_NOT_FOUND'), 404);
         }

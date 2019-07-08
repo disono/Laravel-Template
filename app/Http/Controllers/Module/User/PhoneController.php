@@ -62,25 +62,24 @@ class PhoneController extends Controller
 
     public function updateAction(PhoneUpdate $request)
     {
-        $this->_userPhone->edit(['id' => $request->get('id'), 'user_id' => $this->me->id], $request->only(['phone']));
-
         $error = $this->_checkVerification($request);
         if ($error !== true) {
             return failedJSONResponse(['verify_code' => $error], 422, false);
         }
 
+        $this->_userPhone->edit(['id' => $request->get('id'), 'user_id' => $this->me->id], $request->only(['phone']));
         return $this->json('Phone number is successfully updated.');
     }
 
     public function destroyAction($id)
     {
-        $this->_userPhone->remove($id);
+        $this->_userPhone->remove(['id' => $id, 'user_id' => __me()->id]);
         return $this->json('Phone number is successfully deleted.');
     }
 
     public function _checkVerification($request)
     {
-        if (__settings('addressVerification')->value === 'enabled') {
+        if (__settings('phoneVerification')->value === 'enabled') {
             $q = UserPhone::where('id', $request->get('id'))->where('user_id', __me()->id);
             $address = $q->first();
 
@@ -108,6 +107,6 @@ class PhoneController extends Controller
             }
         }
 
-        return true;
+        return TRUE;
     }
 }

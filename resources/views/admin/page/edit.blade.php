@@ -100,6 +100,18 @@
                                     </div>
 
                                     <div class="form-group">
+                                        <label for="tags">Tags</label>
+
+                                        <input id="tags" type="text"
+                                               class="form-control selectize{{ hasInputError($errors, 'tags') }}"
+                                               name="tags" value="{{ old('tags', $page->tags) }}">
+
+                                        @if ($errors->has('tags'))
+                                            <div class="invalid-feedback">{{ $errors->first('tags') }}</div>
+                                        @endif
+                                    </div>
+
+                                    <div class="form-group">
                                         <label for="template">Template (Custom Page Design)</label>
 
                                         <input id="template" type="text"
@@ -112,7 +124,7 @@
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="cover_photo">Cover Photo</label>
+                                        <label for="cover_photo" class="w-100">Cover Photo</label>
 
                                         <img src="{{ $page->cover_photo->primary }}" alt="Cover Photo"
                                              id="_cover_photo"
@@ -291,7 +303,7 @@
                                         </div>
 
                                         <div class="form-group">
-                                            <label for="og_image">og:image</label>
+                                            <label for="og_image" class="w-100">og:image</label>
 
                                             <img src="{{ $page->og_image->primary }}" alt="og:image"
                                                  id="_og_image"

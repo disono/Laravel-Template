@@ -5,28 +5,18 @@
  * @copyright   Webmons Development Studio
 --}}
 
-@php
-    $_toolbarOffSetSize = '';
-@endphp
-
-<div class="row mb-3">
+<div class="form-row justify-content-end">
     @if(isset($csvSource))
-        <div class="col-md-5 col-sm-12 mb-3 mb-sm-0">
+        <div class="col-auto mb-3">
             @include('vendor.menuCSV', ['csvSource' => $csvSource])
         </div>
-    @else
-        @php
-            $_toolbarOffSetSize = 'offset-md-5';
-        @endphp
     @endif
 
-    {{-- Buttons --}}
-    <div class="col-md-3 {{ $_toolbarOffSetSize }} col-sm-12 mb-3 mb-sm-0 text-right">
+    <div class="col-auto mb-3">
         @include('vendor.app.toolbarButtons')
     </div>
 
-    {{-- Per Page Option --}}
-    <div class="col-md-1 col-sm-12 mb-3 mb-sm-0">
+    <div class="col-auto mb-3">
         <select class="form-control select_picker"
                 data-style="btn-blue-50"
                 name="pagination_show"
@@ -39,8 +29,7 @@
         </select>
     </div>
 
-    {{-- Global Search --}}
-    <div class="col-md-3 col-sm-12 mb-3 mb-sm-0">
+    <div class="col-auto mb-3">
         <input type="text" name="search"
                value="{{ $request->get('search') }}" class="form-control" placeholder="Search Records...">
     </div>

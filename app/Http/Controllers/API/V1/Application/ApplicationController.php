@@ -9,16 +9,16 @@
 namespace App\Http\Controllers\API\V1\Application;
 
 use App\Http\Controllers\API\APIController;
-use App\Models\Country;
-use App\Models\Setting;
+use App\Models\Vendor\Facades\Country;
+use App\Models\Vendor\Facades\Setting;
 
 class ApplicationController extends APIController
 {
     public function settingsAction()
     {
         return $this->json([
-            'settings' => (new Setting())->keyValuePair(),
-            'countries' => (new Country())->fetchAll(),
+            'settings' => Setting::keyValuePair(),
+            'countries' => Country::fetchAll(),
         ]);
     }
 }

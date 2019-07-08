@@ -15,6 +15,7 @@ composer require laravel/socialite
 composer require mews/purifier
 composer require spatie/image-optimizer
 composer require firebase/php-jwt
+composer require wisembly/elephant.io
 ```
 
 # JavaScript & CSS libraries
@@ -38,6 +39,7 @@ tether
 tinymce
 validatorjs
 vue
+selectize
 ```
 
 # How to install

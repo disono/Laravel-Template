@@ -32,6 +32,7 @@
         "moment": "^2.24.0",
         "pickadate": "^3.6.4",
         "popper.js": "^1.15.0",
+        "selectize": "^0.12.6",
         "snackbarjs": "^1.1.0",
         "socket.io-client": "^2.2.0",
         "sweetalert": "^2.1.2",
