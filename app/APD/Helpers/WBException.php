@@ -33,6 +33,9 @@ if (!function_exists('exceptionMessages')) {
             'METHOD_NOT_ALLOWED' => '405 HTTP Method not allowed.',
             'BAD_REQUEST' => '400 Bad Request, can not process your request or token expired.',
             'CONFLICT' => '409 The request could not be completed due to a conflict with the current state of the target resource (TARGET RESOURCE IS DISABLED).',
+
+            'VERIFICATION_PHONE_TRIES' => 'Too many attempts to verify your phone number.',
+            'VERIFICATION_EMAIL_TRIES' => 'Too many attempts to verify your email.'
         ];
 
         if ($key) {

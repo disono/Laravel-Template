@@ -76,6 +76,20 @@ class Controller extends BaseController
     }
 
     /**
+     * Is response must be JSON
+     *
+     * @return bool
+     */
+    protected function isJSON(): bool
+    {
+        if ($this->request->ajax() || $this->viewType === 'json' || $this->request->get('response') === 'json') {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Redirect response
      *
      * @param null $uri
@@ -190,19 +204,5 @@ class Controller extends BaseController
     protected function setAppView($key, $value)
     {
         $this->view->share($key, $value);
-    }
-
-    /**
-     * Is response must be JSON
-     *
-     * @return bool
-     */
-    protected function isJSON(): bool
-    {
-        if ($this->request->ajax() || $this->viewType === 'json' || $this->request->get('response') === 'json') {
-            return true;
-        }
-
-        return false;
     }
 }

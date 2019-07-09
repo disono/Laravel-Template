@@ -6,21 +6,27 @@
  * @license         Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
-namespace App\Http\Requests\Module;
+namespace App\Models\Vendor;
 
-use App\Http\Requests\BaseRequest;
-
-class ModuleRequest extends BaseRequest
+class SMSIntegrator
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
-    public function authorize()
+    public function __construct()
     {
-        return __me() ? true : false;
+
+    }
+
+    public function send($phone, $message)
+    {
+
+    }
+
+    public function Twilio($phone, $message)
+    {
+
+    }
+
+    public function iTextMo($phone, $message)
+    {
+
     }
 }
-
-

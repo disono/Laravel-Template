@@ -96,22 +96,6 @@ class LoginController extends Controller
     }
 
     /**
-     * Log the user out of the application.
-     *
-     * @return Response
-     */
-    public function logoutAction()
-    {
-        // login history
-        $this->_logAuthentication('logout');
-
-        // destroy token log
-        $this->_destroyTokenLog();
-
-        return $this->logout($this->request);
-    }
-
-    /**
      * Authentication error
      *
      * @param $request
@@ -224,6 +208,22 @@ class LoginController extends Controller
     private function _createTokenLog()
     {
         User::crateToken(__me(), 'client', session()->getId(), config('session.lifetime'));
+    }
+
+    /**
+     * Log the user out of the application.
+     *
+     * @return Response
+     */
+    public function logoutAction()
+    {
+        // login history
+        $this->_logAuthentication('logout');
+
+        // destroy token log
+        $this->_destroyTokenLog();
+
+        return $this->logout($this->request);
     }
 
     /**

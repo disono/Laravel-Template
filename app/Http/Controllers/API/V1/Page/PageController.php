@@ -23,7 +23,7 @@ class PageController extends APIController
         parent::__construct();
         $this->_page = Page::self();
     }
-    
+
     /**
      * List by category page
      *

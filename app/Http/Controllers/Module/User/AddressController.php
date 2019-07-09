@@ -85,12 +85,6 @@ class AddressController extends Controller
         return $this->json('Address is successfully updated.');
     }
 
-    public function destroyAction($id)
-    {
-        $this->_userAddress->remove(['id' => $id, 'user_id' => __me()->id]);
-        return $this->json('Address is successfully deleted.');
-    }
-
     public function _checkVerification($request)
     {
         if (__settings('addressVerification')->value === 'enabled') {
@@ -122,5 +116,11 @@ class AddressController extends Controller
         }
 
         return true;
+    }
+
+    public function destroyAction($id)
+    {
+        $this->_userAddress->remove(['id' => $id, 'user_id' => __me()->id]);
+        return $this->json('Address is successfully deleted.');
     }
 }

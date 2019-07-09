@@ -75,6 +75,26 @@ class PageController extends Controller
         return $this->json(['redirect' => '/admin/page/edit/' . $page->id]);
     }
 
+    private function _formInputs($request)
+    {
+        $inputs = $request->all();
+        $inputs['user_id'] = __me()->id;
+
+        return $inputs;
+    }
+
+    private function _pageClassification($page_id, $categories = [])
+    {
+        PageClassification::where('page_id', $page_id)->delete();
+
+        foreach ($categories as $id) {
+            PageClassification::insert([
+                'page_id' => $page_id,
+                'page_category_id' => $id
+            ]);
+        }
+    }
+
     public function editAction($id)
     {
         $this->setHeader('title', 'Editing Page');
@@ -113,25 +133,5 @@ class PageController extends Controller
     {
         $this->_page->remove($id);
         return $this->json('Page is successfully deleted.');
-    }
-
-    private function _formInputs($request)
-    {
-        $inputs = $request->all();
-        $inputs['user_id'] = __me()->id;
-
-        return $inputs;
-    }
-
-    private function _pageClassification($page_id, $categories = [])
-    {
-        PageClassification::where('page_id', $page_id)->delete();
-
-        foreach ($categories as $id) {
-            PageClassification::insert([
-                'page_id' => $page_id,
-                'page_category_id' => $id
-            ]);
-        }
     }
 }

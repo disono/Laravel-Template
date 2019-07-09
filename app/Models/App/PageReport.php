@@ -10,8 +10,8 @@ namespace App\Models\App;
 
 use App\Models\Vendor\BaseModel;
 use App\Models\Vendor\Facades\File;
+use App\Models\Vendor\Facades\PageReportMessage;
 use App\Models\Vendor\Facades\User;
-use \App\Models\Vendor\Facades\PageReportMessage;
 
 class PageReport extends BaseModel
 {
@@ -40,6 +40,21 @@ class PageReport extends BaseModel
     public function user()
     {
         return $this->belongsTo('App\Models\User');
+    }
+
+    public function actionRemoveBefore($results)
+    {
+        foreach ($results as $row) {
+            PageReportMessage::remove(['page_report_id' => $row->id]);
+            File::remove(['table_name' => 'page_reports', 'table_id' => $row->id]);
+        }
+
+        return true;
+    }
+
+    public function statuses()
+    {
+        return ['Pending', 'Processing', 'Reopened', 'Denied', 'Closed'];
     }
 
     protected function customQueries($query): void
@@ -78,20 +93,5 @@ class PageReport extends BaseModel
         $row->process_by_profile_picture = User::profilePicture($row->responded_by_id, $row->process_by_gender);
 
         return $row;
-    }
-
-    public function actionRemoveBefore($results)
-    {
-        foreach ($results as $row) {
-            PageReportMessage::remove(['page_report_id' => $row->id]);
-            File::remove(['table_name' => 'page_reports', 'table_id' => $row->id]);
-        }
-
-        return true;
-    }
-
-    public function statuses()
-    {
-        return ['Pending', 'Processing', 'Reopened', 'Denied', 'Closed'];
     }
 }

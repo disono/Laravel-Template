@@ -53,6 +53,24 @@ class Authenticator
             ]);
     }
 
+    private function _allowedRoute($routes = []): bool
+    {
+        if (!in_array(request()->route()->getName(), $routes)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private function _setView($msg, $view)
+    {
+        if (request()->ajax()) {
+            return failedJSONResponse($msg, 498);
+        }
+
+        return theme($view, [], 498);
+    }
+
     private function _isPhoneVerified($me)
     {
         return !$me->is_phone_verified &&
@@ -66,24 +84,6 @@ class Authenticator
     private function _isAccountEnabled($me)
     {
         return !$me->is_account_enabled && __settings('accountEnabled')->value === 'enabled';
-    }
-
-    private function _setView($msg, $view)
-    {
-        if (request()->ajax()) {
-            return failedJSONResponse($msg, 498);
-        }
-
-        return theme($view, [], 498);
-    }
-
-    private function _allowedRoute($routes = []): bool
-    {
-        if (!in_array(request()->route()->getName(), $routes)) {
-            return false;
-        }
-
-        return true;
     }
 
     private function _updateTokenLog($me)

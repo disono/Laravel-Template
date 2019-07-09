@@ -15,13 +15,13 @@ use Illuminate\Http\JsonResponse;
 class VerifyController extends APIController
 {
     private $_user;
-    
+
     public function __construct()
     {
         parent::__construct();
         $this->_user = User::self();
     }
-    
+
     /**
      * Verify phone
      *

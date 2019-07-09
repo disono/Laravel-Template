@@ -35,6 +35,11 @@ class Token extends BaseModel
         return true;
     }
 
+    public function user()
+    {
+        return $this->belongsTo('App\Models\User');
+    }
+
     protected function customQueries($query): void
     {
         $query->join('users', 'tokens.user_id', '=', 'users.id');
@@ -48,10 +53,5 @@ class Token extends BaseModel
             'username' => 'users.username',
             'is_expired' => 'IF(tokens.expired_at >= DATE(NOW()), 0, 1)',
         ];
-    }
-
-    public function user()
-    {
-        return $this->belongsTo('App\Models\User');
     }
 }

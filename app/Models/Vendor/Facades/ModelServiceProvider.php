@@ -26,6 +26,7 @@ use App\Models\FirebaseNotification;
 use App\Models\FirebaseToken;
 use App\Models\Page;
 use App\Models\PageCategory;
+use App\Models\PageClassification;
 use App\Models\PageView;
 use App\Models\PasswordReset;
 use App\Models\Role;
@@ -38,12 +39,26 @@ use App\Models\User;
 use App\Models\UserAddress;
 use App\Models\UserPhone;
 use App\Models\UserTracker;
+use App\Models\Vendor\SMSIntegrator;
 use App\Models\Verification;
-use App\Models\PageClassification;
 use Illuminate\Support\ServiceProvider;
 
 class ModelServiceProvider extends ServiceProvider
 {
+    /**
+     * Register the service provider.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        foreach ($this->_models() as $key => $model) {
+            $this->app->singleton($key, function () use ($model) {
+                return new $model;
+            });
+        }
+    }
+
     private function _models()
     {
         return [
@@ -82,20 +97,8 @@ class ModelServiceProvider extends ServiceProvider
             'UserPhone' => UserPhone::class,
             'UserTracker' => UserTracker::class,
             'Verification' => Verification::class,
-        ];
-    }
 
-    /**
-     * Register the service provider.
-     *
-     * @return void
-     */
-    public function register()
-    {
-        foreach ($this->_models() as $key => $model) {
-            $this->app->singleton($key, function () use ($model) {
-                return new $model;
-            });
-        }
+            'SMSIntegrator' => SMSIntegrator::class,
+        ];
     }
 }

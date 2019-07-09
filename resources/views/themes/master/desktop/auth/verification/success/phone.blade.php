@@ -10,7 +10,7 @@
 @section('content')
     <div class="container-fluid">
         <div class="row">
-            <div class="col-md-4 mr-auto ml-auto">
+            <div class="col-md-4 col-sm-12 mr-auto ml-auto">
                 <div class="alert alert-light rounded shadow-sm" role="alert">
                     <h4 class="alert-heading">Well done!</h4>
                     <p>Your phone is now verified.</p>

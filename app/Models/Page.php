@@ -10,8 +10,8 @@ namespace App\Models;
 
 use App\Models\Vendor\BaseModel;
 use App\Models\Vendor\Facades\File;
-use App\Models\Vendor\Facades\PageClassification;
 use App\Models\Vendor\Facades\PageCategory;
+use App\Models\Vendor\Facades\PageClassification;
 use App\Models\Vendor\Facades\PageView;
 
 class Page extends BaseModel
@@ -57,6 +57,16 @@ class Page extends BaseModel
         return true;
     }
 
+    public function pageCategory()
+    {
+        return $this->belongsTo('App\Models\PageCategory');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo('App\Models\User');
+    }
+
     protected function customQueries($query): void
     {
         $query->join('users', 'pages.user_id', '=', 'users.id');
@@ -78,32 +88,6 @@ class Page extends BaseModel
             'is_expired' => 'IF(pages.expired_at IS NOT NULL, IF(pages.expired_at < DATE(NOW()), 1, 0), 0)',
             'is_posted' => 'IF(pages.post_at IS NOT NULL, IF(DATE(NOW()) >= pages.post_at, 1, 0), 0)',
         ];
-    }
-
-    protected function dataFormatting($row)
-    {
-        $this->addDateFormatting($row);
-
-        $row->url = url('p/' . $row->slug);
-
-        $row->cover_photo = File::lookForFile($row->id, 'pages', 'cover_photo');
-        $row->og_image = File::lookForFile($row->id, 'pages', 'og_image');
-
-        $row->categories = PageCategory::fetchAll([
-            'include' => ['id' => dbArrayColumns(PageClassification::fetchAll(['page_id' => $row->id]), 'page_category_id')]
-        ]);
-
-        return $row;
-    }
-
-    public function pageCategory()
-    {
-        return $this->belongsTo('App\Models\PageCategory');
-    }
-
-    public function user()
-    {
-        return $this->belongsTo('App\Models\User');
     }
 
     private function _lookForCategory()
@@ -129,5 +113,21 @@ class Page extends BaseModel
         }
 
         return NULL;
+    }
+
+    protected function dataFormatting($row)
+    {
+        $this->addDateFormatting($row);
+
+        $row->url = url('p/' . $row->slug);
+
+        $row->cover_photo = File::lookForFile($row->id, 'pages', 'cover_photo');
+        $row->og_image = File::lookForFile($row->id, 'pages', 'og_image');
+
+        $row->categories = PageCategory::fetchAll([
+            'include' => ['id' => dbArrayColumns(PageClassification::fetchAll(['page_id' => $row->id]), 'page_category_id')]
+        ]);
+
+        return $row;
     }
 }

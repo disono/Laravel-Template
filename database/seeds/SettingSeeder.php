@@ -65,6 +65,8 @@ class SettingSeeder extends Seeder
             ['Threshold for address verification', 'addressVerificationThreshold', '3', 'text', NULL, 5, 'Zero means no threshold.', 0],
             ['Threshold for phone verification', 'phoneVerificationThreshold', '3', 'text', NULL, 5, 'Zero means no threshold.', 0],
             ['Threshold for email verification', 'emailVerificationThreshold', '0', 'text', NULL, 5, 'Zero means no threshold.', 0],
+            ['Email verification expiration', 'emailVerificationExpiration', '1440', 'text', NULL, 5, 'Expiration is in minutes.', 0],
+            ['Phone verification expiration', 'phoneVerificationExpiration', '1440', 'text', NULL, 5, 'Expiration is in minutes.', 0],
 
             ['FCM', 'fcm', NULL, 'checkbox_single', 'enabled', 6, NULL, 1],
             ['FCM Topics', 'fcm_topics', 'news', 'checkbox_multiple', 'news,marketing', 6, NULL, 1],

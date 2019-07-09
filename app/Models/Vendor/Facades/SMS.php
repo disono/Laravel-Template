@@ -6,21 +6,14 @@
  * @license         Apache, 2.0 https://github.com/disono/Laravel-Template/blob/master/LICENSE
  */
 
-namespace App\Http\Requests\Module;
+namespace App\Models\Vendor\Facades;
 
-use App\Http\Requests\BaseRequest;
+use Illuminate\Support\Facades\Facade;
 
-class ModuleRequest extends BaseRequest
+class SMSIntegrator extends Facade
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
-    public function authorize()
+    protected static function getFacadeAccessor()
     {
-        return __me() ? true : false;
+        return 'SMSIntegrator';
     }
 }
-
-

@@ -15,5 +15,10 @@
 
         <p class="font-weight-bold p-0 m-0"># check if user has access to current route</p>
         <p>@@auth_route, @@else and @@endauth_route</p>
+
+        <p class="font-weight-bold p-0 m-0"># create a new model</p>
+        <p class="p-0 m-0">$ php artisan make:model Models/modelName -m </p>
+        <p class="p-0 m-0">Create a new file: /Models/Vendor/Facades modelName.php</p>
+        <p class="p-0 m-0">Add your facades to /Models/Vendor/Facades/ModelServiceProvider.php</p>
     </code>
 </div>

@@ -24,7 +24,7 @@ class FacebookController extends APIController
         parent::__construct();
         $this->_user = User::self();
     }
-    
+
     public function loginAction()
     {
         if (__settings('authSocialFacebook')->value !== 'enabled') {

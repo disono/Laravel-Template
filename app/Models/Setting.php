@@ -32,6 +32,37 @@ class Setting extends BaseModel
         parent::__construct($attributes);
     }
 
+    /**
+     * Setting categories
+     *
+     * @return mixed
+     */
+    public function categories()
+    {
+        return SettingCategory::get();
+    }
+
+    /**
+     * Fetch only the key value pair for settings
+     *
+     * @return array
+     */
+    public function keyValuePair()
+    {
+        $values = [];
+
+        foreach ($this->fetchAll(['is_public' => 1, 'is_disabled' => 0]) as $row) {
+            $values[$row->key] = [
+                'name' => $row->name,
+                'value' => $row->value,
+                'description' => $row->description,
+                'input_type' => $row->input_type
+            ];
+        }
+
+        return $values;
+    }
+
     protected function customQueries($query): void
     {
         $query->join('setting_categories', 'settings.category_setting_id', '=', 'setting_categories.id');
@@ -73,36 +104,5 @@ class Setting extends BaseModel
         }
 
         return $row;
-    }
-
-    /**
-     * Setting categories
-     *
-     * @return mixed
-     */
-    public function categories()
-    {
-        return SettingCategory::get();
-    }
-
-    /**
-     * Fetch only the key value pair for settings
-     *
-     * @return array
-     */
-    public function keyValuePair()
-    {
-        $values = [];
-
-        foreach ($this->fetchAll(['is_public' => 1, 'is_disabled' => 0]) as $row) {
-            $values[$row->key] = [
-                'name' => $row->name,
-                'value' => $row->value,
-                'description' => $row->description,
-                'input_type' => $row->input_type
-            ];
-        }
-
-        return $values;
     }
 }

@@ -25,6 +25,11 @@ class FirebaseToken extends BaseModel
         parent::__construct($attributes);
     }
 
+    public function token()
+    {
+        return $this->belongsTo('App\Models\Token');
+    }
+
     protected function customQueries($query): void
     {
         $query->join('tokens', 'firebase_tokens.token_id', '=', 'tokens.id');
@@ -39,10 +44,5 @@ class FirebaseToken extends BaseModel
             'username' => 'users.username',
             'is_expired' => 'IF(tokens.expired_at >= DATE(NOW()), 0, 1)',
         ];
-    }
-
-    public function token()
-    {
-        return $this->belongsTo('App\Models\Token');
     }
 }

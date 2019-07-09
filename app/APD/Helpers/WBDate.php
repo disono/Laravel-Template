@@ -33,7 +33,7 @@ if (!function_exists('expiredAt')) {
      */
     function expiredAt($minute = 120)
     {
-        return date('Y-m-d H:i:s', strtotime('+' . $minute . ' minute'));
+        return date('Y-m-d H:i:s', strtotime('+' . (int)$minute . ' minute'));
     }
 }
 

@@ -14,7 +14,7 @@ class Verification extends BaseModel
 {
     protected $tableName = 'verifications';
     protected $writableColumns = [
-        'user_id', 'value', 'type', 'token', 'expired_at'
+        'user_id', 'value', 'type', 'token', 'tries', 'expired_at'
     ];
 
     protected $columnHasRelations = ['user_id'];
@@ -28,22 +28,19 @@ class Verification extends BaseModel
     public function isExpired($type)
     {
         if (!__me()) {
-            return false;
+            return FALSE;
         }
 
-        $verification = Verification::where('user_id', __me()->id)
-            ->where('type', $type)
-            ->first();
-
+        $verification = Verification::where('user_id', __me()->id)->where('type', $type)->first();
         if (!$verification) {
-            return true;
+            return TRUE;
         }
 
         if (strtotime($verification->expired_at) <= time()) {
-            return true;
+            return TRUE;
         }
 
-        return false;
+        return FALSE;
     }
 
     public function user()

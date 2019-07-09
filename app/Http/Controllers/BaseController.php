@@ -143,6 +143,68 @@ class BaseController extends Controller
     }
 
     /**
+     * Edit view
+     *
+     * @param $id
+     * @return JsonResponse|Response
+     */
+    public function editAction($id)
+    {
+        if (!$this->allowEdit) {
+            abort(401);
+        }
+
+        $this->beforeEdit();
+        $this->setHeader('title', $this->editTitle);
+        $this->editData[$this->dataName] = $this->modelName->single($id);
+        if (!$this->editData[$this->dataName]) {
+            abort(404);
+        }
+
+        $this->afterEdit();
+        return $this->view('edit', $this->editData);
+    }
+
+    protected function beforeEdit()
+    {
+        // before editing view showed
+    }
+
+    protected function afterEdit()
+    {
+        // after getting the data to view
+    }
+
+    /**
+     * Delete data
+     *
+     * @param $id
+     * @return JsonResponse
+     */
+    public function destroyAction($id)
+    {
+        if (!$this->allowDelete) {
+            abort(401);
+        }
+
+        $this->beforeDestroy();
+        $this->modelName->remove($id);
+        $this->afterDestroy();
+
+        return $this->json('Data is successfully deleted.');
+    }
+
+    protected function beforeDestroy()
+    {
+        // before destroying the data
+    }
+
+    protected function afterDestroy()
+    {
+        // after destroying the data
+    }
+
+    /**
      * Store new data
      *
      * @param $request
@@ -181,39 +243,6 @@ class BaseController extends Controller
     }
 
     /**
-     * Edit view
-     *
-     * @param $id
-     * @return JsonResponse|Response
-     */
-    public function editAction($id)
-    {
-        if (!$this->allowEdit) {
-            abort(401);
-        }
-
-        $this->beforeEdit();
-        $this->setHeader('title', $this->editTitle);
-        $this->editData[$this->dataName] = $this->modelName->single($id);
-        if (!$this->editData[$this->dataName]) {
-            abort(404);
-        }
-
-        $this->afterEdit();
-        return $this->view('edit', $this->editData);
-    }
-
-    protected function beforeEdit()
-    {
-        // before editing view showed
-    }
-
-    protected function afterEdit()
-    {
-        // after getting the data to view
-    }
-
-    /**
      * Update data
      *
      * @param $request
@@ -244,34 +273,5 @@ class BaseController extends Controller
     protected function afterUpdate()
     {
         // after updating the data
-    }
-
-    /**
-     * Delete data
-     *
-     * @param $id
-     * @return JsonResponse
-     */
-    public function destroyAction($id)
-    {
-        if (!$this->allowDelete) {
-            abort(401);
-        }
-
-        $this->beforeDestroy();
-        $this->modelName->remove($id);
-        $this->afterDestroy();
-
-        return $this->json('Data is successfully deleted.');
-    }
-
-    protected function beforeDestroy()
-    {
-        // before destroying the data
-    }
-
-    protected function afterDestroy()
-    {
-        // after destroying the data
     }
 }

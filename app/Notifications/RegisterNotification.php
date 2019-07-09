@@ -8,7 +8,6 @@
 
 namespace App\Notifications;
 
-use App\Models\Verification;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
@@ -29,28 +28,7 @@ class RegisterNotification extends Notification
         $this->user = $user;
 
         // url
-        $token = isset($user->verification_code) ? $user->verification_code : str_random(64);
-        $this->user->link = url('verify/email?token=' . $token . '&email=' . $this->user->email);
-
-        // do we need to renew the verification code
-        $renew = true;
-        if (isset($user->renew_code)) {
-            $renew = $user->renew_code;
-        }
-
-        if ($renew) {
-            // clean all verification before saving new
-            Verification::where('value', $this->user->email)->where('type', 'email')->delete();
-
-            // create token
-            Verification::create([
-                'user_id' => $this->user->id,
-                'token' => $token,
-                'value' => $this->user->email,
-                'type' => 'email',
-                'expired_at' => expiredAt(1440)
-            ]);
-        }
+        $this->user->link = url('verify/email?token=' . $user->verification_code . '&email=' . $this->user->email);
     }
 
     /**
@@ -68,7 +46,7 @@ class RegisterNotification extends Notification
      * Get the mail representation of the notification.
      *
      * @param mixed $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
+     * @return MailMessage
      */
     public function toMail($notifiable)
     {

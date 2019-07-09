@@ -8,11 +8,11 @@
 
 namespace App\Http\Controllers\Module\User;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Module\Application\Report\ReportMessageStore;
 use App\Models\Vendor\Facades\PageReport;
 use App\Models\Vendor\Facades\PageReportMessage;
 use App\Models\Vendor\Facades\PageReportReason;
-use App\Http\Controllers\Controller;
 
 class PageReportController extends Controller
 {

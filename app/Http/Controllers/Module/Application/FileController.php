@@ -27,7 +27,7 @@ class FileController extends Controller
         if (__me()->role === 'client') {
             $default['user_id'] = __me()->id;
         }
-        
+
         return $this->json(File::fetch(requestValues('search|type', $default)));
     }
 
@@ -65,6 +65,25 @@ class FileController extends Controller
         }
     }
 
+    private function _imageSize($key)
+    {
+        return (int)$this->request->get($key);
+    }
+
+    private function _imageQuality()
+    {
+        $quality = $this->request->get('quality');
+        if ($quality <= 0) {
+            return 45;
+        }
+
+        if ($quality > 100) {
+            return 100;
+        }
+
+        return $quality ? $quality : 75;
+    }
+
     public function createAction(FileCreate $request)
     {
         $file = fileUpload([
@@ -91,24 +110,5 @@ class FileController extends Controller
     {
         File::destroy($id);
         return $this->json('File is deleted successfully.');
-    }
-
-    private function _imageSize($key)
-    {
-        return (int)$this->request->get($key);
-    }
-
-    private function _imageQuality()
-    {
-        $quality = $this->request->get('quality');
-        if ($quality <= 0) {
-            return 45;
-        }
-
-        if ($quality > 100) {
-            return 100;
-        }
-
-        return $quality ? $quality : 75;
     }
 }

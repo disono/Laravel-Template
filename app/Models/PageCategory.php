@@ -8,9 +8,9 @@
 
 namespace App\Models;
 
-use App\Models\Vendor\Facades\Page;
 use App\Models\Vendor\BaseModel;
 use App\Models\Vendor\Facades\File;
+use App\Models\Vendor\Facades\Page;
 
 class PageCategory extends BaseModel
 {
@@ -40,13 +40,6 @@ class PageCategory extends BaseModel
         parent::__construct($attributes);
     }
 
-    protected function customQuerySelectList(): array
-    {
-        return [
-            'count_sub' => 'SELECT COUNT(*) FROM page_categories AS sub WHERE sub.parent_id = page_categories.id'
-        ];
-    }
-
     public function actionEditBefore($tableName, $query, $inputs)
     {
         if (!$query) {
@@ -71,17 +64,6 @@ class PageCategory extends BaseModel
         }
 
         return true;
-    }
-
-    protected function dataFormatting($row)
-    {
-        $this->addDateFormatting($row);
-
-        $row->img_active = File::lookForFile($row->id, 'page_categories', 'active');
-        $row->img_inactive = File::lookForFile($row->id, 'page_categories', 'inactive');
-        $row->img_banner = File::lookForFile($row->id, 'page_categories', 'banner');
-
-        return $row;
     }
 
     public function parents($parent_id)
@@ -155,43 +137,6 @@ class PageCategory extends BaseModel
     }
 
     /**
-     * Category tree
-     *
-     * @param array $params
-     *
-     * @return mixed
-     */
-    public function fetchTree($params = [])
-    {
-        $categories = [];
-        $map = [0 => ['sub_categories' => []]];
-        $query = $this->fetchAll($params);
-
-        foreach ($query as $category) {
-            $categories[] = [
-                'id' => $category->id,
-                'position' => $category->position,
-                'parent_id' => $category->parent_id,
-                'name' => $category->name,
-                'description' => $category->description,
-                'is_enabled' => $category->is_enabled,
-                'count_sub' => $category->count_sub
-            ];
-        }
-
-        foreach ($categories as &$category) {
-            $category['sub_categories'] = [];
-            $map[$category['id']] = &$category;
-        }
-
-        foreach ($categories as &$category) {
-            $map[$category['parent_id']]['sub_categories'][] = &$category;
-        }
-
-        return $map[0]['sub_categories'];
-    }
-
-    /**
      * Add formatting
      *
      * @param array $params
@@ -239,8 +184,63 @@ class PageCategory extends BaseModel
         return $this->_categoryList;
     }
 
+    /**
+     * Category tree
+     *
+     * @param array $params
+     *
+     * @return mixed
+     */
+    public function fetchTree($params = [])
+    {
+        $categories = [];
+        $map = [0 => ['sub_categories' => []]];
+        $query = $this->fetchAll($params);
+
+        foreach ($query as $category) {
+            $categories[] = [
+                'id' => $category->id,
+                'position' => $category->position,
+                'parent_id' => $category->parent_id,
+                'name' => $category->name,
+                'description' => $category->description,
+                'is_enabled' => $category->is_enabled,
+                'count_sub' => $category->count_sub
+            ];
+        }
+
+        foreach ($categories as &$category) {
+            $category['sub_categories'] = [];
+            $map[$category['id']] = &$category;
+        }
+
+        foreach ($categories as &$category) {
+            $map[$category['parent_id']]['sub_categories'][] = &$category;
+        }
+
+        return $map[0]['sub_categories'];
+    }
+
     public function page()
     {
         return $this->hasMany('App\Models\Page');
+    }
+
+    protected function customQuerySelectList(): array
+    {
+        return [
+            'count_sub' => 'SELECT COUNT(*) FROM page_categories AS sub WHERE sub.parent_id = page_categories.id'
+        ];
+    }
+
+    protected function dataFormatting($row)
+    {
+        $this->addDateFormatting($row);
+
+        $row->img_active = File::lookForFile($row->id, 'page_categories', 'active');
+        $row->img_inactive = File::lookForFile($row->id, 'page_categories', 'inactive');
+        $row->img_banner = File::lookForFile($row->id, 'page_categories', 'banner');
+
+        return $row;
     }
 }

@@ -36,6 +36,16 @@ class DashboardController extends Controller
     }
 
     /**
+     * Is management
+     *
+     * @return bool
+     */
+    private function _isManagement()
+    {
+        return in_array(__me()->role, ['client']);
+    }
+
+    /**
      * Client data
      *
      * @return array
@@ -59,15 +69,5 @@ class DashboardController extends Controller
             'count_active_members' => (new User())->fetch(['object' => true, 'is_account_activated' => 1])->count(),
             'count_inactive_members' => (new User())->fetch(['object' => true, 'is_account_activated' => 0])->count()
         ];
-    }
-
-    /**
-     * Is management
-     *
-     * @return bool
-     */
-    private function _isManagement()
-    {
-        return in_array(__me()->role, ['client']);
     }
 }

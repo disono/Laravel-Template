@@ -22,6 +22,7 @@ class CreateVerificationsTable extends Migration
             $table->string('value', 100);
             $table->string('type', 45);
             $table->string('token', 100);
+            $table->integer('tries')->default(0);
             $table->timestamp('expired_at')->nullable();
             $table->timestamps();
         });

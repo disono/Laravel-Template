@@ -46,36 +46,6 @@ class File extends BaseModel
         return true;
     }
 
-    protected function dataFormatting($row)
-    {
-        $this->addDateFormatting($row);
-
-        if ($row->type === 'photo') {
-            $row->cover = fetchImage($row->file_name);
-            $row->icon = url('assets/img/placeholders/image.png');
-        } else if ($row->type === 'video') {
-            $row->cover = url('assets/img/placeholders/video.png');
-        } else if ($row->type === 'doc') {
-            $row->cover = url('assets/img/placeholders/document.png');
-        } else if ($row->type === 'file') {
-            $row->cover = url('assets/img/placeholders/file.png');
-        } else if ($row->type === 'audio') {
-            $row->cover = url('assets/img/placeholders/audio.png');
-        }
-
-        if ($row->type === 'video') {
-            $row->path = url('stream/video/' . $row->file_name);
-        } else if ($row->type === 'audio') {
-            $row->path = url('stream/audio/' . $row->file_name);
-        } else if ($row->type === 'photo' && $this->hasParams('to_base64_img') == 1) {
-            $row->path = imgPathToBase64('private/' . $row->file_name);
-        } else {
-            $row->path = url('private/' . $row->file_name);
-        }
-
-        return $row;
-    }
-
     /**
      * File types
      *
@@ -84,6 +54,21 @@ class File extends BaseModel
     public function types()
     {
         return ['video', 'photo', 'doc', 'file', 'audio'];
+    }
+
+    /**
+     * Helper: Get filename
+     *
+     * @param $id
+     * @param $table
+     * @param null $tag
+     *
+     * @return null
+     */
+    public function lookForFilename($id, $table, $tag = NULL)
+    {
+        $file = $this->lookForFile($id, $table, $tag);
+        return $file->exists ? $file->info->file_name : null;
     }
 
     /**
@@ -116,19 +101,34 @@ class File extends BaseModel
         return $object;
     }
 
-    /**
-     * Helper: Get filename
-     *
-     * @param $id
-     * @param $table
-     * @param null $tag
-     *
-     * @return null
-     */
-    public function lookForFilename($id, $table, $tag = NULL)
+    protected function dataFormatting($row)
     {
-        $file = $this->lookForFile($id, $table, $tag);
-        return $file->exists ? $file->info->file_name : null;
+        $this->addDateFormatting($row);
+
+        if ($row->type === 'photo') {
+            $row->cover = fetchImage($row->file_name);
+            $row->icon = url('assets/img/placeholders/image.png');
+        } else if ($row->type === 'video') {
+            $row->cover = url('assets/img/placeholders/video.png');
+        } else if ($row->type === 'doc') {
+            $row->cover = url('assets/img/placeholders/document.png');
+        } else if ($row->type === 'file') {
+            $row->cover = url('assets/img/placeholders/file.png');
+        } else if ($row->type === 'audio') {
+            $row->cover = url('assets/img/placeholders/audio.png');
+        }
+
+        if ($row->type === 'video') {
+            $row->path = url('stream/video/' . $row->file_name);
+        } else if ($row->type === 'audio') {
+            $row->path = url('stream/audio/' . $row->file_name);
+        } else if ($row->type === 'photo' && $this->hasParams('to_base64_img') == 1) {
+            $row->path = imgPathToBase64('private/' . $row->file_name);
+        } else {
+            $row->path = url('private/' . $row->file_name);
+        }
+
+        return $row;
     }
 
     public function user()

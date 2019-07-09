@@ -27,6 +27,16 @@ class PageClassification extends BaseModel
         parent::__construct($attributes);
     }
 
+    public function page()
+    {
+        return $this->belongsTo('App\Models\Page');
+    }
+
+    public function pageCategory()
+    {
+        return $this->belongsTo('App\Models\PageCategory');
+    }
+
     protected function customQueries($query): void
     {
         $query->join('pages', 'page_classifications.page_id', '=', 'pages.id');
@@ -39,15 +49,5 @@ class PageClassification extends BaseModel
             'page_name' => 'pages.name',
             'category_name' => 'page_categories.name'
         ];
-    }
-
-    public function page()
-    {
-        return $this->belongsTo('App\Models\Page');
-    }
-
-    public function pageCategory()
-    {
-        return $this->belongsTo('App\Models\PageCategory');
     }
 }

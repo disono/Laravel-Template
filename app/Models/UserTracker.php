@@ -28,11 +28,6 @@ class UserTracker extends BaseModel
         parent::__construct($attributes);
     }
 
-    protected function customQueries($query): void
-    {
-        $query->join('users', 'user_trackers.user_id', '=', 'users.id');
-    }
-
     public function log()
     {
         if (!request('lat') || !request('lng') || !authId()) {
@@ -65,6 +60,11 @@ class UserTracker extends BaseModel
     public function page()
     {
         return $this->belongsTo('App\Models\Page');
+    }
+
+    protected function customQueries($query): void
+    {
+        $query->join('users', 'user_trackers.user_id', '=', 'users.id');
     }
 
     protected function customQuerySelectList(): array

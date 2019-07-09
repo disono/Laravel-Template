@@ -8,9 +8,9 @@
 
 namespace App\Models\Chat;
 
+use App\Models\Vendor\BaseModel;
 use App\Models\Vendor\Facades\File;
 use App\Models\Vendor\Facades\User;
-use App\Models\Vendor\BaseModel;
 
 class ChatMessage extends BaseModel
 {

@@ -9,7 +9,7 @@
 namespace App\Http\Controllers\Module\Authentication;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
+use App\Models\Vendor\Facades\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 
@@ -39,7 +39,7 @@ class VerifyController extends Controller
     private function _verify($type)
     {
         try {
-            return $this->view('auth.verification.success.' . (new User())->verify($type));
+            return $this->view('auth.verification.success.' . User::verify($type));
         } catch (\Exception $e) {
             return $this->view('errors.default', [
                 'message' => $e->getMessage()
@@ -87,7 +87,7 @@ class VerifyController extends Controller
     public function resendVerificationProcessAction($type)
     {
         try {
-            $value = (new User())->resendVerification($type);
+            $value = User::resendVerification($type);
 
             if ($type == 'email') {
                 return $this->redirect()->with('message', 'We already sent you a verification link for ' . $value . '. Thank You.');

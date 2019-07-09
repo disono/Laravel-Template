@@ -71,12 +71,6 @@ class PhoneController extends Controller
         return $this->json('Phone number is successfully updated.');
     }
 
-    public function destroyAction($id)
-    {
-        $this->_userPhone->remove(['id' => $id, 'user_id' => __me()->id]);
-        return $this->json('Phone number is successfully deleted.');
-    }
-
     public function _checkVerification($request)
     {
         if (__settings('phoneVerification')->value === 'enabled') {
@@ -108,5 +102,11 @@ class PhoneController extends Controller
         }
 
         return TRUE;
+    }
+
+    public function destroyAction($id)
+    {
+        $this->_userPhone->remove(['id' => $id, 'user_id' => __me()->id]);
+        return $this->json('Phone number is successfully deleted.');
     }
 }

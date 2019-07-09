@@ -28,19 +28,6 @@ class PageView extends BaseModel
         parent::__construct($attributes);
     }
 
-    protected function customQueries($query): void
-    {
-        $query->join('pages', 'page_views.page_id', '=', 'pages.id');
-    }
-
-    protected function customQuerySelectList(): array
-    {
-        return [
-            'is_expired' => 'IF(page_views.expired_at >= DATE(NOW()), 0, 1)',
-            'page_name' => 'pages.name',
-        ];
-    }
-
     public function actionStoreBefore($tableName, $inputs)
     {
         if ((new PageView())->fetch(['is_expired' => 0, 'device_id' => $inputs['device_id'], 'page_id' => $inputs['page_id']])->count()) {
@@ -82,5 +69,18 @@ class PageView extends BaseModel
     public function page()
     {
         return $this->belongsTo('App\Models\Page');
+    }
+
+    protected function customQueries($query): void
+    {
+        $query->join('pages', 'page_views.page_id', '=', 'pages.id');
+    }
+
+    protected function customQuerySelectList(): array
+    {
+        return [
+            'is_expired' => 'IF(page_views.expired_at >= DATE(NOW()), 0, 1)',
+            'page_name' => 'pages.name',
+        ];
     }
 }
