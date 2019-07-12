@@ -41,8 +41,6 @@ class VerifyController extends APIController
     /**
      * Resend verification for email and phone
      *
-     * Inputs: type_value
-     *
      * @param $type
      * @return JsonResponse
      */
@@ -57,6 +55,7 @@ class VerifyController extends APIController
 
             return $this->json($value);
         } catch (\Exception $e) {
+            logErrors($e->getMessage());
             return $this->json($e->getMessage(), 422);
         }
     }

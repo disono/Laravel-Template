@@ -96,7 +96,7 @@ class File extends BaseModel
 
         $object = new \stdClass();
         $object->exists = $file ? TRUE : FALSE;
-        $object->primary = $file ? $file->path : ($default ? fetchImage(NULL, $default) : fetchImage(NULL));
+        $object->primary = $file ? fetchImage($file->path, $default) : fetchImage(NULL);
         $object->meta = $file;
         return $object;
     }

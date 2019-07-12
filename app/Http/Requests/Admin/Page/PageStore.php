@@ -23,6 +23,7 @@ class PageStore extends AdminRequest
             'page_category_id' => 'required|exists:page_categories,id',
             'name' => 'required|max:100',
             'content' => 'required|max:100000',
+            'summary' => 'max:220',
             'tags' => 'string_list',
             'slug' => 'required|alpha_dash|unique:pages,slug',
             'template' => 'max:100',

@@ -35,6 +35,17 @@
                                             <div class="invalid-feedback">{{ $errors->first('content') }}</div>
                                         @endif
                                     </div>
+
+                                    <div class="form-group">
+                                        <label for="summary">Summary</label>
+                                        <textarea name="summary" id="summary"
+                                                  class="form-control"
+                                                  rows="3" data-validate="max:220">{!! old('summary', $page->summary) !!}</textarea>
+
+                                        @if ($errors->has('summary'))
+                                            <div class="invalid-feedback">{{ $errors->first('summary') }}</div>
+                                        @endif
+                                    </div>
                                 </div>
 
                                 <div class="col-md-3 col-sm-12 mb-3">

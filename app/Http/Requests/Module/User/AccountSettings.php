@@ -26,7 +26,7 @@ class AccountSettings extends ModuleRequest
             'profile_picture' => 'image|max:' . __settings('fileSizeLimitImage')->value,
 
             'address' => 'max:500',
-            'phone' => 'between:7,22',
+            'phone' => 'numeric|phone_number',
             'gender' => 'required|in:Male,Female',
             'birthday' => 'required|date|birthday:' . __settings('minimumAgeForRegistration')->value,
 

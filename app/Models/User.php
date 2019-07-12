@@ -14,11 +14,11 @@ use App\Models\Vendor\Facades\File;
 use App\Models\Vendor\Facades\FirebaseNotification;
 use App\Models\Vendor\Facades\Page;
 use App\Models\Vendor\Facades\PageView;
+use App\Models\Vendor\Facades\SMSIntegrator;
 use App\Models\Vendor\Facades\Token;
 use App\Models\Vendor\Facades\UserAddress;
 use App\Models\Vendor\Facades\UserPhone;
 use App\Models\Vendor\Facades\Verification;
-use App\Models\Vendor\SMSIntegrator;
 use App\Notifications\RegisterNotification;
 use Exception;
 use Illuminate\Contracts\Routing\UrlGenerator;
@@ -172,6 +172,10 @@ class User extends BaseUser
      */
     private function _resendEmail($user, $reNew = TRUE)
     {
+        if (__settings('emailVerification')->value !== 'enabled') {
+            return;
+        }
+
         $verification = Verification::where('value', $user->email)->where('type', 'email')->where('user_id', $user->id);
         $_verification = $verification->first();
 
@@ -191,11 +195,11 @@ class User extends BaseUser
                 'expired_at' => expiredAt(__settings('emailVerificationExpiration')->value)
             ]);
         } else {
-            if ($verification->tries > 0 && $verification->tries > (int)__settings('emailVerificationThreshold')->value) {
+            if ($_verification->tries > 0 && $_verification->tries > (int)__settings('emailVerificationThreshold')->value) {
                 throwError('VERIFICATION_EMAIL_TRIES');
             }
 
-            $user->verification_code = $verification->token;
+            $user->verification_code = $_verification->token;
         }
 
         // send email for email verification
@@ -299,21 +303,18 @@ class User extends BaseUser
      */
     public function resendVerification($type)
     {
-        $value = request('type_value');
-
-        // do we have a value to search for
-        if (!$value) {
-            throwError('RAW', $type . ' is required.');
+        $user = __me();
+        if (!$user) {
+            throwError('RAW', 'Is not authenticated.');
         }
 
         // did the phone or email exists
-        $user = User::where($type, $value)->first();
-        if (!$user) {
+        if (!$user->$type) {
             throwError('RAW', $type . ' is not registered.');
         }
 
         // did the old verification exists
-        $verification = Verification::where('value', $value)->where('type', $type)->where('user_id', $user->id)->first();
+        $verification = Verification::where('value', $user->$type)->where('type', $type)->where('user_id', $user->id)->first();
         if ($verification) {
             if (strtotime($verification->expired_at) > time()) {
                 // not expired
@@ -326,7 +327,7 @@ class User extends BaseUser
             $this->_resendCode($type, $user, TRUE);
         }
 
-        return $value;
+        return $user->$type;
     }
 
     /**
@@ -355,28 +356,32 @@ class User extends BaseUser
      */
     private function _resendPhone($user, $reNew = TRUE)
     {
+        if (__settings('phoneVerification')->value !== 'enabled') {
+            return;
+        }
+
         $verification = Verification::where('value', $user->phone)->where('type', 'phone')->where('user_id', $user->id);
         $_verification = $verification->first();
 
         if ($reNew || !$_verification) {
             // clean all verification before saving new
             $verification->delete();
-            $verification_code = ucwords(str_random(6));
+            $verification_code = strtoupper(str_random(6));
 
             // create token
             Verification::create([
                 'user_id' => $user->id,
-                'token' => ucwords(str_random(6)),
+                'token' => strtoupper(str_random(6)),
                 'value' => $user->phone,
                 'type' => 'phone',
                 'expired_at' => expiredAt(__settings('phoneVerificationExpiration')->value)
             ]);
         } else {
-            if ($verification->tries > 0 && $verification->tries > (int)__settings('phoneVerificationThreshold')->value) {
+            if ($_verification->tries > 0 && $_verification->tries > (int)__settings('phoneVerificationThreshold')->value) {
                 throwError('VERIFICATION_PHONE_TRIES');
             }
 
-            $verification_code = $verification->token;
+            $verification_code = $_verification->token;
         }
 
         SMSIntegrator::send($user->phone, 'Your Verification Code: ' . $verification_code);

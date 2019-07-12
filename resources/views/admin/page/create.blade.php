@@ -34,10 +34,15 @@
                                         @endif
                                     </div>
 
-                                    <div class="row">
-                                        <div class="col-md-6 col-sm-12">
+                                    <div class="form-group">
+                                        <label for="summary">Summary</label>
+                                        <textarea name="summary" id="summary"
+                                                  class="form-control"
+                                                  rows="3" data-validate="max:220">{!! old('summary') !!}</textarea>
 
-                                        </div>
+                                        @if ($errors->has('summary'))
+                                            <div class="invalid-feedback">{{ $errors->first('summary') }}</div>
+                                        @endif
                                     </div>
                                 </div>
 

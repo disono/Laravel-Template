@@ -10,7 +10,6 @@ use App\Models\AuthorizationRole;
 use App\Models\Vendor\Facades\Token;
 use App\Models\Vendor\Facades\User;
 use Firebase\JWT\JWT;
-use Firebase\JWT\SignatureInvalidException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
@@ -144,9 +143,18 @@ if (!function_exists('jwt')) {
 
         // decode jwt
         try {
-            $decoded = JWT::decode($jwt, $tokenLog->secret, ['HS256']);
             setTimezone();
-        } catch (SignatureInvalidException $exception) {
+
+            /*
+             * When checking nbf, iat or expiration times,
+             * we want to provide some extra leeway time to
+             * account for clock skew.
+             */
+            JWT::$leeway = 10;
+
+            // Decodes a JWT string into a PHP object.
+            $decoded = JWT::decode($jwt, $tokenLog->secret, ['HS256']);
+        } catch (\Exception $exception) {
             return failedJSONResponse('Token failed to validate for the following reason ' . $exception->getMessage() . '.');
         }
 

@@ -33,7 +33,7 @@ class SettingController extends APIController
     public function syncAction()
     {
         return $this->json([
-            'profile' => $this->_user::single(authId()),
+            'profile' => $this->_user->single(authId()),
             'setting' => Setting::keyValuePair()
         ]);
     }
@@ -51,9 +51,9 @@ class SettingController extends APIController
         ]);
         $inputs['profile_picture'] = $request->file('profile_picture');
 
-        $this->_user::clearBoolean();
-        $this->_user::edit(__me()->id, $inputs);
-        return $this->json((new User())->single(__me()->id));
+        $this->_user->clearBoolean();
+        $this->_user->edit(__me()->id, $inputs);
+        return $this->json($this->_user->single(__me()->id));
     }
 
     /**
@@ -64,8 +64,8 @@ class SettingController extends APIController
      */
     public function securityUpdateAction(AccountSecurity $request)
     {
-        $this->_user::clearBoolean();
-        $this->_user::edit(__me()->id, $request->only(['email', 'password']));
-        return $this->json($this->_user::single(__me()->id));
+        $this->_user->clearBoolean();
+        $this->_user->edit(__me()->id, $request->only(['email', 'password']));
+        return $this->json($this->_user->single(__me()->id));
     }
 }

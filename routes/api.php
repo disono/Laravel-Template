@@ -26,7 +26,9 @@ Route::get('v1/p/category/{name}', 'API\V1\Page\PageController@categoryAction')-
 Route::get('v1/p/archive/{year}/{month}', 'API\V1\Page\PageController@archiveAction')->name('api.v1.page.archive.browse');
 
 // application settings
-Route::get('v1/application/settings', 'API\V1\Application\ApplicationController@settingsAction')->name('api.v1.application.settings.details');
+Route::get('v1/application/settings', 'API\V1\Application\ApplicationController@settingsAction')->name('api.v1.application.settings');
+Route::get('v1/application/countries', 'API\V1\Application\ApplicationController@countryAction')->name('api.v1.application.setting.country');
+Route::get('v1/application/cities/{country_id}', 'API\V1\Application\ApplicationController@cityAction')->name('api.v1.application.setting.city');
 
 Route::group(['middleware' => ['api.auth', 'auth.checker']], function () {
     // user

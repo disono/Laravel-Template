@@ -19,7 +19,7 @@ class Page extends BaseModel
     protected $tableName = 'pages';
     protected $writableColumns = [
         'user_id',
-        'name', 'content', 'slug', 'tags', 'template',
+        'name', 'content', 'summary', 'slug', 'tags', 'template',
         'is_draft', 'is_email_to_subscriber',
 
         'seo_description', 'seo_keywords', 'seo_robots', 'og_url', 'og_type', 'og_title', 'og_description',

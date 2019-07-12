@@ -15,7 +15,7 @@ return [
     'supportsCredentials' => false,
     'allowedOrigins' => ['*'],
     'allowedHeaders' => [
-        'Authorization', 'tkey', 'uid', 'dtm', 'did',
+        'Authorization', 'source', 'app-name', 'tkey', 'uid', 'dtm', 'did',
         'X-Auth-Token', 'X-XSRF-TOKEN', 'Access-Control-Allow-Headers',
         'Origin', 'Accept', 'X-Requested-With', 'Content-Type', 'Access-Control-Request-Method',
         'Access-Control-Request-Headers'

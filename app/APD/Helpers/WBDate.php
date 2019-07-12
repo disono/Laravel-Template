@@ -121,12 +121,12 @@ if (!function_exists('setTimezone')) {
     function setTimezone()
     {
         try {
-            if (!fetchRequestValue('device_timezone')) {
+            if (!fetchRequestValue('dtm')) {
                 return;
             }
 
             $collection = collect(timezone_identifiers_list());
-            $searchFor = fetchRequestValue('device_timezone');
+            $searchFor = fetchRequestValue('dtm');
             $c = $collection->get($collection->search(function ($item, $key) use ($searchFor) {
                 return strpos($item, $searchFor) !== false;
             }));

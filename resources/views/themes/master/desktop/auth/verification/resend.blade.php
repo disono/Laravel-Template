@@ -20,19 +20,9 @@
                 <div class="alert alert-light rounded shadow-sm" role="alert">
                     <form action="{{ route('auth.verify.resend', ['type' => $type]) }}" method="post">
                         {{ csrf_field() }}
-
-                        <div class="form-group">
-                            <label for="type_value">Enter your {{ $type }}</label>
-
-                            <input type="text" class="form-control{{ session('error') ? ' is-invalid invalid' : '' }}"
-                                   id="type_value" name="type_value" placeholder="Enter {{ $type }}">
-
-                            @if(session('error'))
-                                <div class="invalid-feedback">{{ ucfirst(session('error')) }}</div>
-                            @endif
-                        </div>
-
-                        <button type="submit" class="btn btn-primary">Resend</button>
+                        <button type="submit" class="btn btn-primary">
+                            Resend your new code for {{ $type }} - ({{ __me()->$type }}).
+                        </button>
                     </form>
                 </div>
             </div>

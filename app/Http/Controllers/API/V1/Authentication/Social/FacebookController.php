@@ -98,7 +98,8 @@ class FacebookController extends APIController
     private function _facebookRegistration()
     {
         return SocialAuthentication::where('social_id', $this->request->get('social_id'))
-            ->where('type', 'Facebook')->first();
+            ->where('type', 'Facebook')
+            ->first();
     }
 
     /**
@@ -119,9 +120,11 @@ class FacebookController extends APIController
      */
     private function _createUser()
     {
-        $email = ($this->request->get('email')) ? $this->request->get('email') :
+        $email = ($this->request->get('email')) ?
+            $this->request->get('email') :
             urlTitle(__settings('title')->value, '.') . time() . str_random(4) . '@' . env('APP_DOMAIN');
-        $username = str_random(8) . time();
+
+        $username = str_random(8) . '_' . time();
 
         $create = $this->_user->store([
             'first_name' => $this->request->get('first_name'),

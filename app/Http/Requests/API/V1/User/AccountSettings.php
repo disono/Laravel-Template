@@ -25,12 +25,12 @@ class AccountSettings extends APIAuthRequest
             'profile_picture' => 'image|max:' . __settings('fileSizeLimitImage')->value,
 
             'address' => 'max:500',
-            'phone' => 'between:7,22',
+            'phone' => 'numeric|phone_number',
             'gender' => 'in:Male,Female',
             'birthday' => 'date|birthday:' . __settings('minimumAgeForRegistration')->value,
 
             'country_id' => 'integer|exists:countries,id',
-            'city_id' => 'integer|exists:countries,id'
+            'city_id' => 'integer|exists:cities,id'
         ];
     }
 }

@@ -55,7 +55,7 @@ class AuthorizationRoleController extends Controller
         $categories = [];
 
         foreach ($this->_routesName() as $route) {
-            $categories[$route->category_slug]['category_name'] = ucwords($route->category_name);
+            $categories[$route->category_slug]['category_name'] = strtoupper($route->category_name);
             $categories[$route->category_slug]['data'][] = $route;
         }
 
@@ -75,7 +75,7 @@ class AuthorizationRoleController extends Controller
                 if ($_name[0] === 'admin') {
                     $data = new \stdClass();
                     $data->id = str_random(32);
-                    $data->name = ucwords(str_replace('.', ' ', $this->_fromUcToSpace(str_replace('admin.', '', $action['as']))));
+                    $data->name = strtoupper(str_replace('.', ' ', $this->_fromUcToSpace(str_replace('admin.', '', $action['as']))));
                     $data->value = $action['as'];
                     $data->category_slug = $_name[1];
                     $data->category_name = $this->_fromUcToSpace($_name[1]);
