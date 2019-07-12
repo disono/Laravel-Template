@@ -63,3 +63,12 @@ Laravel: [http://laravel.com](http://laravel.com) current version 5.6 (Latest Ve
 
 # License
 Laravel Project Template is licensed under the Apache License (ASL) license. For more information, see the LICENSE file in this repository.
+
+### Hire Us!
+Do you like my work? I am a Senior Full Stack App Developer (Web, Desktop & Mobile App) & Syadmin, you can hire me, open a issue or contact me!
+
+Additionally you could be interested in check or hire us through our [Webmons Development Studio.](https://webmons.com)
+
+Do you still need more info about me or my work?
+
+You could check my [Linkedin profile](https://www.linkedin.com/in/disono) and [Twitter profile](https://twitter.com/master_archie)
