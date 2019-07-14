@@ -19,10 +19,10 @@
 
         <div class="row mt-3">
             <div class="col">
-                <form method="get" action="{{ route('admin.fcmNotification.browse') }}" id="frmTableFilter">
+                <form method="get" action="{{ route('admin.socketIoNotification.browse') }}" id="frmTableFilter">
                     <input type="submit" style="display: none;">
 
-                    @include('vendor.app.toolbar', ['createRoute' => 'admin.fcmNotification.create', 'toolbarHasDel' => true])
+                    @include('vendor.app.toolbar', ['createRoute' => 'admin.socketIoNotification.create', 'toolbarHasDel' => true])
 
                     <div class="table-responsive-sm">
                         <table class="table table-bordered">
@@ -44,7 +44,7 @@
                             </thead>
 
                             <tbody>
-                            @foreach($notifications as $row)
+                            @foreach($socket_notification as $row)
                                 <tr id="parent_tr_{{$row->id}}">
                                     {!! tdDelete($row->id) !!}
 
@@ -60,12 +60,12 @@
 
                                             <div class="dropdown-menu">
                                                 <a class="dropdown-item"
-                                                   href="{{ url('admin/fcm-notification/edit/' . $row->id) }}">Edit</a>
+                                                   href="{{ url('admin/socket-io-notification/edit/' . $row->id) }}">Edit</a>
 
                                                 <div class="dropdown-divider"></div>
 
                                                 <a class="dropdown-item"
-                                                   href="{{ url('admin/fcm-notification/destroy/' . $row->id) }}"
+                                                   href="{{ url('admin/socket-io-notification/destroy/' . $row->id) }}"
                                                    id="parent_tr_del_{{ $row->id }}"
                                                    v-on:click.prevent="onDeleteResource($event, '#parent_tr_{{ $row->id }}')">Delete</a>
                                             </div>
@@ -78,7 +78,7 @@
                     </div>
                 </form>
 
-                @include('vendor.app.pagination', ['_lists' => $notifications])
+                @include('vendor.app.pagination', ['_lists' => $socket_notification])
             </div>
         </div>
     </div>

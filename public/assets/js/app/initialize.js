@@ -3,10 +3,12 @@
  * @link        https://github.com/disono/Laravel-Template
  * @lincense    https://github.com/disono/Laravel-Template/blob/master/LICENSE
  * @copyright   Webmons Development Studio
- * @desc        Initialize all non vue libraries and codes
  */
 
 let WBInitialize = function () {
+    // event emitter
+    let _ee = new EventEmitter();
+
     jQ(document).ready(function () {
         // feather icons
         if (typeof feather !== 'undefined') {
@@ -45,6 +47,34 @@ let WBInitialize = function () {
 };
 
 let WBJSOnInit = function () {
+    let _datePickerEvents = {
+        // on pick a date callback
+        onPickDate() {
+            if (this.$node.attr('data-form-submit') && this.$node.val()) {
+                jQ(this.$node.attr('data-form-submit')).submit();
+            }
+        },
+
+        // on open callback
+        onOpenEvent() {
+
+        }
+    };
+
+    // validate inputs
+    function _validateInputs(self) {
+        let rules = {};
+        let data = {};
+        let inputName = self.attr('name');
+
+        data[inputName] = self.val() ? self.val() : null;
+        rules[inputName] = self.attr('data-validate');
+
+        let validation = new Validator(data, rules);
+        validation.passes();
+        WBServices.helpers.form.formInValid(self, validation.errors.first(inputName));
+    }
+
     setTimeout(function () {
         // select picker
         WBServices.form.selectPickerSearch();
@@ -108,11 +138,11 @@ let WBJSOnInit = function () {
             onOpen: _datePickerEvents.onOpenEvent,
         });
 
-       jQ('.selectize').selectize({
-           persist: false,
-           createOnBlur: true,
-           create: true
-       });
+        jQ('.selectize').selectize({
+            persist: false,
+            createOnBlur: true,
+            create: true
+        });
 
         // on checkbox change redirect to uri
         jQ('.is-checkbox-change').off().on('change', function (e) {
@@ -144,33 +174,5 @@ let WBJSOnInit = function () {
                 x.type = "password";
             }
         });
-    }, 50);
-
-    let _datePickerEvents = {
-        // on pick a date callback
-        onPickDate() {
-            if (this.$node.attr('data-form-submit') && this.$node.val()) {
-                jQ(this.$node.attr('data-form-submit')).submit();
-            }
-        },
-
-        // on open callback
-        onOpenEvent() {
-
-        }
-    };
-
-    // validate inputs
-    function _validateInputs(self) {
-        let rules = {};
-        let data = {};
-        let inputName = self.attr('name');
-
-        data[inputName] = self.val() ? self.val() : null;
-        rules[inputName] = self.attr('data-validate');
-
-        let validation = new Validator(data, rules);
-        validation.passes();
-        WBServices.helpers.form.formInValid(self, validation.errors.first(inputName));
-    }
+    }, 300);
 };

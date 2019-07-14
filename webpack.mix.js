@@ -29,6 +29,7 @@ let WB_JS = [
     'node_modules/pickadate/lib/compressed/picker.date.js',
     'node_modules/pickadate/lib/compressed/picker.time.js',
     'node_modules/@fortawesome/fontawesome-free/js/all.js',
+    'node_modules/wolfy87-eventemitter/EventEmitter.min.js',
     'node_modules/feather-icons/dist/feather.min.js',
     'node_modules/axios/dist/axios.min.js',
     'node_modules/vue/dist/vue.min.js'
@@ -56,6 +57,7 @@ if (env === 'p') {
         'public/assets/js/app/helper.js',
         'public/assets/js/app/initialize.js',
         'public/assets/js/app/services.js',
+        'public/assets/js/app/io.js',
 
         'public/assets/js/vue/providers.js',
         'public/assets/js/vue/toolbar.js'

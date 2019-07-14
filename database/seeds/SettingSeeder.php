@@ -69,10 +69,11 @@ class SettingSeeder extends Seeder
             ['Phone verification expiration', 'phoneVerificationExpiration', '1440', 'text', NULL, 5, 'Expiration is in minutes.', 0],
 
             ['FCM', 'fcm', NULL, 'checkbox_single', 'enabled', 6, NULL, 1],
-            ['FCM Topics', 'fcm_topics', 'news', 'checkbox_multiple', 'news,marketing', 6, NULL, 1],
+            ['FCM Topics', 'fcmTopics', 'news', 'checkbox_multiple', 'news,marketing', 6, NULL, 1],
 
             ['SocketIO', 'socketIO', NULL, 'checkbox_single', 'enabled', 6, NULL, 1],
             ['SocketIO App Name', 'socketIOAppName', 'appName', 'text', NULL, 6, NULL, 1],
+            ['SocketIO Topics', 'socketIOTopics', 'news', 'checkbox_multiple', 'news,marketing', 6, NULL, 1],
             ['SocketIO Server', 'socketIOServer', 'http://localhost:4000', 'text', NULL, 6, NULL, 1],
             ['SocketIO Secret Key', 'socketIOSecretKey', '*TWsJFnA6wvJr-K3hzzqZn%A-W!2mKWw', 'text', NULL, 6, NULL, 0],
             ['SocketIO Key Expiration', 'socketIOExpiration', '1', 'text', NULL, 6, 'Expired in minutes.', 1],

@@ -5,7 +5,7 @@
  * @copyright   Webmons Development Studio
 --}}
 
-<form action="{{ route('module.report.store') }}" method="post" id="frmPageReport" data-show-loading="no">
+<form action="{{ route('module.application.report.store') }}" method="post" id="frmPageReport" data-show-loading="no">
     <div class="modal-header">
         <h5 class="modal-title">Submit a Report?</h5>
         <button type="button" class="close dialogDismiss" aria-label="Close">

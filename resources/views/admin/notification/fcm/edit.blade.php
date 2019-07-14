@@ -15,7 +15,7 @@
             <div class="col">
                 <div class="row">
                     <div class="col">
-                        @include('admin.notification.fcm.menu')
+                        @include('admin.notification.menu')
                     </div>
                 </div>
 

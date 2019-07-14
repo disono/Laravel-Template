@@ -14,6 +14,7 @@ if (!function_exists('socketIOPublish')) {
      * Publish data to socketIO
      *
      * @param $to
+     * format: token (from tokens table)
      * @param array $data
      * @return bool|string
      */

@@ -15,7 +15,7 @@
             </div>
 
             <div class="col-sm-12 col-lg-9">
-                <a class="btn btn-primary mb-3" href="{{ route('user.setting.address.create') }}"
+                <a class="btn btn-primary mb-3" href="{{ route('module.user.setting.address.create') }}"
                    role="button"><i class="fas fa-plus"></i> Add a New Address</a>
 
                 @if(count($addresses))

@@ -10,34 +10,65 @@
 
 <div class="custom-controls-stacked d-block my-3">
     <div class="bg-light p-3 mt-3 mb-3 rounded-lg">
-        <code>
+        <pre>
             @php
                 echo nl2br(htmlspecialchars("let socket = io('http://localhost:4000', {
-                        transportOptions: {
-                            polling: {
-                                extraHeaders: {
-                                    'source': 'client',
-                                    'app-name': 'appName'
-                                    't-key': '',
-                                    'uid': ''
-                                }
-                            }
-                        }
-                    });
+    transportOptions: {
+        polling: {
+            extraHeaders: {
+                'source': 'client',
+                'app-name': 'appName'
+                't-key': '',
+                'uid': ''
+            }
+        }
+    }
+});
 
-                    socket.on('connect', function () {
-                        console.log('onConnect');
-                    });
+socket.on('connect', function() {
+    console.log('onConnect');
+});
 
-                    socket.on('disconnect', function () {
-                        console.log('onDisconnect');
-                    });
+socket.on('disconnect', function() {
+    console.log('onDisconnect');
+});
 
-                    socket.on('appName_to', (msg) => {
-                        console.log(msg);
-                    });
-                "))
+socket.on('appName_to', (msg) => {
+    console.log(msg);
+});
+
+// client subscription
+// format: appName_token_nameOfYourSubscription
+WBSocketIO.builder().then(self => {
+    self.subscriptions([
+        // sample client
+        {
+            name: 'client',
+            callback: data => {
+                console.log(data);
+            }
+        },
+
+        // sample chat
+        {
+            name: 'chat',
+            callback: data => {
+                console.log(data);
+            }
+        },
+
+        // me
+        {
+            name: null,
+            callback: data => {
+                console.log(data);
+            }
+        }
+    ]);
+
+    self.publish('to', {data: 'My Data Here'});
+});"))
             @endphp
-        </code>
+        </pre>
     </div>
 </div>

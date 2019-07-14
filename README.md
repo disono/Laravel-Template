@@ -40,6 +40,7 @@ tinymce
 validatorjs
 vue
 selectize
+emitter-js
 ```
 
 # How to install

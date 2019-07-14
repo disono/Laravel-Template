@@ -19,7 +19,7 @@
                     <h3>{{ $view_title }}</h3>
                     <hr>
 
-                    <form action="{{ route('user.setting.address.store') }}" method="post"
+                    <form action="{{ route('module.user.setting.address.store') }}" method="post"
                           v-on:submit.prevent="onFormUpload">
                         {{ csrf_field() }}
 

@@ -33,6 +33,7 @@ use App\Models\Role;
 use App\Models\Setting;
 use App\Models\SettingCategory;
 use App\Models\SocialAuthentication;
+use App\Models\SocketNotification;
 use App\Models\State;
 use App\Models\Token;
 use App\Models\User;
@@ -90,6 +91,7 @@ class ModelServiceProvider extends ServiceProvider
             'Setting' => Setting::class,
             'SettingCategory' => SettingCategory::class,
             'SocialAuthentication' => SocialAuthentication::class,
+            'SocketNotification' => SocketNotification::class,
             'State' => State::class,
             'Token' => Token::class,
             'User' => User::class,

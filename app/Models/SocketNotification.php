@@ -10,9 +10,9 @@ namespace App\Models;
 
 use App\Models\Vendor\BaseModel;
 
-class FirebaseNotification extends BaseModel
+class SocketNotification extends BaseModel
 {
-    protected $tableName = 'firebase_notifications';
+    protected $tableName = 'socket_notifications';
     protected $writableColumns = [
         'user_id', 'title', 'content', 'type', 'topic_name', 'token'
     ];
@@ -27,12 +27,12 @@ class FirebaseNotification extends BaseModel
 
     public function actionStoreAfter($query, $inputs)
     {
-        $this->sendFCM($query);
+        $this->sendNotification($query);
     }
 
     public function actionEditAfter($query, $inputs)
     {
-        $this->sendFCM($query);
+        $this->sendNotification($query);
     }
 
     public function user()
@@ -40,57 +40,16 @@ class FirebaseNotification extends BaseModel
         return $this->belongsTo('App\Models\User');
     }
 
-    /**
-     * Send to
-     *
-     * @param $token
-     * @param $title
-     * @param $body
-     * @return bool|string
-     */
-    public function sendTo($token, $title, $body)
-    {
-        try {
-            FCMSend($token, $title, $body);
-            return true;
-        } catch (\Exception $e) {
-            return $e->getMessage();
-        }
-    }
-
-    /**
-     * Send topic
-     *
-     * @param $topic_name
-     * @param $title
-     * @param $body
-     * @return bool|string
-     */
-    public function topic($topic_name, $title, $body)
-    {
-        try {
-            FCMTopic($topic_name, $title, $body);
-            return true;
-        } catch (\Exception $e) {
-            return $e->getMessage();
-        }
-    }
-
-    /**
-     * Send Notification
-     *
-     * @param $query
-     * @throws \Exception
-     */
-    private function sendFCM($query)
+    private function sendNotification($query)
     {
         try {
             if ($query->type === 'topic' && $query->topic_name) {
-                FCMTopic($query->topic_name, $query->title, $query->content);
+                socketIOPublish($query->topic_name, ['title' => $query->title, 'content' => $query->content]);
             } else if ($query->type === 'token' && $query->token) {
-                FCMSend($query->token, $query->title, $query->content);
+                socketIOPublish($query->token, ['title' => $query->title, 'content' => $query->content]);
             }
         } catch (\Exception $e) {
+            logErrors($e->getMessage());
             throwError($e->getMessage());
         }
     }

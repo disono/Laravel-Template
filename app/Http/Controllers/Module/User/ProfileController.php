@@ -9,7 +9,8 @@
 namespace App\Http\Controllers\Module\User;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
+use App\Models\Vendor\Facades\Token;
+use App\Models\Vendor\Facades\User;
 
 class ProfileController extends Controller
 {
@@ -21,7 +22,8 @@ class ProfileController extends Controller
 
     public function showAction($username)
     {
-        $profile = (new User())->single($username, 'username');
+        $username = $username === 'me' ? __me()->username : $username;
+        $profile = User::single($username, 'username');
         if (!$profile) {
             return $this->error(404);
         }
@@ -31,6 +33,18 @@ class ProfileController extends Controller
 
     public function searchAction()
     {
-        return $this->view('search', (new User())->fetchAll(requestValues('search|role')));
+        return $this->view('search', User::fetchAll(requestValues('search|role')));
+    }
+
+    public function tokenAction()
+    {
+        $token = Token::fetchAll(['single' => true, 'user_id' => __me()->id, 'token' => session()->getId(), 'source' => 'client']);
+        if (!$token) {
+            return $this->error('404', 'Token not found.');
+        }
+
+        unset($token->secret);
+        $token->jwt = jwtEncode();
+        return $this->json($token);
     }
 }

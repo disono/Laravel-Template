@@ -61,7 +61,7 @@
 
         {{-- uploader form --}}
         <div class="col-sm-12 col-md-4 border-left">
-            <form action="{{ route('module.file.store') }}" id="fileUploaderFrm">
+            <form action="{{ route('module.application.file.store') }}" id="fileUploaderFrm">
                 <div class="form-group">
                     <label for="name">Title</label>
                     <input id="name" type="text"

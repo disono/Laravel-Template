@@ -48,7 +48,7 @@ class Authenticator
         return !$me->is_email_verified &&
             __settings('emailVerification')->value === 'enabled' &&
             !$this->_allowedRoute([
-                'user.setting.general', 'user.setting.general.update',
+                'module.user.setting.general', 'module.user.setting.general.update',
                 'api.v1.user.sync', 'api.v1.user.setting.general.update', 'api.v1.user.setting.security.update'
             ]);
     }
@@ -76,7 +76,7 @@ class Authenticator
         return !$me->is_phone_verified &&
             __settings('phoneVerification')->value === 'enabled' &&
             !$this->_allowedRoute([
-                'auth.verify.phone', 'user.setting.general', 'user.setting.general.update',
+                'auth.verify.phone', 'module.user.setting.general', 'module.user.setting.general.update',
                 'api.v1.user.sync', 'api.v1.user.setting.general.update', 'api.v1.user.setting.security.update'
             ]);
     }

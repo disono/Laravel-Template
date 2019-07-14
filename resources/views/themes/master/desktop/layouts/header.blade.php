@@ -15,8 +15,8 @@
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
-            <li class="nav-item {{ isActiveMenu('page.home') }}">
-                <a class="nav-link" href="{{ route('page.home') }}">Home</a>
+            <li class="nav-item {{ isActiveMenu('module.page.home') }}">
+                <a class="nav-link" href="{{ route('module.page.home') }}">Home</a>
             </li>
         </ul>
 
@@ -28,16 +28,16 @@
                         {{ __me()->first_name }}
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="{{ route('user.setting.general') }}">Account Settings</a>
-                        <a class="dropdown-item" href="{{ route('user.setting.security') }}">Security</a>
+                        <a class="dropdown-item" href="{{ route('module.user.setting.general') }}">Account Settings</a>
+                        <a class="dropdown-item" href="{{ route('module.user.setting.security') }}">Security</a>
 
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="{{ route('auth.logout') }}">Logout</a>
                     </div>
                 </li>
 
-                <li class="nav-item {{ isActiveMenu('user.dashboard') }}">
-                    <a class="nav-link" href="{{ route('user.dashboard') }}">Dashboard</a>
+                <li class="nav-item {{ isActiveMenu('module.user.dashboard') }}">
+                    <a class="nav-link" href="{{ route('module.user.dashboard') }}">Dashboard</a>
                 </li>
             @else
                 <li class="nav-item {{ isActiveMenu('auth.register') }}">

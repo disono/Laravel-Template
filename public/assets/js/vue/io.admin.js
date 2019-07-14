@@ -17,20 +17,24 @@ new Vue({
     },
 
     data: {
-        frmAdminFCM: {
+        frmAdminIO: {
             type: jQ('#type').val(),
             topic_name: jQ('#topic_name').val(),
             token: jQ('#token').val()
         }
     },
 
+    updated: function () {
+
+    },
+
     methods: {
-        frmAdminFCMOnTypeChange() {
-            if (this.frmAdminFCM.type === 'topic') {
-                this.frmAdminFCM.topic_name = '';
+        frmAdminIOOnTypeChange() {
+            if (this.frmAdminIO.type === 'topic') {
+                this.frmAdminIO.topic_name = '';
                 jQ('#topic_name').val('');
-            } else if (this.frmAdminFCM.type === 'token') {
-                this.frmAdminFCM.token = '';
+            } else if (this.frmAdminIO.type === 'token') {
+                this.frmAdminIO.token = '';
                 jQ('#token').val('');
             }
 

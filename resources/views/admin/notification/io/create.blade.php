@@ -21,7 +21,7 @@
 
                 <div class="row mt-3">
                     <div class="col">
-                        <form action="{{ route('admin.fcmNotification.store') }}" method="post"
+                        <form action="{{ route('admin.socketIoNotification.store') }}" method="post"
                               v-on:submit.prevent="onFormUpload">
                             {{ csrf_field() }}
 
@@ -43,9 +43,8 @@
                                 <div class="col-md-4 col-sm-12 mb-3">
                                     <label for="content">Content <strong class="text-danger">*</strong></label>
 
-                                    <input id="content" type="text"
-                                           class="form-control{{ hasInputError($errors, 'content') }}"
-                                           name="content" value="{{ old('content') }}" data-validate="required">
+                                    <textarea name="content" id="content" rows="3" data-validate="required"
+                                              class="form-control{{ hasInputError($errors, 'content') }}">{{ old('content') }}</textarea>
 
                                     @if ($errors->has('content'))
                                         <div class="invalid-feedback">{{ $errors->first('content') }}</div>
@@ -59,8 +58,8 @@
 
                                     <select name="type" id="type" class="form-control select_picker"
                                             data-style="btn-blue-50"
-                                            v-model="frmAdminFCM.type"
-                                            @change="frmAdminFCMOnTypeChange">
+                                            v-model="frmAdminIO.type"
+                                            @change="frmAdminIOOnTypeChange">
                                         <option value="">Select Type</option>
                                         <option value="topic">Topic</option>
                                         <option value="token">Token</option>
@@ -72,7 +71,7 @@
                                 </div>
                             </div>
 
-                            <div class="row" v-if="frmAdminFCM.type === 'topic'">
+                            <div class="row" v-if="frmAdminIO.type === 'topic'">
                                 <div class="col-md-4 col-sm-12 mb-3">
                                     <label for="topic_name">Topic Name <strong class="text-danger">*</strong></label>
 
@@ -81,7 +80,7 @@
                                             class="form-control select_picker"
                                             data-validate="required">
                                         <option value="">Select Type</option>
-                                        @foreach($fcmTopics as $topic)
+                                        @foreach($topics as $topic)
                                             <option value="{{ $topic }}">{{ ucfirst($topic) }}</option>
                                         @endforeach
                                     </select>
@@ -92,7 +91,7 @@
                                 </div>
                             </div>
 
-                            <div class="row" v-if="frmAdminFCM.type === 'token'">
+                            <div class="row" v-if="frmAdminIO.type === 'token'">
                                 <div class="col-md-4 col-sm-12 mb-3">
                                     <label for="token">Token <strong class="text-danger">*</strong></label>
 
@@ -100,8 +99,8 @@
                                             data-style="btn-blue-50"
                                             class="form-control select_picker"
                                             data-live-search="true"
-                                            data-live-path="/admin/fcm-notification/tokens"
-                                            data-live-value="fcm_token"
+                                            data-live-path="/admin/socket-io-notification/tokens"
+                                            data-live-value="token"
                                             data-live-text="full_name"
                                             data-validate="required">
                                         <option value="">Select Token</option>

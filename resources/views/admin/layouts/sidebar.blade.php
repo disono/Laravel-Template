@@ -25,7 +25,7 @@
             </li>
 
             <li class="nav-item">
-                <a class="nav-link {{ isActiveMenu('user.dashboard') }}" href="{{ route('user.dashboard') }}"
+                <a class="nav-link {{ isActiveMenu('module.user.dashboard') }}" href="{{ route('module.user.dashboard') }}"
                    title="Dashboard" data-toggle="tooltip" data-placement="right">
                     <span data-feather="monitor"></span>
                     <small class="iconav-nav-label d-md-none">Dashboard</small>
@@ -35,7 +35,8 @@
             <li class="nav-item">
                 <a class="nav-link {{ isActiveMenu('admin.user.browse|admin.user.create|admin.user.edit|
                 admin.userTracker.browse|admin.userAuthenticationHistory.browse|admin.activityLog.browse|admin.activityLog.details') }}"
-                   href="{{ route('admin.user.browse') }}" title="Manage Users" data-toggle="tooltip" data-placement="right">
+                   href="{{ route('admin.user.browse') }}" title="Manage Users" data-toggle="tooltip"
+                   data-placement="right">
                     <span data-feather="users"></span>
                     <small class="iconav-nav-label d-md-none">Manage Users</small>
                 </a>
@@ -45,7 +46,8 @@
                 <a class="nav-link {{ isActiveMenu('admin.page.browse|admin.pageCategory.browse|
                 admin.pageCategory.create|admin.pageCategory.edit|admin.pageView.browse|admin.page.create|
                 admin.page.edit') }}"
-                   href="{{ route('admin.page.browse') }}" title="Manage Pages" data-container="body" data-toggle="tooltip"
+                   href="{{ route('admin.page.browse') }}" title="Manage Pages" data-container="body"
+                   data-toggle="tooltip"
                    data-placement="right">
                     <span data-feather="layout"></span>
                     <small class="iconav-nav-label d-md-none">Manage Pages</small>
@@ -53,8 +55,8 @@
             </li>
 
             <li class="nav-item">
-                <a class="nav-link {{ isActiveMenu('admin.fcmNotification.browse|admin.fcmNotification.create|
-                admin.fcmNotification.edit') }}"
+                <a class="nav-link {{ isActiveMenu('admin.fcmNotification.browse|admin.fcmNotification.create|admin.fcmNotification.edit|
+                admin.socketIoNotification.browse|admin.socketIoNotification.create|admin.socketIoNotification.edit') }}"
                    href="{{ route('admin.fcmNotification.browse') }}" title="Manage Notifications" data-toggle="tooltip"
                    data-placement="right">
                     <span data-feather="bell"></span>

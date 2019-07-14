@@ -56,7 +56,7 @@ class FCMController extends Controller
         }
 
         $this->setHeader('title', 'Send New FCM Notification');
-        return $this->view('create', ['fcm_topics' => explode(',', __settings('fcm_topics')->input_value)]);
+        return $this->view('create', ['fcmTopics' => explode(',', __settings('fcmTopics')->input_value)]);
     }
 
     public function storeAction(FCMStore $request)

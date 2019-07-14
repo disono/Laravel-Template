@@ -16,7 +16,7 @@
 
             <div class="col-sm-12 col-lg-9">
                 <div class="p-3 shadow-sm rounded bg-white border-0">
-                    <form role="form" method="POST" action="{{ route('user.setting.security.update') }}"
+                    <form role="form" method="POST" action="{{ route('module.user.setting.security.update') }}"
                           enctype="multipart/form-data" v-on:submit.prevent="onFormPost">
                         {!! csrf_field() !!}
 

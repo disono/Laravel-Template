@@ -28,7 +28,7 @@
                     </h3>
                     <hr>
 
-                    <form action="{{ route('user.setting.phone.update') }}" method="post"
+                    <form action="{{ route('module.user.setting.phone.update') }}" method="post"
                           v-on:submit.prevent="onFormUpload">
                         {{ csrf_field() }}
 

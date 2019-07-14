@@ -18,6 +18,7 @@
     <script src="{{ devAssets('assets/js/app/helper.js') }}"></script>
     <script src="{{ devAssets('assets/js/app/initialize.js') }}"></script>
     <script src="{{ devAssets('assets/js/app/services.js') }}"></script>
+    <script src="{{ devAssets('assets/js/app/io.js') }}"></script>
 
     <script src="{{ devAssets('assets/js/vue/providers.js') }}"></script>
     <script src="{{ devAssets('assets/js/vue/toolbar.js') }}"></script>

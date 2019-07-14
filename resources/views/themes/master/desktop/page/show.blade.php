@@ -25,7 +25,7 @@
 
                     <p>
                         @foreach(explode(',', $page->tags) as $tag)
-                            <a href="{{ route('page.tag.browse', ['tag' => urlTitle($tag)]) }}" class="btn btn-light btn-sm">#{{ $tag }}</a>
+                            <a href="{{ route('module.page.tag.browse', ['tag' => urlTitle($tag)]) }}" class="btn btn-light btn-sm">#{{ $tag }}</a>
                         @endforeach
                     </p>
                 </div>

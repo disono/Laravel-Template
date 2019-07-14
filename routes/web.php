@@ -1,11 +1,11 @@
 <?php
 
 // page
-Route::get('/', 'Module\Page\PageController@homeAction')->name('page.home');
-Route::get('p/{slug}', 'Module\Page\PageController@showAction')->name('page.show.browse');
-Route::get('p/category/{slug}', 'Module\Page\PageController@categoryAction')->name('page.category.browse');
-Route::get('p/tag/{tag}', 'Module\Page\PageController@tagAction')->name('page.tag.browse');
-Route::get('p/archive/{year}/{month}', 'Module\Page\PageController@archiveAction')->name('page.archive.browse');
+Route::get('/', 'Module\Page\PageController@homeAction')->name('module.page.home');
+Route::get('p/{slug}', 'Module\Page\PageController@showAction')->name('module.page.show.browse');
+Route::get('p/category/{slug}', 'Module\Page\PageController@categoryAction')->name('module.page.category.browse');
+Route::get('p/tag/{tag}', 'Module\Page\PageController@tagAction')->name('module.page.tag.browse');
+Route::get('p/archive/{year}/{month}', 'Module\Page\PageController@archiveAction')->name('module.page.archive.browse');
 
 // login
 Route::get('login', 'Module\Authentication\LoginController@loginAction')->name('auth.login');
@@ -36,7 +36,7 @@ Route::get('verify/resend/{type}', 'Module\Authentication\VerifyController@resen
 Route::post('verify/resend/{type}', 'Module\Authentication\VerifyController@resendVerificationProcessAction')->name('auth.verify.resend');
 
 // views
-Route::get('view/{type}', 'Module\Application\ViewController@viewAction')->name('application.view');
+Route::get('view/{type}', 'Module\Application\ViewController@viewAction')->name('module.application.view');
 
 // stream
 Route::get('stream/video/{file}', 'Module\Application\FileController@streamVideoAction')->name('module.file.video.stream');
@@ -48,8 +48,6 @@ Route::get('location/cities/{country_id}', 'Module\Application\LocationControlle
 
 // development
 Route::get('dev', 'Module\Page\DevelopmentController@applicationAction')->name('development.application');
-
-// documentation
 Route::get('dev/docs', 'Module\Page\DevelopmentController@documentationAction')->name('development.documentation');
 
 /*
@@ -65,37 +63,39 @@ Route::group(['middleware' => ['auth', 'auth.checker']], function () {
      */
 
     // profile
-    Route::get('u/search', 'Module\User\ProfileController@searchAction')->name('user.browse');
-    Route::get('u/{username}', 'Module\User\ProfileController@showAction')->name('user.details');
+    Route::get('u/search', 'Module\User\ProfileController@searchAction')->name('module.user.browse');
+    Route::get('u/{username}', 'Module\User\ProfileController@showAction')->name('module.user.details');
+    Route::get('u/security/token', 'Module\User\ProfileController@tokenAction')->name('module.user.token');
 
     // user
-    Route::get('dashboard', 'Module\User\DashboardController@showAction')->name('user.dashboard');
-    Route::get('user/settings', 'Module\User\SettingsController@generalAction')->name('user.setting.general');
-    Route::post('user/setting/update', 'Module\User\SettingsController@generalUpdateAction')->name('user.setting.general.update');
-    Route::get('user/security', 'Module\User\SettingsController@securityAction')->name('user.setting.security');
-    Route::post('user/security/update', 'Module\User\SettingsController@securityUpdateAction')->name('user.setting.security.update');
+    Route::get('dashboard', 'Module\User\DashboardController@showAction')->name('module.user.dashboard');
+    Route::get('user/settings', 'Module\User\SettingsController@generalAction')->name('module.user.setting.general');
+    Route::post('user/setting/update', 'Module\User\SettingsController@generalUpdateAction')->name('module.user.setting.general.update');
+    Route::get('user/security', 'Module\User\SettingsController@securityAction')->name('module.user.setting.security');
+    Route::post('user/security/update', 'Module\User\SettingsController@securityUpdateAction')->name('module.user.setting.security.update');
 
     // address
-    Route::get('user/setting/addresses', 'Module\User\AddressController@indexAction')->name('user.setting.address.browse');
-    Route::get('user/setting/address/create', 'Module\User\AddressController@createAction')->name('user.setting.address.create');
-    Route::post('user/setting/addresses/store', 'Module\User\AddressController@storeAction')->name('user.setting.address.store');
-    Route::get('user/setting/addresses/edit/{id}', 'Module\User\AddressController@editAction')->name('user.setting.address.edit');
-    Route::post('user/setting/addresses/update', 'Module\User\AddressController@updateAction')->name('user.setting.address.update');
-    Route::delete('user/setting/addresses/destroy/{id}', 'Module\User\AddressController@destroyAction')->name('user.setting.address.destroy');
+    Route::get('user/setting/addresses', 'Module\User\AddressController@indexAction')->name('module.user.setting.address.browse');
+    Route::get('user/setting/address/create', 'Module\User\AddressController@createAction')->name('module.user.setting.address.create');
+    Route::post('user/setting/addresses/store', 'Module\User\AddressController@storeAction')->name('module.user.setting.address.store');
+    Route::get('user/setting/addresses/edit/{id}', 'Module\User\AddressController@editAction')->name('module.user.setting.address.edit');
+    Route::post('user/setting/addresses/update', 'Module\User\AddressController@updateAction')->name('module.user.setting.address.update');
+    Route::delete('user/setting/addresses/destroy/{id}', 'Module\User\AddressController@destroyAction')->name('module.user.setting.address.destroy');
 
     // phone
-    Route::get('user/setting/phones', 'Module\User\PhoneController@indexAction')->name('user.setting.phone.browse');
-    Route::get('user/setting/phone/create', 'Module\User\PhoneController@createAction')->name('user.setting.phone.create');
-    Route::post('user/setting/phone/store', 'Module\User\PhoneController@storeAction')->name('user.setting.phone.store');
-    Route::get('user/setting/phone/edit/{id}', 'Module\User\PhoneController@editAction')->name('user.setting.phone.edit');
-    Route::post('user/setting/phone/update', 'Module\User\PhoneController@updateAction')->name('user.setting.phone.update');
-    Route::delete('user/setting/phone/destroy/{id}', 'Module\User\PhoneController@destroyAction')->name('user.setting.phone.destroy');
+    Route::get('user/setting/phones', 'Module\User\PhoneController@indexAction')->name('module.user.setting.phone.browse');
+    Route::get('user/setting/phone/create', 'Module\User\PhoneController@createAction')->name('module.user.setting.phone.create');
+    Route::post('user/setting/phone/store', 'Module\User\PhoneController@storeAction')->name('module.user.setting.phone.store');
+    Route::get('user/setting/phone/edit/{id}', 'Module\User\PhoneController@editAction')->name('module.user.setting.phone.edit');
+    Route::post('user/setting/phone/update', 'Module\User\PhoneController@updateAction')->name('module.user.setting.phone.update');
+    Route::delete('user/setting/phone/destroy/{id}', 'Module\User\PhoneController@destroyAction')->name('module.user.setting.phone.destroy');
 
-    // files
-    Route::get('files', 'Module\Application\FileController@indexAction')->name('module.file.browse');
-    Route::post('file/store', 'Module\Application\FileController@createAction')->name('module.file.store');
-    Route::post('file/update', 'Module\Application\FileController@updateAction')->name('module.file.update');
-    Route::delete('file/destroy/{id}', 'Module\Application\FileController@destroyAction')->name('module.file.destroy');
+    // page reports
+    Route::get('page-reports', 'Module\User\PageReportController@indexAction')->name('module.pageReport.browse');
+    Route::get('page-report/show/{id}', 'Module\User\PageReportController@showAction')->name('module.pageReport.details');
+    Route::post('page-report/message/store', 'Module\User\PageReportController@messageAction')->name('module.pageReport.sendMessage.store');
+    Route::get('page-report/status/{id}', 'Module\User\PageReportController@statusAction')->name('module.pageReport.status.update');
+    Route::delete('page-report/destroy/{id}', 'Module\User\PageReportController@destroyAction')->name('module.pageReport.destroy');
 
     // chat
     Route::get('chat', 'Module\Chat\MessageController@showAction')->name('module.chat.show');
@@ -113,15 +113,17 @@ Route::group(['middleware' => ['auth', 'auth.checker']], function () {
     Route::get('chat/group/archive/{group_id}/{status}', 'Module\Chat\MessageController@archiveAction')->name('module.chat.group.archive');
     Route::delete('chat/delete/conversation/{group_id}', 'Module\Chat\MessageController@deleteConversation')->name('module.chat.message.delete.conversation');
 
-    // application features
-    Route::post('application/report', 'Module\Application\ReportController@storeAction')->name('module.report.store');
+    // application report
+    Route::post('application/report', 'Module\Application\ReportController@storeAction')->name('module.application.report.store');
 
-    // page reports
-    Route::get('page-reports', 'Module\User\PageReportController@indexAction')->name('module.pageReport.browse');
-    Route::get('page-report/show/{id}', 'Module\User\PageReportController@showAction')->name('module.pageReport.details');
-    Route::post('page-report/message/store', 'Module\User\PageReportController@messageAction')->name('module.pageReport.sendMessage.store');
-    Route::get('page-report/status/{id}', 'Module\User\PageReportController@statusAction')->name('module.pageReport.status.update');
-    Route::delete('page-report/destroy/{id}', 'Module\User\PageReportController@destroyAction')->name('module.pageReport.destroy');
+    // application files
+    Route::get('files', 'Module\Application\FileController@indexAction')->name('module.application.file.browse');
+    Route::post('file/store', 'Module\Application\FileController@createAction')->name('module.application.file.store');
+    Route::post('file/update', 'Module\Application\FileController@updateAction')->name('module.application.file.update');
+    Route::delete('file/destroy/{id}', 'Module\Application\FileController@destroyAction')->name('module.application.file.destroy');
+
+    // application settings
+    Route::get('application/settings', 'Module\Application\SettingController@detailsAction')->name('module.application.settings.details');
 
     /*
      * ------------------------------------
@@ -220,6 +222,15 @@ Route::group(['middleware' => ['auth', 'auth.checker']], function () {
         Route::get('admin/fcm-notification/edit/{id}', 'Admin\Notification\FCMController@editAction')->name('admin.fcmNotification.edit');
         Route::post('admin/fcm-notification/update', 'Admin\Notification\FCMController@updateAction')->name('admin.fcmNotification.update');
         Route::delete('admin/fcm-notification/destroy/{id}', 'Admin\Notification\FCMController@destroyAction')->name('admin.fcmNotification.destroy');
+
+        // SocketIO Notifications
+        Route::get('admin/socket-io-notifications', 'Admin\Notification\SocketIOController@indexAction')->name('admin.socketIoNotification.browse');
+        Route::get('admin/socket-io-notification/tokens', 'Admin\Notification\SocketIOController@tokenListAction')->name('admin.socketIoNotification.token.browse');
+        Route::get('admin/socket-io-notification/create', 'Admin\Notification\SocketIOController@createAction')->name('admin.socketIoNotification.create');
+        Route::post('admin/socket-io-notification/store', 'Admin\Notification\SocketIOController@storeAction')->name('admin.socketIoNotification.store');
+        Route::get('admin/socket-io-notification/edit/{id}', 'Admin\Notification\SocketIOController@editAction')->name('admin.socketIoNotification.edit');
+        Route::post('admin/socket-io-notification/update', 'Admin\Notification\SocketIOController@updateAction')->name('admin.socketIoNotification.update');
+        Route::delete('admin/socket-io-notification/destroy/{id}', 'Admin\Notification\SocketIOController@destroyAction')->name('admin.socketIoNotification.destroy');
 
         // country
         Route::get('admin/setting/countries', 'Admin\Setting\Location\CountryController@indexAction')->name('admin.settingCountry.browse');

@@ -79,7 +79,7 @@ if (!function_exists('jwtEncode')) {
      * @param string $exp
      * @return string|null
      */
-    function jwtEncode($exp = '+ 8 hours')
+    function jwtEncode($exp = '+ 2 hours')
     {
         if (!__me()) {
             return NULL;
