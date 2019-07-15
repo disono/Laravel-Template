@@ -1,8 +1,8 @@
 /**
- * @author      Archie Disono (webmonsph@gmail.com)
- * @link        https://github.com/disono/Laravel-Template
- * @lincense    https://github.com/disono/Laravel-Template/blob/master/LICENSE
- * @copyright   Webmons Development Studio
+ * @author              Archie Disono (webmonsph@gmail.com)
+ * @link                https://github.com/disono/Laravel-Template
+ * @lincense            https://github.com/disono/Laravel-Template/blob/master/LICENSE
+ * @copyright           Webmons Development Studio
  */
 
 Vue.use(WBProviderPlugin);
@@ -13,11 +13,7 @@ new Vue({
     mounted: function () {
         // initialize libraries and non-vue codes (public/assets/js/vendor/initialize.js)
         WBInitialize();
-
-        let self = this;
-        jQ(document).ready(function () {
-            self._mountedChatMessaging();
-        });
+        jQ(document).ready(this.onMounted);
     },
 
     data: {
@@ -73,7 +69,7 @@ new Vue({
         // Helper Methods
         // ************************************************************************
 
-        _searchProfiles(keyword) {
+        searchProfiles(keyword) {
             return new Promise(function (resolve, reject) {
                 if (!keyword) {
                     resolve([]);
@@ -86,7 +82,7 @@ new Vue({
             });
         },
 
-        _fetchInboxMsg(id, type) {
+        fetchInboxMsg(id, type) {
             let self = this;
             return new Promise(function (resolve, reject) {
                 WBServices.http.get('/chat/inbox/' + id + '/' + type).then(function (response) {
@@ -96,7 +92,7 @@ new Vue({
             });
         },
 
-        _fetchGroups(params) {
+        fetchGroups(params) {
             let self = this;
             return WBServices.http.get('/chat/groups', params).then(function (response) {
                 if (self.groups.page === 1) {
@@ -117,7 +113,7 @@ new Vue({
             });
         },
 
-        _fetchMessages(group_id) {
+        fetchMessages(group_id) {
             let self = this;
             return WBServices.http.get('/chat/messages/' + group_id, {page: self.messages.page}).then(function (response) {
                 // remove duplicates
@@ -143,27 +139,27 @@ new Vue({
             });
         },
 
-        _mountedChatMessaging() {
+        onMounted() {
             let self = this;
-            let isChatInboxURI = self._isChatInboxURI();
+            let uri = self.isChatInboxURI();
 
-            if (isChatInboxURI) {
+            if (uri) {
                 WBServices.view.loading(true);
                 self.messages.isLoading = true;
                 self.messages.btnIsShowMore = false;
                 self.groups.page = 1;
 
-                self._fetchInboxMsg(isChatInboxURI[3], isChatInboxURI[4]).then(function (data) {
-                    return self._fetchGroups({page: self.groups.page, has_archive: 0});
+                self.fetchInboxMsg(uri[3], uri[4]).then(function (data) {
+                    return self.fetchGroups({page: self.groups.page, has_archive: 0});
                 }).then(function () {
-                    return self._isScrollingMsg();
+                    return self.isScrollingMsg();
                 }).then(function (scrolled) {
-                    return self._fetchMessages(self.group.id);
+                    return self.fetchMessages(self.group.id);
                 }).then(function (response) {
-                    return self._scrollToBottomMsg();
+                    return self.scrollToBottomMsg();
                 }).finally(function () {
                     WBServices.view.loading(false);
-                    self._focusMessageInput();
+                    self.focusToWritingMessage();
 
                     self.messages.isLoading = false;
                     self.messages.btnIsShowMore = true;
@@ -173,7 +169,7 @@ new Vue({
                 WBServices.view.loading(true);
                 self.groups.page = 1;
 
-                self._fetchGroups({page: self.groups.page, has_archive: 0}).then(function () {
+                self.fetchGroups({page: self.groups.page, has_archive: 0}).then(function () {
 
                 }).finally(function () {
                     WBServices.view.loading(false);
@@ -181,7 +177,7 @@ new Vue({
             }
         },
 
-        _isChatInboxURI() {
+        isChatInboxURI() {
             let uriPath = window.location.pathname;
             if (uriPath && jQ('meta[name="_routeName"]').attr('content') === 'module.chat.inbox') {
                 return uriPath.split('/');
@@ -189,7 +185,7 @@ new Vue({
             return false;
         },
 
-        _isScrollingMsg() {
+        isScrollingMsg() {
             let self = this;
             return new Promise(function (resolve, reject) {
                 jQ('#fluxMsg').scroll(function () {
@@ -197,7 +193,7 @@ new Vue({
                         self.messages.isLoading = true;
                         self.messages.btnIsShowMore = false;
 
-                        self._fetchMessages(self.group.id).then(function (response) {
+                        self.fetchMessages(self.group.id).then(function (response) {
                             // make the scroll bar fallback 12% below
                             if (response.length) {
                                 let objDiv = document.getElementById("fluxMsg");
@@ -215,7 +211,7 @@ new Vue({
             });
         },
 
-        _scrollToBottomMsg() {
+        scrollToBottomMsg() {
             return new Promise(function (resolve, reject) {
                 let objDiv = document.getElementById("fluxMsg");
                 objDiv.scrollTop = objDiv.scrollHeight;
@@ -223,7 +219,7 @@ new Vue({
             });
         },
 
-        _clearMsgFiles() {
+        clearMsgFiles() {
             let _fileInput = '#chat_file_msg';
             document.getElementById("chat_file_msg").value = null;
             jQ(_fileInput).val(null);
@@ -235,7 +231,7 @@ new Vue({
             }
         },
 
-        _focusMessageInput() {
+        focusToWritingMessage() {
             jQ('#chatMessageInput').focus();
         },
 
@@ -245,7 +241,7 @@ new Vue({
 
         btnChatSearchProfile() {
             let self = this;
-            self._searchProfiles(self.profileSearch.keyword).then(function (data) {
+            self.searchProfiles(self.profileSearch.keyword).then(function (data) {
                 self.profileSearch.results = data;
             });
         },
@@ -263,7 +259,7 @@ new Vue({
             }
 
             if (e.keyCode === 13) {
-                self._searchProfiles(self.profileSearch.keyword).then(function (data) {
+                self.searchProfiles(self.profileSearch.keyword).then(function (data) {
                     self.profileSearch.results = data;
                 });
             }
@@ -288,15 +284,15 @@ new Vue({
             self.messages.page = 1;
 
             WBServices.view.loading(true);
-            self._fetchInboxMsg(profile.id, 'user').then(function (response) {
+            self.fetchInboxMsg(profile.id, 'user').then(function (response) {
                 history.pushState(null, self.group.group_name, '/chat/inbox/' + self.group.id + '/group');
-                return self._fetchMessages(self.group.id);
+                return self.fetchMessages(self.group.id);
             }).then(function () {
                 // fetch group list
                 self.groups.page = 1;
-                return self._fetchGroups({page: self.groups.page, has_archive: 0});
+                return self.fetchGroups({page: self.groups.page, has_archive: 0});
             }).then(function () {
-                return self._scrollToBottomMsg();
+                return self.scrollToBottomMsg();
             }).finally(function () {
                 WBServices.view.loading(false);
                 self.messages.btnIsShowMore = true;
@@ -325,7 +321,7 @@ new Vue({
             }
 
             if (e.keyCode === 13) {
-                self._searchProfiles(self.createGroup.searchProfileInput).then(function (data) {
+                self.searchProfiles(self.createGroup.searchProfileInput).then(function (data) {
                     self.createGroup.profileSearch = data;
                 });
             }
@@ -333,7 +329,7 @@ new Vue({
 
         btnChatGroupSearchProfile() {
             let self = this;
-            self._searchProfiles(self.createGroup.searchProfileInput).then(function (data) {
+            self.searchProfiles(self.createGroup.searchProfileInput).then(function (data) {
                 self.createGroup.profileSearch = data;
             });
         },
@@ -415,7 +411,7 @@ new Vue({
 
                 // fetch group list (refresh)
                 self.groups.page = 1;
-                self._fetchGroups({page: self.groups.page, has_archive: 0}).then(function () {
+                self.fetchGroups({page: self.groups.page, has_archive: 0}).then(function () {
 
                 });
             }
@@ -455,12 +451,12 @@ new Vue({
             history.pushState(null, self.group.group_name, '/chat/inbox/' + self.group.id + '/group');
 
             WBServices.view.loading(true, "Fetching messages...");
-            self._fetchInboxMsg(self.group.id, 'group').then(function (response) {
-                return self._fetchMessages(self.group.id);
+            self.fetchInboxMsg(self.group.id, 'group').then(function (response) {
+                return self.fetchMessages(self.group.id);
             }).then(function () {
-                return self._scrollToBottomMsg();
+                return self.scrollToBottomMsg();
             }).then(function () {
-                return self._isScrollingMsg();
+                return self.isScrollingMsg();
             }).finally(function () {
                 WBServices.view.loading(false);
                 self.messages.isLoading = false;
@@ -472,7 +468,7 @@ new Vue({
         filterChatGroups(e) {
             if (e.keyCode === 13 || !this.groupFilter.search) {
                 self.groups.page = 1;
-                this._fetchGroups({
+                this.fetchGroups({
                     search: this.groupFilter.search,
                     has_unread: this.groupFilter.has_unread,
                     has_archive: this.groupFilter.has_archive,
@@ -501,13 +497,13 @@ new Vue({
                 this.groupFilter.has_archive = null;
             }
 
-            this._fetchGroups(_filter).then(function () {
+            this.fetchGroups(_filter).then(function () {
 
             });
         },
 
         loadMoreGroups() {
-            this._fetchGroups({
+            this.fetchGroups({
                 search: this.groupFilter.search,
                 has_unread: this.groupFilter.has_unread,
                 has_archive: this.groupFilter.has_archive,
@@ -558,17 +554,17 @@ new Vue({
             let self = this;
 
             WBServices.form.onUpload(e, function (response) {
-                self._clearMsgFiles();
+                self.clearMsgFiles();
                 self.writeMessage.message = null;
                 self.messages.results.push(response.data);
-                self._focusMessageInput();
+                self.focusToWritingMessage();
             }, function (e) {
 
             });
         },
 
         btnChatClearFiles() {
-            this._clearMsgFiles();
+            this.clearMsgFiles();
         },
 
         btnChatLoadMoreMsg() {
@@ -576,7 +572,7 @@ new Vue({
             self.messages.isLoading = true;
             self.messages.btnIsShowMore = false;
 
-            self._fetchMessages(self.group.id).then(function (response) {
+            self.fetchMessages(self.group.id).then(function (response) {
 
             }).finally(function () {
                 self.messages.isLoading = false;
@@ -605,7 +601,7 @@ new Vue({
             WBServices.view.dialogs('chatDeleteConversation', null, function (r) {
                 WBServices.http.delete('/chat/delete/conversation/' + self.group.id).then(function () {
                     self.messages.page = 1;
-                    return self._fetchMessages(self.group.id)
+                    return self.fetchMessages(self.group.id)
                 }).then(function () {
 
                 }).catch(function (e) {

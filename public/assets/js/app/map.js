@@ -1,24 +1,23 @@
 /**
- * @author      Archie Disono (webmonsph@gmail.com)
- * @link        https://github.com/disono/Laravel-Template
- * @lincense    https://github.com/disono/Laravel-Template/blob/master/LICENSE
- * @copyright   Webmons Development Studio
+ * @author              Archie Disono (webmonsph@gmail.com)
+ * @link                https://github.com/disono/Laravel-Template
+ * @lincense            https://github.com/disono/Laravel-Template/blob/master/LICENSE
+ * @copyright           Webmons Development Studio
  */
 
 let WBGoogleMap = (function () {
-    let _markers = [];
-    let _directionsDisplay;
-    let _directionsService;
-
-    let _centerTimer;
-
     return {
         map: null,
-        infoWindow: new google.maps.InfoWindow(),
+        markers: [],
+        directionsDisplay: null,
+        directionsService: null,
 
         // Default lat and lng
         lat: 14.5995,
         lng: 120.9842,
+
+        // Map styles
+        style: null,
 
         /**
          * Initialize map
@@ -26,76 +25,78 @@ let WBGoogleMap = (function () {
          * @param id
          * @returns {google.maps.Map}
          */
-        init: function (id) {
+        builder: function (id) {
             if (!document.getElementById(id)) {
                 return null;
             }
 
-            _markers = [];
-            _directionsService = new google.maps.DirectionsService();
-            _directionsDisplay = new google.maps.DirectionsRenderer();
+            this.markers = [];
+            this.directionsService = new google.maps.DirectionsService();
+            this.directionsDisplay = new google.maps.DirectionsRenderer();
 
-            WBGoogleMap.map = new google.maps.Map(document.getElementById(id), {
-                center: {lat: WBGoogleMap.lat, lng: WBGoogleMap.lng},
+            this.map = new google.maps.Map(document.getElementById(id), {
+                center: {lat: this.lat, lng: this.lng},
                 zoom: 14,
-                styles: WBGoogleMap.style
+                styles: this.style
             });
 
             // direction display map
-            _directionsDisplay.setMap(WBGoogleMap.map);
+            this.directionsDisplay.setMap(this.map);
 
-            return WBGoogleMap.map;
+            return this;
         },
 
         /**
          * Search
+         * https://developers.google.com/maps/documentation/javascript/places-autocomplete
          *
          * Commonly returns are place.formatted_address, place.name
          *
          * @param id
-         * @param callback
+         * input for search bar
          */
-        search: function (id, callback) {
-            let thisApp = this;
+        search: function (id) {
+            let self = this;
 
-            if (!thisApp.map) {
-                return;
-            }
-
-            let input = document.getElementById(id);
-            let autocomplete = new google.maps.places.Autocomplete(input);
-            autocomplete.bindTo('bounds', thisApp.map);
-
-            // add the listener
-            autocomplete.addListener('place_changed', function () {
-                let place = autocomplete.getPlace();
-
-                if (!place.geometry) {
-                    console.error("No details available for input: '" + place.name + "'");
-                    return;
+            return new Promise((resolve, reject) => {
+                if (!self.map) {
+                    return reject('Map is not initialize.');
                 }
 
-                // reset the markers
-                thisApp.deleteMarker();
+                let input = document.getElementById(id);
+                let autocomplete = new google.maps.places.Autocomplete(input);
+                autocomplete.bindTo('bounds', self.map);
 
-                // If the place has a geometry, then present it on a map.
-                if (place.geometry.viewport) {
-                    thisApp.map.fitBounds(place.geometry.viewport);
-                } else {
-                    thisApp.map.setCenter(place.geometry.location);
-                    thisApp.map.setZoom(17);
-                }
+                // add the listener
+                autocomplete.addListener('place_changed', function () {
+                    let place = autocomplete.getPlace();
 
-                // callback data
-                callback(place);
+                    if (!place.geometry) {
+                        return reject("No details available for input: '" + place.name + "'");
+                    }
 
-                // add marker
-                thisApp.addMarker(place.geometry.location.lat(), place.geometry.location.lng(), null, null);
+                    // reset the markers
+                    self.deleteMarker();
+
+                    // If the place has a geometry, then present it on a map.
+                    if (place.geometry.viewport) {
+                        self.map.fitBounds(place.geometry.viewport);
+                    } else {
+                        self.map.setCenter(place.geometry.location);
+                        self.map.setZoom(17);
+                    }
+
+                    // add marker
+                    self.addMarker(place.geometry.location.lat(), place.geometry.location.lng(), null, null);
+
+                    resolve(place);
+                });
             });
         },
 
         /**
          * Direction routing
+         * https://developers.google.com/maps/documentation/javascript/directions
          *
          * @param start_lat
          * @param start_lng
@@ -103,39 +104,33 @@ let WBGoogleMap = (function () {
          * @param end_lng
          */
         route: function (start_lat, start_lng, end_lat, end_lng) {
-            let thisApp = this;
+            let self = this;
             let request = {
                 origin: new google.maps.LatLng(parseFloat(start_lat), parseFloat(start_lng)),
                 destination: new google.maps.LatLng(parseFloat(end_lat), parseFloat(end_lng)),
                 travelMode: 'DRIVING'
             };
 
-            _directionsService.route(request, function (result, status) {
+            self.directionsService.route(request, function (result, status) {
                 if (status === 'OK') {
-                    _directionsDisplay.setDirections(result);
+                    self.directionsDisplay.setDirections(result);
 
                     // center the map to destination
-                    thisApp.centerMap(end_lat, end_lng);
+                    self.centerMap(end_lat, end_lng);
                 }
             });
         },
 
         /**
          * Add marker
+         * https://developers.google.com/maps/documentation/javascript/markers
+         * https://developers.google.com/maps/documentation/javascript/infowindows
          *
          * @param lat
          * @param lng
-         * @param data
-         * @param clickCallback
+         * @param options
          */
-        addMarker: function (lat, lng, data, clickCallback) {
-            let icon = null;
-            if (data) {
-                if (data.icon) {
-                    icon = data.icon;
-                }
-            }
-
+        addMarker: function (lat, lng, options) {
             let marker = new google.maps.Marker({
                 position: {
                     lat: parseFloat(lat),
@@ -143,25 +138,39 @@ let WBGoogleMap = (function () {
                 },
 
                 map: this.map,
-                icon: ((icon) ? icon : null)
+                icon: typeof options.icon !== "undefined" ? options.icon : null
             });
-            _markers.push(marker);
 
-            // click
-            if (clickCallback) {
+            // onClick
+            if (typeof options.onClick !== "undefined") {
+                google.maps.event.addListener(marker, 'click', options.onClick);
+            }
+
+            // infoWindow
+            if (typeof options.infoWindow !== "undefined") {
+                let infoWindow = new google.maps.InfoWindow({
+                    content: options.infoWindow.content
+                });
+
                 google.maps.event.addListener(marker, 'click', function () {
-                    clickCallback(lat, lng, data, marker);
+                    infoWindow.open(map, marker);
                 });
             }
 
-            this.centerMap(null, null);
+            // center map
+            if (typeof options.center !== "undefined") {
+                this.centerMap(null, null);
+            }
+
+            // add markers
+            this.markers.push(marker);
         },
 
         /**
          * Delete markers
          */
         deleteMarker: function () {
-            _markers.forEach(function (marker) {
+            this.markers.forEach(function (marker) {
                 marker.setMap(null);
             });
         },
@@ -173,29 +182,18 @@ let WBGoogleMap = (function () {
          * @param lng
          */
         centerMap: function (lat, lng) {
-            let thisApp = this;
+            let self = this;
 
-            if (_centerTimer) {
-                clearTimeout(_centerTimer);
-            }
-
-            _centerTimer = setTimeout(function () {
-                if (lat === null || lng === null) {
-                    let bounds = new google.maps.LatLngBounds();
-                    for (let i = 0; i < _markers.length; i++) {
-                        bounds.extend(_markers[i].getPosition());
-                    }
-
-                    thisApp.map.fitBounds(bounds);
-                } else {
-                    thisApp.map.panTo(new google.maps.LatLng(parseFloat(lat), parseFloat(lng)));
+            if (lat === null || lng === null) {
+                let bounds = new google.maps.LatLngBounds();
+                for (let i = 0; i < this.markers.length; i++) {
+                    bounds.extend(this.markers[i].getPosition());
                 }
-            }, 800);
-        },
 
-        /**
-         * Map styles
-         */
-        style: null
+                self.map.fitBounds(bounds);
+            } else {
+                self.map.panTo(new google.maps.LatLng(parseFloat(lat), parseFloat(lng)));
+            }
+        }
     };
 }());

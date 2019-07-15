@@ -1,10 +1,53 @@
+/**
+ * @author              Archie Disono (webmonsph@gmail.com)
+ * @link                https://github.com/disono/Laravel-Template
+ * @lincense            https://github.com/disono/Laravel-Template/blob/master/LICENSE
+ * @copyright           Webmons Development Studio
+ */
+
 let WBSocketIO = {
     io: null,
     settingResults: {},
     appName: null,
+    connected: null,
+
+    construct(callback) {
+        this.settings().then(callback);
+        return this;
+    },
 
     builder() {
-        return this.fetchSettings();
+        return this.settings();
+    },
+
+    subscribe(name, callback) {
+        this.io.on(this.subscribeTo(name), callback);
+    },
+
+    subscriptions(subscribers) {
+        let self = this;
+        subscribers.forEach((client) => {
+            self.subscribe(client.name, client.callback);
+        });
+    },
+
+    addSubscriber(name, callback) {
+        let self = this;
+        let isConnected = setInterval(() => {
+            if (isConnected && self.connected) {
+                clearInterval(isConnected);
+
+                self.subscribe(name, callback);
+            }
+        }, 5000);
+    },
+
+    subscribeTo(name) {
+        return name === null ? this.appName + '_' + this.settingResults.token.token : this.appName + '_' + this.settingResults.token.token + '_' + name;
+    },
+
+    publish(to, data) {
+        this.io.emit(this.appName + '_onServerSubscribe', {to: to, data: data});
     },
 
     initialize() {
@@ -28,32 +71,17 @@ let WBSocketIO = {
 
             self.io.on('connect', () => {
                 WBHelper.console.log('OnConnect: ' + self.io.id);
+                self.connected = self.io.id;
                 resolve(self);
             });
 
             self.io.on('disconnect', () => {
-
+                WBHelper.console.error('onDisconnect');
             });
         });
     },
 
-    subscribe(name, callback) {
-        name = name === null ? this.appName + '_' + this.settingResults.token.token : this.appName + '_' + this.settingResults.token.token + '_' + name;
-        this.io.on(name, callback);
-    },
-
-    subscriptions(subscribers) {
-        let self = this;
-        subscribers.forEach((client) => {
-            self.subscribe(client.name, client.callback);
-        });
-    },
-
-    publish(to, data) {
-        this.io.emit(this.appName + '_onServerSubscribe', {to: to, data: data});
-    },
-
-    fetchSettings() {
+    settings() {
         let self = this;
 
         return WBServices.raw.get('/application/settings').then(response => {

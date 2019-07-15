@@ -10,15 +10,15 @@
 
 <div class="custom-controls-stacked d-block my-3">
     <div class="bg-light p-3 mt-3 mb-3 rounded-lg">
-        <pre>
-            @php
-                echo nl2br(htmlspecialchars("let socket = io('http://localhost:4000', {
+        <pre class="p-0 m-0"><code>@php
+                    echo trim(htmlspecialchars("let socket = io('http://localhost:4000', {
     transportOptions: {
         polling: {
             extraHeaders: {
+                'authorization': 'Bearer your-token',
                 'source': 'client',
                 'app-name': 'appName'
-                't-key': '',
+                'tkey': '',
                 'uid': ''
             }
         }
@@ -66,9 +66,10 @@ WBSocketIO.builder().then(self => {
         }
     ]);
 
-    self.publish('to', {data: 'My Data Here'});
-});"))
-            @endphp
-        </pre>
+    self.publish('to', {
+        data: 'My Data Here'
+    });
+});"))@endphp
+        </code></pre>
     </div>
 </div>

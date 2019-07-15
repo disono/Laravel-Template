@@ -74,7 +74,7 @@ class ChatGroup extends BaseModel
             // latest date of message received
             'latest_message_at' => '(SELECT chat_messages.created_at FROM chat_messages WHERE 
                 chat_messages.chat_group_id = chat_groups.id AND chat_messages.user_id = ' . $me . ' 
-                ORDER BY chat_messages.created_at DESC)',
+                ORDER BY chat_messages.created_at DESC LIMIT 1)',
 
             // is some member mark this group archive?
             'has_archive' => 'IF((SELECT COUNT(*) FROM chat_group_members WHERE 

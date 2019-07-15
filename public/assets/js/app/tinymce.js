@@ -1,25 +1,27 @@
 /**
- * @author      Archie Disono (webmonsph@gmail.com)
- * @link        https://github.com/disono/Laravel-Template
- * @lincense    https://github.com/disono/Laravel-Template/blob/master/LICENSE
- * @copyright   Webmons Development Studio
+ * @author              Archie Disono (webmonsph@gmail.com)
+ * @link                https://github.com/disono/Laravel-Template
+ * @lincense            https://github.com/disono/Laravel-Template/blob/master/LICENSE
+ * @copyright           Webmons Development Studio
  */
 
-jQ(document).ready(function () {
+jQ(document).ready(WBTinyMCE);
+
+function WBTinyMCE () {
     if (typeof tinymce === 'undefined') {
         return;
     }
 
-    let _filePage = 1;
-    let _loadingHtml = '<div class="w-100 d-flex justify-content-center"><div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div>';
+    let paginationNumber = 1;
+    let onLoadingView = '<div class="w-100 d-flex justify-content-center"><div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div>';
 
-    let _MCE_toolBars = 'styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist | forecolor backcolor | link image media | insertBtn | code preview';
-    let _MCE_content_style = "body {padding: 8px; background-color: #fff;}";
-    let _MCE_content_css = [
+    let MCEToolBars = 'styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist | forecolor backcolor | link image media | insertBtn | code preview';
+    let MCEContentStyle = "body {padding: 8px; background-color: #fff;}";
+    let MCEContentCss = [
         '/assets/css/vendor.css',
         '/assets/css/theme.css'
     ];
-    let _MCE_plugins = [
+    let MCEPlugins = [
         'advlist autolink lists link image charmap preview hr anchor pagebreak',
         'searchreplace wordcount visualblocks visualchars code fullscreen',
         'insertdatetime media nonbreaking save table directionality',
@@ -27,11 +29,11 @@ jQ(document).ready(function () {
         'code'
     ];
 
-    function _MCE_file_picker_callback(callback, value, meta) {
+    function MCEOnFilePicker(callback, value, meta) {
         WBServices.view.dialogs('fileExplorer', function (views) {
             jQ('#fileExplorerLoading').hide();
             let type = meta.filetype;
-            _filePage = 1;
+            paginationNumber = 1;
 
             if (type === 'image') {
                 type = 'photo';
@@ -39,8 +41,8 @@ jQ(document).ready(function () {
                 type = 'video';
             }
 
-            _formUpload(views, type);
-            _fetchData(views, type);
+            tinyFormUpload(views, type);
+            tinyFetchData(views, type);
         }, function (r) {
             if (r) {
                 callback(r.path);
@@ -50,7 +52,7 @@ jQ(document).ready(function () {
         });
     }
 
-    function _MCE_setup(editor) {
+    function MCESetup(editor) {
         editor.ui.registry.addMenuButton('insertBtn', {
             text: 'Insert',
 
@@ -69,11 +71,11 @@ jQ(document).ready(function () {
                         text: 'Audio',
                         onAction: function () {
                             WBServices.view.dialogs('fileExplorer', function (views) {
-                                _filePage = 1;
-                                _formUpload(views, 'audio');
-                                _fetchData(views, 'audio');
+                                paginationNumber = 1;
+                                tinyFormUpload(views, 'audio');
+                                tinyFetchData(views, 'audio');
                             }, function (r) {
-                                _insertContent(r, editor);
+                                onInsertContent(r, editor);
                             }, function (r) {
 
                             });
@@ -84,11 +86,11 @@ jQ(document).ready(function () {
                         text: 'Document',
                         onAction: function () {
                             WBServices.view.dialogs('fileExplorer', function (views) {
-                                _filePage = 1;
-                                _formUpload(views, 'doc');
-                                _fetchData(views, 'doc');
+                                paginationNumber = 1;
+                                tinyFormUpload(views, 'doc');
+                                tinyFetchData(views, 'doc');
                             }, function (r) {
-                                _insertContent(r, editor);
+                                onInsertContent(r, editor);
                             }, function (r) {
 
                             });
@@ -99,11 +101,11 @@ jQ(document).ready(function () {
                         text: 'File',
                         onAction: function () {
                             WBServices.view.dialogs('fileExplorer', function (views) {
-                                _filePage = 1;
-                                _formUpload(views, 'file');
-                                _fetchData(views, 'file');
+                                paginationNumber = 1;
+                                tinyFormUpload(views, 'file');
+                                tinyFetchData(views, 'file');
                             }, function (r) {
-                                _insertContent(r, editor);
+                                onInsertContent(r, editor);
                             }, function (r) {
 
                             });
@@ -114,7 +116,7 @@ jQ(document).ready(function () {
         });
     }
 
-    function _insertContent(r, editor) {
+    function onInsertContent(r, editor) {
         if (!r) {
             return;
         }
@@ -169,40 +171,40 @@ jQ(document).ready(function () {
         }
     }
 
-    function _parseView(data) {
-        let _view = '';
+    function parseView(data) {
+        let view = '';
 
         data.forEach(function (data) {
-            _view += '<div class="col-lg-4 col-md-4 col-sm-6">';
-            _view += '<div class="d-block h-100 mb-4 text-center">';
+            view += '<div class="col-lg-4 col-md-4 col-sm-6">';
+            view += '<div class="d-block h-100 mb-4 text-center">';
 
             if (data.type === 'video') {
-                _view += '<video controls class="img-fluid" "><source src="' + data.path + '" type="video/mp4"></video>';
+                view += '<video controls class="img-fluid" "><source src="' + data.path + '" type="video/mp4"></video>';
             } else if (data.type === 'audio') {
-                _view += '<audio controls class="file-exp-audio-list"><source src="' + data.path + '" type="audio/mpeg"></audio>';
+                view += '<audio controls class="file-exp-audio-list"><source src="' + data.path + '" type="audio/mpeg"></audio>';
             } else if (data.type === 'photo') {
-                _view += '<div style="background-image:url(' + data.cover + ') !important;" class="rounded file-exp-photo-list"></div>';
+                view += '<div style="background-image:url(' + data.cover + ') !important;" class="rounded file-exp-photo-list"></div>';
             } else {
-                _view += '<img class="img-fluid rounded" src="' + data.cover + '" alt="' + data.title + '">';
+                view += '<img class="img-fluid rounded" src="' + data.cover + '" alt="' + data.title + '">';
             }
 
             if (data.title !== '' && data.title !== null && data.title) {
-                _view += '<p class="mb-0 mt-1 text-center">' + data.title + '</p>';
+                view += '<p class="mb-0 mt-1 text-center">' + data.title + '</p>';
             } else {
-                _view += '<p class="mb-0 mt-1 text-center">' + data.created_at + '</p>';
+                view += '<p class="mb-0 mt-1 text-center">' + data.created_at + '</p>';
             }
 
-            _view += '<button type="button" class="mb-0 mt-1 btn btn-link btn-sm btn-block selected-file" ' +
+            view += '<button type="button" class="mb-0 mt-1 btn btn-link btn-sm btn-block selected-file" ' +
                 '   data-id="' + data.id + '" data-path="' + data.path + '" data-title="' + data.title + '" data-type="' + data.type + '">Select ' + data.type +
                 '</button>';
-            _view += '</div>';
-            _view += '</div>';
+            view += '</div>';
+            view += '</div>';
         });
 
-        return _view;
+        return view;
     }
 
-    function _renderView(data, isTop) {
+    function renderView(data, isTop) {
         if (data === '' || !data) {
             return;
         }
@@ -214,7 +216,7 @@ jQ(document).ready(function () {
         }
     }
 
-    function _viewEvents(views, type) {
+    function onEvents(views, type) {
         // validate on change input values
         WBJSOnInit();
 
@@ -236,47 +238,47 @@ jQ(document).ready(function () {
 
             jQ('.fileExplorerNav').removeClass('active');
             jQ(this).addClass('active');
-            let _dataType = jQ(this).attr('data-type');
-            _dataType = (_dataType === 'all') ? null : _dataType;
+            let dataType = jQ(this).attr('data-type');
+            dataType = (dataType === 'all') ? null : dataType;
 
-            _filePage = 1;
-            _fetchData(views, _dataType);
+            paginationNumber = 1;
+            tinyFetchData(views, dataType);
         });
 
         jQ('#fileExplorerLoad').off().on('click', function (e) {
             e.preventDefault();
             jQ(this).hide();
             jQ('#fileExplorerLoading').show();
-            _fetchData(views, type);
+            tinyFetchData(views, type);
         });
 
         jQ('#fileExplorerSearchBar').off().keypress(function (e) {
             let key = e.which;
             if (key === 13) {
-                _filePage = 1;
-                _fetchData(views, type);
+                paginationNumber = 1;
+                tinyFetchData(views, type);
             }
         });
 
-        let _dataType = (type === null) ? 'all' : type;
+        let dataType = (type === null) ? 'all' : type;
         jQ('.fileExplorerNav').removeClass('active');
-        jQ('.fileExplorerNav[data-type="' + _dataType + '"]').addClass('active');
+        jQ('.fileExplorerNav[data-type="' + dataType + '"]').addClass('active');
     }
 
-    function _formUpload(views, type) {
+    function tinyFormUpload(views, type) {
         // form
         jQ('#fileUploaderFrm').off().on('submit', function (e) {
             e.preventDefault();
-            let _me = jQ(this);
+            let self = jQ(this);
 
             WBServices.form.onUpload(e, function (response) {
-                _me.find('[name="title"]').val('');
-                _me.find('[name="description"]').val('');
-                _me.find('[name="file_selected"]').val('');
+                self.find('[name="title"]').val('');
+                self.find('[name="description"]').val('');
+                self.find('[name="file_selected"]').val('');
 
                 if (response.data.type === type) {
-                    _renderView(_parseView([response.data]), 1);
-                    _viewEvents(views, type);
+                    renderView(parseView([response.data]), 1);
+                    onEvents(views, type);
                 }
             }, function (e) {
 
@@ -284,31 +286,31 @@ jQ(document).ready(function () {
         });
     }
 
-    function _fetchData(views, type) {
-        if (_filePage === 1) {
-            jQ('#fileSelectList').html(_loadingHtml);
+    function tinyFetchData(views, type) {
+        if (paginationNumber === 1) {
+            jQ('#fileSelectList').html(onLoadingView);
         }
 
         // list of files
         WBServices.raw.get('/files', {
-            page: _filePage,
+            page: paginationNumber,
             type: type,
             search: jQ('#fileExplorerSearchBar').val()
         }).then(function (response) {
             jQ('#fileExplorerLoad').show();
             jQ('#fileExplorerLoading').hide();
 
-            if (_filePage === 1) {
+            if (paginationNumber === 1) {
                 jQ('#fileSelectList').html('');
             }
 
             views.buttons();
-            _renderView(_parseView(response.data), 0);
-            _viewEvents(views, type);
+            renderView(parseView(response.data), 0);
+            onEvents(views, type);
 
             if (response.data.length) {
-                _filePage++;
-            } else if (_filePage === 1) {
+                paginationNumber++;
+            } else if (paginationNumber === 1) {
                 type = type ? type : 'All';
                 jQ('#fileSelectList').html('<h4 class="text-center w-100">No files uploaded (' + type + ').</h4>');
             }
@@ -325,21 +327,21 @@ jQ(document).ready(function () {
         relative_urls: false,
         remove_script_host: false,
         convert_urls: true,
-        plugins: _MCE_plugins,
+        plugins: MCEPlugins,
 
         // list of menu
-        toolbar: _MCE_toolBars,
+        toolbar: MCEToolBars,
         image_advtab: true,
 
         // added styles
-        content_css: _MCE_content_css,
+        content_css: MCEContentCss,
 
         // inline styles
-        content_style: _MCE_content_style,
+        content_style: MCEContentStyle,
 
         // images selector from server
         file_picker_types: 'image media',
-        file_picker_callback: _MCE_file_picker_callback,
-        setup: _MCE_setup
+        file_picker_callback: MCEOnFilePicker,
+        setup: MCESetup
     });
-});
+};
