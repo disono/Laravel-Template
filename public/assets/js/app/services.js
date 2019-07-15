@@ -98,6 +98,12 @@ let WBServices = (function () {
 
                 // options
                 if (_options.showErrors === true) {
+                    // clear bottom messages
+                    for (let key in inputData) {
+                        self.formRemoveInvalidMsg(formAction.find('[name=' + key + ']'));
+                    }
+
+                    // add error styles
                     for (let key in inputData) {
                         self.formInValid(formAction.find('[name=' + key + ']'), validation.errors.first(key));
                     }
@@ -108,7 +114,7 @@ let WBServices = (function () {
 
             processResponse(formAction, response) {
                 let self = this;
-                console.table(response);
+
                 if (response.success === true) {
                     // remove all error messages
                     self.formValid(formAction);
@@ -127,6 +133,11 @@ let WBServices = (function () {
                     }
                 } else if (response.success === false && typeof response.errors !== 'undefined') {
                     if (typeof response.errors === 'object') {
+                        // clear bottom messages
+                        jQ.each(response.errors, function (name, error) {
+                            self.formRemoveInvalidMsg(formAction.find('[name=' + name + ']'));
+                        });
+
                         jQ.each(response.errors, function (name, error) {
                             WBHelper.console.error(error);
                             self.formInValid(formAction.find('[name=' + name + ']'), error);
@@ -138,6 +149,8 @@ let WBServices = (function () {
             },
 
             formValid(formAction) {
+                let self = this;
+
                 // remove all error messages
                 formAction.find('.invalid-feedback').remove();
                 formAction.find('.custom-control-checkbox-invalid').remove();
@@ -151,66 +164,77 @@ let WBServices = (function () {
                     for (let i = 0; i < materialInputs.length; i++) {
                         if (input.hasClass(materialInputs[i] + '-control-input')) {
                             input.parent().parent().find('.' + materialInputs[i]).parent().find('.custom-control-checkbox-invalid').remove();
-                            input.parent().parent().find('.' + materialInputs[i]).parent().find('.' + materialInputs[i] + '-control-indicator').removeClass('material-switch-danger');
-                            input.parent().parent().find('.' + materialInputs[i]).parent().find('.' + materialInputs[i] + '-control-description').removeClass('text-danger');
+                            self.removeError().materialSwitch(input, materialInputs[i]);
+
                             return;
                         }
                     }
 
                     // material input checkbox
                     if (input.hasClass('material-control-input')) {
-                        input.parent().parent().find('.material-control-input').parent().find('.custom-control-checkbox-invalid').remove();
-                        input.parent().parent().find('.material-control-input').parent().find('.material-control-indicator').removeClass('material-control-indicator-danger');
-                        input.parent().parent().find('.material-control-input').parent().find('.material-control-description').removeClass('text-danger');
+                        input.parent().find('.material-control-input').parent().find('.custom-control-checkbox-invalid').remove();
+                        self.removeError().materialCheckbox(input);
+
                         return;
                     }
 
                     // select picker
-                    input.parent().parent().find('.select_picker').parent().find('.invalid-feedback').remove();
                     if (input.hasClass('select_picker')) {
-                        input.removeClass('is-invalid');
-                        input.parent().parent().find('.btn.dropdown-toggle').removeClass('btn-toggle-danger');
-                        input.parent().parent().find('.select_picker').removeClass('is-invalid');
+                        input.parent().parent().find('.invalid-feedback-text').remove();
+                        self.removeError().selectPicker(input);
                         jQ('.select_picker').selectpicker('refresh');
+
                         return;
                     }
 
                     // tiny mce
-                    input.parent().parent().find('.tiny').parent().find('.invalid-feedback').remove();
                     if (input.hasClass('tiny')) {
-                        input.parent().parent().find('.tiny').removeClass('is-invalid');
+                        input.parent().parent().find('.tiny').parent().find('.invalid-feedback-text').remove();
+
                         return;
                     }
 
-                    // group input append
+                    // group inputs
                     if (input.parent().find('.input-group-append').length) {
                         input.parent().find('.input-group-append').find('.btn').removeClass('input-group-append-danger');
                         input.parent().find('.input-group-append').next().remove();
+
+                        return;
                     }
 
                     // group input prepend
                     if (input.parent().find('.input-group-prepend').length) {
                         input.parent().find('.input-group-prepend').find('.btn').removeClass('input-group-prepend-danger');
                         input.parent().find('.input-group-prepend').next().remove();
-                    }
 
-                    // selectize
-                    if (input.parent().find('.selectize').length) {
-                        input.parent().find('.selectize').find('.selectize-input').removeClass('input--danger');
+                        return;
                     }
 
                     // group input prepend
                     if (input.hasClass('custom-file-input')) {
                         input.parent().find('.custom-file-label').next().remove();
+
+                        return;
+                    }
+
+                    // selectize
+                    if (input.parent().find('.selectize').length) {
+                        input.parent().find('.selectize').find('.selectize-input').removeClass('input--danger');
+
+                        return;
                     }
 
                     if (input.hasClass('custom-file-input')) {
                         input.parent().find('.custom-file-label').text('Choose file');
                         input.parent().find('.custom-file-label').removeClass('custom-file-label-danger');
+
+                        return;
                     }
 
                     if (input.hasClass('picker__input')) {
                         input.removeClass('input--danger');
+
+                        return;
                     }
 
                     input.removeClass('is-invalid');
@@ -218,6 +242,8 @@ let WBServices = (function () {
             },
 
             formInValid(input, msg) {
+                let self = this;
+
                 // no input found
                 if (!input.length) {
                     swal("Validation Error", msg, "error");
@@ -232,15 +258,15 @@ let WBServices = (function () {
                 // custom checkbox (switch)
                 let materialInputs = ['material-switch'];
                 for (let i = 0; i < materialInputs.length; i++) {
-                    input.parent().parent().find('.' + materialInputs[i]).parent().find('.custom-control-checkbox-invalid').not('.form-text').remove();
                     if (input.hasClass(materialInputs[i] + '-control-input')) {
+                        input.parent().parent().find('.' + materialInputs[i]).parent().find('.custom-control-checkbox-invalid').not('.form-text').remove();
+
                         if (msg) {
                             input.parent().parent().find('.' + materialInputs[i]).parent().find('.' + materialInputs[i] + '-control-description').addClass('text-danger');
                             input.parent().parent().find('.' + materialInputs[i]).parent().find('.' + materialInputs[i] + '-control-indicator').addClass('material-switch-danger');
                             input.parent().parent().find('.' + materialInputs[i]).after('<div class="custom-control-checkbox-invalid">' + msg + '</div>');
                         } else {
-                            input.parent().parent().find('.' + materialInputs[i]).parent().find('.' + materialInputs[i] + '-control-indicator').removeClass('material-switch-danger');
-                            input.parent().parent().find('.' + materialInputs[i]).parent().find('.' + materialInputs[i] + '-control-description').removeClass('text-danger');
+                            self.removeError().materialSwitch(input, materialInputs[i]);
                         }
 
                         return;
@@ -248,31 +274,29 @@ let WBServices = (function () {
                 }
 
                 // material input checkbox
-                input.parent().parent().find('.material-control-input').parent().find('.custom-control-checkbox-invalid').not('.form-text').remove();
                 if (input.hasClass('material-control-input')) {
+                    input.parent().parent().find('.material-control-input').parent().find('.custom-control-checkbox-invalid').not('.form-text').remove();
+
                     if (msg) {
                         input.parent().parent().find('.material-control-input').parent().find('.material-control-indicator').addClass('material-control-indicator-danger');
                         input.parent().parent().find('.material-control-input').parent().find('.material-control-description').addClass('text-danger');
                         input.parent().parent().find('.material-control-input').parent().find('.material-control-description').after('<div class="custom-control-checkbox-invalid">' + msg + '</div>');
                     } else {
-                        input.parent().parent().find('.material-control-input').parent().find('.material-control-indicator').removeClass('material-control-indicator-danger');
-                        input.parent().parent().find('.material-control-input').parent().find('.material-control-description').removeClass('text-danger');
+                        self.removeError().materialCheckbox(input);
                     }
 
                     return;
                 }
 
                 // select picker
-                input.parent().parent().find('.select_picker').parent().find('.invalid-feedback').not('.form-text').remove();
                 if (input.hasClass('select_picker')) {
+                    input.parent().parent().find('.invalid-feedback-text').remove();
+
                     if (msg) {
-                        input.addClass('is-invalid');
                         input.parent().parent().find('.btn.dropdown-toggle').addClass('btn-toggle-danger');
-                        input.parent().parent().find('.select_picker').parent().after('<div class="invalid-feedback">' + msg + '</div>');
+                        input.parent().after('<div class="invalid-feedback-text">' + msg + '</div>');
                     } else {
-                        input.removeClass('is-invalid');
-                        input.parent().parent().find('.btn.dropdown-toggle').removeClass('btn-toggle-danger');
-                        input.parent().parent().find('.select_picker').removeClass('is-invalid');
+                        self.removeError().selectPicker(input);
                     }
 
                     jQ('.select_picker').selectpicker('refresh');
@@ -280,32 +304,15 @@ let WBServices = (function () {
                 }
 
                 // tiny mce
-                input.parent().parent().find('.tiny').parent().find('.invalid-feedback').not('.form-text').remove();
                 if (input.hasClass('tiny')) {
+                    input.parent().parent().find('.tiny').parent().find('.invalid-feedback-text').not('.form-text').remove();
+
                     if (msg) {
-                        input.addClass('is-invalid');
-                        input.parent().parent().find('.tiny').parent().find('.tox-tinymce').after('<div class="invalid-feedback">' + msg + '</div>');
-                    } else {
-                        input.parent().parent().find('.tiny').removeClass('is-invalid');
+                        input.parent().parent().find('.tiny').parent().find('.tox-tinymce').after('<div class="invalid-feedback-text">' + msg + '</div>');
                     }
+
                     return;
                 }
-
-                // remove error messages (bottom)
-                input.parent().parent()
-                    .not('.form-text')
-                    .not('.custom-control-label')
-                    .not('.custom-file-input')
-                    .not('.custom-file-label')
-                    .not('.dropdown-toggle')
-                    .not('.dropdown-menu')
-                    .not('.select_picker')
-                    .not('.picker')
-                    .not('.input-group-append')
-                    .not('.input-group-prepend')
-                    .not('.selectize')
-                    .find('.invalid-feedback')
-                    .remove();
 
                 // group input append
                 if (input.parent().find('.input-group-append').length) {
@@ -330,19 +337,15 @@ let WBServices = (function () {
                 if (msg) {
                     input.addClass('is-invalid');
 
-                    if (input.hasClass('picker__input')) {
-                        input.addClass('input--danger');
-                    }
-
                     if (input.hasClass('custom-file-input')) {
                         input.parent().find('.custom-file-label').addClass('custom-file-label-danger');
                         input.parent().find('.custom-file-label').after('<div class="invalid-feedback">' + msg + '</div>');
+
                         return;
                     }
 
                     if (input.parent().find('.input-group-append').length) {
                         input.parent().find('.input-group-append').after('<div class="invalid-feedback">' + msg + '</div>');
-
                         if (input.parent().find('.input-group-append').find('.btn').length === 1) {
                             input.parent().find('.input-group-append').find('.btn').addClass('input-group-append-danger');
                         }
@@ -352,7 +355,6 @@ let WBServices = (function () {
 
                     if (input.parent().find('.input-group-prepend').length) {
                         input.parent().find('.input-group-prepend').after('<div class="invalid-feedback">' + msg + '</div>');
-
                         if (input.parent().find('.input-group-prepend').find('.btn').length === 1) {
                             input.parent().find('.input-group-prepend').find('.btn').addClass('input-group-prepend-danger');
                         }
@@ -367,9 +369,17 @@ let WBServices = (function () {
                         return;
                     }
 
+                    if (input.hasClass('picker__input')) {
+                        input.addClass('input--danger');
+                    }
+
                     input.after('<div class="invalid-feedback">' + msg + '</div>');
                 } else {
                     input.removeClass('is-invalid');
+
+                    if (input.hasClass('picker__input')) {
+                        input.removeClass('input--danger');
+                    }
 
                     if (input.parent().find('.input-group-append').length) {
                         input.parent().find('.input-group-append').find('.btn').removeClass('input-group-append-danger');
@@ -386,11 +396,34 @@ let WBServices = (function () {
                     if (input.parent().find('.selectize').length) {
                         input.parent().find('.selectize').find('.selectize-input').removeClass('input--danger');
                     }
-
-                    if (input.hasClass('picker__input')) {
-                        input.removeClass('input--danger');
-                    }
                 }
+            },
+
+            removeError() {
+                return {
+                    materialSwitch(input, materialInput) {
+                        input.parent().parent().find('.' + materialInput).parent().find('.' + materialInput + '-control-indicator').removeClass('material-switch-danger');
+                        input.parent().parent().find('.' + materialInput).parent().find('.' + materialInput + '-control-description').removeClass('text-danger');
+                    },
+
+                    materialCheckbox(input) {
+                        input.parent().find('.material-control-input').parent().find('.material-control-indicator').removeClass('material-control-indicator-danger');
+                        input.parent().find('.material-control-input').parent().find('.material-control-description').removeClass('text-danger');
+                    },
+
+                    selectPicker(input) {
+                        input.parent().parent().find('.btn.dropdown-toggle').removeClass('btn-toggle-danger');
+                        input.parent().parent().find('.select_picker').removeClass('is-invalid');
+                    }
+                };
+            },
+
+            formRemoveInvalidMsg(input) {
+                // remove error messages (bottom)
+                input.parent().not('.form-text').not('.custom-control-label').not('.custom-file-input')
+                    .not('.custom-file-label').not('.dropdown-toggle').not('.dropdown-menu').not('.select_picker')
+                    .not('.picker').not('.input-group-append').not('.input-group-prepend').not('.selectize')
+                    .find('.invalid-feedback').remove();
             },
 
             extractErrorMsg(e) {
@@ -675,7 +708,7 @@ let WBServices = (function () {
 
                 _view().dialogs('reportPage', function (views) {
                     // initialize JS libraries
-                    WBJSOnInit();
+                    WBLibraries();
 
                     jQ('#url_report').val(href);
 

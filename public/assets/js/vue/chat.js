@@ -12,7 +12,6 @@ new Vue({
 
     mounted: function () {
         // initialize libraries and non-vue codes (public/assets/js/vendor/initialize.js)
-        WBInitialize();
         jQ(document).ready(this.onMounted);
     },
 
@@ -164,6 +163,8 @@ new Vue({
                     self.messages.isLoading = false;
                     self.messages.btnIsShowMore = true;
                     self.messages.isNoMsgShown = true;
+
+                    WBInitialize();
                 });
             } else if (jQ('meta[name="_routeName"]').attr('content') === 'module.chat.show') {
                 WBServices.view.loading(true);
@@ -173,6 +174,8 @@ new Vue({
 
                 }).finally(function () {
                     WBServices.view.loading(false);
+
+                    WBInitialize();
                 });
             }
         },
@@ -221,8 +224,8 @@ new Vue({
 
         clearMsgFiles() {
             let _fileInput = '#chat_file_msg';
-            document.getElementById("chat_file_msg").value = null;
-            jQ(_fileInput).val(null);
+            document.getElementById("chat_file_msg").value = '';
+            jQ(_fileInput).val('');
 
             let selection = document.getElementById('chat_file_msg');
             this.writeMessage.files = selection.files;
@@ -554,9 +557,10 @@ new Vue({
             let self = this;
 
             WBServices.form.onUpload(e, function (response) {
-                self.clearMsgFiles();
-                self.writeMessage.message = null;
                 self.messages.results.push(response.data);
+
+                self.writeMessage.message = null;
+                self.clearMsgFiles();
                 self.focusToWritingMessage();
             }, function (e) {
 

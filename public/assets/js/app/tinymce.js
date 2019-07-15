@@ -7,7 +7,7 @@
 
 jQ(document).ready(WBTinyMCE);
 
-function WBTinyMCE () {
+function WBTinyMCE() {
     if (typeof tinymce === 'undefined') {
         return;
     }
@@ -17,10 +17,12 @@ function WBTinyMCE () {
 
     let MCEToolBars = 'styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist | forecolor backcolor | link image media | insertBtn | code preview';
     let MCEContentStyle = "body {padding: 8px; background-color: #fff;}";
+
     let MCEContentCss = [
         '/assets/css/vendor.css',
         '/assets/css/theme.css'
     ];
+
     let MCEPlugins = [
         'advlist autolink lists link image charmap preview hr anchor pagebreak',
         'searchreplace wordcount visualblocks visualchars code fullscreen',
@@ -218,7 +220,7 @@ function WBTinyMCE () {
 
     function onEvents(views, type) {
         // validate on change input values
-        WBJSOnInit();
+        WBLibraries();
 
         jQ('.selected-file').off().on('click', function (e) {
             e.preventDefault();
@@ -344,4 +346,4 @@ function WBTinyMCE () {
         file_picker_callback: MCEOnFilePicker,
         setup: MCESetup
     });
-};
+}

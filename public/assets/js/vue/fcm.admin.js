@@ -35,7 +35,7 @@ new Vue({
             }
 
             // reinitialized select picker
-            WBJSOnInit();
+            WBLibraries();
         }
     }
 });

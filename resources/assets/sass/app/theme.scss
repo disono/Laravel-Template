@@ -745,8 +745,19 @@ END Custom checkbox
     --color: $color-danger !important;
 }
 
+.material-switch-danger:after {
+    background-color: $color-danger !important;
+}
+
 .form-control.is-invalid::placeholder {
     color: $color-danger !important;
+}
+
+.invalid-feedback-text {
+    color: $color-danger;
+    width: 100%;
+    margin-top: .25rem;
+    font-size: 80%;
 }
 
 /* select_picker */
