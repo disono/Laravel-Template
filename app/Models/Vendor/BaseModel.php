@@ -309,23 +309,6 @@ class BaseModel extends Model
     }
 
     /**
-     * Custom queries
-     *
-     * @param $key
-     * @return mixed|NULL
-     */
-    private function _fetchSelect($key = NULL)
-    {
-        $queries = $this->customQuerySelectList();
-
-        if ($key === NULL) {
-            return $queries;
-        }
-
-        return $queries[$key] ?? NULL;
-    }
-
-    /**
      * Check if we allow NULL on filters with defined value
      *
      * @param $val
@@ -340,6 +323,23 @@ class BaseModel extends Model
         }
 
         return TRUE;
+    }
+
+    /**
+     * Custom queries
+     *
+     * @param $key
+     * @return mixed|NULL
+     */
+    private function _fetchSelect($key = NULL)
+    {
+        $queries = $this->customQuerySelectList();
+
+        if ($key === NULL) {
+            return $queries;
+        }
+
+        return $queries[$key] ?? NULL;
     }
 
     /**
@@ -367,10 +367,7 @@ class BaseModel extends Model
         // if fetch_today is boolean get the data today unless specify the date
         if ($this->hasParams('fetch_today')) {
             $data_name_today = $this->params['fetch_today_name'] ?? ($tableName . 'created_at');
-            $current_date = $this->params['fetch_today'] === TRUE || is_numeric($this->params['fetch_today']) ?
-                'CURDATE()' :
-                sqlDate($this->params['fetch_today'], TRUE);
-
+            $current_date = $this->params['fetch_today'] === TRUE || is_numeric($this->params['fetch_today']) ? 'CURDATE()' : sqlDate($this->params['fetch_today'], TRUE);
             $query->whereRaw('DATE(' . $data_name_today . ') = ' . $current_date);
         }
 

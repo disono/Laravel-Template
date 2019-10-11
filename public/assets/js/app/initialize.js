@@ -42,24 +42,8 @@ let jQueryInit = function () {
     // mater waves
     Waves.attach('.btn', ['waves-effect']);
 
-    // initialize JS libraries
-    WBLibraries();
-};
-
-let WBLibraries = function () {
-    let datePickerEvents = {
-        // on pick a date callback
-        onPickDate() {
-            if (this.$node.attr('data-form-submit') && this.$node.val()) {
-                jQ(this.$node.attr('data-form-submit')).submit();
-            }
-        },
-
-        // on open callback
-        onOpenEvent() {
-
-        }
-    };
+    // Bootstrap Tooltip
+    jQ('[data-toggle="tooltip"]').tooltip({boundary: 'window'});
 
     // validate inputs
     function validateInputs(self) {
@@ -76,39 +60,35 @@ let WBLibraries = function () {
         WBServices.helpers.form.formInValid(self, validation.errors.first(inputName));
     }
 
-    // Bootstrap Tooltip
-    jQ('[data-toggle="tooltip"]').off().tooltip({boundary: 'window'});
-
-    // select picker
-    WBServices.form.selectPickerSearch();
-    jQ("[data-validate]").off();
-
     // set validators
     // validate input form upon change on values
-    jQ("[data-validate]").on('change', function (e) {
+    jQ(document).on("change", "[data-validate]", function () {
         validateInputs(jQ(this));
     });
 
     // validate input form upon keyup
-    jQ("input[data-validate]").on('keyup', function (e) {
+    jQ(document).on("keyup", "input[data-validate]", function () {
         validateInputs(jQ(this));
     });
 
     // validate input form upon keyup (textarea)
-    jQ("textarea[data-validate]").on('keyup', function (e) {
+    jQ(document).on("keyup", "textarea[data-validate]", function () {
         validateInputs(jQ(this));
     });
 
-    // custom file input upon selection of file
-    jQ('.custom-file-input').off().on("change", function (e) {
-        let input = jQ(this);
+    let datePickerEvents = {
+        // on pick a date callback
+        onPickDate() {
+            if (this.$node.attr('data-form-submit') && this.$node.val()) {
+                jQ(this.$node.attr('data-form-submit')).submit();
+            }
+        },
 
-        if (input.val() && input.hasClass('custom-file-input')) {
-            input.parent().find('.custom-file-label').text('Choose file');
-            input.removeClass('is-invalid');
-            input.parent().find('.custom-file-label').removeClass('custom-file-label-danger');
+        // on open callback
+        onOpenEvent() {
+
         }
-    });
+    };
 
     jQ('.date-picker-no-future').pickadate({
         format: 'mmmm d, yyyy',
@@ -148,6 +128,27 @@ let WBLibraries = function () {
         persist: false,
         createOnBlur: true,
         create: true
+    });
+
+    // initialize JS libraries
+    WBLibraries();
+};
+
+let WBLibraries = function () {
+    // select picker
+    setTimeout(() => {
+        WBServices.form.selectPickerSearch();
+    });
+
+    // custom file input upon selection of file
+    jQ('.custom-file-input').off().on("change", function (e) {
+        let input = jQ(this);
+
+        if (input.val() && input.hasClass('custom-file-input')) {
+            input.parent().find('.custom-file-label').text('Choose file');
+            input.removeClass('is-invalid');
+            input.parent().find('.custom-file-label').removeClass('custom-file-label-danger');
+        }
     });
 
     // on checkbox change redirect to uri

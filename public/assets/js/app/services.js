@@ -182,7 +182,7 @@ let WBServices = (function () {
                     if (input.hasClass('select_picker')) {
                         input.parent().parent().find('.invalid-feedback-text').remove();
                         self.removeError().selectPicker(input);
-                        jQ('.select_picker').selectpicker('refresh');
+                        input.selectpicker('refresh');
 
                         return;
                     }
@@ -293,13 +293,13 @@ let WBServices = (function () {
                     input.parent().parent().find('.invalid-feedback-text').remove();
 
                     if (msg) {
-                        input.parent().parent().find('.btn.dropdown-toggle').addClass('btn-toggle-danger');
+                        input.parent().find('.btn.dropdown-toggle').addClass('btn-toggle-danger');
                         input.parent().after('<div class="invalid-feedback-text">' + msg + '</div>');
                     } else {
                         self.removeError().selectPicker(input);
                     }
 
-                    jQ('.select_picker').selectpicker('refresh');
+                    input.selectpicker('refresh');
                     return;
                 }
 
@@ -412,8 +412,7 @@ let WBServices = (function () {
                     },
 
                     selectPicker(input) {
-                        input.parent().parent().find('.btn.dropdown-toggle').removeClass('btn-toggle-danger');
-                        input.parent().parent().find('.select_picker').removeClass('is-invalid');
+                        input.parent().find('.btn.dropdown-toggle').removeClass('btn-toggle-danger');
                     }
                 };
             },
@@ -733,8 +732,7 @@ let WBServices = (function () {
 
         form: {
             selectPickerSearch() {
-                jQ('.select_picker').selectpicker('destroy');
-                jQ('.select_picker').selectpicker('render');
+                jQ('.select_picker').selectpicker('refresh');
 
                 jQ('.select_picker').each(function (i, obj) {
                     let self = jQ(obj);

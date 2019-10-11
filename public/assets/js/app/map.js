@@ -163,15 +163,29 @@ let WBGoogleMap = (function () {
             }
 
             // add markers
-            this.markers.push(marker);
+            this.markers.push({
+                marker: marker,
+                data: typeof options.data !== "undefined" ? options.data : null
+            });
         },
 
         /**
          * Delete markers
          */
-        deleteMarker: function () {
-            this.markers.forEach(function (marker) {
-                marker.setMap(null);
+        deleteMarker: function (id) {
+            this.markers.forEach(function (obj) {
+                if (id === obj.data.id) {
+                    obj.marker.setMap(null);
+                }
+            });
+        },
+
+        /**
+         * Delete markers
+         */
+        deleteMarkers: function () {
+            this.markers.forEach(function (obj) {
+                obj.marker.setMap(null);
             });
         },
 
