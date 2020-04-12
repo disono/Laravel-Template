@@ -48,8 +48,6 @@ class UsersImport implements ToModel, WithHeadingRow
     {
         $cleanHidden = array_diff((new User())->getWritableColumns(), $this->hidden);
         $cleanColumns = array_diff($this->hidden, (new User())->getWritableColumns());
-        $final_output = array_merge($cleanHidden, $cleanColumns);
-
-        return $final_output;
+        return array_merge($cleanHidden, $cleanColumns);
     }
 }

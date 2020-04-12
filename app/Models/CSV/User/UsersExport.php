@@ -14,7 +14,7 @@ use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 
-class UsersExport implements FromQuery, WithMapping, WithHeadings
+class UsersExport implements FromCollection, WithMapping, WithHeadings
 {
     use Exportable;
     private $params = [];
@@ -27,14 +27,13 @@ class UsersExport implements FromQuery, WithMapping, WithHeadings
         $this->exportTemplate = $isTemplate;
     }
 
-    public function query()
+    public function collection()
     {
         if ($this->exportTemplate) {
             return collect([]);
         }
 
-        $this->params['object'] = true;
-        return (new User())->fetchAll($this->params);
+        return collect((new User())->fetchAll($this->params));
     }
 
     public function map($data): array
@@ -52,9 +51,7 @@ class UsersExport implements FromQuery, WithMapping, WithHeadings
     {
         $cleanHidden = array_diff((new User())->getWritableColumns(), $this->hidden);
         $cleanColumns = array_diff($this->hidden, (new User())->getWritableColumns());
-        $final_output = array_merge($cleanHidden, $cleanColumns);
-
-        return $final_output;
+        return array_merge($cleanHidden, $cleanColumns);
     }
 
     public function headings(): array
