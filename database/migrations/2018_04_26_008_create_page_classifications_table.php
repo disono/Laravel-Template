@@ -15,10 +15,10 @@ class CreatePageClassificationsTable extends Migration
     {
         Schema::create('page_classifications', function (Blueprint $table) {
             $table->unsignedInteger('page_id');
-            $table->foreign('page_id')->references('id')->on('pages');
+            $table->foreign('page_id')->references('id')->on('pages')->onDelete('cascade');
 
             $table->unsignedInteger('page_category_id');
-            $table->foreign('page_category_id')->references('id')->on('page_categories');
+            $table->foreign('page_category_id')->references('id')->on('page_categories')->onDelete('cascade');
         });
     }
 

@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.0.9 (2019-06-26)
+ * Version: 5.2.1 (2020-03-25)
  */
 (function () {
     'use strict';
@@ -17,11 +17,15 @@
       return editor.getParam('autolink_pattern', /^(https?:\/\/|ssh:\/\/|ftp:\/\/|file:\/|www\.|(?:mailto:)?[A-Z0-9._%+\-]+@)(.+)$/i);
     };
     var getDefaultLinkTarget = function (editor) {
-      return editor.getParam('default_link_target', '');
+      return editor.getParam('default_link_target', false);
+    };
+    var getDefaultLinkProtocol = function (editor) {
+      return editor.getParam('link_default_protocol', 'http', 'string');
     };
     var Settings = {
       getAutoLinkPattern: getAutoLinkPattern,
-      getDefaultLinkTarget: getDefaultLinkTarget
+      getDefaultLinkTarget: getDefaultLinkTarget,
+      getDefaultLinkProtocol: getDefaultLinkProtocol
     };
 
     var rangeEqualsDelimiterOrSpace = function (rangeString, delimiter) {
@@ -127,16 +131,17 @@
       }
       text = rng.toString().trim();
       matches = text.match(autoLinkPattern);
+      var protocol = Settings.getDefaultLinkProtocol(editor);
       if (matches) {
         if (matches[1] === 'www.') {
-          matches[1] = 'http://www.';
+          matches[1] = protocol + '://www.';
         } else if (/@$/.test(matches[1]) && !/^mailto:/.test(matches[1])) {
           matches[1] = 'mailto:' + matches[1];
         }
         bookmark = editor.selection.getBookmark();
         editor.selection.setRng(rng);
         editor.execCommand('createlink', false, matches[1] + matches[2]);
-        if (defaultLinkTarget) {
+        if (defaultLinkTarget !== false) {
           editor.dom.setAttrib(editor.selection.getNode(), 'target', defaultLinkTarget);
         }
         editor.selection.moveToBookmark(bookmark);
@@ -150,7 +155,7 @@
           return handleEnter(editor);
         }
       });
-      if (global$1.ie) {
+      if (global$1.browser.isIE()) {
         editor.on('focus', function () {
           if (!autoUrlDetectState) {
             autoUrlDetectState = true;

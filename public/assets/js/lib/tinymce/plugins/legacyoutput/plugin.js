@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.0.9 (2019-06-26)
+ * Version: 5.2.1 (2020-03-25)
  */
 (function () {
     'use strict';
@@ -119,7 +119,7 @@
           toggle: false,
           attributes: {
             size: function (vars) {
-              return global$1.inArray(fontSizes, vars.value) + 1;
+              return String(global$1.inArray(fontSizes, vars.value) + 1);
             }
           }
         },
@@ -167,7 +167,7 @@
     };
     var setup = function (editor) {
       overrideSettings(editor);
-      editor.on('init', function () {
+      editor.on('PreInit', function () {
         return overrideFormats(editor);
       });
     };

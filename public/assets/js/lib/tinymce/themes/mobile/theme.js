@@ -4,28 +4,11 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.0.9 (2019-06-26)
+ * Version: 5.2.1 (2020-03-25)
  */
 (function (domGlobals) {
     'use strict';
 
-    var extendStatics = function (d, b) {
-      extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function (d, b) {
-        d.__proto__ = b;
-      } || function (d, b) {
-        for (var p in b)
-          if (b.hasOwnProperty(p))
-            d[p] = b[p];
-      };
-      return extendStatics(d, b);
-    };
-    function __extends(d, b) {
-      extendStatics(d, b);
-      function __() {
-        this.constructor = d;
-      }
-      d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    }
     var __assign = function () {
       __assign = Object.assign || function __assign(t) {
         for (var s, i = 1, n = arguments.length; i < n; i++) {
@@ -44,334 +27,22 @@
         if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
           t[p] = s[p];
       if (s != null && typeof Object.getOwnPropertySymbols === 'function')
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++)
-          if (e.indexOf(p[i]) < 0)
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+          if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
             t[p[i]] = s[p[i]];
+        }
       return t;
     }
-    function __decorate(decorators, target, key, desc) {
-      var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-      if (typeof Reflect === 'object' && typeof Reflect.decorate === 'function')
-        r = Reflect.decorate(decorators, target, key, desc);
-      else
-        for (var i = decorators.length - 1; i >= 0; i--)
-          if (d = decorators[i])
-            r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-      return c > 3 && r && Object.defineProperty(target, key, r), r;
+    function __spreadArrays() {
+      for (var s = 0, i = 0, il = arguments.length; i < il; i++)
+        s += arguments[i].length;
+      for (var r = Array(s), k = 0, i = 0; i < il; i++)
+        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+          r[k] = a[j];
+      return r;
     }
-    function __param(paramIndex, decorator) {
-      return function (target, key) {
-        decorator(target, key, paramIndex);
-      };
-    }
-    function __metadata(metadataKey, metadataValue) {
-      if (typeof Reflect === 'object' && typeof Reflect.metadata === 'function')
-        return Reflect.metadata(metadataKey, metadataValue);
-    }
-    function __awaiter(thisArg, _arguments, P, generator) {
-      return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) {
-          try {
-            step(generator.next(value));
-          } catch (e) {
-            reject(e);
-          }
-        }
-        function rejected(value) {
-          try {
-            step(generator['throw'](value));
-          } catch (e) {
-            reject(e);
-          }
-        }
-        function step(result) {
-          result.done ? resolve(result.value) : new P(function (resolve) {
-            resolve(result.value);
-          }).then(fulfilled, rejected);
-        }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-      });
-    }
-    function __generator(thisArg, body) {
-      var _ = {
-          label: 0,
-          sent: function () {
-            if (t[0] & 1)
-              throw t[1];
-            return t[1];
-          },
-          trys: [],
-          ops: []
-        }, f, y, t, g;
-      return g = {
-        next: verb(0),
-        'throw': verb(1),
-        'return': verb(2)
-      }, typeof Symbol === 'function' && (g[Symbol.iterator] = function () {
-        return this;
-      }), g;
-      function verb(n) {
-        return function (v) {
-          return step([
-            n,
-            v
-          ]);
-        };
-      }
-      function step(op) {
-        if (f)
-          throw new TypeError('Generator is already executing.');
-        while (_)
-          try {
-            if (f = 1, y && (t = op[0] & 2 ? y['return'] : op[0] ? y['throw'] || ((t = y['return']) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done)
-              return t;
-            if (y = 0, t)
-              op = [
-                op[0] & 2,
-                t.value
-              ];
-            switch (op[0]) {
-            case 0:
-            case 1:
-              t = op;
-              break;
-            case 4:
-              _.label++;
-              return {
-                value: op[1],
-                done: false
-              };
-            case 5:
-              _.label++;
-              y = op[1];
-              op = [0];
-              continue;
-            case 7:
-              op = _.ops.pop();
-              _.trys.pop();
-              continue;
-            default:
-              if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) {
-                _ = 0;
-                continue;
-              }
-              if (op[0] === 3 && (!t || op[1] > t[0] && op[1] < t[3])) {
-                _.label = op[1];
-                break;
-              }
-              if (op[0] === 6 && _.label < t[1]) {
-                _.label = t[1];
-                t = op;
-                break;
-              }
-              if (t && _.label < t[2]) {
-                _.label = t[2];
-                _.ops.push(op);
-                break;
-              }
-              if (t[2])
-                _.ops.pop();
-              _.trys.pop();
-              continue;
-            }
-            op = body.call(thisArg, _);
-          } catch (e) {
-            op = [
-              6,
-              e
-            ];
-            y = 0;
-          } finally {
-            f = t = 0;
-          }
-        if (op[0] & 5)
-          throw op[1];
-        return {
-          value: op[0] ? op[1] : void 0,
-          done: true
-        };
-      }
-    }
-    function __exportStar(m, exports) {
-      for (var p in m)
-        if (!exports.hasOwnProperty(p))
-          exports[p] = m[p];
-    }
-    function __values(o) {
-      var m = typeof Symbol === 'function' && o[Symbol.iterator], i = 0;
-      if (m)
-        return m.call(o);
-      return {
-        next: function () {
-          if (o && i >= o.length)
-            o = void 0;
-          return {
-            value: o && o[i++],
-            done: !o
-          };
-        }
-      };
-    }
-    function __read(o, n) {
-      var m = typeof Symbol === 'function' && o[Symbol.iterator];
-      if (!m)
-        return o;
-      var i = m.call(o), r, ar = [], e;
-      try {
-        while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
-          ar.push(r.value);
-      } catch (error) {
-        e = { error: error };
-      } finally {
-        try {
-          if (r && !r.done && (m = i['return']))
-            m.call(i);
-        } finally {
-          if (e)
-            throw e.error;
-        }
-      }
-      return ar;
-    }
-    function __spread() {
-      for (var ar = [], i = 0; i < arguments.length; i++)
-        ar = ar.concat(__read(arguments[i]));
-      return ar;
-    }
-    function __await(v) {
-      return this instanceof __await ? (this.v = v, this) : new __await(v);
-    }
-    function __asyncGenerator(thisArg, _arguments, generator) {
-      if (!Symbol.asyncIterator)
-        throw new TypeError('Symbol.asyncIterator is not defined.');
-      var g = generator.apply(thisArg, _arguments || []), i, q = [];
-      return i = {}, verb('next'), verb('throw'), verb('return'), i[Symbol.asyncIterator] = function () {
-        return this;
-      }, i;
-      function verb(n) {
-        if (g[n])
-          i[n] = function (v) {
-            return new Promise(function (a, b) {
-              q.push([
-                n,
-                v,
-                a,
-                b
-              ]) > 1 || resume(n, v);
-            });
-          };
-      }
-      function resume(n, v) {
-        try {
-          step(g[n](v));
-        } catch (e) {
-          settle(q[0][3], e);
-        }
-      }
-      function step(r) {
-        r.value instanceof __await ? Promise.resolve(r.value.v).then(fulfill, reject) : settle(q[0][2], r);
-      }
-      function fulfill(value) {
-        resume('next', value);
-      }
-      function reject(value) {
-        resume('throw', value);
-      }
-      function settle(f, v) {
-        if (f(v), q.shift(), q.length)
-          resume(q[0][0], q[0][1]);
-      }
-    }
-    function __asyncDelegator(o) {
-      var i, p;
-      return i = {}, verb('next'), verb('throw', function (e) {
-        throw e;
-      }), verb('return'), i[Symbol.iterator] = function () {
-        return this;
-      }, i;
-      function verb(n, f) {
-        i[n] = o[n] ? function (v) {
-          return (p = !p) ? {
-            value: __await(o[n](v)),
-            done: n === 'return'
-          } : f ? f(v) : v;
-        } : f;
-      }
-    }
-    function __asyncValues(o) {
-      if (!Symbol.asyncIterator)
-        throw new TypeError('Symbol.asyncIterator is not defined.');
-      var m = o[Symbol.asyncIterator], i;
-      return m ? m.call(o) : (o = typeof __values === 'function' ? __values(o) : o[Symbol.iterator](), i = {}, verb('next'), verb('throw'), verb('return'), i[Symbol.asyncIterator] = function () {
-        return this;
-      }, i);
-      function verb(n) {
-        i[n] = o[n] && function (v) {
-          return new Promise(function (resolve, reject) {
-            v = o[n](v), settle(resolve, reject, v.done, v.value);
-          });
-        };
-      }
-      function settle(resolve, reject, d, v) {
-        Promise.resolve(v).then(function (v) {
-          resolve({
-            value: v,
-            done: d
-          });
-        }, reject);
-      }
-    }
-    function __makeTemplateObject(cooked, raw) {
-      if (Object.defineProperty) {
-        Object.defineProperty(cooked, 'raw', { value: raw });
-      } else {
-        cooked.raw = raw;
-      }
-      return cooked;
-    }
-    function __importStar(mod) {
-      if (mod && mod.__esModule)
-        return mod;
-      var result = {};
-      if (mod != null)
-        for (var k in mod)
-          if (Object.hasOwnProperty.call(mod, k))
-            result[k] = mod[k];
-      result.default = mod;
-      return result;
-    }
-    function __importDefault(mod) {
-      return mod && mod.__esModule ? mod : { default: mod };
-    }
-
-    var tslib_1 = /*#__PURE__*/Object.freeze({
-        __extends: __extends,
-        get __assign () { return __assign; },
-        __rest: __rest,
-        __decorate: __decorate,
-        __param: __param,
-        __metadata: __metadata,
-        __awaiter: __awaiter,
-        __generator: __generator,
-        __exportStar: __exportStar,
-        __values: __values,
-        __read: __read,
-        __spread: __spread,
-        __await: __await,
-        __asyncGenerator: __asyncGenerator,
-        __asyncDelegator: __asyncDelegator,
-        __asyncValues: __asyncValues,
-        __makeTemplateObject: __makeTemplateObject,
-        __importStar: __importStar,
-        __importDefault: __importDefault
-    });
 
     var noop = function () {
-    };
-    var noarg = function (f) {
-      return function () {
-        return f();
-      };
     };
     var compose = function (fa, fb) {
       return function () {
@@ -389,9 +60,6 @@
     };
     var identity = function (x) {
       return x;
-    };
-    var tripleEquals = function (a, b) {
-      return a === b;
     };
     function curry(fn) {
       var initialArgs = [];
@@ -424,30 +92,9 @@
     var apply = function (f) {
       return f();
     };
-    var call = function (f) {
-      f();
-    };
     var never = constant(false);
     var always = constant(true);
 
-    var Fun = /*#__PURE__*/Object.freeze({
-        noop: noop,
-        noarg: noarg,
-        compose: compose,
-        constant: constant,
-        identity: identity,
-        tripleEquals: tripleEquals,
-        curry: curry,
-        not: not,
-        die: die,
-        apply: apply,
-        call: call,
-        never: never,
-        always: always
-    });
-
-    var never$1 = never;
-    var always$1 = always;
     var none = function () {
       return NONE;
     };
@@ -461,37 +108,27 @@
       var id = function (n) {
         return n;
       };
-      var noop = function () {
-      };
-      var nul = function () {
-        return null;
-      };
-      var undef = function () {
-        return undefined;
-      };
       var me = {
         fold: function (n, s) {
           return n();
         },
-        is: never$1,
-        isSome: never$1,
-        isNone: always$1,
+        is: never,
+        isSome: never,
+        isNone: always,
         getOr: id,
         getOrThunk: call,
         getOrDie: function (msg) {
           throw new Error(msg || 'error: getOrDie called on none.');
         },
-        getOrNull: nul,
-        getOrUndefined: undef,
+        getOrNull: constant(null),
+        getOrUndefined: constant(undefined),
         or: id,
         orThunk: call,
         map: none,
-        ap: none,
         each: noop,
         bind: none,
-        flatten: none,
-        exists: never$1,
-        forall: always$1,
+        exists: never,
+        forall: always,
         filter: none,
         equals: eq,
         equals_: eq,
@@ -500,19 +137,15 @@
         },
         toString: constant('none()')
       };
-      if (Object.freeze)
+      if (Object.freeze) {
         Object.freeze(me);
+      }
       return me;
     }();
     var some = function (a) {
-      var constant_a = function () {
-        return a;
-      };
+      var constant_a = constant(a);
       var self = function () {
         return me;
-      };
-      var map = function (f) {
-        return some(f(a));
       };
       var bind = function (f) {
         return f(a);
@@ -524,8 +157,8 @@
         is: function (v) {
           return a === v;
         },
-        isSome: always$1,
-        isNone: never$1,
+        isSome: always,
+        isNone: never,
         getOr: constant_a,
         getOrThunk: constant_a,
         getOrDie: constant_a,
@@ -533,35 +166,31 @@
         getOrUndefined: constant_a,
         or: self,
         orThunk: self,
-        map: map,
-        ap: function (optfab) {
-          return optfab.fold(none, function (fab) {
-            return some(fab(a));
-          });
+        map: function (f) {
+          return some(f(a));
         },
         each: function (f) {
           f(a);
         },
         bind: bind,
-        flatten: constant_a,
         exists: bind,
         forall: bind,
         filter: function (f) {
           return f(a) ? me : NONE;
-        },
-        equals: function (o) {
-          return o.is(a);
-        },
-        equals_: function (o, elementEq) {
-          return o.fold(never$1, function (b) {
-            return elementEq(a, b);
-          });
         },
         toArray: function () {
           return [a];
         },
         toString: function () {
           return 'some(' + a + ')';
+        },
+        equals: function (o) {
+          return o.is(a);
+        },
+        equals_: function (o, elementEq) {
+          return o.fold(never, function (b) {
+            return elementEq(a, b);
+          });
         }
       };
       return me;
@@ -582,36 +211,24 @@
       for (var k = 0, len = props.length; k < len; k++) {
         var i = props[k];
         var x = obj[i];
-        f(x, i, obj);
+        f(x, i);
       }
     };
     var map = function (obj, f) {
-      return tupleMap(obj, function (x, i, obj) {
+      return tupleMap(obj, function (x, i) {
         return {
           k: i,
-          v: f(x, i, obj)
+          v: f(x, i)
         };
       });
     };
     var tupleMap = function (obj, f) {
       var r = {};
       each(obj, function (x, i) {
-        var tuple = f(x, i, obj);
+        var tuple = f(x, i);
         r[tuple.k] = tuple.v;
       });
       return r;
-    };
-    var bifilter = function (obj, pred) {
-      var t = {};
-      var f = {};
-      each(obj, function (x, i) {
-        var branch = pred(x, i) ? t : f;
-        branch[i] = x;
-      });
-      return {
-        t: t,
-        f: f
-      };
     };
     var mapToArray = function (obj, f) {
       var r = [];
@@ -636,77 +253,51 @@
         return v;
       });
     };
-    var size = function (obj) {
-      return keys(obj).length;
-    };
     var get = function (obj, key) {
       return has(obj, key) ? Option.from(obj[key]) : Option.none();
     };
     var has = function (obj, key) {
       return hasOwnProperty.call(obj, key);
     };
+    var hasNonNullableKey = function (obj, key) {
+      return has(obj, key) && obj[key] !== undefined && obj[key] !== null;
+    };
 
-    var Obj = /*#__PURE__*/Object.freeze({
-        keys: keys,
-        hasOwnProperty: hasOwnProperty,
-        each: each,
-        map: map,
-        tupleMap: tupleMap,
-        bifilter: bifilter,
-        mapToArray: mapToArray,
-        find: find,
-        values: values,
-        size: size,
+    var Cell = function (initial) {
+      var value = initial;
+      var get = function () {
+        return value;
+      };
+      var set = function (v) {
+        value = v;
+      };
+      var clone = function () {
+        return Cell(get());
+      };
+      return {
         get: get,
-        has: has
-    });
-
-    var touchstart = constant('touchstart');
-    var touchmove = constant('touchmove');
-    var touchend = constant('touchend');
-    var mousedown = constant('mousedown');
-    var mousemove = constant('mousemove');
-    var mouseup = constant('mouseup');
-    var mouseover = constant('mouseover');
-    var keydown = constant('keydown');
-    var keyup = constant('keyup');
-    var input = constant('input');
-    var change = constant('change');
-    var click = constant('click');
-    var transitionend = constant('transitionend');
-    var selectstart = constant('selectstart');
-
-    var cached = function (f) {
-      var called = false;
-      var r;
-      return function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-          args[_i] = arguments[_i];
-        }
-        if (!called) {
-          called = true;
-          r = f.apply(null, args);
-        }
-        return r;
+        set: set,
+        clone: clone
       };
     };
 
     var firstMatch = function (regexes, s) {
       for (var i = 0; i < regexes.length; i++) {
         var x = regexes[i];
-        if (x.test(s))
+        if (x.test(s)) {
           return x;
+        }
       }
       return undefined;
     };
     var find$1 = function (regexes, agent) {
       var r = firstMatch(regexes, agent);
-      if (!r)
+      if (!r) {
         return {
           major: 0,
           minor: 0
         };
+      }
       var group = function (i) {
         return Number(agent.replace(r, '$' + i));
       };
@@ -714,8 +305,9 @@
     };
     var detect = function (versionRegexes, agent) {
       var cleanedAgent = String(agent).toLowerCase();
-      if (versionRegexes.length === 0)
+      if (versionRegexes.length === 0) {
         return unknown();
+      }
       return find$1(versionRegexes, cleanedAgent);
     };
     var unknown = function () {
@@ -782,6 +374,7 @@
     var osx = 'OSX';
     var solaris = 'Solaris';
     var freebsd = 'FreeBSD';
+    var chromeos = 'ChromeOS';
     var isOS = function (name, current) {
       return function () {
         return current === name;
@@ -805,7 +398,8 @@
         isOSX: isOS(osx, current),
         isLinux: isOS(linux, current),
         isSolaris: isOS(solaris, current),
-        isFreeBSD: isOS(freebsd, current)
+        isFreeBSD: isOS(freebsd, current),
+        isChromeOS: isOS(chromeos, current)
       };
     };
     var OperatingSystem = {
@@ -817,18 +411,19 @@
       linux: constant(linux),
       osx: constant(osx),
       solaris: constant(solaris),
-      freebsd: constant(freebsd)
+      freebsd: constant(freebsd),
+      chromeos: constant(chromeos)
     };
 
-    var DeviceType = function (os, browser, userAgent) {
+    var DeviceType = function (os, browser, userAgent, mediaMatch) {
       var isiPad = os.isiOS() && /ipad/i.test(userAgent) === true;
       var isiPhone = os.isiOS() && !isiPad;
-      var isAndroid3 = os.isAndroid() && os.version.major === 3;
-      var isAndroid4 = os.isAndroid() && os.version.major === 4;
-      var isTablet = isiPad || isAndroid3 || isAndroid4 && /mobile/i.test(userAgent) === true;
-      var isTouch = os.isiOS() || os.isAndroid();
-      var isPhone = isTouch && !isTablet;
+      var isMobile = os.isiOS() || os.isAndroid();
+      var isTouch = isMobile || mediaMatch('(pointer:coarse)');
+      var isTablet = isiPad || !isiPhone && isMobile && mediaMatch('(min-device-width:768px)');
+      var isPhone = isiPhone || isMobile && !isTablet;
       var iOSwebview = browser.isSafari() && os.isiOS() && /safari/i.test(userAgent) === false;
+      var isDesktop = !isPhone && !isTablet && !iOSwebview;
       return {
         isiPad: constant(isiPad),
         isiPhone: constant(isiPhone),
@@ -837,18 +432,22 @@
         isTouch: constant(isTouch),
         isAndroid: os.isAndroid,
         isiOS: os.isiOS,
-        isWebView: constant(iOSwebview)
+        isWebView: constant(iOSwebview),
+        isDesktop: constant(isDesktop)
       };
     };
 
     var typeOf = function (x) {
-      if (x === null)
+      if (x === null) {
         return 'null';
+      }
       var t = typeof x;
-      if (t === 'object' && Array.prototype.isPrototypeOf(x))
+      if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array')) {
         return 'array';
-      if (t === 'object' && String.prototype.isPrototypeOf(x))
+      }
+      if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String')) {
         return 'string';
+      }
       return t;
     };
     var isType = function (type) {
@@ -859,137 +458,58 @@
     var isString = isType('string');
     var isObject = isType('object');
     var isArray = isType('array');
-    var isNull = isType('null');
     var isBoolean = isType('boolean');
-    var isUndefined = isType('undefined');
     var isFunction = isType('function');
     var isNumber = isType('number');
-    var isArrayOf = function (value, pred) {
-      if (isArray(value)) {
-        for (var i = 0, len = value.length; i < len; ++i) {
-          if (pred(value[i]) !== true) {
-            return false;
-          }
-        }
-        return true;
-      }
-      return false;
-    };
 
-    var Type = /*#__PURE__*/Object.freeze({
-        isString: isString,
-        isObject: isObject,
-        isArray: isArray,
-        isNull: isNull,
-        isBoolean: isBoolean,
-        isUndefined: isUndefined,
-        isFunction: isFunction,
-        isNumber: isNumber,
-        isArrayOf: isArrayOf
-    });
-
-    var slice = Array.prototype.slice;
-    var rawIndexOf = function () {
-      var pIndexOf = Array.prototype.indexOf;
-      var fastIndex = function (xs, x) {
-        return pIndexOf.call(xs, x);
-      };
-      var slowIndex = function (xs, x) {
-        return slowIndexOf(xs, x);
-      };
-      return pIndexOf === undefined ? slowIndex : fastIndex;
-    }();
-    var indexOf = function (xs, x) {
-      var r = rawIndexOf(xs, x);
-      return r === -1 ? Option.none() : Option.some(r);
+    var nativeSlice = Array.prototype.slice;
+    var nativeIndexOf = Array.prototype.indexOf;
+    var nativePush = Array.prototype.push;
+    var rawIndexOf = function (ts, t) {
+      return nativeIndexOf.call(ts, t);
     };
     var contains = function (xs, x) {
       return rawIndexOf(xs, x) > -1;
     };
     var exists = function (xs, pred) {
-      return findIndex(xs, pred).isSome();
-    };
-    var range = function (num, f) {
-      var r = [];
-      for (var i = 0; i < num; i++) {
-        r.push(f(i));
+      for (var i = 0, len = xs.length; i < len; i++) {
+        var x = xs[i];
+        if (pred(x, i)) {
+          return true;
+        }
       }
-      return r;
-    };
-    var chunk = function (array, size) {
-      var r = [];
-      for (var i = 0; i < array.length; i += size) {
-        var s = slice.call(array, i, i + size);
-        r.push(s);
-      }
-      return r;
+      return false;
     };
     var map$1 = function (xs, f) {
       var len = xs.length;
       var r = new Array(len);
       for (var i = 0; i < len; i++) {
         var x = xs[i];
-        r[i] = f(x, i, xs);
+        r[i] = f(x, i);
       }
       return r;
     };
     var each$1 = function (xs, f) {
       for (var i = 0, len = xs.length; i < len; i++) {
         var x = xs[i];
-        f(x, i, xs);
+        f(x, i);
       }
     };
     var eachr = function (xs, f) {
       for (var i = xs.length - 1; i >= 0; i--) {
         var x = xs[i];
-        f(x, i, xs);
+        f(x, i);
       }
-    };
-    var partition = function (xs, pred) {
-      var pass = [];
-      var fail = [];
-      for (var i = 0, len = xs.length; i < len; i++) {
-        var x = xs[i];
-        var arr = pred(x, i, xs) ? pass : fail;
-        arr.push(x);
-      }
-      return {
-        pass: pass,
-        fail: fail
-      };
     };
     var filter = function (xs, pred) {
       var r = [];
       for (var i = 0, len = xs.length; i < len; i++) {
         var x = xs[i];
-        if (pred(x, i, xs)) {
+        if (pred(x, i)) {
           r.push(x);
         }
       }
       return r;
-    };
-    var groupBy = function (xs, f) {
-      if (xs.length === 0) {
-        return [];
-      } else {
-        var wasType = f(xs[0]);
-        var r = [];
-        var group = [];
-        for (var i = 0, len = xs.length; i < len; i++) {
-          var x = xs[i];
-          var type = f(x);
-          if (type !== wasType) {
-            r.push(group);
-            group = [];
-          }
-          wasType = type;
-          group.push(x);
-        }
-        if (group.length !== 0) {
-          r.push(group);
-        }
-        return r;
-      }
     };
     var foldr = function (xs, f, acc) {
       eachr(xs, function (x) {
@@ -1006,7 +526,7 @@
     var find$2 = function (xs, pred) {
       for (var i = 0, len = xs.length; i < len; i++) {
         var x = xs[i];
-        if (pred(x, i, xs)) {
+        if (pred(x, i)) {
           return Option.some(x);
         }
       }
@@ -1015,50 +535,36 @@
     var findIndex = function (xs, pred) {
       for (var i = 0, len = xs.length; i < len; i++) {
         var x = xs[i];
-        if (pred(x, i, xs)) {
+        if (pred(x, i)) {
           return Option.some(i);
         }
       }
       return Option.none();
     };
-    var slowIndexOf = function (xs, x) {
-      for (var i = 0, len = xs.length; i < len; ++i) {
-        if (xs[i] === x) {
-          return i;
-        }
-      }
-      return -1;
-    };
-    var push = Array.prototype.push;
     var flatten = function (xs) {
       var r = [];
       for (var i = 0, len = xs.length; i < len; ++i) {
-        if (!Array.prototype.isPrototypeOf(xs[i]))
+        if (!isArray(xs[i])) {
           throw new Error('Arr.flatten item ' + i + ' was not an array, input: ' + xs);
-        push.apply(r, xs[i]);
+        }
+        nativePush.apply(r, xs[i]);
       }
       return r;
     };
     var bind = function (xs, f) {
-      var output = map$1(xs, f);
-      return flatten(output);
+      return flatten(map$1(xs, f));
     };
     var forall = function (xs, pred) {
       for (var i = 0, len = xs.length; i < len; ++i) {
         var x = xs[i];
-        if (pred(x, i, xs) !== true) {
+        if (pred(x, i) !== true) {
           return false;
         }
       }
       return true;
     };
-    var equal = function (a1, a2) {
-      return a1.length === a2.length && forall(a1, function (x, i) {
-        return x === a2[i];
-      });
-    };
     var reverse = function (xs) {
-      var r = slice.call(xs, 0);
+      var r = nativeSlice.call(xs, 0);
       r.reverse();
       return r;
     };
@@ -1067,61 +573,26 @@
         return !contains(a2, x);
       });
     };
-    var mapToObject = function (xs, f) {
-      var r = {};
-      for (var i = 0, len = xs.length; i < len; i++) {
-        var x = xs[i];
-        r[String(x)] = f(x, i);
-      }
-      return r;
-    };
     var pure = function (x) {
       return [x];
     };
     var sort = function (xs, comparator) {
-      var copy = slice.call(xs, 0);
+      var copy = nativeSlice.call(xs, 0);
       copy.sort(comparator);
       return copy;
     };
-    var head = function (xs) {
-      return xs.length === 0 ? Option.none() : Option.some(xs[0]);
-    };
-    var last = function (xs) {
-      return xs.length === 0 ? Option.none() : Option.some(xs[xs.length - 1]);
-    };
     var from$1 = isFunction(Array.from) ? Array.from : function (x) {
-      return slice.call(x);
+      return nativeSlice.call(x);
     };
-
-    var Arr = /*#__PURE__*/Object.freeze({
-        indexOf: indexOf,
-        contains: contains,
-        exists: exists,
-        range: range,
-        chunk: chunk,
-        map: map$1,
-        each: each$1,
-        eachr: eachr,
-        partition: partition,
-        filter: filter,
-        groupBy: groupBy,
-        foldr: foldr,
-        foldl: foldl,
-        find: find$2,
-        findIndex: findIndex,
-        flatten: flatten,
-        bind: bind,
-        forall: forall,
-        equal: equal,
-        reverse: reverse,
-        difference: difference,
-        mapToObject: mapToObject,
-        pure: pure,
-        sort: sort,
-        head: head,
-        last: last,
-        from: from$1
-    });
+    var findMap = function (arr, f) {
+      for (var i = 0; i < arr.length; i++) {
+        var r = f(arr[i], i);
+        if (r.isSome()) {
+          return r;
+        }
+      }
+      return Option.none();
+    };
 
     var detect$1 = function (candidates, userAgent) {
       var agent = String(userAgent).toLowerCase();
@@ -1153,10 +624,12 @@
     };
 
     var checkRange = function (str, substr, start) {
-      if (substr === '')
+      if (substr === '') {
         return true;
-      if (str.length < substr.length)
+      }
+      if (str.length < substr.length) {
         return false;
+      }
       var x = str.substr(start, start + substr.length);
       return x === substr;
     };
@@ -1191,8 +664,7 @@
         name: 'Edge',
         versionRegexes: [/.*?edge\/ ?([0-9]+)\.([0-9]+)$/],
         search: function (uastring) {
-          var monstrosity = contains$1(uastring, 'edge/') && contains$1(uastring, 'chrome') && contains$1(uastring, 'safari') && contains$1(uastring, 'applewebkit');
-          return monstrosity;
+          return contains$1(uastring, 'edge/') && contains$1(uastring, 'chrome') && contains$1(uastring, 'safari') && contains$1(uastring, 'applewebkit');
         }
       },
       {
@@ -1263,8 +735,8 @@
       },
       {
         name: 'OSX',
-        search: checkContains('os x'),
-        versionRegexes: [/.*?os\ x\ ?([0-9]+)_([0-9]+).*/]
+        search: checkContains('mac os x'),
+        versionRegexes: [/.*?mac\ os\ x\ ?([0-9]+)_([0-9]+).*/]
       },
       {
         name: 'Linux',
@@ -1280,6 +752,11 @@
         name: 'FreeBSD',
         search: checkContains('freebsd'),
         versionRegexes: []
+      },
+      {
+        name: 'ChromeOS',
+        search: checkContains('cros'),
+        versionRegexes: [/.*?chrome\/([0-9]+)\.([0-9]+).*/]
       }
     ];
     var PlatformInfo = {
@@ -1287,12 +764,12 @@
       oses: constant(oses)
     };
 
-    var detect$2 = function (userAgent) {
+    var detect$2 = function (userAgent, mediaMatch) {
       var browsers = PlatformInfo.browsers();
       var oses = PlatformInfo.oses();
       var browser = UaString.detectBrowser(browsers, userAgent).fold(Browser.unknown, Browser.nu);
       var os = UaString.detectOs(oses, userAgent).fold(OperatingSystem.unknown, OperatingSystem.nu);
-      var deviceType = DeviceType(os, browser, userAgent);
+      var deviceType = DeviceType(os, browser, userAgent, mediaMatch);
       return {
         browser: browser,
         os: os,
@@ -1301,11 +778,28 @@
     };
     var PlatformDetection = { detect: detect$2 };
 
-    var detect$3 = cached(function () {
-      var userAgent = domGlobals.navigator.userAgent;
-      return PlatformDetection.detect(userAgent);
-    });
-    var PlatformDetection$1 = { detect: detect$3 };
+    var mediaMatch = function (query) {
+      return domGlobals.window.matchMedia(query).matches;
+    };
+    var platform = Cell(PlatformDetection.detect(domGlobals.navigator.userAgent, mediaMatch));
+    var detect$3 = function () {
+      return platform.get();
+    };
+
+    var touchstart = constant('touchstart');
+    var touchmove = constant('touchmove');
+    var touchend = constant('touchend');
+    var mousedown = constant('mousedown');
+    var mousemove = constant('mousemove');
+    var mouseup = constant('mouseup');
+    var mouseover = constant('mouseover');
+    var keydown = constant('keydown');
+    var keyup = constant('keyup');
+    var input = constant('input');
+    var change = constant('change');
+    var click = constant('click');
+    var transitionend = constant('transitionend');
+    var selectstart = constant('selectstart');
 
     var alloy = { tap: constant('alloy.tap') };
     var focus = constant('alloy.focus');
@@ -1315,7 +809,6 @@
     var execute = constant('alloy.execute');
     var focusItem = constant('alloy.focus.item');
     var tap = alloy.tap;
-    var tapOrClick = PlatformDetection$1.detect().deviceType.isTouch() ? alloy.tap : click;
     var longpress = constant('alloy.longpress');
     var systemInit = constant('alloy.system.init');
     var attachedToDom = constant('alloy.system.attached');
@@ -1345,6 +838,22 @@
     };
     var dispatchFocus = function (component, target) {
       component.getSystem().triggerFocus(target, component.element());
+    };
+
+    var cached = function (f) {
+      var called = false;
+      var r;
+      return function () {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+          args[_i] = arguments[_i];
+        }
+        if (!called) {
+          called = true;
+          r = f.apply(null, args);
+        }
+        return r;
+      };
     };
 
     var fromHtml = function (html, scope) {
@@ -1398,6 +907,8 @@
     var ENTITY = domGlobals.Node.ENTITY_NODE;
     var NOTATION = domGlobals.Node.NOTATION_NODE;
 
+    var Global = typeof domGlobals.window !== 'undefined' ? domGlobals.window : Function('return this;')();
+
     var name = function (element) {
       var r = element.dom().nodeName;
       return r.toLowerCase();
@@ -1405,30 +916,13 @@
     var type = function (element) {
       return element.dom().nodeType;
     };
-    var value = function (element) {
-      return element.dom().nodeValue;
-    };
     var isType$1 = function (t) {
       return function (element) {
         return type(element) === t;
       };
     };
-    var isComment = function (element) {
-      return type(element) === COMMENT || name(element) === '#comment';
-    };
     var isElement = isType$1(ELEMENT);
     var isText = isType$1(TEXT);
-    var isDocument = isType$1(DOCUMENT);
-
-    var Node = /*#__PURE__*/Object.freeze({
-        name: name,
-        type: type,
-        value: value,
-        isElement: isElement,
-        isText: isText,
-        isDocument: isDocument,
-        isComment: isComment
-    });
 
     var inBody = function (element) {
       var dom = isText(element) ? element.dom().parentNode : element.dom();
@@ -1476,11 +970,13 @@
       throw new Error('Unsupported keys for object: ' + sort$1(unsupported).join(', '));
     };
     var validateStrArr = function (label, array) {
-      if (!isArray(array))
+      if (!isArray(array)) {
         throw new Error('The ' + label + ' fields must be an array. Was: ' + array + '.');
+      }
       each$1(array, function (a) {
-        if (!isString(a))
+        if (!isString(a)) {
           throw new Error('The value ' + a + ' in the ' + label + ' fields was not a string.');
+        }
       });
     };
     var checkDupes = function (everything) {
@@ -1495,8 +991,9 @@
 
     var MixedBag = function (required, optional) {
       var everything = required.concat(optional);
-      if (everything.length === 0)
+      if (everything.length === 0) {
         throw new Error('You must specify at least one required or optional field.');
+      }
       validateStrArr('required', required);
       validateStrArr('optional', optional);
       checkDupes(everything);
@@ -1505,13 +1002,15 @@
         var allReqd = forall(required, function (req) {
           return contains(keys$1, req);
         });
-        if (!allReqd)
+        if (!allReqd) {
           reqMessage(required, keys$1);
+        }
         var unsupported = filter(keys$1, function (key) {
           return !contains(everything, key);
         });
-        if (unsupported.length > 0)
+        if (unsupported.length > 0) {
           unsuppMessage(unsupported);
+        }
         var r = {};
         each$1(required, function (req) {
           r[req] = constant(obj[req]);
@@ -1523,44 +1022,16 @@
       };
     };
 
-    var Global = typeof domGlobals.window !== 'undefined' ? domGlobals.window : Function('return this;')();
-
-    var path = function (parts, scope) {
-      var o = scope !== undefined && scope !== null ? scope : Global;
-      for (var i = 0; i < parts.length && o !== undefined && o !== null; ++i)
-        o = o[parts[i]];
-      return o;
-    };
-    var resolve = function (p, scope) {
-      var parts = p.split('.');
-      return path(parts, scope);
-    };
-
-    var unsafe = function (name, scope) {
-      return resolve(name, scope);
-    };
-    var getOrDie = function (name, scope) {
-      var actual = unsafe(name, scope);
-      if (actual === undefined || actual === null)
-        throw name + ' not available on this browser';
-      return actual;
-    };
-    var Global$1 = { getOrDie: getOrDie };
-
-    var node = function () {
-      var f = Global$1.getOrDie('Node');
-      return f;
-    };
     var compareDocumentPosition = function (a, b, match) {
       return (a.compareDocumentPosition(b) & match) !== 0;
     };
     var documentPositionPreceding = function (a, b) {
-      return compareDocumentPosition(a, b, node().DOCUMENT_POSITION_PRECEDING);
+      return compareDocumentPosition(a, b, domGlobals.Node.DOCUMENT_POSITION_PRECEDING);
     };
     var documentPositionContainedBy = function (a, b) {
-      return compareDocumentPosition(a, b, node().DOCUMENT_POSITION_CONTAINED_BY);
+      return compareDocumentPosition(a, b, domGlobals.Node.DOCUMENT_POSITION_CONTAINED_BY);
     };
-    var Node$1 = {
+    var Node = {
       documentPositionPreceding: documentPositionPreceding,
       documentPositionContainedBy: documentPositionContainedBy
     };
@@ -1568,19 +1039,22 @@
     var ELEMENT$1 = ELEMENT;
     var DOCUMENT$1 = DOCUMENT;
     var is = function (element, selector) {
-      var elem = element.dom();
-      if (elem.nodeType !== ELEMENT$1) {
+      var dom = element.dom();
+      if (dom.nodeType !== ELEMENT$1) {
         return false;
-      } else if (elem.matches !== undefined) {
-        return elem.matches(selector);
-      } else if (elem.msMatchesSelector !== undefined) {
-        return elem.msMatchesSelector(selector);
-      } else if (elem.webkitMatchesSelector !== undefined) {
-        return elem.webkitMatchesSelector(selector);
-      } else if (elem.mozMatchesSelector !== undefined) {
-        return elem.mozMatchesSelector(selector);
       } else {
-        throw new Error('Browser lacks native selectors');
+        var elem = dom;
+        if (elem.matches !== undefined) {
+          return elem.matches(selector);
+        } else if (elem.msMatchesSelector !== undefined) {
+          return elem.msMatchesSelector(selector);
+        } else if (elem.webkitMatchesSelector !== undefined) {
+          return elem.webkitMatchesSelector(selector);
+        } else if (elem.mozMatchesSelector !== undefined) {
+          return elem.mozMatchesSelector(selector);
+        } else {
+          throw new Error('Browser lacks native selectors');
+        }
       }
     };
     var bypassSelector = function (dom) {
@@ -1604,25 +1078,22 @@
       return d1 === d2 ? false : d1.contains(d2);
     };
     var ieContains = function (e1, e2) {
-      return Node$1.documentPositionContainedBy(e1.dom(), e2.dom());
+      return Node.documentPositionContainedBy(e1.dom(), e2.dom());
     };
-    var browser = PlatformDetection$1.detect().browser;
+    var browser = detect$3().browser;
     var contains$2 = browser.isIE() ? ieContains : regularContains;
 
     var owner = function (element) {
       return Element.fromDom(element.dom().ownerDocument);
     };
     var defaultView = function (element) {
-      var el = element.dom();
-      var defView = el.ownerDocument.defaultView;
-      return Element.fromDom(defView);
+      return Element.fromDom(element.dom().ownerDocument.defaultView);
     };
     var parent = function (element) {
-      var dom = element.dom();
-      return Option.from(dom.parentNode).map(Element.fromDom);
+      return Option.from(element.dom().parentNode).map(Element.fromDom);
     };
     var parents = function (element, isRoot) {
-      var stop = isFunction(isRoot) ? isRoot : constant(false);
+      var stop = isFunction(isRoot) ? isRoot : never;
       var dom = element.dom();
       var ret = [];
       while (dom.parentNode !== null && dom.parentNode !== undefined) {
@@ -1646,12 +1117,10 @@
       return parent(element).map(children).map(filterSelf).getOr([]);
     };
     var nextSibling = function (element) {
-      var dom = element.dom();
-      return Option.from(dom.nextSibling).map(Element.fromDom);
+      return Option.from(element.dom().nextSibling).map(Element.fromDom);
     };
     var children = function (element) {
-      var dom = element.dom();
-      return map$1(dom.childNodes, Element.fromDom);
+      return map$1(element.dom().childNodes, Element.fromDom);
     };
     var child = function (element, index) {
       var cs = element.dom().childNodes;
@@ -1728,6 +1197,38 @@
       emit(component, attachedToDom());
     };
     var attach = function (parent, child) {
+      append(parent.element(), child.element());
+    };
+    var detachChildren = function (component) {
+      each$1(component.components(), function (childComp) {
+        return remove(childComp.element());
+      });
+      empty(component.element());
+      component.syncComponents();
+    };
+    var replaceChildren = function (component, newChildren) {
+      var subs = component.components();
+      detachChildren(component);
+      var deleted = difference(subs, newChildren);
+      each$1(deleted, function (comp) {
+        fireDetaching(comp);
+        component.getSystem().removeFromWorld(comp);
+      });
+      each$1(newChildren, function (childComp) {
+        if (!childComp.getSystem().isConnected()) {
+          component.getSystem().addToWorld(childComp);
+          attach(component, childComp);
+          if (inBody(component.element())) {
+            fireAttaching(childComp);
+          }
+        } else {
+          attach(component, childComp);
+        }
+        component.syncComponents();
+      });
+    };
+
+    var attach$1 = function (parent, child) {
       attachWith(parent, child, append);
     };
     var attachWith = function (parent, child, insertion) {
@@ -1745,23 +1246,17 @@
     };
     var detach = function (component) {
       var parent$1 = parent(component.element()).bind(function (p) {
-        return component.getSystem().getByDom(p).fold(Option.none, Option.some);
+        return component.getSystem().getByDom(p).toOption();
       });
       doDetach(component);
       parent$1.each(function (p) {
         p.syncComponents();
       });
     };
-    var detachChildren = function (component) {
-      var subs = component.components();
-      each$1(subs, doDetach);
-      empty(component.element());
-      component.syncComponents();
-    };
     var attachSystemAfter = function (element, guiSystem) {
-      attachSystemInternal(element, guiSystem, after);
+      attachSystemWith(element, guiSystem, after);
     };
-    var attachSystemInternal = function (element, guiSystem, inserter) {
+    var attachSystemWith = function (element, guiSystem, inserter) {
       inserter(element, guiSystem.element());
       var children$1 = children(guiSystem.element());
       each$1(children$1, function (child) {
@@ -1776,21 +1271,21 @@
       remove(guiSystem.element());
     };
 
-    var value$1 = function (o) {
+    var value = function (o) {
       var is = function (v) {
         return o === v;
       };
       var or = function (opt) {
-        return value$1(o);
+        return value(o);
       };
       var orThunk = function (f) {
-        return value$1(o);
+        return value(o);
       };
       var map = function (f) {
-        return value$1(f(o));
+        return value(f(o));
       };
       var mapError = function (f) {
-        return value$1(o);
+        return value(o);
       };
       var each = function (f) {
         f(o);
@@ -1876,10 +1371,10 @@
     var fromOption = function (opt, err) {
       return opt.fold(function () {
         return error(err);
-      }, value$1);
+      }, value);
     };
     var Result = {
-      value: value$1,
+      value: value,
       error: error,
       fromOption: fromOption
     };
@@ -1914,8 +1409,9 @@
             throw new Error('Wrong number of arguments to case ' + key + '. Expected ' + value.length + ' (' + value + '), got ' + argLength);
           }
           var args = new Array(argLength);
-          for (var i = 0; i < args.length; i++)
+          for (var i = 0; i < args.length; i++) {
             args[i] = arguments[i];
+          }
           var match = function (branches) {
             var branchKeys = keys(branches);
             if (constructors.length !== branchKeys.length) {
@@ -1924,8 +1420,9 @@
             var allReqd = forall(constructors, function (reqKey) {
               return contains(branchKeys, reqKey);
             });
-            if (!allReqd)
+            if (!allReqd) {
               throw new Error('Not all branches were specified when using match. Specified: ' + branchKeys.join(', ') + '\nRequired: ' + constructors.join(', '));
+            }
             return branches[key].apply(null, args);
           };
           return {
@@ -1962,155 +1459,26 @@
     var baseMerge = function (merger) {
       return function () {
         var objects = new Array(arguments.length);
-        for (var i = 0; i < objects.length; i++)
+        for (var i = 0; i < objects.length; i++) {
           objects[i] = arguments[i];
-        if (objects.length === 0)
+        }
+        if (objects.length === 0) {
           throw new Error('Can\'t merge zero objects');
+        }
         var ret = {};
         for (var j = 0; j < objects.length; j++) {
           var curObject = objects[j];
-          for (var key in curObject)
+          for (var key in curObject) {
             if (hasOwnProperty$1.call(curObject, key)) {
               ret[key] = merger(ret[key], curObject[key]);
             }
+          }
         }
         return ret;
       };
     };
     var deepMerge = baseMerge(deep);
     var merge = baseMerge(shallow);
-
-    var adt = Adt.generate([
-      { strict: [] },
-      { defaultedThunk: ['fallbackThunk'] },
-      { asOption: [] },
-      { asDefaultedOptionThunk: ['fallbackThunk'] },
-      { mergeWithThunk: ['baseThunk'] }
-    ]);
-    var defaulted = function (fallback) {
-      return adt.defaultedThunk(constant(fallback));
-    };
-    var mergeWith = function (base) {
-      return adt.mergeWithThunk(constant(base));
-    };
-    var strict = adt.strict;
-    var asOption = adt.asOption;
-    var defaultedThunk = adt.defaultedThunk;
-    var mergeWithThunk = adt.mergeWithThunk;
-
-    var exclude = function (obj, fields) {
-      var r = {};
-      each(obj, function (v, k) {
-        if (!contains(fields, k)) {
-          r[k] = v;
-        }
-      });
-      return r;
-    };
-
-    var readOpt = function (key) {
-      return function (obj) {
-        return has(obj, key) ? Option.from(obj[key]) : Option.none();
-      };
-    };
-    var readOr = function (key, fallback) {
-      return function (obj) {
-        return has(obj, key) ? obj[key] : fallback;
-      };
-    };
-    var readOptFrom = function (obj, key) {
-      return readOpt(key)(obj);
-    };
-    var hasKey = function (obj, key) {
-      return has(obj, key) && obj[key] !== undefined && obj[key] !== null;
-    };
-
-    var wrap = function (key, value) {
-      var r = {};
-      r[key] = value;
-      return r;
-    };
-    var wrapAll = function (keyvalues) {
-      var r = {};
-      each$1(keyvalues, function (kv) {
-        r[kv.key] = kv.value;
-      });
-      return r;
-    };
-
-    var comparison = Adt.generate([
-      {
-        bothErrors: [
-          'error1',
-          'error2'
-        ]
-      },
-      {
-        firstError: [
-          'error1',
-          'value2'
-        ]
-      },
-      {
-        secondError: [
-          'value1',
-          'error2'
-        ]
-      },
-      {
-        bothValues: [
-          'value1',
-          'value2'
-        ]
-      }
-    ]);
-    var partition$1 = function (results) {
-      var errors = [];
-      var values = [];
-      each$1(results, function (result) {
-        result.fold(function (err) {
-          errors.push(err);
-        }, function (value) {
-          values.push(value);
-        });
-      });
-      return {
-        errors: errors,
-        values: values
-      };
-    };
-
-    var exclude$1 = function (obj, fields) {
-      return exclude(obj, fields);
-    };
-    var readOpt$1 = function (key) {
-      return readOpt(key);
-    };
-    var readOr$1 = function (key, fallback) {
-      return readOr(key, fallback);
-    };
-    var readOptFrom$1 = function (obj, key) {
-      return readOptFrom(obj, key);
-    };
-    var wrap$1 = function (key, value) {
-      return wrap(key, value);
-    };
-    var wrapAll$1 = function (keyvalues) {
-      return wrapAll(keyvalues);
-    };
-    var mergeValues = function (values, base) {
-      return values.length === 0 ? Result.value(base) : Result.value(deepMerge(base, merge.apply(undefined, values)));
-    };
-    var mergeErrors = function (errors) {
-      return compose(Result.error, flatten)(errors);
-    };
-    var consolidate = function (objs, base) {
-      var partitions = partition$1(objs);
-      return partitions.errors.length > 0 ? mergeErrors(partitions.errors) : mergeValues(partitions.values, base);
-    };
-    var hasKey$1 = function (obj, key) {
-      return hasKey(obj, key);
-    };
 
     var SimpleResultType;
     (function (SimpleResultType) {
@@ -2120,7 +1488,7 @@
     var fold = function (res, onError, onValue) {
       return res.stype === SimpleResultType.Error ? onError(res.serror) : onValue(res.svalue);
     };
-    var partition$2 = function (results) {
+    var partition = function (results) {
       var values = [];
       var errors = [];
       each$1(results, function (obj) {
@@ -2191,13 +1559,116 @@
       fromResult: fromResult,
       toResult: toResult,
       svalue: svalue,
-      partition: partition$2,
+      partition: partition,
       serror: serror,
       bind: bind$1,
       bindError: bindError,
       map: map$2,
       mapError: mapError,
       fold: fold
+    };
+
+    var adt = Adt.generate([
+      { strict: [] },
+      { defaultedThunk: ['fallbackThunk'] },
+      { asOption: [] },
+      { asDefaultedOptionThunk: ['fallbackThunk'] },
+      { mergeWithThunk: ['baseThunk'] }
+    ]);
+    var defaulted = function (fallback) {
+      return adt.defaultedThunk(constant(fallback));
+    };
+    var mergeWith = function (base) {
+      return adt.mergeWithThunk(constant(base));
+    };
+    var strict = adt.strict;
+    var asOption = adt.asOption;
+    var defaultedThunk = adt.defaultedThunk;
+    var asDefaultedOptionThunk = adt.asDefaultedOptionThunk;
+    var mergeWithThunk = adt.mergeWithThunk;
+
+    var exclude = function (obj, fields) {
+      var r = {};
+      each(obj, function (v, k) {
+        if (!contains(fields, k)) {
+          r[k] = v;
+        }
+      });
+      return r;
+    };
+
+    var wrap = function (key, value) {
+      var _a;
+      return _a = {}, _a[key] = value, _a;
+    };
+    var wrapAll = function (keyvalues) {
+      var r = {};
+      each$1(keyvalues, function (kv) {
+        r[kv.key] = kv.value;
+      });
+      return r;
+    };
+
+    var comparison = Adt.generate([
+      {
+        bothErrors: [
+          'error1',
+          'error2'
+        ]
+      },
+      {
+        firstError: [
+          'error1',
+          'value2'
+        ]
+      },
+      {
+        secondError: [
+          'value1',
+          'error2'
+        ]
+      },
+      {
+        bothValues: [
+          'value1',
+          'value2'
+        ]
+      }
+    ]);
+    var partition$1 = function (results) {
+      var errors = [];
+      var values = [];
+      each$1(results, function (result) {
+        result.fold(function (err) {
+          errors.push(err);
+        }, function (value) {
+          values.push(value);
+        });
+      });
+      return {
+        errors: errors,
+        values: values
+      };
+    };
+
+    var exclude$1 = function (obj, fields) {
+      return exclude(obj, fields);
+    };
+    var wrap$1 = function (key, value) {
+      return wrap(key, value);
+    };
+    var wrapAll$1 = function (keyvalues) {
+      return wrapAll(keyvalues);
+    };
+    var mergeValues = function (values, base) {
+      return values.length === 0 ? Result.value(base) : Result.value(deepMerge(base, merge.apply(undefined, values)));
+    };
+    var mergeErrors = function (errors) {
+      return Result.error(flatten(errors));
+    };
+    var consolidate = function (objs, base) {
+      var partitions = partition$1(objs);
+      return partitions.errors.length > 0 ? mergeErrors(partitions.errors) : mergeValues(partitions.values, base);
     };
 
     var mergeValues$1 = function (values, base) {
@@ -2219,57 +1690,8 @@
       consolidateArr: consolidateArr
     };
 
-    var typeAdt = Adt.generate([
-      {
-        setOf: [
-          'validator',
-          'valueType'
-        ]
-      },
-      { arrOf: ['valueType'] },
-      { objOf: ['fields'] },
-      { itemOf: ['validator'] },
-      {
-        choiceOf: [
-          'key',
-          'branches'
-        ]
-      },
-      { thunk: ['description'] },
-      {
-        func: [
-          'args',
-          'outputSchema'
-        ]
-      }
-    ]);
-    var fieldAdt = Adt.generate([
-      {
-        field: [
-          'name',
-          'presence',
-          'type'
-        ]
-      },
-      { state: ['name'] }
-    ]);
-
-    var json = function () {
-      return Global$1.getOrDie('JSON');
-    };
-    var parse = function (text) {
-      return json().parse(text);
-    };
-    var stringify = function (obj, replacer, space) {
-      return json().stringify(obj, replacer, space);
-    };
-    var Json = {
-      parse: parse,
-      stringify: stringify
-    };
-
     var formatObj = function (input) {
-      return isObject(input) && keys(input).length > 100 ? ' removed due to size' : Json.stringify(input, null, 2);
+      return isObject(input) && keys(input).length > 100 ? ' removed due to size' : JSON.stringify(input, null, 2);
     };
     var formatErrors = function (errors) {
       var es = errors.length > 10 ? errors.slice(0, 10).concat([{
@@ -2332,21 +1754,21 @@
       }
     ]);
     var strictAccess = function (path, obj, key) {
-      return readOptFrom(obj, key).fold(function () {
+      return get(obj, key).fold(function () {
         return missingStrict(path, key, obj);
       }, SimpleResult.svalue);
     };
     var fallbackAccess = function (obj, key, fallbackThunk) {
-      var v = readOptFrom(obj, key).fold(function () {
+      var v = get(obj, key).fold(function () {
         return fallbackThunk(obj);
       }, identity);
       return SimpleResult.svalue(v);
     };
     var optionAccess = function (obj, key) {
-      return SimpleResult.svalue(readOptFrom(obj, key));
+      return SimpleResult.svalue(get(obj, key));
     };
     var optionDefaultedAccess = function (obj, key, fallback) {
-      var opt = readOptFrom(obj, key).map(function (val) {
+      var opt = get(obj, key).map(function (val) {
         return val === true ? fallback(obj) : val;
       });
       return SimpleResult.svalue(opt);
@@ -2398,7 +1820,7 @@
       });
       return ResultCombine.consolidateObj(results, {});
     };
-    var value$2 = function (validator) {
+    var value$1 = function (validator) {
       var extract = function (path, strength, val) {
         return SimpleResult.bindError(validator(val, strength), function (err) {
           return custom(path, err);
@@ -2407,19 +1829,15 @@
       var toString = function () {
         return 'val';
       };
-      var toDsl = function () {
-        return typeAdt.itemOf(validator);
-      };
       return {
         extract: extract,
-        toString: toString,
-        toDsl: toDsl
+        toString: toString
       };
     };
     var getSetKeys = function (obj) {
       var keys$1 = keys(obj);
       return filter(keys$1, function (k) {
-        return hasKey$1(obj, k);
+        return hasNonNullableKey(obj, k);
       });
     };
     var objOfOnly = function (fields) {
@@ -2432,14 +1850,13 @@
       var extract = function (path, strength, o) {
         var keys = isBoolean(o) ? [] : getSetKeys(o);
         var extra = filter(keys, function (k) {
-          return !hasKey$1(fieldNames, k);
+          return !hasNonNullableKey(fieldNames, k);
         });
         return extra.length === 0 ? delegate.extract(path, strength, o) : unsupportedFields(path, extra);
       };
       return {
         extract: extract,
-        toString: delegate.toString,
-        toDsl: delegate.toDsl
+        toString: delegate.toString
       };
     };
     var objOf = function (fields) {
@@ -2456,19 +1873,9 @@
         });
         return 'obj{\n' + fieldStrings.join('\n') + '}';
       };
-      var toDsl = function () {
-        return typeAdt.objOf(map$1(fields, function (f) {
-          return f.fold(function (key, okey, presence, prop) {
-            return fieldAdt.field(key, presence, prop);
-          }, function (okey, instantiator) {
-            return fieldAdt.state(okey);
-          });
-        }));
-      };
       return {
         extract: extract,
-        toString: toString,
-        toDsl: toDsl
+        toString: toString
       };
     };
     var arrOf = function (prop) {
@@ -2481,18 +1888,14 @@
       var toString = function () {
         return 'array(' + prop.toString() + ')';
       };
-      var toDsl = function () {
-        return typeAdt.arrOf(prop);
-      };
       return {
         extract: extract,
-        toString: toString,
-        toDsl: toDsl
+        toString: toString
       };
     };
     var setOf = function (validator, prop) {
       var validateKeys = function (path, keys) {
-        return arrOf(value$2(validator)).extract(path, identity, keys);
+        return arrOf(value$1(validator)).extract(path, identity, keys);
       };
       var extract = function (path, strength, o) {
         var keys$1 = keys(o);
@@ -2507,30 +1910,26 @@
       var toString = function () {
         return 'setOf(' + prop.toString() + ')';
       };
-      var toDsl = function () {
-        return typeAdt.setOf(validator, prop);
-      };
       return {
         extract: extract,
-        toString: toString,
-        toDsl: toDsl
+        toString: toString
       };
     };
-    var anyValue = constant(value$2(SimpleResult.svalue));
+    var anyValue = constant(value$1(SimpleResult.svalue));
     var state = adt$1.state;
     var field = adt$1.field;
 
     var chooseFrom = function (path, strength, input, branches, ch) {
-      var fields = readOptFrom$1(branches, ch);
+      var fields = get(branches, ch);
       return fields.fold(function () {
         return missingBranch(path, branches, ch);
-      }, function (fs) {
-        return objOf(fs).extract(path.concat(['branch: ' + ch]), strength, input);
+      }, function (vp) {
+        return vp.extract(path.concat(['branch: ' + ch]), strength, input);
       });
     };
     var choose = function (key, branches) {
       var extract = function (path, strength, input) {
-        var choice = readOptFrom$1(input, key);
+        var choice = get(input, key);
         return choice.fold(function () {
           return missingKey(path, key);
         }, function (chosen) {
@@ -2540,19 +1939,15 @@
       var toString = function () {
         return 'chooseOn(' + key + '). Possible values: ' + keys(branches);
       };
-      var toDsl = function () {
-        return typeAdt.choiceOf(key, branches);
-      };
       return {
         extract: extract,
-        toString: toString,
-        toDsl: toDsl
+        toString: toString
       };
     };
 
-    var _anyValue = value$2(SimpleResult.svalue);
+    var _anyValue = value$1(SimpleResult.svalue);
     var valueOf = function (validator) {
-      return value$2(function (v) {
+      return value$1(function (v) {
         return validator(v).fold(SimpleResult.serror, SimpleResult.svalue);
       });
     };
@@ -2573,23 +1968,23 @@
     var asRaw = function (label, prop, obj) {
       return SimpleResult.toResult(extract(label, prop, identity, obj));
     };
-    var getOrDie$1 = function (extraction) {
+    var getOrDie = function (extraction) {
       return extraction.fold(function (errInfo) {
         throw new Error(formatError(errInfo));
       }, identity);
     };
     var asRawOrDie = function (label, prop, obj) {
-      return getOrDie$1(asRaw(label, prop, obj));
+      return getOrDie(asRaw(label, prop, obj));
     };
     var formatError = function (errInfo) {
-      return 'Errors: \n' + formatErrors(errInfo.errors) + '\n\nInput object: ' + formatObj(errInfo.input);
+      return 'Errors: \n' + formatErrors(errInfo.errors).join('\n') + '\n\nInput object: ' + formatObj(errInfo.input);
     };
     var choose$1 = function (key, branches) {
-      return choose(key, branches);
+      return choose(key, map(branches, objOf));
     };
     var anyValue$1 = constant(_anyValue);
     var typedValue = function (validator, expectedType) {
-      return value$2(function (a) {
+      return value$1(function (a) {
         var actualType = typeof a;
         return validator(a) ? SimpleResult.svalue(a) : SimpleResult.serror('Expected type: ' + expectedType + ' but got: ' + actualType);
       });
@@ -2606,7 +2001,7 @@
       return strictOf(key, functionProcessor);
     };
     var forbid = function (key, message) {
-      return field(key, key, asOption(), value$2(function (v) {
+      return field(key, key, asOption(), value$1(function (v) {
         return SimpleResult.serror('The field: ' + key + ' is forbidden. ' + message);
       }));
     };
@@ -2638,13 +2033,35 @@
       return state(okey, instantiator);
     };
 
+    var ancestor = function (scope, transform, isRoot) {
+      var element = scope.dom();
+      var stop = isFunction(isRoot) ? isRoot : constant(false);
+      while (element.parentNode) {
+        element = element.parentNode;
+        var el = Element.fromDom(element);
+        var transformed = transform(el);
+        if (transformed.isSome()) {
+          return transformed;
+        } else if (stop(el)) {
+          break;
+        }
+      }
+      return Option.none();
+    };
+    var closest = function (scope, transform, isRoot) {
+      var current = transform(scope);
+      return current.orThunk(function () {
+        return isRoot(scope) ? Option.none() : ancestor(scope, transform, isRoot);
+      });
+    };
+
     var isSource = function (component, simulatedEvent) {
       return eq(component.element(), simulatedEvent.event().target());
     };
 
     var nu$4 = function (parts) {
-      if (!hasKey$1(parts, 'can') && !hasKey$1(parts, 'abort') && !hasKey$1(parts, 'run')) {
-        throw new Error('EventHandler defined by: ' + Json.stringify(parts, null, 2) + ' does not have can, abort, or run!');
+      if (!hasNonNullableKey(parts, 'can') && !hasNonNullableKey(parts, 'abort') && !hasNonNullableKey(parts, 'run')) {
+        throw new Error('EventHandler defined by: ' + JSON.stringify(parts, null, 2) + ' does not have can, abort, or run!');
       }
       return asRawOrDie('Extracting event.handler', objOfOnly([
         defaulted$1('can', constant(true)),
@@ -2704,66 +2121,6 @@
       });
     };
 
-    function ClosestOrAncestor (is, ancestor, scope, a, isRoot) {
-      return is(scope, a) ? Option.some(scope) : isFunction(isRoot) && isRoot(scope) ? Option.none() : ancestor(scope, a, isRoot);
-    }
-
-    var ancestor = function (scope, predicate, isRoot) {
-      var element = scope.dom();
-      var stop = isFunction(isRoot) ? isRoot : constant(false);
-      while (element.parentNode) {
-        element = element.parentNode;
-        var el = Element.fromDom(element);
-        if (predicate(el)) {
-          return Option.some(el);
-        } else if (stop(el)) {
-          break;
-        }
-      }
-      return Option.none();
-    };
-    var closest = function (scope, predicate, isRoot) {
-      var is = function (s) {
-        return predicate(s);
-      };
-      return ClosestOrAncestor(is, ancestor, scope, predicate, isRoot);
-    };
-    var sibling = function (scope, predicate) {
-      var element = scope.dom();
-      if (!element.parentNode) {
-        return Option.none();
-      }
-      return child$1(Element.fromDom(element.parentNode), function (x) {
-        return !eq(scope, x) && predicate(x);
-      });
-    };
-    var child$1 = function (scope, predicate) {
-      var result = find$2(scope.dom().childNodes, compose(predicate, Element.fromDom));
-      return result.map(Element.fromDom);
-    };
-    var descendant = function (scope, predicate) {
-      var descend = function (node) {
-        for (var i = 0; i < node.childNodes.length; i++) {
-          if (predicate(Element.fromDom(node.childNodes[i]))) {
-            return Option.some(Element.fromDom(node.childNodes[i]));
-          }
-          var res = descend(node.childNodes[i]);
-          if (res.isSome()) {
-            return res;
-          }
-        }
-        return Option.none();
-      };
-      return descend(scope.dom());
-    };
-
-    var closest$1 = function (target, transform, isRoot) {
-      var delegate = closest(target, function (elem) {
-        return transform(elem).isSome();
-      }, isRoot);
-      return delegate.bind(transform);
-    };
-
     var derive = function (configs) {
       return wrapAll$1(configs);
     };
@@ -2779,16 +2136,6 @@
         value: nu$4({ can: predicate })
       };
     };
-    var preventDefault = function (name) {
-      return {
-        key: name,
-        value: nu$4({
-          run: function (component, simulatedEvent) {
-            simulatedEvent.event().prevent();
-          }
-        })
-      };
-    };
     var run = function (name, handler) {
       return {
         key: name,
@@ -2799,8 +2146,11 @@
       return {
         key: name,
         value: nu$4({
-          run: function (component) {
-            action.apply(undefined, [component].concat(extra));
+          run: function (component, simulatedEvent) {
+            action.apply(undefined, [
+              component,
+              simulatedEvent
+            ].concat(extra));
           }
         })
       };
@@ -2835,20 +2185,6 @@
       var uid = detail.partUids[partName];
       return redirectToUid(name, uid);
     };
-    var runWithTarget = function (name, f) {
-      return run(name, function (component, simulatedEvent) {
-        var ev = simulatedEvent.event();
-        var target = component.getSystem().getByDom(ev.target()).fold(function () {
-          var closest = closest$1(ev.target(), function (el) {
-            return component.getSystem().getByDom(el).toOption();
-          }, constant(false));
-          return closest.getOr(component);
-        }, function (c) {
-          return c;
-        });
-        f(component, target, simulatedEvent);
-      });
-    };
     var cutter = function (name) {
       return run(name, function (component, simulatedEvent) {
         simulatedEvent.cut();
@@ -2866,25 +2202,6 @@
     var runOnDetached = runOnSourceName(detachedFromDom());
     var runOnInit = runOnSourceName(systemInit());
     var runOnExecute = runOnName(execute());
-
-    var AlloyEvents = /*#__PURE__*/Object.freeze({
-        derive: derive,
-        run: run,
-        preventDefault: preventDefault,
-        runActionExtra: runActionExtra,
-        runOnAttached: runOnAttached,
-        runOnDetached: runOnDetached,
-        runOnSource: runOnSource,
-        runOnInit: runOnInit,
-        runOnExecute: runOnExecute,
-        redirectToUid: redirectToUid,
-        redirectToPart: redirectToPart,
-        runWithTarget: runWithTarget,
-        abort: abort,
-        can: can,
-        cutter: cutter,
-        stopper: stopper
-    });
 
     var markAsBehaviourApi = function (f, apiName, apiFunction) {
       var delegate = apiFunction.toString();
@@ -2939,9 +2256,9 @@
       };
     };
     var merge$1 = function (defnA, mod) {
-      return __assign({}, defnA, {
-        attributes: __assign({}, defnA.attributes, mod.attributes),
-        styles: __assign({}, defnA.styles, mod.styles),
+      return __assign(__assign({}, defnA), {
+        attributes: __assign(__assign({}, defnA.attributes), mod.attributes),
+        styles: __assign(__assign({}, defnA.styles), mod.styles),
         classes: defnA.classes.concat(mod.classes)
       });
     };
@@ -2994,7 +2311,7 @@
     };
     var doCreate = function (configSchema, schemaSchema, name, active, apis, extra, state) {
       var getConfig = function (info) {
-        return hasKey$1(info, name) ? info[name]() : Option.none();
+        return hasNonNullableKey(info, name) ? info[name]() : Option.none();
       };
       var wrappedApis = map(apis, function (apiF, apiName) {
         return wrapApi(name, apiF, apiName);
@@ -3002,7 +2319,7 @@
       var wrappedExtra = map(extra, function (extraF, extraName) {
         return markAsExtraApi(extraF, extraName);
       });
-      var me = __assign({}, wrappedExtra, wrappedApis, {
+      var me = __assign(__assign(__assign({}, wrappedExtra), wrappedApis), {
         revoke: curry(revokeBehaviour, name),
         config: function (spec) {
           var prepared = asRawOrDie(name + '-config', configSchema, spec);
@@ -3024,7 +2341,7 @@
         },
         exhibit: function (info, base) {
           return getConfig(info).bind(function (behaviourInfo) {
-            return readOptFrom$1(active, 'exhibit').map(function (exhibitor) {
+            return get(active, 'exhibit').map(function (exhibitor) {
               return exhibitor(base, behaviourInfo.config, behaviourInfo.state);
             });
           }).getOr(nu$5({}));
@@ -3034,9 +2351,9 @@
         },
         handlers: function (info) {
           return getConfig(info).map(function (behaviourInfo) {
-            var getEvents = readOr$1('events', function (a, b) {
+            var getEvents = get(active, 'events').getOr(function () {
               return {};
-            })(active);
+            });
             return getEvents(behaviourInfo.config, behaviourInfo.state);
           }).getOr({});
         }
@@ -3086,44 +2403,6 @@
       return createModes(choose$1(value.branchKey, value.branches), value.name, value.active, value.apis, value.extra, value.state);
     };
     var revoke = constant(undefined);
-    var noActive = constant({});
-    var noApis = constant({});
-    var noExtra = constant({});
-
-    var Behaviour = /*#__PURE__*/Object.freeze({
-        derive: derive$1,
-        revoke: revoke,
-        noActive: noActive,
-        noApis: noApis,
-        noExtra: noExtra,
-        create: create$1,
-        createModes: createModes$1
-    });
-
-    function Toggler (turnOff, turnOn, initial) {
-      var active = initial || false;
-      var on = function () {
-        turnOn();
-        active = true;
-      };
-      var off = function () {
-        turnOff();
-        active = false;
-      };
-      var toggle = function () {
-        var f = active ? off : on;
-        f();
-      };
-      var isOn = function () {
-        return active;
-      };
-      return {
-        on: on,
-        off: off,
-        toggle: toggle,
-        isOn: isOn
-      };
-    }
 
     var rawSet = function (dom, key, value) {
       if (isString(value) || isBoolean(value) || isNumber(value)) {
@@ -3146,9 +2425,6 @@
       var v = element.dom().getAttribute(key);
       return v === null ? undefined : v;
     };
-    var getOpt = function (element, key) {
-      return Option.from(get$1(element, key));
-    };
     var has$1 = function (element, key) {
       var dom = element.dom();
       return dom && dom.hasAttribute ? dom.hasAttribute(key) : false;
@@ -3156,41 +2432,6 @@
     var remove$1 = function (element, key) {
       element.dom().removeAttribute(key);
     };
-    var hasNone = function (element) {
-      var attrs = element.dom().attributes;
-      return attrs === undefined || attrs === null || attrs.length === 0;
-    };
-    var clone = function (element) {
-      return foldl(element.dom().attributes, function (acc, attr) {
-        acc[attr.name] = attr.value;
-        return acc;
-      }, {});
-    };
-    var transferOne = function (source, destination, attr) {
-      if (has$1(source, attr) && !has$1(destination, attr)) {
-        set(destination, attr, get$1(source, attr));
-      }
-    };
-    var transfer = function (source, destination, attrs) {
-      if (!isElement(source) || !isElement(destination)) {
-        return;
-      }
-      each$1(attrs, function (attr) {
-        transferOne(source, destination, attr);
-      });
-    };
-
-    var Attr = /*#__PURE__*/Object.freeze({
-        clone: clone,
-        set: set,
-        setAll: setAll,
-        get: get$1,
-        getOpt: getOpt,
-        has: has$1,
-        remove: remove$1,
-        hasNone: hasNone,
-        transfer: transfer
-    });
 
     var read$1 = function (element, attr) {
       var value = get$1(element, attr);
@@ -3226,21 +2467,6 @@
     var remove$3 = function (element, clazz) {
       return remove$2(element, 'class', clazz);
     };
-    var toggle = function (element, clazz) {
-      if (contains(get$2(element), clazz)) {
-        return remove$3(element, clazz);
-      } else {
-        return add$1(element, clazz);
-      }
-    };
-
-    var ClassList = /*#__PURE__*/Object.freeze({
-        get: get$2,
-        add: add$1,
-        remove: remove$3,
-        toggle: toggle,
-        supports: supports
-    });
 
     var add$2 = function (element, clazz) {
       if (supports(element)) {
@@ -3264,39 +2490,9 @@
       }
       cleanClass(element);
     };
-    var toggle$1 = function (element, clazz) {
-      return supports(element) ? element.dom().classList.toggle(clazz) : toggle(element, clazz);
-    };
-    var toggler = function (element, clazz) {
-      var hasClasslist = supports(element);
-      var classList = element.dom().classList;
-      var off = function () {
-        if (hasClasslist) {
-          classList.remove(clazz);
-        } else {
-          remove$3(element, clazz);
-        }
-      };
-      var on = function () {
-        if (hasClasslist) {
-          classList.add(clazz);
-        } else {
-          add$1(element, clazz);
-        }
-      };
-      return Toggler(off, on, has$2(element, clazz));
-    };
     var has$2 = function (element, clazz) {
       return supports(element) && element.dom().classList.contains(clazz);
     };
-
-    var Class = /*#__PURE__*/Object.freeze({
-        add: add$2,
-        remove: remove$4,
-        toggle: toggle$1,
-        toggler: toggler,
-        has: has$2
-    });
 
     var swap = function (element, addCls, removeCls) {
       remove$4(element, removeCls);
@@ -3320,6 +2516,7 @@
     };
 
     var SwapApis = /*#__PURE__*/Object.freeze({
+        __proto__: null,
         toAlpha: toAlpha,
         toOmega: toOmega,
         isAlpha: isAlpha,
@@ -3338,22 +2535,45 @@
       apis: SwapApis
     });
 
-    var Cell = function (initial) {
-      var value = initial;
-      var get = function () {
-        return value;
+    function ClosestOrAncestor (is, ancestor, scope, a, isRoot) {
+      return is(scope, a) ? Option.some(scope) : isFunction(isRoot) && isRoot(scope) ? Option.none() : ancestor(scope, a, isRoot);
+    }
+
+    var ancestor$1 = function (scope, predicate, isRoot) {
+      var element = scope.dom();
+      var stop = isFunction(isRoot) ? isRoot : constant(false);
+      while (element.parentNode) {
+        element = element.parentNode;
+        var el = Element.fromDom(element);
+        if (predicate(el)) {
+          return Option.some(el);
+        } else if (stop(el)) {
+          break;
+        }
+      }
+      return Option.none();
+    };
+    var closest$1 = function (scope, predicate, isRoot) {
+      var is = function (s, test) {
+        return test(s);
       };
-      var set = function (v) {
-        value = v;
+      return ClosestOrAncestor(is, ancestor$1, scope, predicate, isRoot);
+    };
+    var descendant = function (scope, predicate) {
+      var descend = function (node) {
+        for (var i = 0; i < node.childNodes.length; i++) {
+          var child_1 = Element.fromDom(node.childNodes[i]);
+          if (predicate(child_1)) {
+            return Option.some(child_1);
+          }
+          var res = descend(node.childNodes[i]);
+          if (res.isSome()) {
+            return res;
+          }
+        }
+        return Option.none();
       };
-      var clone = function () {
-        return Cell(get());
-      };
-      return {
-        get: get,
-        set: set,
-        clone: clone
-      };
+      return descend(scope.dom());
     };
 
     var focus$1 = function (element) {
@@ -3366,8 +2586,8 @@
       var doc = owner(element).dom();
       return element.dom() === doc.activeElement;
     };
-    var active = function (_DOC) {
-      var doc = _DOC !== undefined ? _DOC.dom() : domGlobals.document;
+    var active = function (_doc) {
+      var doc = _doc !== undefined ? _doc.dom() : domGlobals.document;
       return Option.from(doc.activeElement).map(Element.fromDom);
     };
     var search = function (element) {
@@ -3376,9 +2596,9 @@
       });
     };
 
-    var global = tinymce.util.Tools.resolve('tinymce.dom.DOMUtils');
+    var global$1 = tinymce.util.Tools.resolve('tinymce.dom.DOMUtils');
 
-    var global$1 = tinymce.util.Tools.resolve('tinymce.ThemeManager');
+    var global$2 = tinymce.util.Tools.resolve('tinymce.ThemeManager');
 
     var openLink = function (target) {
       var link = domGlobals.document.createElement('a');
@@ -3435,11 +2655,11 @@
       return get$3(container);
     };
 
-    var clone$1 = function (original, isDeep) {
+    var clone = function (original, isDeep) {
       return Element.fromDom(original.dom().cloneNode(isDeep));
     };
     var shallow$1 = function (original) {
-      return clone$1(original, false);
+      return clone(original, false);
     };
 
     var getHtml = function (element) {
@@ -3460,65 +2680,20 @@
       return derive([run(receive(), function (component, message) {
           var channelMap = receiveConfig.channels;
           var channels = keys(channelMap);
-          var targetChannels = chooseChannels(channels, message);
+          var receivingData = message;
+          var targetChannels = chooseChannels(channels, receivingData);
           each$1(targetChannels, function (ch) {
             var channelInfo = channelMap[ch];
             var channelSchema = channelInfo.schema;
-            var data = asRawOrDie('channel[' + ch + '] data\nReceiver: ' + element(component.element()), channelSchema, message.data());
+            var data = asRawOrDie('channel[' + ch + '] data\nReceiver: ' + element(component.element()), channelSchema, receivingData.data());
             channelInfo.onReceive(component, data);
           });
         })]);
     };
 
     var ActiveReceiving = /*#__PURE__*/Object.freeze({
+        __proto__: null,
         events: events
-    });
-
-    var cat = function (arr) {
-      var r = [];
-      var push = function (x) {
-        r.push(x);
-      };
-      for (var i = 0; i < arr.length; i++) {
-        arr[i].each(push);
-      }
-      return r;
-    };
-    var findMap = function (arr, f) {
-      for (var i = 0; i < arr.length; i++) {
-        var r = f(arr[i], i);
-        if (r.isSome()) {
-          return r;
-        }
-      }
-      return Option.none();
-    };
-    var liftN = function (arr, f) {
-      var r = [];
-      for (var i = 0; i < arr.length; i++) {
-        var x = arr[i];
-        if (x.isSome()) {
-          r.push(x.getOrDie());
-        } else {
-          return Option.none();
-        }
-      }
-      return Option.some(f.apply(null, r));
-    };
-    function lift() {
-      var args = [];
-      for (var _i = 0; _i < arguments.length; _i++) {
-        args[_i] = arguments[_i];
-      }
-      var f = args.pop();
-      return liftN(args, f);
-    }
-
-    var Options = /*#__PURE__*/Object.freeze({
-        cat: cat,
-        findMap: findMap,
-        liftN: liftN,
-        lift: lift
     });
 
     var unknown$3 = 'unknown';
@@ -3597,7 +2772,7 @@
       };
     };
     var processEvent = function (eventName, initialTarget, f) {
-      var status = readOptFrom$1(eventConfig.get(), eventName).orThunk(function () {
+      var status = get(eventConfig.get(), eventName).orThunk(function () {
         var patterns = keys(eventConfig.get());
         return findMap(patterns, function (p) {
           return eventName.indexOf(p) > -1 ? Option.some(eventConfig.get()[p]) : Option.none();
@@ -3616,7 +2791,7 @@
         return true;
       }
     };
-    var path$1 = [
+    var path = [
       'alloy/data/Fields',
       'alloy/debugging/Debugging'
     ];
@@ -3625,7 +2800,7 @@
       if (err.stack !== undefined) {
         var lines = err.stack.split('\n');
         return find$2(lines, function (line) {
-          return line.indexOf('alloy') > 0 && !exists(path$1, function (p) {
+          return line.indexOf('alloy') > 0 && !exists(path, function (p) {
             return line.indexOf(p) > -1;
           });
         }).getOr(unknown$3);
@@ -3726,7 +2901,7 @@
         }
       });
     };
-    var toggle$2 = function (component, toggleConfig, toggleState) {
+    var toggle = function (component, toggleConfig, toggleState) {
       set$2(component, toggleConfig, toggleState, !toggleState.get());
     };
     var on = function (component, toggleConfig, toggleState) {
@@ -3751,19 +2926,20 @@
     };
 
     var ToggleApis = /*#__PURE__*/Object.freeze({
+        __proto__: null,
         onLoad: onLoad,
-        toggle: toggle$2,
+        toggle: toggle,
         isOn: isOn,
         on: on,
         off: off,
         set: set$2
     });
 
-    var exhibit = function (base, toggleConfig, toggleState) {
+    var exhibit = function () {
       return nu$5({});
     };
     var events$1 = function (toggleConfig, toggleState) {
-      var execute = executeEvent(toggleConfig, toggleState, toggle$2);
+      var execute = executeEvent(toggleConfig, toggleState, toggle);
       var load = loadEvent(toggleConfig, toggleState, onLoad);
       return derive(flatten([
         toggleConfig.toggleOnExecute ? [execute] : [],
@@ -3772,6 +2948,7 @@
     };
 
     var ActiveToggle = /*#__PURE__*/Object.freeze({
+        __proto__: null,
         exhibit: exhibit,
         events: events$1
     });
@@ -3868,35 +3045,36 @@
     };
 
     var prefix = 'tinymce-mobile';
-    var resolve$1 = function (p) {
+    var resolve = function (p) {
       return prefix + '-' + p;
     };
     var Styles = {
-      resolve: resolve$1,
+      resolve: resolve,
       prefix: constant(prefix)
     };
 
-    var events$2 = function (optAction) {
-      var executeHandler = function (action) {
-        return run(execute(), function (component, simulatedEvent) {
-          action(component);
-          simulatedEvent.stop();
-        });
-      };
+    var pointerEvents = function () {
       var onClick = function (component, simulatedEvent) {
         simulatedEvent.stop();
         emitExecute(component);
       };
-      var onMousedown = function (component, simulatedEvent) {
-        simulatedEvent.cut();
-      };
-      var pointerEvents = PlatformDetection$1.detect().deviceType.isTouch() ? [run(tap(), onClick)] : [
+      return [
         run(click(), onClick),
-        run(mousedown(), onMousedown)
+        run(tap(), onClick),
+        cutter(touchstart()),
+        cutter(mousedown())
       ];
+    };
+    var events$2 = function (optAction) {
+      var executeHandler = function (action) {
+        return runOnExecute(function (component, simulatedEvent) {
+          action(component);
+          simulatedEvent.stop();
+        });
+      };
       return derive(flatten([
         optAction.map(executeHandler).toArray(),
-        pointerEvents
+        pointerEvents()
       ]));
     };
 
@@ -3916,6 +3094,7 @@
     };
 
     var FocusApis = /*#__PURE__*/Object.freeze({
+        __proto__: null,
         focus: focus$2,
         blur: blur$1,
         isFocused: isFocused
@@ -3935,6 +3114,7 @@
     };
 
     var ActiveFocus = /*#__PURE__*/Object.freeze({
+        __proto__: null,
         exhibit: exhibit$1,
         events: events$3
     });
@@ -3953,7 +3133,7 @@
     });
 
     var isSupported = function (dom) {
-      return dom.style !== undefined;
+      return dom.style !== undefined && isFunction(dom.style.getPropertyValue);
     };
 
     var internalSet = function (dom, property, value) {
@@ -3980,16 +3160,6 @@
         internalSet(dom, k, v);
       });
     };
-    var setOptions = function (element, css) {
-      var dom = element.dom();
-      each(css, function (v, k) {
-        v.fold(function () {
-          internalRemove(dom, k);
-        }, function (value) {
-          internalSet(dom, k, value);
-        });
-      });
-    };
     var get$4 = function (element, property) {
       var dom = element.dom();
       var styles = domGlobals.window.getComputedStyle(dom);
@@ -4007,23 +3177,6 @@
         return r.length > 0;
       });
     };
-    var getAllRaw = function (element) {
-      var css = {};
-      var dom = element.dom();
-      if (isSupported(dom)) {
-        for (var i = 0; i < dom.style.length; i++) {
-          var ruleName = dom.style.item(i);
-          css[ruleName] = dom.style[ruleName];
-        }
-      }
-      return css;
-    };
-    var isValidValue = function (tag, property, value) {
-      var element = Element.fromTag(tag);
-      set$3(element, property, value);
-      var style = getRaw(element, property);
-      return style.isSome();
-    };
     var remove$5 = function (element, property) {
       var dom = element.dom();
       internalRemove(dom, property);
@@ -4031,53 +3184,9 @@
         remove$1(element, 'style');
       }
     };
-    var preserve = function (element, f) {
-      var oldStyles = get$1(element, 'style');
-      var result = f(element);
-      var restore = oldStyles === undefined ? remove$1 : set;
-      restore(element, 'style', oldStyles);
-      return result;
-    };
-    var copy = function (source, target) {
-      var sourceDom = source.dom();
-      var targetDom = target.dom();
-      if (isSupported(sourceDom) && isSupported(targetDom)) {
-        targetDom.style.cssText = sourceDom.style.cssText;
-      }
-    };
     var reflow = function (e) {
       return e.dom().offsetWidth;
     };
-    var transferOne$1 = function (source, destination, style) {
-      getRaw(source, style).each(function (value) {
-        if (getRaw(destination, style).isNone()) {
-          set$3(destination, style, value);
-        }
-      });
-    };
-    var transfer$1 = function (source, destination, styles) {
-      if (!isElement(source) || !isElement(destination)) {
-        return;
-      }
-      each$1(styles, function (style) {
-        transferOne$1(source, destination, style);
-      });
-    };
-
-    var Css = /*#__PURE__*/Object.freeze({
-        copy: copy,
-        set: set$3,
-        preserve: preserve,
-        setAll: setAll$1,
-        setOptions: setOptions,
-        remove: remove$5,
-        get: get$4,
-        getRaw: getRaw,
-        getAllRaw: getAllRaw,
-        isValidValue: isValidValue,
-        reflow: reflow,
-        transfer: transfer$1
-    });
 
     function Dimension (name, getOffset) {
       var set = function (element, h) {
@@ -4133,9 +3242,6 @@
     var siblings$1 = function (scope, predicate) {
       return filter(siblings(scope), predicate);
     };
-    var children$1 = function (scope, predicate) {
-      return filter(children(scope), predicate);
-    };
 
     var all$2 = function (selector) {
       return all(selector);
@@ -4150,56 +3256,24 @@
         return is(e, selector);
       });
     };
-    var children$2 = function (scope, selector) {
-      return children$1(scope, function (e) {
-        return is(e, selector);
-      });
-    };
     var descendants = function (scope, selector) {
       return all(selector, scope);
     };
 
-    var SelectorFilter = /*#__PURE__*/Object.freeze({
-        all: all$2,
-        ancestors: ancestors$1,
-        siblings: siblings$2,
-        children: children$2,
-        descendants: descendants
-    });
-
     var first = function (selector) {
       return one(selector);
     };
-    var ancestor$1 = function (scope, selector, isRoot) {
-      return ancestor(scope, function (e) {
+    var ancestor$2 = function (scope, selector, isRoot) {
+      return ancestor$1(scope, function (e) {
         return is(e, selector);
       }, isRoot);
-    };
-    var sibling$1 = function (scope, selector) {
-      return sibling(scope, function (e) {
-        return is(e, selector);
-      });
-    };
-    var child$2 = function (scope, selector) {
-      return child$1(scope, function (e) {
-        return is(e, selector);
-      });
     };
     var descendant$1 = function (scope, selector) {
       return one(selector, scope);
     };
     var closest$2 = function (scope, selector, isRoot) {
-      return ClosestOrAncestor(is, ancestor$1, scope, selector, isRoot);
+      return ClosestOrAncestor(is, ancestor$2, scope, selector, isRoot);
     };
-
-    var SelectorFind = /*#__PURE__*/Object.freeze({
-        first: first,
-        ancestor: ancestor$1,
-        sibling: sibling$1,
-        child: child$2,
-        descendant: descendant$1,
-        closest: closest$2
-    });
 
     var BACKSPACE = function () {
       return [8];
@@ -4261,12 +3335,6 @@
         });
       };
     };
-    var is$1 = function (key) {
-      return function (event) {
-        var raw = event.raw();
-        return raw.which === key;
-      };
-    };
     var isShift = function (event) {
       var raw = event.raw();
       return raw.shiftKey === true;
@@ -4277,12 +3345,6 @@
     };
     var isNotShift = not(isShift);
 
-    var basic = function (key, action) {
-      return {
-        matches: is$1(key),
-        classification: action
-      };
-    };
     var rule = function (matches, action) {
       return {
         matches: matches,
@@ -4298,26 +3360,38 @@
       });
     };
 
-    var KeyRules = /*#__PURE__*/Object.freeze({
-        basic: basic,
-        rule: rule,
-        choose: choose$2
-    });
+    var cat = function (arr) {
+      var r = [];
+      var push = function (x) {
+        r.push(x);
+      };
+      for (var i = 0; i < arr.length; i++) {
+        arr[i].each(push);
+      }
+      return r;
+    };
+    var sequence = function (arr) {
+      var r = [];
+      for (var i = 0; i < arr.length; i++) {
+        var x = arr[i];
+        if (x.isSome()) {
+          r.push(x.getOrDie());
+        } else {
+          return Option.none();
+        }
+      }
+      return Option.some(r);
+    };
+    var someIf = function (b, a) {
+      return b ? Option.some(a) : Option.none();
+    };
 
     var cycleBy = function (value, delta, min, max) {
       var r = value + delta;
-      if (r > max) {
-        return min;
-      } else {
-        return r < min ? max : r;
-      }
+      return r > max ? min : r < min ? max : r;
     };
-    var cap = function (value, min, max) {
-      if (value <= min) {
-        return min;
-      } else {
-        return value >= max ? max : value;
-      }
+    var clamp = function (value, min, max) {
+      return Math.min(Math.max(value, min), max);
     };
 
     var dehighlightAllExcept = function (component, hConfig, hState, skip) {
@@ -4353,12 +3427,12 @@
       }
     };
     var highlightFirst = function (component, hConfig, hState) {
-      getFirst(component, hConfig, hState).each(function (firstComp) {
+      getFirst(component, hConfig).each(function (firstComp) {
         highlight$1(component, hConfig, hState, firstComp);
       });
     };
     var highlightLast = function (component, hConfig, hState) {
-      getLast(component, hConfig, hState).each(function (lastComp) {
+      getLast(component, hConfig).each(function (lastComp) {
         highlight$1(component, hConfig, hState, lastComp);
       });
     };
@@ -4370,7 +3444,7 @@
       });
     };
     var highlightBy = function (component, hConfig, hState, predicate) {
-      var candidates = getCandidates(component, hConfig, hState);
+      var candidates = getCandidates(component, hConfig);
       var targetComp = find$2(candidates, predicate);
       targetComp.each(function (c) {
         highlight$1(component, hConfig, hState, c);
@@ -4426,6 +3500,7 @@
     };
 
     var HighlightApis = /*#__PURE__*/Object.freeze({
+        __proto__: null,
         dehighlightAll: dehighlightAll,
         dehighlight: dehighlight$1,
         highlight: highlight$1,
@@ -4575,7 +3650,7 @@
       var schema = [
         option('onEscape'),
         option('onEnter'),
-        defaulted$1('selector', '[data-alloy-tabstop="true"]'),
+        defaulted$1('selector', '[data-alloy-tabstop="true"]:not(:disabled)'),
         defaulted$1('firstTabstop', 0),
         defaulted$1('useTabstopAt', constant(true)),
         option('visibilitySelector')
@@ -4601,7 +3676,7 @@
       var isTabstop = function (tabbingConfig, element) {
         return isVisible(tabbingConfig, element) && tabbingConfig.useTabstopAt(element);
       };
-      var focusIn = function (component, tabbingConfig) {
+      var focusIn = function (component, tabbingConfig, tabbingState) {
         findInitial(component, tabbingConfig).each(function (target) {
           tabbingConfig.focusManager.set(component, target);
         });
@@ -4625,20 +3700,20 @@
           });
         });
       };
-      var goBackwards = function (component, simulatedEvent, tabbingConfig, tabbingState) {
+      var goBackwards = function (component, simulatedEvent, tabbingConfig) {
         var navigate = tabbingConfig.cyclic ? cyclePrev : tryPrev;
         return go(component, simulatedEvent, tabbingConfig, navigate);
       };
-      var goForwards = function (component, simulatedEvent, tabbingConfig, tabbingState) {
+      var goForwards = function (component, simulatedEvent, tabbingConfig) {
         var navigate = tabbingConfig.cyclic ? cycleNext : tryNext;
         return go(component, simulatedEvent, tabbingConfig, navigate);
       };
-      var execute = function (component, simulatedEvent, tabbingConfig, tabbingState) {
+      var execute = function (component, simulatedEvent, tabbingConfig) {
         return tabbingConfig.onEnter.bind(function (f) {
           return f(component, simulatedEvent);
         });
       };
-      var exit = function (component, simulatedEvent, tabbingConfig, tabbingState) {
+      var exit = function (component, simulatedEvent, tabbingConfig) {
         return tabbingConfig.onEscape.bind(function (f) {
           return f(component, simulatedEvent);
         });
@@ -4707,7 +3782,7 @@
       return Option.none();
     });
 
-    var flatgrid = function (spec) {
+    var flatgrid = function () {
       var dimensions = Cell(Option.none());
       var setGridSize = function (numRows, numColumns) {
         dimensions.set(Option.some({
@@ -4729,8 +3804,8 @@
         readState: function () {
           return dimensions.get().map(function (d) {
             return {
-              numRows: d.numRows(),
-              numColumns: d.numColumns()
+              numRows: String(d.numRows()),
+              numColumns: String(d.numColumns())
             };
           }).getOr({
             numRows: '?',
@@ -4747,6 +3822,7 @@
     };
 
     var KeyingState = /*#__PURE__*/Object.freeze({
+        __proto__: null,
         flatgrid: flatgrid,
         init: init
     });
@@ -4800,25 +3876,19 @@
       return !isHidden(dom);
     };
 
-    var indexInfo = MixedBag([
-      'index',
-      'candidates'
-    ], []);
     var locate = function (candidates, predicate) {
       return findIndex(candidates, predicate).map(function (index) {
-        return indexInfo({
-          index: index,
-          candidates: candidates
-        });
+        return {
+          index: constant(index),
+          candidates: constant(candidates)
+        };
       });
     };
 
     var locateVisible = function (container, current, selector) {
-      var filter = isVisible;
-      return locateIn(container, current, selector, filter);
-    };
-    var locateIn = function (container, current, selector, filter$1) {
-      var predicate = curry(eq, current);
+      var predicate = function (x) {
+        return eq(x, current);
+      };
       var candidates = descendants(container, selector);
       var visible = filter(candidates, isVisible);
       return locate(visible, predicate);
@@ -4853,7 +3923,7 @@
         var newRow = cycleBy(oldRow, delta, 0, numRows - 1);
         var onLastRow = newRow === numRows - 1;
         var colsInRow = onLastRow ? values.length - newRow * numCols : numCols;
-        var newCol = cap(oldColumn, 0, colsInRow - 1);
+        var newCol = clamp(oldColumn, 0, colsInRow - 1);
         return Option.some({
           row: constant(newRow),
           column: constant(newCol)
@@ -4902,10 +3972,10 @@
         });
       };
     };
-    var handleTab = function (component, simulatedEvent, gridConfig, gridState) {
+    var handleTab = function (component, simulatedEvent, gridConfig) {
       return gridConfig.captureTab ? Option.some(true) : Option.none();
     };
-    var doEscape = function (component, simulatedEvent, gridConfig, gridState) {
+    var doEscape = function (component, simulatedEvent, gridConfig) {
       return gridConfig.onEscape(component, simulatedEvent);
     };
     var moveLeft = doMove(cycleLeft);
@@ -4970,7 +4040,7 @@
         return flowConfig.execute(component, simulatedEvent, focused);
       });
     };
-    var focusIn$1 = function (component, flowConfig) {
+    var focusIn$1 = function (component, flowConfig, state) {
       flowConfig.getInitial(component).orThunk(function () {
         return descendant$1(component.element(), flowConfig.selector);
       }).each(function (first) {
@@ -4984,13 +4054,13 @@
       return horizontal(element, info.selector, focused, +1);
     };
     var doMove$1 = function (movement) {
-      return function (component, simulatedEvent, flowConfig) {
-        return movement(component, simulatedEvent, flowConfig).bind(function () {
+      return function (component, simulatedEvent, flowConfig, flowState) {
+        return movement(component, simulatedEvent, flowConfig, flowState).bind(function () {
           return flowConfig.executeOnMove ? execute$3(component, simulatedEvent, flowConfig) : Option.some(true);
         });
       };
     };
-    var doEscape$1 = function (component, simulatedEvent, flowConfig, _flowState) {
+    var doEscape$1 = function (component, simulatedEvent, flowConfig) {
       return flowConfig.onEscape(component, simulatedEvent);
     };
     var getKeydownRules$2 = function (_component, _se, flowConfig, _flowState) {
@@ -5034,19 +4104,19 @@
     var cycleVertical$1 = function (matrix, colIndex, startRow, deltaRow) {
       var nextRowIndex = cycleBy(startRow, deltaRow, 0, matrix.length - 1);
       var colsInNextRow = matrix[nextRowIndex].length;
-      var nextColIndex = cap(colIndex, 0, colsInNextRow - 1);
+      var nextColIndex = clamp(colIndex, 0, colsInNextRow - 1);
       return toCell(matrix, nextRowIndex, nextColIndex);
     };
     var moveHorizontal = function (matrix, rowIndex, startCol, deltaCol) {
       var row = matrix[rowIndex];
       var colsInRow = row.length;
-      var newColIndex = cap(startCol + deltaCol, 0, colsInRow - 1);
+      var newColIndex = clamp(startCol + deltaCol, 0, colsInRow - 1);
       return toCell(matrix, rowIndex, newColIndex);
     };
     var moveVertical = function (matrix, colIndex, startRow, deltaRow) {
-      var nextRowIndex = cap(startRow + deltaRow, 0, matrix.length - 1);
+      var nextRowIndex = clamp(startRow + deltaRow, 0, matrix.length - 1);
       var colsInNextRow = matrix[nextRowIndex].length;
-      var nextColIndex = cap(colIndex, 0, colsInNextRow - 1);
+      var nextColIndex = clamp(colIndex, 0, colsInNextRow - 1);
       return toCell(matrix, nextRowIndex, nextColIndex);
     };
     var cycleRight$1 = function (matrix, startRow, startCol) {
@@ -5083,7 +4153,7 @@
       defaulted$1('previousSelector', Option.none),
       defaulted$1('execute', defaultExecute)
     ];
-    var focusIn$2 = function (component, matrixConfig) {
+    var focusIn$2 = function (component, matrixConfig, state) {
       var focused = matrixConfig.previousSelector(component).orThunk(function () {
         var selectors = matrixConfig.selectors;
         return descendant$1(component.element(), selectors.cell);
@@ -5145,7 +4215,7 @@
         return menuConfig.execute(component, simulatedEvent, focused);
       });
     };
-    var focusIn$3 = function (component, menuConfig) {
+    var focusIn$3 = function (component, menuConfig, state) {
       descendant$1(component.element(), menuConfig.selector).each(function (first) {
         menuConfig.focusManager.set(component, first);
       });
@@ -5156,11 +4226,11 @@
     var moveDown$1 = function (element, focused, info) {
       return horizontal(element, info.selector, focused, +1);
     };
-    var fireShiftTab = function (component, simulatedEvent, menuConfig) {
-      return menuConfig.moveOnTab ? move(moveUp$1)(component, simulatedEvent, menuConfig) : Option.none();
+    var fireShiftTab = function (component, simulatedEvent, menuConfig, menuState) {
+      return menuConfig.moveOnTab ? move(moveUp$1)(component, simulatedEvent, menuConfig, menuState) : Option.none();
     };
-    var fireTab = function (component, simulatedEvent, menuConfig) {
-      return menuConfig.moveOnTab ? move(moveDown$1)(component, simulatedEvent, menuConfig) : Option.none();
+    var fireTab = function (component, simulatedEvent, menuConfig, menuState) {
+      return menuConfig.moveOnTab ? move(moveDown$1)(component, simulatedEvent, menuConfig, menuState) : Option.none();
     };
     var getKeydownRules$4 = constant([
       rule(inSet(UP()), move(moveUp$1)),
@@ -5239,6 +4309,7 @@
     var special = SpecialType.schema();
 
     var KeyboardBranches = /*#__PURE__*/Object.freeze({
+        __proto__: null,
         acyclic: acyclic,
         cyclic: cyclic,
         flow: flow,
@@ -5249,6 +4320,9 @@
         special: special
     });
 
+    var isFlatgridState = function (keyState) {
+      return hasNonNullableKey(keyState, 'setGridSize');
+    };
     var Keying = createModes$1({
       branchKey: 'mode',
       branches: KeyboardBranches,
@@ -5268,7 +4342,7 @@
           });
         },
         setGridSize: function (component, keyConfig, keyState, numRows, numColumns) {
-          if (!hasKey$1(keyState, 'setGridSize')) {
+          if (!isFlatgridState(keyState)) {
             domGlobals.console.error('Layout does not support setGridSize');
           } else {
             keyState.setGridSize(numRows, numColumns);
@@ -5287,20 +4361,13 @@
       return data.dump;
     };
     var augment = function (data, original) {
-      return __assign({}, data.dump, derive$1(original));
+      return __assign(__assign({}, data.dump), derive$1(original));
     };
     var SketchBehaviours = {
       field: field$1,
       augment: augment,
       get: get$6
     };
-
-    var SketchBehaviours$1 = /*#__PURE__*/Object.freeze({
-        SketchBehaviours: SketchBehaviours,
-        field: field$1,
-        get: get$6,
-        augment: augment
-    });
 
     var _placeholder = 'placeholder';
     var adt$2 = Adt.generate([
@@ -5317,8 +4384,8 @@
         ]
       }
     ]);
-    var isSubstitute = function (uiType) {
-      return contains([_placeholder], uiType);
+    var isSubstituted = function (spec) {
+      return has(spec, 'uiType');
     };
     var subPlaceholder = function (owner, detail, compSpec, placeholders) {
       if (owner.exists(function (o) {
@@ -5326,14 +4393,14 @@
         })) {
         return adt$2.single(true, constant(compSpec));
       }
-      return readOptFrom$1(placeholders, compSpec.name).fold(function () {
-        throw new Error('Unknown placeholder component: ' + compSpec.name + '\nKnown: [' + keys(placeholders) + ']\nNamespace: ' + owner.getOr('none') + '\nSpec: ' + Json.stringify(compSpec, null, 2));
+      return get(placeholders, compSpec.name).fold(function () {
+        throw new Error('Unknown placeholder component: ' + compSpec.name + '\nKnown: [' + keys(placeholders) + ']\nNamespace: ' + owner.getOr('none') + '\nSpec: ' + JSON.stringify(compSpec, null, 2));
       }, function (newSpec) {
         return newSpec.replace();
       });
     };
     var scan = function (owner, detail, compSpec, placeholders) {
-      if (compSpec.uiType === _placeholder) {
+      if (isSubstituted(compSpec) && compSpec.uiType === _placeholder) {
         return subPlaceholder(owner, detail, compSpec, placeholders);
       } else {
         return adt$2.single(false, constant(compSpec));
@@ -5342,16 +4409,20 @@
     var substitute = function (owner, detail, compSpec, placeholders) {
       var base = scan(owner, detail, compSpec, placeholders);
       return base.fold(function (req, valueThunk) {
-        var value = valueThunk(detail, compSpec.config, compSpec.validated);
-        var childSpecs = readOptFrom$1(value, 'components').getOr([]);
+        var value = isSubstituted(compSpec) ? valueThunk(detail, compSpec.config, compSpec.validated) : valueThunk(detail);
+        var childSpecs = get(value, 'components').getOr([]);
         var substituted = bind(childSpecs, function (c) {
           return substitute(owner, detail, c, placeholders);
         });
-        return [__assign({}, value, { components: substituted })];
+        return [__assign(__assign({}, value), { components: substituted })];
       }, function (req, valuesThunk) {
-        var values = valuesThunk(detail, compSpec.config, compSpec.validated);
-        var preprocessor = compSpec.validated.preprocess.getOr(identity);
-        return preprocessor(values);
+        if (isSubstituted(compSpec)) {
+          var values = valuesThunk(detail, compSpec.config, compSpec.validated);
+          var preprocessor = compSpec.validated.preprocess.getOr(identity);
+          return preprocessor(values);
+        } else {
+          return valuesThunk(detail);
+        }
       });
     };
     var substituteAll = function (owner, detail, components, placeholders) {
@@ -5365,7 +4436,7 @@
         return called;
       };
       var replace = function () {
-        if (called === true) {
+        if (called) {
           throw new Error('Trying to use the same placeholder more than once: ' + label);
         }
         called = true;
@@ -5392,32 +4463,14 @@
       var outcome = substituteAll(owner, detail, components, ps);
       each(ps, function (p) {
         if (p.used() === false && p.required()) {
-          throw new Error('Placeholder: ' + p.name() + ' was not found in components list\nNamespace: ' + owner.getOr('none') + '\nComponents: ' + Json.stringify(detail.components, null, 2));
+          throw new Error('Placeholder: ' + p.name() + ' was not found in components list\nNamespace: ' + owner.getOr('none') + '\nComponents: ' + JSON.stringify(detail.components, null, 2));
         }
       });
       return outcome;
     };
-    var singleReplace = function (detail, p) {
-      var replacement = p;
-      return replacement.fold(function (req, valueThunk) {
-        return [valueThunk(detail)];
-      }, function (req, valuesThunk) {
-        return valuesThunk(detail);
-      });
-    };
     var single = adt$2.single;
     var multiple = adt$2.multiple;
     var placeholder = constant(_placeholder);
-
-    var UiSubstitutes = /*#__PURE__*/Object.freeze({
-        single: single,
-        multiple: multiple,
-        isSubstitute: isSubstitute,
-        placeholder: placeholder,
-        substituteAll: substituteAll,
-        substitutePlaces: substitutePlaces,
-        singleReplace: singleReplace
-    });
 
     var unique = 0;
     var generate$1 = function (prefix) {
@@ -5450,6 +4503,13 @@
       fSchema,
       fName,
       fPname,
+      fDefaults,
+      fOverrides
+    ]);
+    var externalSpec = objOf([
+      fFactory,
+      fSchema,
+      fName,
       fDefaults,
       fOverrides
     ]);
@@ -5486,6 +4546,7 @@
       };
     };
     var required = convert(adt$3.required, requiredSpec);
+    var external = convert(adt$3.external, externalSpec);
     var optional = convert(adt$3.optional, optionalSpec);
     var group = convert(adt$3.group, groupSpec);
     var original = constant('entirety');
@@ -5530,7 +4591,7 @@
           var g = doGenerateOne(owner, np.pname);
           r[np.name] = function (config) {
             var validated = asRawOrDie('Part: ' + np.name + ' in ' + owner, objOf(np.schema), config);
-            return __assign({}, g, {
+            return __assign(__assign({}, g), {
               config: config,
               validated: validated
             });
@@ -5578,32 +4639,11 @@
     var getPartOrDie = function (component, detail, partKey) {
       return getPart(component, detail, partKey).getOrDie('Could not find part: ' + partKey);
     };
-    var getParts = function (component, detail, partKeys) {
-      var r = {};
-      var uids = detail.partUids;
-      var system = component.getSystem();
-      each$1(partKeys, function (pk) {
-        r[pk] = system.getByUid(uids[pk]);
-      });
-      return map(r, constant);
-    };
     var getAllParts = function (component, detail) {
       var system = component.getSystem();
       return map(detail.partUids, function (pUid, k) {
         return constant(system.getByUid(pUid));
       });
-    };
-    var getAllPartNames = function (detail) {
-      return keys(detail.partUids);
-    };
-    var getPartsOrDie = function (component, detail, partKeys) {
-      var r = {};
-      var uids = detail.partUids;
-      var system = component.getSystem();
-      each$1(partKeys, function (pk) {
-        r[pk] = system.getByUid(uids[pk]).getOrDie();
-      });
-      return map(r, constant);
     };
     var defaultUids = function (baseUid, partTypes) {
       var partNames = names(partTypes);
@@ -5620,29 +4660,12 @@
       }), anyValue$1());
     };
 
-    var AlloyParts = /*#__PURE__*/Object.freeze({
-        generate: generate$2,
-        generateOne: generateOne,
-        schemas: schemas,
-        names: names,
-        substitutes: substitutes,
-        components: components,
-        defaultUids: defaultUids,
-        defaultUidsSchema: defaultUidsSchema,
-        getAllParts: getAllParts,
-        getAllPartNames: getAllPartNames,
-        getPart: getPart,
-        getPartOrDie: getPartOrDie,
-        getParts: getParts,
-        getPartsOrDie: getPartsOrDie
-    });
-
     var premadeTag = generate$1('alloy-premade');
     var premade = function (comp) {
       return wrap$1(premadeTag, comp);
     };
     var getPremade = function (spec) {
-      return readOptFrom$1(spec, premadeTag);
+      return get(spec, premadeTag);
     };
     var makeApi = function (f) {
       return markAsSketchApi(function (component) {
@@ -5653,12 +4676,6 @@
         return f.apply(undefined, [component.getApis()].concat([component].concat(rest)));
       }, f);
     };
-
-    var GuiTypes = /*#__PURE__*/Object.freeze({
-        makeApi: makeApi,
-        premade: premade,
-        getPremade: getPremade
-    });
 
     var prefix$1 = constant('alloy-id-');
     var idAttr = constant('data-alloy-id');
@@ -5684,7 +4701,7 @@
       return generate$1(prefix);
     };
 
-    var base = function (label, partSchemas, partUidsSchemas, spec) {
+    var base = function (partSchemas, partUidsSchemas) {
       var ps = partSchemas.length > 0 ? [strictObjOf('parts', partSchemas)] : [];
       return ps.concat([
         strict$1('uid'),
@@ -5695,7 +4712,7 @@
       ]).concat(partUidsSchemas);
     };
     var asRawOrDie$1 = function (label, schema, spec, partSchemas, partUidsSchemas) {
-      var baseS = base(label, partSchemas, partUidsSchemas, spec);
+      var baseS = base(partSchemas, partUidsSchemas);
       return asRawOrDie(label + ' [SpecSchema]', objOfOnly(baseS.concat(schema)), spec);
     };
 
@@ -5713,8 +4730,11 @@
       var components$1 = components(owner, detail, subs.internals());
       return factory(detail, components$1, specWithUid, subs.externals());
     };
+    var hasUid = function (spec) {
+      return has(spec, 'uid');
+    };
     var supplyUid = function (spec) {
-      return spec.hasOwnProperty('uid') ? spec : __assign({}, spec, { uid: generate$3('uid') });
+      return hasUid(spec) ? spec : __assign(__assign({}, spec), { uid: generate$3('uid') });
     };
 
     function isSketchSpec(spec) {
@@ -5744,12 +4764,11 @@
       var extraApis = map(config.extraApis, function (f, k) {
         return markAsExtraApi(f, k);
       });
-      return __assign({
+      return __assign(__assign({
         name: constant(config.name),
-        partFields: constant([]),
         configFields: constant(config.configFields),
         sketch: sketch
-      }, apis, extraApis);
+      }, apis), extraApis);
     };
     var composite$1 = function (rawConfig) {
       var config = asRawOrDie('Sketcher for ' + rawConfig.name, compositeSchema, rawConfig);
@@ -5761,21 +4780,21 @@
       var extraApis = map(config.extraApis, function (f, k) {
         return markAsExtraApi(f, k);
       });
-      return __assign({
+      return __assign(__assign({
         name: constant(config.name),
         partFields: constant(config.partFields),
         configFields: constant(config.configFields),
         sketch: sketch,
         parts: constant(parts)
-      }, apis, extraApis);
+      }, apis), extraApis);
     };
 
     var factory = function (detail) {
       var events = events$2(detail.action);
       var tag = detail.dom.tag;
       var lookupAttr = function (attr) {
-        return readOptFrom$1(detail.dom, 'attributes').bind(function (attrs) {
-          return readOptFrom$1(attrs, attr);
+        return get(detail.dom, 'attributes').bind(function (attrs) {
+          return get(attrs, attr);
         });
       };
       var getModAttributes = function () {
@@ -5824,7 +4843,7 @@
       ]
     });
 
-    var exhibit$2 = function (base, unselectConfig) {
+    var exhibit$2 = function () {
       return nu$5({
         styles: {
           '-webkit-user-select': 'none',
@@ -5835,11 +4854,12 @@
         attributes: { unselectable: 'on' }
       });
     };
-    var events$4 = function (unselectConfig) {
+    var events$4 = function () {
       return derive([abort(selectstart(), constant(true))]);
     };
 
     var ActiveUnselecting = /*#__PURE__*/Object.freeze({
+        __proto__: null,
         events: events$4,
         exhibit: exhibit$2
     });
@@ -5857,7 +4877,7 @@
         if (attr.name === 'class') {
           return b;
         } else {
-          return __assign({}, b, (_a = {}, _a[attr.name] = attr.value, _a));
+          return __assign(__assign({}, b), (_a = {}, _a[attr.name] = attr.value, _a));
         }
       }, {});
     };
@@ -5938,8 +4958,6 @@
       getToolbarIconButton: getToolbarIconButton
     };
 
-    var platform = PlatformDetection$1.detect();
-    var isTouch = platform.deviceType.isTouch();
     var labelPart = optional({
       schema: [strict$1('dom')],
       name: 'label'
@@ -5952,16 +4970,21 @@
           return action.fold(function () {
             return {};
           }, function (a) {
-            var touchEvents = derive([runActionExtra(touchstart(), a, [detail])]);
-            var mouseEvents = derive([
-              runActionExtra(mousedown(), a, [detail]),
-              runActionExtra(mousemove(), function (l, det) {
-                if (det.mouseIsDown.get()) {
-                  a(l, det);
-                }
-              }, [detail])
-            ]);
-            return { events: isTouch ? touchEvents : mouseEvents };
+            return {
+              events: derive([
+                runActionExtra(touchstart(), function (comp, se, d) {
+                  return a(comp, d);
+                }, [detail]),
+                runActionExtra(mousedown(), function (comp, se, d) {
+                  return a(comp, d);
+                }, [detail]),
+                runActionExtra(mousemove(), function (comp, se, det) {
+                  if (det.mouseIsDown.get()) {
+                    a(comp, det);
+                  }
+                }, [detail])
+              ])
+            };
           });
         }
       });
@@ -6003,20 +5026,8 @@
             return model.setValueFrom(component, detail, value);
           });
         };
-        var touchEvents = derive([
-          run(touchstart(), setValueFrom),
-          run(touchmove(), setValueFrom)
-        ]);
-        var mouseEvents = derive([
-          run(mousedown(), setValueFrom),
-          run(mousemove(), function (spectrum, se) {
-            if (detail.mouseIsDown.get()) {
-              setValueFrom(spectrum, se);
-            }
-          })
-        ]);
         return {
-          behaviours: derive$1(isTouch ? [] : [
+          behaviours: derive$1([
             Keying.config({
               mode: 'special',
               onLeft: function (spectrum) {
@@ -6034,7 +5045,16 @@
             }),
             Focusing.config({})
           ]),
-          events: isTouch ? touchEvents : mouseEvents
+          events: derive([
+            run(touchstart(), setValueFrom),
+            run(touchmove(), setValueFrom),
+            run(mousedown(), setValueFrom),
+            run(mousemove(), function (spectrum, se) {
+              if (detail.mouseIsDown.get()) {
+                setValueFrom(spectrum, se);
+              }
+            })
+          ])
         };
       }
     });
@@ -6069,6 +5089,7 @@
     };
 
     var RepresentApis = /*#__PURE__*/Object.freeze({
+        __proto__: null,
         onLoad: onLoad$1,
         onUnload: onUnload,
         setValue: setValue,
@@ -6089,6 +5110,7 @@
     };
 
     var ActiveRepresenting = /*#__PURE__*/Object.freeze({
+        __proto__: null,
         events: events$5
     });
 
@@ -6134,8 +5156,8 @@
         dataByText.set({});
       };
       var lookup = function (itemString) {
-        return readOptFrom$1(dataByValue.get(), itemString).orThunk(function () {
-          return readOptFrom$1(dataByText.get(), itemString);
+        return get(dataByValue.get(), itemString).orThunk(function () {
+          return get(dataByText.get(), itemString);
         });
       };
       var update = function (items) {
@@ -6145,14 +5167,14 @@
         var newDataByText = {};
         each$1(items, function (item) {
           newDataByValue[item.value] = item;
-          readOptFrom$1(item, 'meta').each(function (meta) {
-            readOptFrom$1(meta, 'text').each(function (text) {
+          get(item, 'meta').each(function (meta) {
+            get(meta, 'text').each(function (text) {
               newDataByText[text] = item;
             });
           });
         });
-        dataByValue.set(__assign({}, currentDataByValue, newDataByValue));
-        dataByText.set(__assign({}, currentDataByText, newDataByText));
+        dataByValue.set(__assign(__assign({}, currentDataByValue), newDataByValue));
+        dataByText.set(__assign(__assign({}, currentDataByText), newDataByText));
       };
       return nu$6({
         readState: readState,
@@ -6166,6 +5188,7 @@
     };
 
     var RepresentState = /*#__PURE__*/Object.freeze({
+        __proto__: null,
         memory: memory,
         dataset: dataset,
         manual: manual,
@@ -6287,6 +5310,16 @@
       state: RepresentState
     });
 
+    var api$1 = Dimension('width', function (element) {
+      return element.dom().offsetWidth;
+    });
+    var set$4 = function (element, h) {
+      api$1.set(element, h);
+    };
+    var get$7 = function (element) {
+      return api$1.get(element);
+    };
+
     var r = function (left, top) {
       var translate = function (x, y) {
         return r(left + x, top + y);
@@ -6299,12 +5332,14 @@
     };
     var Position = r;
 
-    var isTouch$1 = PlatformDetection$1.detect().deviceType.isTouch();
     var _sliderChangeEvent = 'slider.change.value';
     var sliderChangeEvent = constant(_sliderChangeEvent);
+    var isTouchEvent = function (evt) {
+      return evt.type.indexOf('touch') !== -1;
+    };
     var getEventSource = function (simulatedEvent) {
       var evt = simulatedEvent.event().raw();
-      if (isTouch$1) {
+      if (isTouchEvent(evt)) {
         var touchEvent = evt;
         return touchEvent.touches !== undefined && touchEvent.touches.length === 1 ? Option.some(touchEvent.touches[0]).map(function (t) {
           return Position(t.clientX, t.clientY);
@@ -6315,90 +5350,6 @@
           return Position(me.clientX, me.clientY);
         }) : Option.none();
       }
-    };
-
-    var reduceBy = function (value, min, max, step) {
-      if (value < min) {
-        return value;
-      } else if (value > max) {
-        return max;
-      } else if (value === min) {
-        return min - 1;
-      } else {
-        return Math.max(min, value - step);
-      }
-    };
-    var increaseBy = function (value, min, max, step) {
-      if (value > max) {
-        return value;
-      } else if (value < min) {
-        return min;
-      } else if (value === max) {
-        return max + 1;
-      } else {
-        return Math.min(max, value + step);
-      }
-    };
-    var capValue = function (value, min, max) {
-      return Math.max(min, Math.min(max, value));
-    };
-    var snapValueOf = function (value, min, max, step, snapStart) {
-      return snapStart.fold(function () {
-        var initValue = value - min;
-        var extraValue = Math.round(initValue / step) * step;
-        return capValue(min + extraValue, min - 1, max + 1);
-      }, function (start) {
-        var remainder = (value - start) % step;
-        var adjustment = Math.round(remainder / step);
-        var rawSteps = Math.floor((value - start) / step);
-        var maxSteps = Math.floor((max - start) / step);
-        var numSteps = Math.min(maxSteps, rawSteps + adjustment);
-        var r = start + numSteps * step;
-        return Math.max(start, r);
-      });
-    };
-    var findOffsetOf = function (value, min, max) {
-      return Math.min(max, Math.max(value, min)) - min;
-    };
-    var findValueOf = function (args) {
-      var min = args.min, max = args.max, range = args.range, value = args.value, step = args.step, snap = args.snap, snapStart = args.snapStart, rounded = args.rounded, hasMinEdge = args.hasMinEdge, hasMaxEdge = args.hasMaxEdge, minBound = args.minBound, maxBound = args.maxBound, screenRange = args.screenRange;
-      var capMin = hasMinEdge ? min - 1 : min;
-      var capMax = hasMaxEdge ? max + 1 : max;
-      if (value < minBound) {
-        return capMin;
-      } else if (value > maxBound) {
-        return capMax;
-      } else {
-        var offset = findOffsetOf(value, minBound, maxBound);
-        var newValue = capValue(offset / screenRange * range + min, capMin, capMax);
-        if (snap && newValue >= min && newValue <= max) {
-          return snapValueOf(newValue, min, max, step, snapStart);
-        } else if (rounded) {
-          return Math.round(newValue);
-        } else {
-          return newValue;
-        }
-      }
-    };
-    var findOffsetOfValue = function (args) {
-      var min = args.min, max = args.max, range = args.range, value = args.value, hasMinEdge = args.hasMinEdge, hasMaxEdge = args.hasMaxEdge, maxBound = args.maxBound, maxOffset = args.maxOffset, centerMinEdge = args.centerMinEdge, centerMaxEdge = args.centerMaxEdge;
-      if (value < min) {
-        return hasMinEdge ? 0 : centerMinEdge;
-      } else if (value > max) {
-        return hasMaxEdge ? maxBound : centerMaxEdge;
-      } else {
-        return (value - min) / range * maxOffset;
-      }
-    };
-
-    var api$1 = Dimension('width', function (element) {
-      return element.dom().offsetWidth;
-    });
-    var set$4 = function (element, h) {
-      api$1.set(element, h);
-    };
-    var get$7 = function (element) {
-      return api$1.get(element);
     };
 
     var t = 'top', r$1 = 'right', b = 'bottom', l = 'left';
@@ -6426,14 +5377,14 @@
     var max1Y = function (detail) {
       return detail.model.maxY + 1;
     };
-    var range$1 = function (detail, max, min) {
+    var range = function (detail, max, min) {
       return max(detail) - min(detail);
     };
     var xRange = function (detail) {
-      return range$1(detail, maxX, minX);
+      return range(detail, maxX, minX);
     };
     var yRange = function (detail) {
-      return range$1(detail, maxY, minY);
+      return range(detail, maxY, minY);
     };
     var halfX = function (detail) {
       return xRange(detail) / 2;
@@ -6522,6 +5473,80 @@
     };
     var setToLEdgeXY = function (edge, detail) {
       fireSliderChange(edge, xyValue(min1X(detail), halfY(detail)));
+    };
+
+    var reduceBy = function (value, min, max, step) {
+      if (value < min) {
+        return value;
+      } else if (value > max) {
+        return max;
+      } else if (value === min) {
+        return min - 1;
+      } else {
+        return Math.max(min, value - step);
+      }
+    };
+    var increaseBy = function (value, min, max, step) {
+      if (value > max) {
+        return value;
+      } else if (value < min) {
+        return min;
+      } else if (value === max) {
+        return max + 1;
+      } else {
+        return Math.min(max, value + step);
+      }
+    };
+    var capValue = function (value, min, max) {
+      return Math.max(min, Math.min(max, value));
+    };
+    var snapValueOf = function (value, min, max, step, snapStart) {
+      return snapStart.fold(function () {
+        var initValue = value - min;
+        var extraValue = Math.round(initValue / step) * step;
+        return capValue(min + extraValue, min - 1, max + 1);
+      }, function (start) {
+        var remainder = (value - start) % step;
+        var adjustment = Math.round(remainder / step);
+        var rawSteps = Math.floor((value - start) / step);
+        var maxSteps = Math.floor((max - start) / step);
+        var numSteps = Math.min(maxSteps, rawSteps + adjustment);
+        var r = start + numSteps * step;
+        return Math.max(start, r);
+      });
+    };
+    var findOffsetOf = function (value, min, max) {
+      return Math.min(max, Math.max(value, min)) - min;
+    };
+    var findValueOf = function (args) {
+      var min = args.min, max = args.max, range = args.range, value = args.value, step = args.step, snap = args.snap, snapStart = args.snapStart, rounded = args.rounded, hasMinEdge = args.hasMinEdge, hasMaxEdge = args.hasMaxEdge, minBound = args.minBound, maxBound = args.maxBound, screenRange = args.screenRange;
+      var capMin = hasMinEdge ? min - 1 : min;
+      var capMax = hasMaxEdge ? max + 1 : max;
+      if (value < minBound) {
+        return capMin;
+      } else if (value > maxBound) {
+        return capMax;
+      } else {
+        var offset = findOffsetOf(value, minBound, maxBound);
+        var newValue = capValue(offset / screenRange * range + min, capMin, capMax);
+        if (snap && newValue >= min && newValue <= max) {
+          return snapValueOf(newValue, min, max, step, snapStart);
+        } else if (rounded) {
+          return Math.round(newValue);
+        } else {
+          return newValue;
+        }
+      }
+    };
+    var findOffsetOfValue = function (args) {
+      var min = args.min, max = args.max, range = args.range, value = args.value, hasMinEdge = args.hasMinEdge, hasMaxEdge = args.hasMaxEdge, maxBound = args.maxBound, maxOffset = args.maxOffset, centerMinEdge = args.centerMinEdge, centerMaxEdge = args.centerMaxEdge;
+      if (value < min) {
+        return hasMinEdge ? 0 : centerMinEdge;
+      } else if (value > max) {
+        return hasMaxEdge ? maxBound : centerMaxEdge;
+      } else {
+        return (value - min) / range * maxOffset;
+      }
     };
 
     var top = 'top', right = 'right', bottom = 'bottom', left = 'left', width = 'width', height = 'height';
@@ -6683,6 +5708,7 @@
     };
 
     var HorizontalModel = /*#__PURE__*/Object.freeze({
+        __proto__: null,
         setValueFrom: setValueFrom,
         setToMin: setToMin,
         setToMax: setToMax,
@@ -6805,6 +5831,7 @@
     };
 
     var VerticalModel = /*#__PURE__*/Object.freeze({
+        __proto__: null,
         setValueFrom: setValueFrom$1,
         setToMin: setToMin$1,
         setToMax: setToMax$1,
@@ -6887,6 +5914,7 @@
     };
 
     var TwoDModel = /*#__PURE__*/Object.freeze({
+        __proto__: null,
         setValueFrom: setValueFrom$2,
         setToMin: setToMin$2,
         setToMax: setToMax$2,
@@ -6899,7 +5927,6 @@
         edgeActions: edgeActions$2
     });
 
-    var isTouch$2 = PlatformDetection$1.detect().deviceType.isTouch();
     var SliderSchema = [
       defaulted$1('stepSize', 1),
       defaulted$1('onChange', noop),
@@ -6947,13 +5974,16 @@
       field$1('sliderBehaviours', [
         Keying,
         Representing
-      ])
-    ].concat(!isTouch$2 ? [state$1('mouseIsDown', function () {
+      ]),
+      state$1('mouseIsDown', function () {
         return Cell(false);
-      })] : []);
+      })
+    ];
 
-    var isTouch$3 = PlatformDetection$1.detect().deviceType.isTouch();
+    var mouseReleased = constant('mouse.released');
+
     var sketch = function (detail, components, _spec, _externals) {
+      var _a;
       var getThumb = function (component) {
         return getPartOrDie(component, detail, 'thumb');
       };
@@ -6996,63 +6026,50 @@
       var resetToMax = function (slider) {
         model.setToMax(slider, detail);
       };
-      var touchEvents = [
-        run(touchstart(), function (slider, _simulatedEvent) {
-          detail.onDragStart(slider, getThumb(slider));
-        }),
-        run(touchend(), function (slider, _simulatedEvent) {
-          detail.onDragEnd(slider, getThumb(slider));
-        })
-      ];
-      var mouseEvents = [
-        run(mousedown(), function (slider, simulatedEvent) {
-          simulatedEvent.stop();
-          detail.onDragStart(slider, getThumb(slider));
-          detail.mouseIsDown.set(true);
-        }),
-        run(mouseup(), function (slider, _simulatedEvent) {
-          detail.onDragEnd(slider, getThumb(slider));
-        })
-      ];
-      var uiEventsArr = isTouch$3 ? touchEvents : mouseEvents;
+      var choose = function (slider) {
+        var fireOnChoose = function () {
+          getPart(slider, detail, 'thumb').each(function (thumb) {
+            var value = modelDetail.value.get();
+            detail.onChoose(slider, thumb, value);
+          });
+        };
+        var wasDown = detail.mouseIsDown.get();
+        detail.mouseIsDown.set(false);
+        if (wasDown) {
+          fireOnChoose();
+        }
+      };
+      var onDragStart = function (slider, simulatedEvent) {
+        simulatedEvent.stop();
+        detail.mouseIsDown.set(true);
+        detail.onDragStart(slider, getThumb(slider));
+      };
+      var onDragEnd = function (slider, simulatedEvent) {
+        simulatedEvent.stop();
+        detail.onDragEnd(slider, getThumb(slider));
+        choose(slider);
+      };
       return {
         uid: detail.uid,
         dom: detail.dom,
         components: components,
-        behaviours: augment(detail.sliderBehaviours, flatten([
-          !isTouch$3 ? [Keying.config({
-              mode: 'special',
-              focusIn: function (slider) {
-                return getPart(slider, detail, 'spectrum').map(Keying.focusIn).map(constant(true));
+        behaviours: augment(detail.sliderBehaviours, [
+          Keying.config({
+            mode: 'special',
+            focusIn: function (slider) {
+              return getPart(slider, detail, 'spectrum').map(Keying.focusIn).map(constant(true));
+            }
+          }),
+          Representing.config({
+            store: {
+              mode: 'manual',
+              getValue: function (_) {
+                return modelDetail.value.get();
               }
-            })] : [],
-          [
-            Representing.config({
-              store: {
-                mode: 'manual',
-                getValue: function (_) {
-                  return modelDetail.value.get();
-                }
-              }
-            }),
-            Receiving.config({
-              channels: {
-                'mouse.released': {
-                  onReceive: function (slider, se) {
-                    var wasDown = detail.mouseIsDown.get();
-                    detail.mouseIsDown.set(false);
-                    if (wasDown) {
-                      getPart(slider, detail, 'thumb').each(function (thumb) {
-                        var value = modelDetail.value.get();
-                        detail.onChoose(slider, thumb, value);
-                      });
-                    }
-                  }
-                }
-              }
-            })
-          ]
-        ])),
+            }
+          }),
+          Receiving.config({ channels: (_a = {}, _a[mouseReleased()] = { onReceive: choose }, _a) })
+        ]),
         events: derive([
           run(sliderChangeEvent(), function (slider, simulatedEvent) {
             changeValue(slider, simulatedEvent.event().value());
@@ -7064,8 +6081,12 @@
             refresh(slider, thumb);
             var spectrum = getSpectrum(slider);
             detail.onInit(slider, thumb, spectrum, modelDetail.value.get());
-          })
-        ].concat(uiEventsArr)),
+          }),
+          run(touchstart(), onDragStart),
+          run(touchend(), onDragEnd),
+          run(mousedown(), onDragStart),
+          run(mouseup(), onDragEnd)
+        ]),
         apis: {
           resetToMin: resetToMin,
           resetToMax: resetToMax,
@@ -7273,9 +6294,9 @@
       });
     };
     var getRawOrComputed = function (isRoot, rawStart) {
-      var optStart = isElement(rawStart) ? Option.some(rawStart) : parent(rawStart);
+      var optStart = isElement(rawStart) ? Option.some(rawStart) : parent(rawStart).filter(isElement);
       return optStart.map(function (start) {
-        var inline = closest(start, function (elem) {
+        var inline = closest$1(start, function (elem) {
           return getRaw(elem, 'font-size').isSome();
         }, isRoot).bind(function (elem) {
           return getRaw(elem, 'font-size');
@@ -7349,15 +6370,15 @@
     };
 
     var record = function (spec) {
-      var uid = isSketchSpec(spec) && hasKey$1(spec, 'uid') ? spec.uid : generate$3('memento');
+      var uid = isSketchSpec(spec) && hasNonNullableKey(spec, 'uid') ? spec.uid : generate$3('memento');
       var get = function (anyInSystem) {
         return anyInSystem.getSystem().getByUid(uid).getOrDie();
       };
       var getOpt = function (anyInSystem) {
-        return anyInSystem.getSystem().getByUid(uid).fold(Option.none, Option.some);
+        return anyInSystem.getSystem().getByUid(uid).toOption();
       };
       var asSpec = function () {
-        return __assign({}, spec, { uid: uid });
+        return __assign(__assign({}, spec), { uid: uid });
       };
       return {
         get: get,
@@ -7365,15 +6386,6 @@
         asSpec: asSpec
       };
     };
-
-    var Memento = /*#__PURE__*/Object.freeze({
-        record: record
-    });
-
-    function FileReader () {
-      var f = Global$1.getOrDie('FileReader');
-      return new f();
-    }
 
     var promise = function () {
       var Promise = function (fn) {
@@ -7549,11 +6561,11 @@
       };
       return Promise;
     };
-    var Promise$1 = window.Promise ? window.Promise : promise();
+    var Promise = window.Promise ? window.Promise : promise();
 
     function blobToDataUri(blob) {
-      return new Promise$1(function (resolve) {
-        var reader = FileReader();
+      return new Promise(function (resolve) {
+        var reader = new domGlobals.FileReader();
         reader.onloadend = function () {
           resolve(reader.result);
         };
@@ -7718,14 +6730,14 @@
       query: query
     };
 
-    var platform$1 = PlatformDetection$1.detect();
-    var preserve$1 = function (f, editor) {
+    var platform$1 = detect$3();
+    var preserve = function (f, editor) {
       var rng = editor.selection.getRng();
       f();
       editor.selection.setRng(rng);
     };
     var forAndroid = function (editor, f) {
-      var wrapper = platform$1.os.isAndroid() ? preserve$1 : apply;
+      var wrapper = platform$1.os.isAndroid() ? preserve : apply;
       wrapper(f, editor);
     };
     var RangePreserver = { forAndroid: forAndroid };
@@ -7757,6 +6769,7 @@
     };
 
     var ComposeApis = /*#__PURE__*/Object.freeze({
+        __proto__: null,
         getCurrent: getCurrent
     });
 
@@ -7854,7 +6867,7 @@
     ]);
     var focusBehaviours = function (detail) {
       return derive$1([Focusing.config({
-          onFocus: detail.selectOnFocus === false ? noop : function (component) {
+          onFocus: !detail.selectOnFocus ? noop : function (component) {
             var input = component.element();
             var value = get$a(input);
             input.dom().setSelectionRange(0, value.length);
@@ -7862,10 +6875,10 @@
         })]);
     };
     var behaviours = function (detail) {
-      return __assign({}, focusBehaviours(detail), augment(detail.inputBehaviours, [Representing.config({
-          store: {
-            mode: 'manual',
-            initialValue: detail.data.getOr(undefined),
+      return __assign(__assign({}, focusBehaviours(detail)), augment(detail.inputBehaviours, [Representing.config({
+          store: __assign(__assign({ mode: 'manual' }, detail.data.map(function (data) {
+            return { initialValue: data };
+          }).getOr({})), {
             getValue: function (input) {
               return get$a(input.element());
             },
@@ -7875,7 +6888,7 @@
                 set$6(input.element(), data);
               }
             }
-          },
+          }),
           onSetValue: detail.onSetValue
         })]));
     };
@@ -7913,6 +6926,7 @@
     };
 
     var ActiveTabstopping = /*#__PURE__*/Object.freeze({
+        __proto__: null,
         exhibit: exhibit$3
     });
 
@@ -7924,12 +6938,12 @@
       active: ActiveTabstopping
     });
 
-    var global$2 = tinymce.util.Tools.resolve('tinymce.util.I18n');
+    var global$3 = tinymce.util.Tools.resolve('tinymce.util.I18n');
 
     var clearInputBehaviour = 'input-clearing';
     var field$2 = function (name, placeholder) {
       var inputSpec = record(Input.sketch({
-        inputAttributes: { placeholder: global$2.translate(placeholder) },
+        inputAttributes: { placeholder: global$3.translate(placeholder) },
         onSetValue: function (input$1, data) {
           emit(input$1, input());
         },
@@ -7990,15 +7004,16 @@
     var nativeDisabled = [
       'input',
       'button',
-      'textarea'
+      'textarea',
+      'select'
     ];
     var onLoad$5 = function (component, disableConfig, disableState) {
       if (disableConfig.disabled) {
-        disable(component, disableConfig, disableState);
+        disable(component, disableConfig);
       }
     };
-    var hasNative = function (component) {
-      return contains(nativeDisabled, name(component.element()));
+    var hasNative = function (component, config) {
+      return config.useNative === true && contains(nativeDisabled, name(component.element()));
     };
     var nativeIsDisabled = function (component) {
       return has$1(component.element(), 'disabled');
@@ -8022,18 +7037,20 @@
       disableConfig.disableClass.each(function (disableClass) {
         add$2(component.element(), disableClass);
       });
-      var f = hasNative(component) ? nativeDisable : ariaDisable;
+      var f = hasNative(component, disableConfig) ? nativeDisable : ariaDisable;
       f(component);
+      disableConfig.onDisabled(component);
     };
     var enable = function (component, disableConfig, disableState) {
       disableConfig.disableClass.each(function (disableClass) {
         remove$4(component.element(), disableClass);
       });
-      var f = hasNative(component) ? nativeEnable : ariaEnable;
+      var f = hasNative(component, disableConfig) ? nativeEnable : ariaEnable;
       f(component);
+      disableConfig.onEnabled(component);
     };
-    var isDisabled = function (component) {
-      return hasNative(component) ? nativeIsDisabled(component) : ariaIsDisabled(component);
+    var isDisabled = function (component, disableConfig) {
+      return hasNative(component, disableConfig) ? nativeIsDisabled(component) : ariaIsDisabled(component);
     };
     var set$7 = function (component, disableConfig, disableState, disabled) {
       var f = disabled ? disable : enable;
@@ -8041,6 +7058,7 @@
     };
 
     var DisableApis = /*#__PURE__*/Object.freeze({
+        __proto__: null,
         enable: enable,
         disable: disable,
         isDisabled: isDisabled,
@@ -8048,26 +7066,30 @@
         set: set$7
     });
 
-    var exhibit$4 = function (base, disableConfig, disableState) {
+    var exhibit$4 = function (base, disableConfig) {
       return nu$5({ classes: disableConfig.disabled ? disableConfig.disableClass.map(pure).getOr([]) : [] });
     };
     var events$7 = function (disableConfig, disableState) {
       return derive([
         abort(execute(), function (component, simulatedEvent) {
-          return isDisabled(component);
+          return isDisabled(component, disableConfig);
         }),
         loadEvent(disableConfig, disableState, onLoad$5)
       ]);
     };
 
     var ActiveDisable = /*#__PURE__*/Object.freeze({
+        __proto__: null,
         exhibit: exhibit$4,
         events: events$7
     });
 
     var DisableSchema = [
       defaulted$1('disabled', false),
-      option('disableClass')
+      defaulted$1('useNative', true),
+      option('disableClass'),
+      onHandler('onDisabled'),
+      onHandler('onEnabled')
     ];
 
     var Disabling = create$1({
@@ -8111,12 +7133,12 @@
         return Result.error(e);
       }, Result.value);
     };
-    var make = function (detail, components, spec) {
+    var make = function (detail, components) {
       return {
-        'uid': detail.uid,
-        'dom': detail.dom,
-        'components': components,
-        'behaviours': augment(detail.formBehaviours, [Representing.config({
+        uid: detail.uid,
+        dom: detail.dom,
+        components: components,
+        behaviours: augment(detail.formBehaviours, [Representing.config({
             store: {
               mode: 'manual',
               getValue: function (form) {
@@ -8124,7 +7146,7 @@
                 return map(resPs, function (resPThunk, pName) {
                   return resPThunk().bind(function (v) {
                     var opt = Composing.getCurrent(v);
-                    return toResult$1(opt, 'missing current');
+                    return toResult$1(opt, new Error('Cannot find a current component to extract the value from for form part \'' + pName + '\': ' + element(v.element())));
                   }).map(Representing.getValue);
                 });
               },
@@ -8139,7 +7161,7 @@
               }
             }
           })]),
-        'apis': {
+        apis: {
           getField: function (form, key) {
             return getPart(form, detail, key).bind(Composing.getCurrent);
           }
@@ -8181,7 +7203,7 @@
         run: run
       };
     };
-    var value$3 = function () {
+    var value$2 = function () {
       var subject = Cell(Option.none());
       var clear = function () {
         subject.set(Option.none());
@@ -8260,7 +7282,7 @@
         strict$1('getInitialValue'),
         state$1('state', function () {
           return {
-            dialogSwipeState: value$3(),
+            dialogSwipeState: value$2(),
             currentScreen: Cell(0)
           };
         })
@@ -8593,6 +7615,7 @@
       })]);
 
     var DefaultEvents = /*#__PURE__*/Object.freeze({
+        __proto__: null,
         events: events$8
     });
 
@@ -8601,7 +7624,7 @@
     var NoContextApi = function (getComp) {
       var fail = function (event) {
         return function () {
-          throw new Error('The component must be in a context to send: ' + event + '\n' + element(getComp().element()) + ' is not in context.');
+          throw new Error('The component must be in a context to send: ' + event + (getComp ? '\n' + element(getComp().element()) + ' is not in context.' : ''));
         };
       };
       return {
@@ -8632,15 +7655,14 @@
         ]);
       });
       var validated = asRaw('component.behaviours', objOf(schema), spec.behaviours).fold(function (errInfo) {
-        throw new Error(formatError(errInfo) + '\nComplete spec:\n' + Json.stringify(spec, null, 2));
+        throw new Error(formatError(errInfo) + '\nComplete spec:\n' + JSON.stringify(spec, null, 2));
       }, function (v) {
         return v;
       });
       return {
         list: all,
         data: map(validated, function (optBlobThunk) {
-          var optBlob = optBlobThunk;
-          var output = optBlob.map(function (blob) {
+          var output = optBlobThunk.map(function (blob) {
             return {
               config: blob.config,
               state: blob.state.init(blob.config)
@@ -8663,7 +7685,7 @@
       var r = {};
       each(data, function (detail, key) {
         each(detail, function (value, indexKey) {
-          var chain = readOr$1(indexKey, [])(r);
+          var chain = get(r, indexKey).getOr([]);
           r[indexKey] = chain.concat([tuple(key, value)]);
         });
       });
@@ -8675,16 +7697,15 @@
       each$1(behaviours, function (behaviour) {
         modsByBehaviour[behaviour.name()] = behaviour.exhibit(info, base);
       });
-      var nameAndMod = function (name, modification) {
+      var byAspect = byInnerKey(modsByBehaviour, function (name, modification) {
         return {
           name: name,
           modification: modification
         };
-      };
-      var byAspect = byInnerKey(modsByBehaviour, nameAndMod);
+      });
       var combineObjects = function (objects) {
         return foldr(objects, function (b, a) {
-          return __assign({}, a.modification, b);
+          return __assign(__assign({}, a.modification), b);
         }, {});
       };
       var combinedClasses = foldr(byAspect.classes, function (b, a) {
@@ -8700,18 +7721,17 @@
     };
 
     var sortKeys = function (label, keyName, array, order) {
-      var sliced = array.slice(0);
       try {
-        var sorted = sliced.sort(function (a, b) {
+        var sorted = sort(array, function (a, b) {
           var aKey = a[keyName]();
           var bKey = b[keyName]();
           var aIndex = order.indexOf(aKey);
           var bIndex = order.indexOf(bKey);
           if (aIndex === -1) {
-            throw new Error('The ordering for ' + label + ' does not have an entry for ' + aKey + '.\nOrder specified: ' + Json.stringify(order, null, 2));
+            throw new Error('The ordering for ' + label + ' does not have an entry for ' + aKey + '.\nOrder specified: ' + JSON.stringify(order, null, 2));
           }
           if (bIndex === -1) {
-            throw new Error('The ordering for ' + label + ' does not have an entry for ' + bKey + '.\nOrder specified: ' + Json.stringify(order, null, 2));
+            throw new Error('The ordering for ' + label + ' does not have an entry for ' + bKey + '.\nOrder specified: ' + JSON.stringify(order, null, 2));
           }
           if (aIndex < bIndex) {
             return -1;
@@ -8760,7 +7780,7 @@
       return r;
     };
     var groupByEvents = function (info, behaviours, base) {
-      var behaviourEvents = __assign({}, base, nameToHandlers(behaviours, info));
+      var behaviourEvents = __assign(__assign({}, base), nameToHandlers(behaviours, info));
       return byInnerKey(behaviourEvents, behaviourTuple);
     };
     var combine$2 = function (info, eventOrder, behaviours, base) {
@@ -8786,7 +7806,7 @@
       };
     };
     var missingOrderError = function (eventName, tuples) {
-      return Result.error(['The event (' + eventName + ') has more than one behaviour that listens to it.\nWhen this occurs, you must ' + 'specify an event ordering for the behaviours in your spec (e.g. [ "listing", "toggling" ]).\nThe behaviours that ' + 'can trigger it are: ' + Json.stringify(map$1(tuples, function (c) {
+      return Result.error(['The event (' + eventName + ') has more than one behaviour that listens to it.\nWhen this occurs, you must ' + 'specify an event ordering for the behaviours in your spec (e.g. [ "listing", "toggling" ]).\nThe behaviours that ' + 'can trigger it are: ' + JSON.stringify(map$1(tuples, function (c) {
           return c.name();
         }), null, 2)]);
     };
@@ -8808,8 +7828,8 @@
         var combined = tuples.length === 1 ? Result.value(tuples[0].handler()) : fuse$1(tuples, eventOrder, eventName);
         return combined.map(function (handler) {
           var assembled = assemble(handler);
-          var purpose = tuples.length > 1 ? filter(eventOrder, function (o) {
-            return contains(tuples, function (t) {
+          var purpose = tuples.length > 1 ? filter(eventOrder[eventName], function (o) {
+            return exists(tuples, function (t) {
               return t.name() === o;
             });
           }).join(' > ') : tuples[0].name();
@@ -8868,6 +7888,11 @@
             'alloy.base.behaviour',
             'item-type-events'
           ],
+          'touchstart': [
+            'focusing',
+            'alloy.base.behaviour',
+            'item-type-events'
+          ],
           'mouseover': [
             'item-type-events',
             'tooltipping'
@@ -8877,7 +7902,7 @@
       ]), spec);
     };
     var toDefinition = function (detail) {
-      return __assign({}, detail.dom, {
+      return __assign(__assign({}, detail.dom), {
         uid: detail.uid,
         domChildren: map$1(detail.components, function (comp) {
           return comp.element();
@@ -8925,7 +7950,7 @@
     };
 
     var getBehaviours$1 = function (spec) {
-      var behaviours = readOr$1('behaviours', {})(spec);
+      var behaviours = get(spec, 'behaviours').getOr({});
       var keys$1 = filter(keys(behaviours), function (k) {
         return behaviours[k] !== undefined;
       });
@@ -8957,7 +7982,7 @@
         return me;
       };
       var systemApi = Cell(singleton);
-      var info = getOrDie$1(toInfo(spec));
+      var info = getOrDie(toInfo(spec));
       var bBlob = generate$4(spec);
       var bList = getBehaviours(bBlob);
       var bData = getData(bBlob);
@@ -8985,7 +8010,7 @@
       var config = function (behaviour) {
         var b = bData;
         var f = isFunction(b[behaviour.name()]) ? b[behaviour.name()] : function () {
-          throw new Error('Could not find ' + behaviour.name() + ' in ' + Json.stringify(spec, null, 2));
+          throw new Error('Could not find ' + behaviour.name() + ' in ' + JSON.stringify(spec, null, 2));
         };
         return f();
       };
@@ -9018,23 +8043,23 @@
     };
 
     var buildSubcomponents = function (spec) {
-      var components = readOr$1('components', [])(spec);
+      var components = get(spec, 'components').getOr([]);
       return map$1(components, build$1);
     };
     var buildFromSpec = function (userSpec) {
       var _a = make$1(userSpec), specEvents = _a.events, spec = __rest(_a, ['events']);
       var components = buildSubcomponents(spec);
-      var completeSpec = __assign({}, spec, {
-        events: __assign({}, DefaultEvents, specEvents),
+      var completeSpec = __assign(__assign({}, spec), {
+        events: __assign(__assign({}, DefaultEvents), specEvents),
         components: components
       });
       return Result.value(build(completeSpec));
     };
     var text = function (textContent) {
       var element = Element.fromText(textContent);
-      return external({ element: element });
+      return external$1({ element: element });
     };
-    var external = function (spec) {
+    var external$1 = function (spec) {
       var extSpec = asRawOrDie('external.component', objOfOnly([
         strict$1('element'),
         option('uid')
@@ -9099,7 +8124,7 @@
     var builder = function (detail) {
       return {
         dom: detail.dom,
-        domModification: __assign({}, detail.domModification, { attributes: __assign({ 'role': detail.toggling.isSome() ? 'menuitemcheckbox' : 'menuitem' }, detail.domModification.attributes, { 'aria-haspopup': detail.hasSubmenu }, detail.hasSubmenu ? { 'aria-expanded': false } : {}) }),
+        domModification: __assign(__assign({}, detail.domModification), { attributes: __assign(__assign(__assign({ 'role': detail.toggling.isSome() ? 'menuitemcheckbox' : 'menuitem' }, detail.domModification.attributes), { 'aria-haspopup': detail.hasSubmenu }), detail.hasSubmenu ? { 'aria-expanded': false } : {}) }),
         behaviours: SketchBehaviours.augment(detail.itemBehaviours, [
           detail.toggling.fold(Toggling.revoke, function (tConfig) {
             return Toggling.config(__assign({ aria: { mode: 'checked' } }, tConfig));
@@ -9118,12 +8143,10 @@
               initialValue: detail.data
             }
           }),
-          config('item-type-events', [
-            run(tapOrClick(), emitExecute),
-            cutter(mousedown()),
+          config('item-type-events', __spreadArrays(pointerEvents(), [
             run(mouseover(), onHover),
             run(focusItem(), Focusing.focus)
-          ])
+          ]))
         ]),
         components: detail.components,
         eventOrder: detail.eventOrder
@@ -9315,7 +8338,7 @@
         name: 'items',
         unit: 'item',
         defaults: function (detail, u) {
-          return u.hasOwnProperty('uid') ? u : __assign({}, u, { uid: generate$3('item') });
+          return u.hasOwnProperty('uid') ? u : __assign(__assign({}, u), { uid: generate$3('item') });
         },
         overrides: function (detail, u) {
           return {
@@ -9412,7 +8435,7 @@
       factory: make$2
     });
 
-    var preserve$2 = function (f, container) {
+    var preserve$1 = function (f, container) {
       var ownerDoc = owner(container);
       var refocus = active(ownerDoc).bind(function (focused) {
         var hasFocus = function (elem) {
@@ -9432,12 +8455,9 @@
     };
 
     var set$8 = function (component, replaceConfig, replaceState, data) {
-      detachChildren(component);
-      preserve$2(function () {
-        var children = map$1(data, component.getSystem().build);
-        each$1(children, function (l) {
-          attach(component, l);
-        });
+      preserve$1(function () {
+        var newChildren = map$1(data, component.getSystem().build);
+        replaceChildren(component, newChildren);
       }, component.element());
     };
     var insert = function (component, replaceConfig, insertion, childSpec) {
@@ -9451,7 +8471,7 @@
       insert(component, replaceConfig, prepend, prependee);
     };
     var remove$7 = function (component, replaceConfig, replaceState, removee) {
-      var children = contents(component, replaceConfig);
+      var children = contents(component);
       var foundChild = find$2(children, function (child) {
         return eq(removee.element(), child.element());
       });
@@ -9461,7 +8481,7 @@
       return component.components();
     };
     var replaceAt = function (component, replaceConfig, replaceState, replaceeIndex, replacer) {
-      var children = contents(component, replaceConfig);
+      var children = contents(component);
       return Option.from(children[replaceeIndex]).map(function (replacee) {
         remove$7(component, replaceConfig, replaceState, replacee);
         replacer.each(function (r) {
@@ -9473,13 +8493,14 @@
       });
     };
     var replaceBy = function (component, replaceConfig, replaceState, replaceePred, replacer) {
-      var children = contents(component, replaceConfig);
+      var children = contents(component);
       return findIndex(children, replaceePred).bind(function (replaceeIndex) {
         return replaceAt(component, replaceConfig, replaceState, replaceeIndex, replacer);
       });
     };
 
     var ReplaceApis = /*#__PURE__*/Object.freeze({
+        __proto__: null,
         append: append$2,
         prepend: prepend$1,
         remove: remove$7,
@@ -9504,8 +8525,8 @@
       });
     };
     var trace = function (items, byItem, byMenu, finish) {
-      return readOptFrom$1(byMenu, finish).bind(function (triggerItem) {
-        return readOptFrom$1(items, triggerItem).bind(function (triggerMenu) {
+      return get(byMenu, finish).bind(function (triggerItem) {
+        return get(items, triggerItem).bind(function (triggerMenu) {
           var rest = trace(items, byItem, byMenu, triggerMenu);
           return Option.some([triggerMenu].concat(rest));
         });
@@ -9524,7 +8545,7 @@
         return [submenu].concat(trace(items, byItem, byMenu, submenu));
       });
       return map(items, function (menu) {
-        return readOptFrom$1(menuPaths, menu).getOr([menu]);
+        return get(menuPaths, menu).getOr([menu]);
       });
     };
 
@@ -9545,7 +8566,7 @@
       };
       var setMenuBuilt = function (menuName, built) {
         var _a;
-        menus.set(__assign({}, menus.get(), (_a = {}, _a[menuName] = {
+        menus.set(__assign(__assign({}, menus.get()), (_a = {}, _a[menuName] = {
           type: 'prepared',
           menu: built
         }, _a)));
@@ -9558,33 +8579,69 @@
         var sPaths = generate$5(dir, sExpansions);
         paths.set(sPaths);
       };
+      var getTriggeringItem = function (menuValue) {
+        return find(expansions.get(), function (v, k) {
+          return v === menuValue;
+        });
+      };
+      var getTriggerData = function (menuValue, getItemByValue, path) {
+        return getPreparedMenu(menuValue).bind(function (menu) {
+          return getTriggeringItem(menuValue).bind(function (triggeringItemValue) {
+            return getItemByValue(triggeringItemValue).map(function (triggeredItem) {
+              return {
+                triggeredMenu: menu,
+                triggeringItem: triggeredItem,
+                triggeringPath: path
+              };
+            });
+          });
+        });
+      };
+      var getTriggeringPath = function (itemValue, getItemByValue) {
+        var extraPath = filter(lookupItem(itemValue).toArray(), function (menuValue) {
+          return getPreparedMenu(menuValue).isSome();
+        });
+        return get(paths.get(), itemValue).bind(function (path) {
+          var revPath = reverse(extraPath.concat(path));
+          var triggers = bind(revPath, function (menuValue, menuIndex) {
+            return getTriggerData(menuValue, getItemByValue, revPath.slice(0, menuIndex + 1)).fold(function () {
+              return primary.get().is(menuValue) ? [] : [Option.none()];
+            }, function (data) {
+              return [Option.some(data)];
+            });
+          });
+          return sequence(triggers);
+        });
+      };
       var expand = function (itemValue) {
-        return readOptFrom$1(expansions.get(), itemValue).map(function (menu) {
-          var current = readOptFrom$1(paths.get(), itemValue).getOr([]);
+        return get(expansions.get(), itemValue).map(function (menu) {
+          var current = get(paths.get(), itemValue).getOr([]);
           return [menu].concat(current);
         });
       };
       var collapse = function (itemValue) {
-        return readOptFrom$1(paths.get(), itemValue).bind(function (path) {
+        return get(paths.get(), itemValue).bind(function (path) {
           return path.length > 1 ? Option.some(path.slice(1)) : Option.none();
         });
       };
       var refresh = function (itemValue) {
-        return readOptFrom$1(paths.get(), itemValue);
+        return get(paths.get(), itemValue);
+      };
+      var getPreparedMenu = function (menuValue) {
+        return lookupMenu(menuValue).bind(extractPreparedMenu);
       };
       var lookupMenu = function (menuValue) {
-        return readOptFrom$1(menus.get(), menuValue);
+        return get(menus.get(), menuValue);
+      };
+      var lookupItem = function (itemValue) {
+        return get(expansions.get(), itemValue);
       };
       var otherMenus = function (path) {
         var menuValues = directory.get();
         return difference(keys(menuValues), path);
       };
       var getPrimary = function () {
-        return primary.get().bind(function (primaryName) {
-          return lookupMenu(primaryName).bind(function (prep) {
-            return prep.type === 'prepared' ? Option.some(prep.menu) : Option.none();
-          });
-        });
+        return primary.get().bind(getPreparedMenu);
       };
       var getMenus = function () {
         return menus.get();
@@ -9596,21 +8653,29 @@
         refresh: refresh,
         collapse: collapse,
         lookupMenu: lookupMenu,
+        lookupItem: lookupItem,
         otherMenus: otherMenus,
         getPrimary: getPrimary,
         getMenus: getMenus,
         clear: clear,
-        isClear: isClear
+        isClear: isClear,
+        getTriggeringPath: getTriggeringPath
       };
     };
-    var LayeredState = { init: init$3 };
+    var extractPreparedMenu = function (prep) {
+      return prep.type === 'prepared' ? Option.some(prep.menu) : Option.none();
+    };
+    var LayeredState = {
+      init: init$3,
+      extractPreparedMenu: extractPreparedMenu
+    };
 
     var make$3 = function (detail, rawUiSpec) {
       var submenuParentItems = Cell(Option.none());
       var buildMenus = function (container, primaryName, menus) {
         return map(menus, function (spec, name) {
           var makeSketch = function () {
-            return Menu.sketch(__assign({ dom: spec.dom }, spec, {
+            return Menu.sketch(__assign(__assign({ dom: spec.dom }, spec), {
               value: name,
               items: spec.items,
               markers: detail.markers,
@@ -9631,12 +8696,23 @@
       var layeredState = LayeredState.init();
       var setup = function (container) {
         var componentMap = buildMenus(container, detail.data.primary, detail.data.menus);
-        var directory = toDirectory(container);
+        var directory = toDirectory();
         layeredState.setContents(detail.data.primary, componentMap, detail.data.expansions, directory);
         return layeredState.getPrimary();
       };
       var getItemValue = function (item) {
         return Representing.getValue(item).value;
+      };
+      var getItemByValue = function (container, menus, itemValue) {
+        return findMap(menus, function (menu) {
+          if (!menu.getSystem().isConnected()) {
+            return Option.none();
+          }
+          var candidates = Highlighting.getCandidates(menu);
+          return find$2(candidates, function (c) {
+            return getItemValue(c) === itemValue;
+          });
+        });
       };
       var toDirectory = function (container) {
         return map(detail.data.menus, function (data, menuName) {
@@ -9742,7 +8818,7 @@
               if (!inBody(activeMenu.element())) {
                 Replacing.append(container, premade$1(activeMenu));
               }
-              detail.onOpenSubmenu(container, item, activeMenu);
+              detail.onOpenSubmenu(container, item, activeMenu, reverse(path));
               if (decision === ExpandHighlightDecision.HighlightSubmenu) {
                 Highlighting.highlightFirst(activeMenu);
                 return updateMenuPath(container, layeredState, path);
@@ -9797,11 +8873,14 @@
       };
       var events = derive([
         run(focus$4(), function (sandbox, simulatedEvent) {
-          var menu = simulatedEvent.event().menu();
-          Highlighting.highlight(sandbox, menu);
-          var value = getItemValue(simulatedEvent.event().item());
-          layeredState.refresh(value).each(function (path) {
-            return closeOthers(sandbox, layeredState, path);
+          var item = simulatedEvent.event().item();
+          layeredState.lookupItem(getItemValue(item)).each(function () {
+            var menu = simulatedEvent.event().menu();
+            Highlighting.highlight(sandbox, menu);
+            var value = getItemValue(simulatedEvent.event().item());
+            layeredState.refresh(value).each(function (path) {
+              return closeOthers(sandbox, layeredState, path);
+            });
           });
         }),
         runOnExecute(function (component, simulatedEvent) {
@@ -9832,11 +8911,12 @@
           expandRight(sandbox, item, ExpandHighlightDecision.HighlightParent);
           detail.onHover(sandbox, item);
         })] : []));
+      var getActiveItem = function (container) {
+        return Highlighting.getHighlighted(container).bind(Highlighting.getHighlighted);
+      };
       var collapseMenuApi = function (container) {
-        Highlighting.getHighlighted(container).each(function (currentMenu) {
-          Highlighting.getHighlighted(currentMenu).each(function (currentItem) {
-            collapseLeft(container, currentItem);
-          });
+        getActiveItem(container).each(function (currentItem) {
+          collapseLeft(container, currentItem);
         });
       };
       var highlightPrimary = function (container) {
@@ -9844,9 +8924,40 @@
           setActiveMenu(container, primary);
         });
       };
+      var extractMenuFromContainer = function (container) {
+        return Option.from(container.components()[0]).filter(function (comp) {
+          return get$1(comp.element(), 'role') === 'menu';
+        });
+      };
+      var repositionMenus = function (container) {
+        var maybeActivePrimary = layeredState.getPrimary().bind(function (primary) {
+          return getActiveItem(container).bind(function (currentItem) {
+            var itemValue = getItemValue(currentItem);
+            var allMenus = values(layeredState.getMenus());
+            var preparedMenus = cat(map$1(allMenus, LayeredState.extractPreparedMenu));
+            return layeredState.getTriggeringPath(itemValue, function (v) {
+              return getItemByValue(container, preparedMenus, v);
+            });
+          }).map(function (triggeringPath) {
+            return {
+              primary: primary,
+              triggeringPath: triggeringPath
+            };
+          });
+        });
+        maybeActivePrimary.fold(function () {
+          extractMenuFromContainer(container).each(function (primaryMenu) {
+            detail.onRepositionMenu(container, primaryMenu, []);
+          });
+        }, function (_a) {
+          var primary = _a.primary, triggeringPath = _a.triggeringPath;
+          detail.onRepositionMenu(container, primary, triggeringPath);
+        });
+      };
       var apis = {
         collapseMenu: collapseMenuApi,
-        highlightPrimary: highlightPrimary
+        highlightPrimary: highlightPrimary,
+        repositionMenus: repositionMenus
       };
       return {
         uid: detail.uid,
@@ -9909,6 +9020,7 @@
         onStrictKeyboardHandler('onEscape'),
         onStrictHandler('onOpenMenu'),
         onStrictHandler('onOpenSubmenu'),
+        onHandler('onRepositionMenu'),
         onHandler('onCollapseMenu'),
         defaulted$1('highlightImmediately', true),
         strictObjOf('data', [
@@ -9937,6 +9049,9 @@
         },
         highlightPrimary: function (apis, tmenu) {
           apis.highlightPrimary(tmenu);
+        },
+        repositionMenus: function (apis, tmenu) {
+          apis.repositionMenus(tmenu);
         }
       },
       factory: make$3,
@@ -9948,12 +9063,12 @@
     });
 
     var findRoute = function (component, transConfig, transState, route) {
-      return readOptFrom$1(transConfig.routes, route.start).bind(function (sConfig) {
-        return readOptFrom$1(sConfig, route.destination);
+      return get(transConfig.routes, route.start).bind(function (sConfig) {
+        return get(sConfig, route.destination);
       });
     };
     var getTransition = function (comp, transConfig, transState) {
-      var route = getCurrentRoute(comp, transConfig, transState);
+      var route = getCurrentRoute(comp, transConfig);
       return route.bind(function (r) {
         return getTransitionOf(comp, transConfig, transState, r);
       });
@@ -10002,7 +9117,7 @@
       }
     };
     var progressTo = function (comp, transConfig, transState, destination) {
-      fasttrack(comp, transConfig, transState, destination);
+      fasttrack(comp, transConfig);
       var route = getNewRoute(comp, transConfig, transState, destination);
       getTransitionOf(comp, transConfig, transState, route).fold(function () {
         jumpTo(comp, transConfig, transState, destination);
@@ -10019,6 +9134,7 @@
     };
 
     var TransitionApis = /*#__PURE__*/Object.freeze({
+        __proto__: null,
         findRoute: findRoute,
         disableTransition: disableTransition,
         getCurrentRoute: getCurrentRoute,
@@ -10031,7 +9147,7 @@
       return derive([
         run(transitionend(), function (component, simulatedEvent) {
           var raw = simulatedEvent.event().raw();
-          getCurrentRoute(component, transConfig, transState).each(function (route) {
+          getCurrentRoute(component, transConfig).each(function (route) {
             findRoute(component, transConfig, transState, route).each(function (rInfo) {
               rInfo.transition.each(function (rTransition) {
                 if (raw.propertyName === rTransition.property) {
@@ -10049,6 +9165,7 @@
     };
 
     var ActiveTransitioning = /*#__PURE__*/Object.freeze({
+        __proto__: null,
         events: events$9
     });
 
@@ -10154,15 +9271,15 @@
     };
 
     var getValue$4 = function (item) {
-      return readOptFrom$1(item, 'format').getOr(item.title);
+      return get(item, 'format').getOr(item.title);
     };
     var convert$1 = function (formats, memMenuThunk) {
       var mainMenu = makeMenu('Styles', [].concat(map$1(formats.items, function (k) {
-        return makeItem(getValue$4(k), k.title, k.isSelected(), k.getPreview(), hasKey$1(formats.expansions, getValue$4(k)));
+        return makeItem(getValue$4(k), k.title, k.isSelected(), k.getPreview(), hasNonNullableKey(formats.expansions, getValue$4(k)));
       })), memMenuThunk, false);
       var submenus = map(formats.menus, function (menuItems, menuName) {
         var items = map$1(menuItems, function (item) {
-          return makeItem(getValue$4(item), item.title, item.isSelected !== undefined ? item.isSelected() : false, item.getPreview !== undefined ? item.getPreview() : '', hasKey$1(formats.expansions, getValue$4(item)));
+          return makeItem(getValue$4(item), item.title, item.isSelected !== undefined ? item.isSelected() : false, item.getPreview !== undefined ? item.getPreview() : '', hasNonNullableKey(formats.expansions, getValue$4(item)));
         });
         return makeMenu(menuName, items, memMenuThunk, true);
       });
@@ -10284,7 +9401,7 @@
         },
         onOpenSubmenu: function (container, item, submenu) {
           var w = get$7(container.element());
-          var menu = ancestor$1(item.element(), '[role="menu"]').getOrDie('hacky');
+          var menu = ancestor$2(item.element(), '[role="menu"]').getOrDie('hacky');
           var menuComp = container.getSystem().getByDom(menu).getOrDie();
           set$4(submenu.element(), w);
           Transitioning.progressTo(menuComp, 'before');
@@ -10292,7 +9409,7 @@
           Transitioning.progressTo(submenu, 'current');
         },
         onCollapseMenu: function (container, item, menu) {
-          var submenu = ancestor$1(item.element(), '[role="menu"]').getOrDie('hacky');
+          var submenu = ancestor$2(item.element(), '[role="menu"]').getOrDie('hacky');
           var submenuComp = container.getSystem().getByDom(submenu).getOrDie();
           Transitioning.progressTo(submenuComp, 'after');
           Transitioning.progressTo(menu, 'current');
@@ -10324,7 +9441,7 @@
       };
     };
     var getFromItem = function (item) {
-      return hasKey$1(item, 'items') ? getFromExpandingItem(item) : {
+      return hasNonNullableKey(item, 'items') ? getFromExpandingItem(item) : {
         item: item,
         menus: {},
         expansions: {}
@@ -10380,13 +9497,13 @@
         editor.formatter.register(formatName, newItem);
         return newItem;
       };
-      var formats = readOptFrom$1(settings, 'style_formats').getOr(DefaultStyleFormats);
+      var formats = get(settings, 'style_formats').getOr(DefaultStyleFormats);
       var doEnrich = function (items) {
         return map$1(items, function (item) {
-          if (hasKey$1(item, 'items')) {
+          if (hasNonNullableKey(item, 'items')) {
             var newItems = doEnrich(item.items);
             return deepMerge(enrichMenu(item), { items: newItems });
-          } else if (hasKey$1(item, 'format')) {
+          } else if (hasNonNullableKey(item, 'format')) {
             return enrichSupported(item);
           } else {
             return enrichCustom(item);
@@ -10402,7 +9519,7 @@
             var newItems = doPrune(item.items);
             return newItems.length > 0 ? [item] : [];
           } else {
-            var keep = hasKey$1(item, 'format') ? editor.formatter.canApply(item.format) : true;
+            var keep = hasNonNullableKey(item, 'format') ? editor.formatter.canApply(item.format) : true;
             return keep ? [item] : [];
           }
         });
@@ -10525,7 +9642,7 @@
           isSupported: function () {
             var buttons = editor.ui.registry.getAll().buttons;
             return prereq.forall(function (p) {
-              return hasKey$1(buttons, p);
+              return hasNonNullableKey(buttons, p);
             });
           },
           sketch: sketch
@@ -10552,7 +9669,7 @@
       var itemNames = identify(settings);
       var present = {};
       return bind(itemNames, function (iName) {
-        var r = !hasKey$1(present, iName) && hasKey$1(features, iName) && features[iName].isSupported() ? [features[iName].sketch()] : [];
+        var r = !hasNonNullableKey(present, iName) && hasNonNullableKey(features, iName) && features[iName].isSupported() ? [features[iName].sketch()] : [];
         present[iName] = true;
         return r;
       });
@@ -10574,21 +9691,23 @@
         raw: constant(raw)
       };
     };
+    var fromRawEvent = function (rawEvent) {
+      var target = Element.fromDom(rawEvent.target);
+      var stop = function () {
+        rawEvent.stopPropagation();
+      };
+      var prevent = function () {
+        rawEvent.preventDefault();
+      };
+      var kill = compose(prevent, stop);
+      return mkEvent(target, rawEvent.clientX, rawEvent.clientY, stop, prevent, kill, rawEvent);
+    };
     var handle = function (filter, handler) {
       return function (rawEvent) {
         if (!filter(rawEvent)) {
           return;
         }
-        var target = Element.fromDom(rawEvent.target);
-        var stop = function () {
-          rawEvent.stopPropagation();
-        };
-        var prevent = function () {
-          rawEvent.preventDefault();
-        };
-        var kill = compose(prevent, stop);
-        var evt = mkEvent(target, rawEvent.clientX, rawEvent.clientY, stop, prevent, kill, rawEvent);
-        handler(evt);
+        handler(fromRawEvent(rawEvent));
       };
     };
     var binder = function (element, event, filter, handler, useCapture) {
@@ -10614,7 +9733,7 @@
       return capture(element, event, filter$1, handler);
     };
 
-    var global$3 = tinymce.util.Tools.resolve('tinymce.util.Delay');
+    var global$4 = tinymce.util.Tools.resolve('tinymce.util.Delay');
 
     var INTERVAL = 50;
     var INSURANCE = 1000 / INTERVAL;
@@ -10623,7 +9742,7 @@
       return { isPortrait: constant(isPortrait) };
     };
     var getActualWidth = function (outerWindow) {
-      var isIos = PlatformDetection$1.detect().os.isiOS();
+      var isIos = detect$3().os.isiOS();
       var isPortrait = get$b(outerWindow).isPortrait();
       return isIos && !isPortrait ? outerWindow.screen.height : outerWindow.screen.width;
     };
@@ -10631,7 +9750,7 @@
       var win = Element.fromDom(outerWindow);
       var poller = null;
       var change = function () {
-        global$3.clearInterval(poller);
+        global$4.clearInterval(poller);
         var orientation = get$b(outerWindow);
         listeners.onChange(orientation);
         onAdjustment(function () {
@@ -10640,15 +9759,15 @@
       };
       var orientationHandle = bind$3(win, 'orientationchange', change);
       var onAdjustment = function (f) {
-        global$3.clearInterval(poller);
+        global$4.clearInterval(poller);
         var flag = outerWindow.innerHeight;
         var insurance = 0;
-        poller = global$3.setInterval(function () {
+        poller = global$4.setInterval(function () {
           if (flag !== outerWindow.innerHeight) {
-            global$3.clearInterval(poller);
+            global$4.clearInterval(poller);
             f(Option.some(outerWindow.innerHeight));
           } else if (insurance > INSURANCE) {
-            global$3.clearInterval(poller);
+            global$4.clearInterval(poller);
             f(Option.none());
           }
           insurance++;
@@ -10708,9 +9827,10 @@
     };
     var monitor = function (settings) {
       var startData = Cell(Option.none());
+      var longpressFired = Cell(false);
       var longpress$1 = DelayedFunction(function (event) {
-        startData.set(Option.none());
         settings.triggerEvent(longpress(), event);
+        longpressFired.set(true);
       }, LONGPRESS_DELAY);
       var handleTouchstart = function (event) {
         getTouch(event).each(function (touch) {
@@ -10721,6 +9841,7 @@
             target: event.target
           };
           longpress$1.schedule(event);
+          longpressFired.set(false);
           startData.set(Option.some(data));
         });
         return Option.none();
@@ -10742,7 +9863,12 @@
           return eq(data.target(), event.target());
         };
         return startData.get().filter(isSame).map(function (data) {
-          return settings.triggerEvent(tap(), event);
+          if (longpressFired.get()) {
+            event.prevent();
+            return false;
+          } else {
+            return settings.triggerEvent(tap(), event);
+          }
         });
       };
       var handlers = wrapAll$1([
@@ -10760,7 +9886,7 @@
         }
       ]);
       var fireIfReady = function (event, type) {
-        return readOptFrom$1(handlers, type).bind(function (handler) {
+        return get(handlers, type).bind(function (handler) {
           return handler(event);
         });
       };
@@ -10794,7 +9920,7 @@
     };
     var TappingEvent = { monitor: monitor$1 };
 
-    var isAndroid6 = PlatformDetection$1.detect().os.version.major >= 6;
+    var isAndroid6 = detect$3().os.version.major >= 6;
     var initEvents = function (editorApi, toolstrip, alloy) {
       var tapping = TappingEvent.monitor(editorApi);
       var outerDoc = owner(toolstrip);
@@ -10866,18 +9992,9 @@
         }
         return getOption(element).getOr('');
       };
-      var getOptionIE10 = function (element) {
-        try {
-          return getOptionSafe(element);
-        } catch (e) {
-          return Option.none();
-        }
-      };
-      var getOptionSafe = function (element) {
+      var getOption = function (element) {
         return is(element) ? Option.from(element.dom().nodeValue) : Option.none();
       };
-      var browser = PlatformDetection$1.detect().browser;
-      var getOption = browser.isIE() && browser.version.major === 10 ? getOptionIE10 : getOptionSafe;
       var set = function (element, value) {
         if (!is(element)) {
           throw new Error('Can only set raw ' + name + ' value of a ' + name + ' node');
@@ -10892,9 +10009,6 @@
     }
 
     var api$3 = NodeValue(isText, 'text');
-    var get$c = function (element) {
-      return api$3.get(element);
-    };
     var getOption = function (element) {
       return api$3.getOption(element);
     };
@@ -10905,20 +10019,6 @@
       }, function (v) {
         return v.length;
       });
-    };
-    var NBSP = '\xA0';
-    var isTextNodeWithCursorPosition = function (el) {
-      return getOption(el).filter(function (text) {
-        return text.trim().length !== 0 || text.indexOf(NBSP) > -1;
-      }).isSome();
-    };
-    var elementsWithCursorPosition = [
-      'img',
-      'br'
-    ];
-    var isCursorPosition = function (elem) {
-      var hasCursorPosition = isTextNodeWithCursorPosition(elem);
-      return hasCursorPosition || contains(elementsWithCursorPosition, name(elem));
     };
 
     var create$3 = Immutable('start', 'soffset', 'finish', 'foffset');
@@ -10991,14 +10091,14 @@
       var start = getStart$1(selection);
       return defaultView(start);
     };
-    var range$2 = SimRange.create;
+    var range$1 = SimRange.create;
     var Selection = {
       domRange: domRange,
       relative: relative,
       exact: exact,
       exactFromRange: exactFromRange,
       getWin: getWin,
-      range: range$2
+      range: range$1
     };
 
     var setStart = function (rng, situ) {
@@ -11134,169 +10234,8 @@
         }
       });
     };
-
-    var searchForPoint = function (rectForOffset, x, y, maxX, length) {
-      if (length === 0) {
-        return 0;
-      } else if (x === maxX) {
-        return length - 1;
-      }
-      var xDelta = maxX;
-      for (var i = 1; i < length; i++) {
-        var rect = rectForOffset(i);
-        var curDeltaX = Math.abs(x - rect.left);
-        if (y <= rect.bottom) {
-          if (y < rect.top || curDeltaX > xDelta) {
-            return i - 1;
-          } else {
-            xDelta = curDeltaX;
-          }
-        }
-      }
-      return 0;
-    };
-    var inRect = function (rect, x, y) {
-      return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
-    };
-
-    var locateOffset = function (doc, textnode, x, y, rect) {
-      var rangeForOffset = function (o) {
-        var r = doc.dom().createRange();
-        r.setStart(textnode.dom(), o);
-        r.collapse(true);
-        return r;
-      };
-      var rectForOffset = function (o) {
-        var r = rangeForOffset(o);
-        return r.getBoundingClientRect();
-      };
-      var length = get$c(textnode).length;
-      var offset = searchForPoint(rectForOffset, x, y, rect.right, length);
-      return rangeForOffset(offset);
-    };
-    var locate$1 = function (doc, node, x, y) {
-      var r = doc.dom().createRange();
-      r.selectNode(node.dom());
-      var rects = r.getClientRects();
-      var foundRect = findMap(rects, function (rect) {
-        return inRect(rect, x, y) ? Option.some(rect) : Option.none();
-      });
-      return foundRect.map(function (rect) {
-        return locateOffset(doc, node, x, y, rect);
-      });
-    };
-
-    var TextPoint = /*#__PURE__*/Object.freeze({
-        locate: locate$1
-    });
-
-    var searchInChildren = function (doc, node, x, y) {
-      var r = doc.dom().createRange();
-      var nodes = children(node);
-      return findMap(nodes, function (n) {
-        r.selectNode(n.dom());
-        return inRect(r.getBoundingClientRect(), x, y) ? locateNode(doc, n, x, y) : Option.none();
-      });
-    };
-    var locateNode = function (doc, node, x, y) {
-      var locator = isText(node) ? locate$1 : searchInChildren;
-      return locator(doc, node, x, y);
-    };
-    var locate$2 = function (doc, node, x, y) {
-      var r = doc.dom().createRange();
-      r.selectNode(node.dom());
-      var rect = r.getBoundingClientRect();
-      var boundedX = Math.max(rect.left, Math.min(rect.right, x));
-      var boundedY = Math.max(rect.top, Math.min(rect.bottom, y));
-      return locateNode(doc, node, boundedX, boundedY);
-    };
-
-    var first$1 = function (element) {
-      return descendant(element, isCursorPosition);
-    };
-    var last$1 = function (element) {
-      return descendantRtl(element, isCursorPosition);
-    };
-    var descendantRtl = function (scope, predicate) {
-      var descend = function (element) {
-        var children$1 = children(element);
-        for (var i = children$1.length - 1; i >= 0; i--) {
-          var child = children$1[i];
-          if (predicate(child)) {
-            return Option.some(child);
-          }
-          var res = descend(child);
-          if (res.isSome()) {
-            return res;
-          }
-        }
-        return Option.none();
-      };
-      return descend(scope);
-    };
-
-    var COLLAPSE_TO_LEFT = true;
-    var COLLAPSE_TO_RIGHT = false;
-    var getCollapseDirection = function (rect, x) {
-      return x - rect.left < rect.right - x ? COLLAPSE_TO_LEFT : COLLAPSE_TO_RIGHT;
-    };
-    var createCollapsedNode = function (doc, target, collapseDirection) {
-      var r = doc.dom().createRange();
-      r.selectNode(target.dom());
-      r.collapse(collapseDirection);
-      return r;
-    };
-    var locateInElement = function (doc, node, x) {
-      var cursorRange = doc.dom().createRange();
-      cursorRange.selectNode(node.dom());
-      var rect = cursorRange.getBoundingClientRect();
-      var collapseDirection = getCollapseDirection(rect, x);
-      var f = collapseDirection === COLLAPSE_TO_LEFT ? first$1 : last$1;
-      return f(node).map(function (target) {
-        return createCollapsedNode(doc, target, collapseDirection);
-      });
-    };
-    var locateInEmpty = function (doc, node, x) {
-      var rect = node.dom().getBoundingClientRect();
-      var collapseDirection = getCollapseDirection(rect, x);
-      return Option.some(createCollapsedNode(doc, node, collapseDirection));
-    };
-    var search$1 = function (doc, node, x) {
-      var f = children(node).length === 0 ? locateInEmpty : locateInElement;
-      return f(doc, node, x);
-    };
-
-    var caretPositionFromPoint = function (doc, x, y) {
-      return Option.from(doc.dom().caretPositionFromPoint(x, y)).bind(function (pos) {
-        if (pos.offsetNode === null) {
-          return Option.none();
-        }
-        var r = doc.dom().createRange();
-        r.setStart(pos.offsetNode, pos.offset);
-        r.collapse();
-        return Option.some(r);
-      });
-    };
-    var caretRangeFromPoint = function (doc, x, y) {
-      return Option.from(doc.dom().caretRangeFromPoint(x, y));
-    };
-    var searchTextNodes = function (doc, node, x, y) {
-      var r = doc.dom().createRange();
-      r.selectNode(node.dom());
-      var rect = r.getBoundingClientRect();
-      var boundedX = Math.max(rect.left, Math.min(rect.right, x));
-      var boundedY = Math.max(rect.top, Math.min(rect.bottom, y));
-      return locate$2(doc, node, boundedX, boundedY);
-    };
-    var searchFromPoint = function (doc, x, y) {
-      return Element.fromPoint(doc, x, y).bind(function (elem) {
-        var fallback = function () {
-          return search$1(doc, elem, x);
-        };
-        return children(elem).length === 0 ? fallback() : searchTextNodes(doc, elem, x, y).orThunk(fallback);
-      });
-    };
-    var availableSearch = document.caretPositionFromPoint ? caretPositionFromPoint : document.caretRangeFromPoint ? caretRangeFromPoint : searchFromPoint;
+    var ltr = adt$6.ltr;
+    var rtl = adt$6.rtl;
 
     var beforeSpecial = function (element, offset) {
       var name$1 = name(element);
@@ -11388,7 +10327,7 @@
         return sel.rangeCount > 0;
       }).bind(doGetExact);
     };
-    var get$d = function (win) {
+    var get$c = function (win) {
       return getExact(win).map(function (range) {
         return Selection.exact(range.start(), range.soffset(), range.finish(), range.foffset());
       });
@@ -11443,7 +10382,7 @@
 
     var autocompleteHack = function () {
       return function (f) {
-        global$3.setTimeout(function () {
+        global$4.setTimeout(function () {
           f();
         }, 0);
       };
@@ -11581,7 +10520,7 @@
             var html = Element.fromDom(doc.dom().documentElement);
             var getCursorBox = editor.getCursorBox.getOrThunk(function () {
               return function () {
-                return get$d(win).bind(function (sel) {
+                return get$c(win).bind(function (sel) {
                   return getFirstRect$1(win, sel).orThunk(function () {
                     return tryFallbackBox(win);
                   });
@@ -11638,7 +10577,7 @@
     var ancestorPosition = 'position:absolute!important;';
     var ancestorStyles = 'top:0!important;left:0!important;margin:0!important;padding:0!important;width:100%!important;height:100%!important;overflow:visible!important;';
     var bgFallback = 'background-color:rgb(255,255,255)!important;';
-    var isAndroid = PlatformDetection$1.detect().os.isAndroid();
+    var isAndroid = detect$3().os.isAndroid();
     var matchColor = function (editorBody) {
       var color = get$4(editorBody, 'background-color');
       return color !== undefined && color !== '' ? 'background-color:' + color + '!important' : bgFallback;
@@ -11745,36 +10684,7 @@
     };
     var AndroidMode = { create: create$4 };
 
-    var adaptable = function (fn, rate) {
-      var timer = null;
-      var args = null;
-      var cancel = function () {
-        if (timer !== null) {
-          domGlobals.clearTimeout(timer);
-          timer = null;
-          args = null;
-        }
-      };
-      var throttle = function () {
-        var newArgs = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-          newArgs[_i] = arguments[_i];
-        }
-        args = newArgs;
-        if (timer === null) {
-          timer = domGlobals.setTimeout(function () {
-            fn.apply(null, args);
-            timer = null;
-            args = null;
-          }, rate);
-        }
-      };
-      return {
-        cancel: cancel,
-        throttle: throttle
-      };
-    };
-    var first$2 = function (fn, rate) {
+    var first$1 = function (fn, rate) {
       var timer = null;
       var cancel = function () {
         if (timer !== null) {
@@ -11799,7 +10709,7 @@
         throttle: throttle
       };
     };
-    var last$2 = function (fn, rate) {
+    var last = function (fn, rate) {
       var timer = null;
       var cancel = function () {
         if (timer !== null) {
@@ -11812,8 +10722,9 @@
         for (var _i = 0; _i < arguments.length; _i++) {
           args[_i] = arguments[_i];
         }
-        if (timer !== null)
+        if (timer !== null) {
           domGlobals.clearTimeout(timer);
+        }
         timer = domGlobals.setTimeout(function () {
           fn.apply(null, args);
           timer = null;
@@ -11825,12 +10736,6 @@
       };
     };
 
-    var Throttler = /*#__PURE__*/Object.freeze({
-        adaptable: adaptable,
-        first: first$2,
-        last: last$2
-    });
-
     var sketch$9 = function (onView, translate) {
       var memIcon = record(Container.sketch({
         dom: dom$1('<div aria-hidden="true" class="${prefix}-mask-tap-icon"></div>'),
@@ -11839,7 +10744,7 @@
             toggleOnExecute: false
           })])
       }));
-      var onViewThrottle = first$2(onView, 200);
+      var onViewThrottle = first$1(onView, 200);
       return Container.sketch({
         dom: dom$1('<div class="${prefix}-disabled-mask"></div>'),
         components: [Container.sketch({
@@ -11931,7 +10836,7 @@
       defaulted$1('shell', true),
       field$1('toolbarBehaviours', [Replacing])
     ]);
-    var enhanceGroups = function (detail) {
+    var enhanceGroups = function () {
       return { behaviours: derive$1([Replacing.config({})]) };
     };
     var parts$2 = constant([optional({
@@ -11991,10 +10896,10 @@
 
     var factory$5 = function (detail, components, spec, _externals) {
       return {
-        'uid': detail.uid,
-        'dom': detail.dom,
-        'components': components,
-        'behaviours': augment(detail.tgroupBehaviours, [Keying.config({
+        uid: detail.uid,
+        dom: detail.dom,
+        components: components,
+        behaviours: augment(detail.tgroupBehaviours, [Keying.config({
             mode: 'flow',
             selector: detail.markers.itemSelector
           })]),
@@ -12272,7 +11177,7 @@
       return has$2(root, slideConfig.shrinkingClass) === true;
     };
     var isTransitioning = function (component, slideConfig, slideState) {
-      return isGrowing(component, slideConfig, slideState) === true || isShrinking(component, slideConfig, slideState) === true;
+      return isGrowing(component, slideConfig) === true || isShrinking(component, slideConfig) === true;
     };
     var toggleGrow = function (component, slideConfig, slideState) {
       var f = slideState.isExpanded() ? doStartSmartShrink : doStartGrow;
@@ -12280,6 +11185,7 @@
     };
 
     var SlidingApis = /*#__PURE__*/Object.freeze({
+        __proto__: null,
         refresh: refresh,
         grow: grow,
         shrink: shrink,
@@ -12318,6 +11224,7 @@
     };
 
     var ActiveSliding = /*#__PURE__*/Object.freeze({
+        __proto__: null,
         exhibit: exhibit$5,
         events: events$a
     });
@@ -12368,6 +11275,7 @@
     };
 
     var SlidingState = /*#__PURE__*/Object.freeze({
+        __proto__: null,
         init: init$4
     });
 
@@ -12443,7 +11351,7 @@
         'textarea'
       ], name(event.target())) && !closest$3(event.target(), '[contenteditable="true"]');
     };
-    var isFirefox = PlatformDetection$1.detect().browser.isFirefox();
+    var isFirefox = detect$3().browser.isFirefox();
     var settingsSchema = objOfOnly([
       strictFunction('triggerEvent'),
       defaulted$1('stopBackspace', true)
@@ -12464,12 +11372,12 @@
     };
     var setup$2 = function (container, rawSettings) {
       var settings = asRawOrDie('Getting GUI events settings', settingsSchema, rawSettings);
-      var pointerEvents = PlatformDetection$1.detect().deviceType.isTouch() ? [
+      var pointerEvents = [
         'touchstart',
         'touchmove',
         'touchend',
-        'gesturestart'
-      ] : [
+        'touchcancel',
+        'gesturestart',
         'mousedown',
         'mouseup',
         'mouseover',
@@ -12559,7 +11467,7 @@
     };
 
     var derive$2 = function (rawEvent, rawTarget) {
-      var source = readOptFrom$1(rawEvent, 'target').map(function (getTarget) {
+      var source = get(rawEvent, 'target').map(function (getTarget) {
         return getTarget();
       }).getOr(rawTarget);
       return Cell(source);
@@ -12683,23 +11591,23 @@
         return read$2(elem).fold(function () {
           return Option.none();
         }, function (id) {
-          var reader = readOpt$1(id);
-          return handlers.bind(reader).map(function (descHandler) {
+          return handlers.bind(function (h) {
+            return get(h, id);
+          }).map(function (descHandler) {
             return eventHandler(elem, descHandler);
           });
         });
       };
       var filterByType = function (type) {
-        return readOptFrom$1(registry, type).map(function (handlers) {
+        return get(registry, type).map(function (handlers) {
           return mapToArray(handlers, function (f, id) {
             return broadcastHandler(id, f);
           });
         }).getOr([]);
       };
       var find = function (isAboveRoot, type, target) {
-        var readType = readOpt$1(type);
-        var handlers = readType(registry);
-        return closest$1(target, function (elem) {
+        var handlers = get(registry, type);
+        return closest(target, function (elem) {
           return findHandler(handlers, elem);
         }, isAboveRoot);
       };
@@ -12739,7 +11647,7 @@
       };
       var register = function (component) {
         var tagId = readOrTag(component);
-        if (hasKey$1(components, tagId)) {
+        if (hasNonNullableKey(components, tagId)) {
           failOnDuplicate(component, tagId);
         }
         var extraArgs = [component];
@@ -12759,7 +11667,7 @@
         return events.find(isAboveRoot, type, target);
       };
       var getById = function (id) {
-        return readOpt$1(id)(components);
+        return get(components, id);
       };
       return {
         find: find,
@@ -12793,7 +11701,7 @@
         debugInfo: constant('real'),
         triggerEvent: function (eventName, target, data) {
           monitorEvent(eventName, target, function (logger) {
-            triggerOnUntilStopped(lookup, eventName, data, target, logger);
+            return triggerOnUntilStopped(lookup, eventName, data, target, logger);
           });
         },
         triggerFocus: function (target, originator) {
@@ -12807,6 +11715,7 @@
                 prevent: noop,
                 target: constant(target)
               }, target, logger);
+              return false;
             });
           });
         },
@@ -12859,7 +11768,7 @@
         component.disconnect();
       };
       var add = function (component) {
-        attach(root, component);
+        attach$1(root, component);
       };
       var remove$1 = function (component) {
         detach(component);
@@ -13002,7 +11911,7 @@
       var start = input.dom().selectionStart;
       var end = input.dom().selectionEnd;
       var dir = input.dom().selectionDirection;
-      global$3.setTimeout(function () {
+      global$4.setTimeout(function () {
         input.dom().setSelectionRange(start, end, dir);
         focus$1(input);
       }, 50);
@@ -13151,7 +12060,7 @@
         });
       };
       var tapping = TappingEvent.monitor(editorApi);
-      var refreshThrottle = last$2(refreshView, 300);
+      var refreshThrottle = last(refreshView, 300);
       var listeners = [
         editorApi.onKeyup(clearAndRefresh),
         editorApi.onNodeChanged(refreshIosSelection),
@@ -13250,6 +12159,503 @@
       };
     }
 
+    var exports$1 = {}, module = { exports: exports$1 };
+    (function (define, exports, module, require) {
+      (function (f) {
+        if (typeof exports === 'object' && typeof module !== 'undefined') {
+          module.exports = f();
+        } else if (typeof define === 'function' && define.amd) {
+          define([], f);
+        } else {
+          var g;
+          if (typeof window !== 'undefined') {
+            g = window;
+          } else if (typeof global !== 'undefined') {
+            g = global;
+          } else if (typeof self !== 'undefined') {
+            g = self;
+          } else {
+            g = this;
+          }
+          g.EphoxContactWrapper = f();
+        }
+      }(function () {
+        return function () {
+          function r(e, n, t) {
+            function o(i, f) {
+              if (!n[i]) {
+                if (!e[i]) {
+                  var c = 'function' == typeof require && require;
+                  if (!f && c)
+                    return c(i, !0);
+                  if (u)
+                    return u(i, !0);
+                  var a = new Error('Cannot find module \'' + i + '\'');
+                  throw a.code = 'MODULE_NOT_FOUND', a;
+                }
+                var p = n[i] = { exports: {} };
+                e[i][0].call(p.exports, function (r) {
+                  var n = e[i][1][r];
+                  return o(n || r);
+                }, p, p.exports, r, e, n, t);
+              }
+              return n[i].exports;
+            }
+            for (var u = 'function' == typeof require && require, i = 0; i < t.length; i++)
+              o(t[i]);
+            return o;
+          }
+          return r;
+        }()({
+          1: [
+            function (require, module, exports) {
+              var process = module.exports = {};
+              var cachedSetTimeout;
+              var cachedClearTimeout;
+              function defaultSetTimout() {
+                throw new Error('setTimeout has not been defined');
+              }
+              function defaultClearTimeout() {
+                throw new Error('clearTimeout has not been defined');
+              }
+              (function () {
+                try {
+                  if (typeof setTimeout === 'function') {
+                    cachedSetTimeout = setTimeout;
+                  } else {
+                    cachedSetTimeout = defaultSetTimout;
+                  }
+                } catch (e) {
+                  cachedSetTimeout = defaultSetTimout;
+                }
+                try {
+                  if (typeof clearTimeout === 'function') {
+                    cachedClearTimeout = clearTimeout;
+                  } else {
+                    cachedClearTimeout = defaultClearTimeout;
+                  }
+                } catch (e) {
+                  cachedClearTimeout = defaultClearTimeout;
+                }
+              }());
+              function runTimeout(fun) {
+                if (cachedSetTimeout === setTimeout) {
+                  return setTimeout(fun, 0);
+                }
+                if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+                  cachedSetTimeout = setTimeout;
+                  return setTimeout(fun, 0);
+                }
+                try {
+                  return cachedSetTimeout(fun, 0);
+                } catch (e) {
+                  try {
+                    return cachedSetTimeout.call(null, fun, 0);
+                  } catch (e) {
+                    return cachedSetTimeout.call(this, fun, 0);
+                  }
+                }
+              }
+              function runClearTimeout(marker) {
+                if (cachedClearTimeout === clearTimeout) {
+                  return clearTimeout(marker);
+                }
+                if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+                  cachedClearTimeout = clearTimeout;
+                  return clearTimeout(marker);
+                }
+                try {
+                  return cachedClearTimeout(marker);
+                } catch (e) {
+                  try {
+                    return cachedClearTimeout.call(null, marker);
+                  } catch (e) {
+                    return cachedClearTimeout.call(this, marker);
+                  }
+                }
+              }
+              var queue = [];
+              var draining = false;
+              var currentQueue;
+              var queueIndex = -1;
+              function cleanUpNextTick() {
+                if (!draining || !currentQueue) {
+                  return;
+                }
+                draining = false;
+                if (currentQueue.length) {
+                  queue = currentQueue.concat(queue);
+                } else {
+                  queueIndex = -1;
+                }
+                if (queue.length) {
+                  drainQueue();
+                }
+              }
+              function drainQueue() {
+                if (draining) {
+                  return;
+                }
+                var timeout = runTimeout(cleanUpNextTick);
+                draining = true;
+                var len = queue.length;
+                while (len) {
+                  currentQueue = queue;
+                  queue = [];
+                  while (++queueIndex < len) {
+                    if (currentQueue) {
+                      currentQueue[queueIndex].run();
+                    }
+                  }
+                  queueIndex = -1;
+                  len = queue.length;
+                }
+                currentQueue = null;
+                draining = false;
+                runClearTimeout(timeout);
+              }
+              process.nextTick = function (fun) {
+                var args = new Array(arguments.length - 1);
+                if (arguments.length > 1) {
+                  for (var i = 1; i < arguments.length; i++) {
+                    args[i - 1] = arguments[i];
+                  }
+                }
+                queue.push(new Item(fun, args));
+                if (queue.length === 1 && !draining) {
+                  runTimeout(drainQueue);
+                }
+              };
+              function Item(fun, array) {
+                this.fun = fun;
+                this.array = array;
+              }
+              Item.prototype.run = function () {
+                this.fun.apply(null, this.array);
+              };
+              process.title = 'browser';
+              process.browser = true;
+              process.env = {};
+              process.argv = [];
+              process.version = '';
+              process.versions = {};
+              function noop() {
+              }
+              process.on = noop;
+              process.addListener = noop;
+              process.once = noop;
+              process.off = noop;
+              process.removeListener = noop;
+              process.removeAllListeners = noop;
+              process.emit = noop;
+              process.prependListener = noop;
+              process.prependOnceListener = noop;
+              process.listeners = function (name) {
+                return [];
+              };
+              process.binding = function (name) {
+                throw new Error('process.binding is not supported');
+              };
+              process.cwd = function () {
+                return '/';
+              };
+              process.chdir = function (dir) {
+                throw new Error('process.chdir is not supported');
+              };
+              process.umask = function () {
+                return 0;
+              };
+            },
+            {}
+          ],
+          2: [
+            function (require, module, exports) {
+              (function (setImmediate) {
+                (function (root) {
+                  var setTimeoutFunc = setTimeout;
+                  function noop() {
+                  }
+                  function bind(fn, thisArg) {
+                    return function () {
+                      fn.apply(thisArg, arguments);
+                    };
+                  }
+                  function Promise(fn) {
+                    if (typeof this !== 'object')
+                      throw new TypeError('Promises must be constructed via new');
+                    if (typeof fn !== 'function')
+                      throw new TypeError('not a function');
+                    this._state = 0;
+                    this._handled = false;
+                    this._value = undefined;
+                    this._deferreds = [];
+                    doResolve(fn, this);
+                  }
+                  function handle(self, deferred) {
+                    while (self._state === 3) {
+                      self = self._value;
+                    }
+                    if (self._state === 0) {
+                      self._deferreds.push(deferred);
+                      return;
+                    }
+                    self._handled = true;
+                    Promise._immediateFn(function () {
+                      var cb = self._state === 1 ? deferred.onFulfilled : deferred.onRejected;
+                      if (cb === null) {
+                        (self._state === 1 ? resolve : reject)(deferred.promise, self._value);
+                        return;
+                      }
+                      var ret;
+                      try {
+                        ret = cb(self._value);
+                      } catch (e) {
+                        reject(deferred.promise, e);
+                        return;
+                      }
+                      resolve(deferred.promise, ret);
+                    });
+                  }
+                  function resolve(self, newValue) {
+                    try {
+                      if (newValue === self)
+                        throw new TypeError('A promise cannot be resolved with itself.');
+                      if (newValue && (typeof newValue === 'object' || typeof newValue === 'function')) {
+                        var then = newValue.then;
+                        if (newValue instanceof Promise) {
+                          self._state = 3;
+                          self._value = newValue;
+                          finale(self);
+                          return;
+                        } else if (typeof then === 'function') {
+                          doResolve(bind(then, newValue), self);
+                          return;
+                        }
+                      }
+                      self._state = 1;
+                      self._value = newValue;
+                      finale(self);
+                    } catch (e) {
+                      reject(self, e);
+                    }
+                  }
+                  function reject(self, newValue) {
+                    self._state = 2;
+                    self._value = newValue;
+                    finale(self);
+                  }
+                  function finale(self) {
+                    if (self._state === 2 && self._deferreds.length === 0) {
+                      Promise._immediateFn(function () {
+                        if (!self._handled) {
+                          Promise._unhandledRejectionFn(self._value);
+                        }
+                      });
+                    }
+                    for (var i = 0, len = self._deferreds.length; i < len; i++) {
+                      handle(self, self._deferreds[i]);
+                    }
+                    self._deferreds = null;
+                  }
+                  function Handler(onFulfilled, onRejected, promise) {
+                    this.onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : null;
+                    this.onRejected = typeof onRejected === 'function' ? onRejected : null;
+                    this.promise = promise;
+                  }
+                  function doResolve(fn, self) {
+                    var done = false;
+                    try {
+                      fn(function (value) {
+                        if (done)
+                          return;
+                        done = true;
+                        resolve(self, value);
+                      }, function (reason) {
+                        if (done)
+                          return;
+                        done = true;
+                        reject(self, reason);
+                      });
+                    } catch (ex) {
+                      if (done)
+                        return;
+                      done = true;
+                      reject(self, ex);
+                    }
+                  }
+                  Promise.prototype['catch'] = function (onRejected) {
+                    return this.then(null, onRejected);
+                  };
+                  Promise.prototype.then = function (onFulfilled, onRejected) {
+                    var prom = new this.constructor(noop);
+                    handle(this, new Handler(onFulfilled, onRejected, prom));
+                    return prom;
+                  };
+                  Promise.all = function (arr) {
+                    var args = Array.prototype.slice.call(arr);
+                    return new Promise(function (resolve, reject) {
+                      if (args.length === 0)
+                        return resolve([]);
+                      var remaining = args.length;
+                      function res(i, val) {
+                        try {
+                          if (val && (typeof val === 'object' || typeof val === 'function')) {
+                            var then = val.then;
+                            if (typeof then === 'function') {
+                              then.call(val, function (val) {
+                                res(i, val);
+                              }, reject);
+                              return;
+                            }
+                          }
+                          args[i] = val;
+                          if (--remaining === 0) {
+                            resolve(args);
+                          }
+                        } catch (ex) {
+                          reject(ex);
+                        }
+                      }
+                      for (var i = 0; i < args.length; i++) {
+                        res(i, args[i]);
+                      }
+                    });
+                  };
+                  Promise.resolve = function (value) {
+                    if (value && typeof value === 'object' && value.constructor === Promise) {
+                      return value;
+                    }
+                    return new Promise(function (resolve) {
+                      resolve(value);
+                    });
+                  };
+                  Promise.reject = function (value) {
+                    return new Promise(function (resolve, reject) {
+                      reject(value);
+                    });
+                  };
+                  Promise.race = function (values) {
+                    return new Promise(function (resolve, reject) {
+                      for (var i = 0, len = values.length; i < len; i++) {
+                        values[i].then(resolve, reject);
+                      }
+                    });
+                  };
+                  Promise._immediateFn = typeof setImmediate === 'function' ? function (fn) {
+                    setImmediate(fn);
+                  } : function (fn) {
+                    setTimeoutFunc(fn, 0);
+                  };
+                  Promise._unhandledRejectionFn = function _unhandledRejectionFn(err) {
+                    if (typeof console !== 'undefined' && console) {
+                      console.warn('Possible Unhandled Promise Rejection:', err);
+                    }
+                  };
+                  Promise._setImmediateFn = function _setImmediateFn(fn) {
+                    Promise._immediateFn = fn;
+                  };
+                  Promise._setUnhandledRejectionFn = function _setUnhandledRejectionFn(fn) {
+                    Promise._unhandledRejectionFn = fn;
+                  };
+                  if (typeof module !== 'undefined' && module.exports) {
+                    module.exports = Promise;
+                  } else if (!root.Promise) {
+                    root.Promise = Promise;
+                  }
+                }(this));
+              }.call(this, require('timers').setImmediate));
+            },
+            { 'timers': 3 }
+          ],
+          3: [
+            function (require, module, exports) {
+              (function (setImmediate, clearImmediate) {
+                var nextTick = require('process/browser.js').nextTick;
+                var apply = Function.prototype.apply;
+                var slice = Array.prototype.slice;
+                var immediateIds = {};
+                var nextImmediateId = 0;
+                exports.setTimeout = function () {
+                  return new Timeout(apply.call(setTimeout, window, arguments), clearTimeout);
+                };
+                exports.setInterval = function () {
+                  return new Timeout(apply.call(setInterval, window, arguments), clearInterval);
+                };
+                exports.clearTimeout = exports.clearInterval = function (timeout) {
+                  timeout.close();
+                };
+                function Timeout(id, clearFn) {
+                  this._id = id;
+                  this._clearFn = clearFn;
+                }
+                Timeout.prototype.unref = Timeout.prototype.ref = function () {
+                };
+                Timeout.prototype.close = function () {
+                  this._clearFn.call(window, this._id);
+                };
+                exports.enroll = function (item, msecs) {
+                  clearTimeout(item._idleTimeoutId);
+                  item._idleTimeout = msecs;
+                };
+                exports.unenroll = function (item) {
+                  clearTimeout(item._idleTimeoutId);
+                  item._idleTimeout = -1;
+                };
+                exports._unrefActive = exports.active = function (item) {
+                  clearTimeout(item._idleTimeoutId);
+                  var msecs = item._idleTimeout;
+                  if (msecs >= 0) {
+                    item._idleTimeoutId = setTimeout(function onTimeout() {
+                      if (item._onTimeout)
+                        item._onTimeout();
+                    }, msecs);
+                  }
+                };
+                exports.setImmediate = typeof setImmediate === 'function' ? setImmediate : function (fn) {
+                  var id = nextImmediateId++;
+                  var args = arguments.length < 2 ? false : slice.call(arguments, 1);
+                  immediateIds[id] = true;
+                  nextTick(function onNextTick() {
+                    if (immediateIds[id]) {
+                      if (args) {
+                        fn.apply(null, args);
+                      } else {
+                        fn.call(null);
+                      }
+                      exports.clearImmediate(id);
+                    }
+                  });
+                  return id;
+                };
+                exports.clearImmediate = typeof clearImmediate === 'function' ? clearImmediate : function (id) {
+                  delete immediateIds[id];
+                };
+              }.call(this, require('timers').setImmediate, require('timers').clearImmediate));
+            },
+            {
+              'process/browser.js': 1,
+              'timers': 3
+            }
+          ],
+          4: [
+            function (require, module, exports) {
+              var promisePolyfill = require('promise-polyfill');
+              var Global = function () {
+                if (typeof window !== 'undefined') {
+                  return window;
+                } else {
+                  return Function('return this;')();
+                }
+              }();
+              module.exports = { boltExport: Global.Promise || promisePolyfill };
+            },
+            { 'promise-polyfill': 2 }
+          ]
+        }, {}, [4])(4);
+      }));
+    }(undefined, exports$1, module, undefined));
+    var Promise$1 = module.exports.boltExport;
+
     var nu$7 = function (baseFn) {
       var data = Option.none();
       var callbacks = [];
@@ -13261,10 +12667,11 @@
         });
       };
       var get = function (nCallback) {
-        if (isReady())
+        if (isReady()) {
           call(nCallback);
-        else
+        } else {
           callbacks.push(nCallback);
+        }
       };
       var set = function (x) {
         data = Option.some(x);
@@ -13301,42 +12708,31 @@
       pure: pure$1
     };
 
-    var bounce = function (f) {
-      return function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-          args[_i] = arguments[_i];
-        }
-        var me = this;
-        domGlobals.setTimeout(function () {
-          f.apply(me, args);
-        }, 0);
-      };
+    var errorReporter = function (err) {
+      domGlobals.setTimeout(function () {
+        throw err;
+      }, 0);
     };
-
-    var nu$8 = function (baseFn) {
+    var make$4 = function (run) {
       var get = function (callback) {
-        baseFn(bounce(callback));
+        run().then(callback, errorReporter);
       };
       var map = function (fab) {
-        return nu$8(function (callback) {
-          get(function (a) {
-            var value = fab(a);
-            callback(value);
-          });
+        return make$4(function () {
+          return run().then(fab);
         });
       };
       var bind = function (aFutureB) {
-        return nu$8(function (callback) {
-          get(function (a) {
-            aFutureB(a).get(callback);
+        return make$4(function () {
+          return run().then(function (v) {
+            return aFutureB(v).toPromise();
           });
         });
       };
       var anonBind = function (futureB) {
-        return nu$8(function (callback) {
-          get(function (a) {
-            futureB.get(callback);
+        return make$4(function () {
+          return run().then(function () {
+            return futureB.toPromise();
           });
         });
       };
@@ -13345,25 +12741,32 @@
       };
       var toCached = function () {
         var cache = null;
-        return nu$8(function (callback) {
+        return make$4(function () {
           if (cache === null) {
-            cache = toLazy();
+            cache = run();
           }
-          cache.get(callback);
+          return cache;
         });
       };
+      var toPromise = run;
       return {
         map: map,
         bind: bind,
         anonBind: anonBind,
         toLazy: toLazy,
         toCached: toCached,
+        toPromise: toPromise,
         get: get
       };
     };
+    var nu$8 = function (baseFn) {
+      return make$4(function () {
+        return new Promise$1(baseFn);
+      });
+    };
     var pure$2 = function (a) {
-      return nu$8(function (callback) {
-        callback(a);
+      return make$4(function () {
+        return Promise$1.resolve(a);
       });
     };
     var Future = {
@@ -13388,22 +12791,22 @@
           finished = true;
           doFinish(v);
         };
-        global$3.clearInterval(interval);
+        global$4.clearInterval(interval);
         var abort = function (v) {
-          global$3.clearInterval(interval);
+          global$4.clearInterval(interval);
           finish(v);
         };
-        interval = global$3.setInterval(function () {
+        interval = global$4.setInterval(function () {
           var value = getCurrent();
           adjust(value, destination, amount).fold(function () {
-            global$3.clearInterval(interval);
+            global$4.clearInterval(interval);
             finish(destination);
           }, function (s) {
             increment(s, abort);
             if (!finished) {
               var newValue = getCurrent();
               if (newValue !== s || Math.abs(newValue - destination) > Math.abs(value - destination)) {
-                global$3.clearInterval(interval);
+                global$4.clearInterval(interval);
                 finish(destination);
               }
             }
@@ -13469,16 +12872,15 @@
         }
       ];
       return findMap(devices, function (device) {
-        return deviceWidth <= device.width && deviceHeight <= device.height ? Option.some(device.keyboard) : Option.none();
+        return someIf(deviceWidth <= device.width && deviceHeight <= device.height, device.keyboard);
       }).getOr({
         portrait: deviceHeight / 5,
         landscape: deviceWidth / 4
       });
     };
-    var Devices = { findDevice: findDevice };
 
     var softKeyboardLimits = function (outerWindow) {
-      return Devices.findDevice(outerWindow.screen.width, outerWindow.screen.height);
+      return findDevice(outerWindow.screen.width, outerWindow.screen.height);
     };
     var accountableKeyboardHeight = function (outerWindow) {
       var portrait = Orientation.get(outerWindow).isPortrait();
@@ -13611,7 +13013,7 @@
       var dropupHeight = get$5(dropup);
       var viewportHeight = deriveViewportHeight(viewport, toolbarHeight, dropupHeight);
       var viewportSetup = takeoverViewport(toolbarHeight, viewportHeight, viewport);
-      var dropupSetup = takeoverDropup(dropup, toolbarHeight, viewportHeight);
+      var dropupSetup = takeoverDropup(dropup);
       var isActive = true;
       var restore = function () {
         isActive = false;
@@ -13840,7 +13242,7 @@
           }) : Option.none();
         });
       };
-      var scrollThrottle = last$2(function () {
+      var scrollThrottle = last(function () {
         scroller.idle(function () {
           IosUpdates.updatePositions(container, outerWindow.pageYOffset).get(function () {
             var extraScroll = scrollBounds();
@@ -13946,8 +13348,8 @@
 
     var create$6 = function (platform, mask) {
       var meta = MetaViewport.tag();
-      var priorState = value$3();
-      var scrollEvents = value$3();
+      var priorState = value$2();
+      var scrollEvents = value$2();
       var iosApi = api$2();
       var iosEvents = api$2();
       var enter = function () {
@@ -14131,11 +13533,11 @@
       };
     }
 
-    var global$4 = tinymce.util.Tools.resolve('tinymce.EditorManager');
+    var global$5 = tinymce.util.Tools.resolve('tinymce.EditorManager');
 
     var derive$3 = function (editor) {
-      var base = readOptFrom$1(editor.settings, 'skin_url').fold(function () {
-        return global$4.baseURL + '/skins/ui/oxide';
+      var base = get(editor.settings, 'skin_url').fold(function () {
+        return global$5.baseURL + '/skins/ui/oxide';
       }, function (url) {
         return url;
       });
@@ -14203,14 +13605,14 @@
         var cssUrls = CssUrls.derive(editor);
         if (isSkinDisabled(editor) === false) {
           editor.contentCSS.push(cssUrls.content);
-          global.DOM.styleSheetLoader.load(cssUrls.ui, SkinLoaded.fireSkinLoaded(editor));
+          global$1.DOM.styleSheetLoader.load(cssUrls.ui, SkinLoaded.fireSkinLoaded(editor));
         } else {
           SkinLoaded.fireSkinLoaded(editor)();
         }
         var doScrollIntoView = function () {
           editor.fire('ScrollIntoView');
         };
-        var realm = PlatformDetection$1.detect().os.isAndroid() ? AndroidRealm(doScrollIntoView) : IosRealm(doScrollIntoView);
+        var realm = detect$3().os.isAndroid() ? AndroidRealm(doScrollIntoView) : IosRealm(doScrollIntoView);
         var original = Element.fromDom(targetNode);
         attachSystemAfter(original, realm.system());
         var findFocusIn = function (elem) {
@@ -14312,7 +13714,7 @@
               setReadOnly(dynamicGroup, readOnlyGroups, mainGroups, ro);
             },
             readOnlyOnInit: function () {
-              return readOnlyOnInit(editor);
+              return readOnlyOnInit();
             }
           });
           var hideDropup = function () {
@@ -14384,7 +13786,11 @@
             open: constant({
               progressBar: { value: noop },
               close: noop,
-              text: noop
+              text: noop,
+              getEl: constant(null),
+              moveTo: noop,
+              moveRel: noop,
+              settings: {}
             }),
             close: noop,
             reposition: noop,
@@ -14395,7 +13801,7 @@
       };
     };
     function Theme () {
-      global$1.add('mobile', renderMobileTheme);
+      global$2.add('mobile', renderMobileTheme);
     }
 
     Theme();

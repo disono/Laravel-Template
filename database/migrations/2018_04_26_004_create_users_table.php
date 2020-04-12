@@ -24,15 +24,15 @@ class CreateUsersTable extends Migration
             $table->enum('gender', ['Male', 'Female'])->nullable();
 
             $table->unsignedInteger('country_id')->nullable();
-            $table->foreign('country_id')->references('id')->on('countries');
+            $table->foreign('country_id')->references('id')->on('countries')->onDelete('cascade');
 
             $table->unsignedInteger('city_id')->nullable();
-            $table->foreign('city_id')->references('id')->on('cities');
+            $table->foreign('city_id')->references('id')->on('cities')->onDelete('cascade');
 
             $table->string('phone', 20)->nullable();
 
             $table->unsignedInteger('role_id');
-            $table->foreign('role_id')->references('id')->on('roles');
+            $table->foreign('role_id')->references('id')->on('roles')->onDelete('cascade');
 
             $table->string('username', 100)->unique();
             $table->string('email')->unique();

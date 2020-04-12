@@ -12,7 +12,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Application\File\CSVImport;
 use App\Models\CSV\User\UsersExport;
 use App\Models\CSV\User\UsersImport;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
 use Maatwebsite\Excel\Facades\Excel;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class CSVController extends Controller
 {
@@ -27,7 +30,7 @@ class CSVController extends Controller
     /**
      * Import view
      *
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
+     * @return JsonResponse|Response
      */
     public function csvImportAction()
     {
@@ -77,7 +80,7 @@ class CSVController extends Controller
     /**'
      * Export Data
      *
-     * @return bool|\Illuminate\Http\Response|\Symfony\Component\HttpFoundation\BinaryFileResponse
+     * @return bool|Response|BinaryFileResponse
      */
     public function csvExportAction()
     {
@@ -91,7 +94,7 @@ class CSVController extends Controller
     /**
      * Download template
      *
-     * @return bool|\Illuminate\Http\Response|\Symfony\Component\HttpFoundation\BinaryFileResponse
+     * @return bool|Response|BinaryFileResponse
      */
     public function csvTemplateAction()
     {

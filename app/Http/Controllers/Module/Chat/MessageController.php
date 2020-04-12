@@ -16,6 +16,7 @@ use App\Models\Chat\ChatGroup;
 use App\Models\Chat\ChatGroupMember;
 use App\Models\Chat\ChatMessage;
 use App\Models\User;
+use Exception;
 use Illuminate\Support\Facades\DB;
 
 class MessageController extends Controller
@@ -206,7 +207,7 @@ class MessageController extends Controller
                     'chat_group_id' => $group->id, 'added_by_id' => $this->me->id, 'member_id' => $this->me->id, 'is_admin' => 1
                 ]);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             return $this->json('Failed to create a new group, reason: ' . $e->getMessage());
         }

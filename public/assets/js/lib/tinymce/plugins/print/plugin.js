@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.0.9 (2019-06-26)
+ * Version: 5.2.1 (2020-03-25)
  */
 (function () {
     'use strict';
@@ -15,7 +15,7 @@
 
     var register = function (editor) {
       editor.addCommand('mcePrint', function () {
-        if (global$1.ie && global$1.ie <= 11) {
+        if (global$1.browser.isIE()) {
           editor.getDoc().execCommand('print', false, null);
         } else {
           editor.getWin().print();

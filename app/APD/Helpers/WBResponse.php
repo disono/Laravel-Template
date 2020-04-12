@@ -138,7 +138,7 @@ if (!function_exists('httpDownloadImage')) {
                     return $file_name;
                 }
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
         }
 
@@ -174,7 +174,7 @@ if (!function_exists('userAgent')) {
      */
     function userAgent()
     {
-        $object = new \stdClass();
+        $object = new stdClass();
         $object->u_agent = $_SERVER['HTTP_USER_AGENT'];
         $object->browserName = 'Unknown';
         $object->platform = 'Unknown';
@@ -232,7 +232,7 @@ if (!function_exists('userAgent')) {
             } else {
                 $object->version = $matches['version'][0];
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $object->pattern = '';
             $object->version = null;
         }
@@ -361,7 +361,7 @@ if (!function_exists('devURLExt')) {
             }
 
             return (env('APP_ENV') == 'local') ? '?' . rand(10, 100) . time() : '?' . $css_version;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             logErrors($e->getMessage());
             return null;
         }

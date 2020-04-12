@@ -12,6 +12,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Module\Application\FileCreate;
 use App\Http\Requests\Module\Application\FileUpdate;
 use App\Models\Vendor\Facades\File;
+use Exception;
 use Intervention\Image\Facades\Image;
 
 class FileController extends Controller
@@ -60,7 +61,7 @@ class FileController extends Controller
             } else {
                 return $img->response('jpg', $this->_imageQuality());
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return abort(404);
         }
     }

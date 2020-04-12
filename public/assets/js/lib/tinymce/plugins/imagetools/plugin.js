@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.0.9 (2019-06-26)
+ * Version: 5.2.1 (2020-03-25)
  */
 (function (domGlobals) {
     'use strict';
@@ -31,14 +31,7 @@
 
     var global$1 = tinymce.util.Tools.resolve('tinymce.util.Tools');
 
-    var compose = function (fa, fb) {
-      return function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-          args[_i] = arguments[_i];
-        }
-        return fa(fb.apply(null, args));
-      };
+    var noop = function () {
     };
     var constant = function (value) {
       return function () {
@@ -48,8 +41,6 @@
     var never = constant(false);
     var always = constant(true);
 
-    var never$1 = never;
-    var always$1 = always;
     var none = function () {
       return NONE;
     };
@@ -63,37 +54,27 @@
       var id = function (n) {
         return n;
       };
-      var noop = function () {
-      };
-      var nul = function () {
-        return null;
-      };
-      var undef = function () {
-        return undefined;
-      };
       var me = {
         fold: function (n, s) {
           return n();
         },
-        is: never$1,
-        isSome: never$1,
-        isNone: always$1,
+        is: never,
+        isSome: never,
+        isNone: always,
         getOr: id,
         getOrThunk: call,
         getOrDie: function (msg) {
           throw new Error(msg || 'error: getOrDie called on none.');
         },
-        getOrNull: nul,
-        getOrUndefined: undef,
+        getOrNull: constant(null),
+        getOrUndefined: constant(undefined),
         or: id,
         orThunk: call,
         map: none,
-        ap: none,
         each: noop,
         bind: none,
-        flatten: none,
-        exists: never$1,
-        forall: always$1,
+        exists: never,
+        forall: always,
         filter: none,
         equals: eq,
         equals_: eq,
@@ -102,19 +83,15 @@
         },
         toString: constant('none()')
       };
-      if (Object.freeze)
+      if (Object.freeze) {
         Object.freeze(me);
+      }
       return me;
     }();
     var some = function (a) {
-      var constant_a = function () {
-        return a;
-      };
+      var constant_a = constant(a);
       var self = function () {
         return me;
-      };
-      var map = function (f) {
-        return some(f(a));
       };
       var bind = function (f) {
         return f(a);
@@ -126,8 +103,8 @@
         is: function (v) {
           return a === v;
         },
-        isSome: always$1,
-        isNone: never$1,
+        isSome: always,
+        isNone: never,
         getOr: constant_a,
         getOrThunk: constant_a,
         getOrDie: constant_a,
@@ -135,35 +112,31 @@
         getOrUndefined: constant_a,
         or: self,
         orThunk: self,
-        map: map,
-        ap: function (optfab) {
-          return optfab.fold(none, function (fab) {
-            return some(fab(a));
-          });
+        map: function (f) {
+          return some(f(a));
         },
         each: function (f) {
           f(a);
         },
         bind: bind,
-        flatten: constant_a,
         exists: bind,
         forall: bind,
         filter: function (f) {
           return f(a) ? me : NONE;
-        },
-        equals: function (o) {
-          return o.is(a);
-        },
-        equals_: function (o, elementEq) {
-          return o.fold(never$1, function (b) {
-            return elementEq(a, b);
-          });
         },
         toArray: function () {
           return [a];
         },
         toString: function () {
           return 'some(' + a + ')';
+        },
+        equals: function (o) {
+          return o.is(a);
+        },
+        equals_: function (o, elementEq) {
+          return o.fold(never, function (b) {
+            return elementEq(a, b);
+          });
         }
       };
       return me;
@@ -175,58 +148,6 @@
       some: some,
       none: none,
       from: from
-    };
-
-    var Global = typeof domGlobals.window !== 'undefined' ? domGlobals.window : Function('return this;')();
-
-    var path = function (parts, scope) {
-      var o = scope !== undefined && scope !== null ? scope : Global;
-      for (var i = 0; i < parts.length && o !== undefined && o !== null; ++i)
-        o = o[parts[i]];
-      return o;
-    };
-    var resolve = function (p, scope) {
-      var parts = p.split('.');
-      return path(parts, scope);
-    };
-
-    var unsafe = function (name, scope) {
-      return resolve(name, scope);
-    };
-    var getOrDie = function (name, scope) {
-      var actual = unsafe(name, scope);
-      if (actual === undefined || actual === null)
-        throw name + ' not available on this browser';
-      return actual;
-    };
-    var Global$1 = { getOrDie: getOrDie };
-
-    function SandBlob (parts, properties) {
-      var f = Global$1.getOrDie('Blob');
-      return new f(parts, properties);
-    }
-
-    function FileReader () {
-      var f = Global$1.getOrDie('FileReader');
-      return new f();
-    }
-
-    function Uint8Array (arr) {
-      var f = Global$1.getOrDie('Uint8Array');
-      return new f(arr);
-    }
-
-    var requestAnimationFrame = function (callback) {
-      var f = Global$1.getOrDie('requestAnimationFrame');
-      f(callback);
-    };
-    var atob = function (base64) {
-      var f = Global$1.getOrDie('atob');
-      return f(base64);
-    };
-    var Window = {
-      atob: atob,
-      requestAnimationFrame: requestAnimationFrame
     };
 
     function create(width, height) {
@@ -496,7 +417,7 @@
       var mimetype = matches[1];
       var base64 = data[1];
       var sliceSize = 1024;
-      var byteCharacters = Window.atob(base64);
+      var byteCharacters = domGlobals.atob(base64);
       var bytesLength = byteCharacters.length;
       var slicesCount = Math.ceil(bytesLength / sliceSize);
       var byteArrays = new Array(slicesCount);
@@ -507,9 +428,9 @@
         for (var offset = begin, i = 0; offset < end; ++i, ++offset) {
           bytes[i] = byteCharacters[offset].charCodeAt(0);
         }
-        byteArrays[sliceIndex] = Uint8Array(bytes);
+        byteArrays[sliceIndex] = new Uint8Array(bytes);
       }
-      return Option.some(SandBlob(byteArrays, { type: mimetype }));
+      return Option.some(new domGlobals.Blob(byteArrays, { type: mimetype }));
     }
     function dataUriToBlob(uri) {
       return new Promise(function (resolve, reject) {
@@ -549,7 +470,7 @@
     }
     function blobToDataUri(blob) {
       return new Promise(function (resolve) {
-        var reader = FileReader();
+        var reader = new domGlobals.FileReader();
         reader.onloadend = function () {
           resolve(reader.result);
         };
@@ -618,21 +539,6 @@
         return create$1(Promise.resolve(canvas), blob, canvas.toDataURL());
       });
     }
-    function fromImage(image) {
-      return imageToBlob(image).then(function (blob) {
-        return fromBlob(blob);
-      });
-    }
-    var fromBlobAndUrlSync = function (blob, url) {
-      return create$1(blobToCanvas(blob), blob, url);
-    };
-
-    var ImageResult = /*#__PURE__*/Object.freeze({
-        fromBlob: fromBlob,
-        fromCanvas: fromCanvas,
-        fromImage: fromImage,
-        fromBlobAndUrlSync: fromBlobAndUrlSync
-    });
 
     function rotate(ir, angle) {
       return ir.toCanvas().then(function (canvas) {
@@ -686,20 +592,6 @@
 
     var blobToImageResult = function (blob) {
       return fromBlob(blob);
-    };
-
-    var url = function () {
-      return Global$1.getOrDie('URL');
-    };
-    var createObjectURL = function (blob) {
-      return url().createObjectURL(blob);
-    };
-    var revokeObjectURL = function (u) {
-      url().revokeObjectURL(u);
-    };
-    var URL = {
-      createObjectURL: createObjectURL,
-      revokeObjectURL: revokeObjectURL
     };
 
     var global$2 = tinymce.util.Tools.resolve('tinymce.util.Delay');
@@ -790,13 +682,16 @@
     };
 
     var typeOf = function (x) {
-      if (x === null)
+      if (x === null) {
         return 'null';
+      }
       var t = typeof x;
-      if (t === 'object' && Array.prototype.isPrototypeOf(x))
+      if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array')) {
         return 'array';
-      if (t === 'object' && String.prototype.isPrototypeOf(x))
+      }
+      if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String')) {
         return 'string';
+      }
       return t;
     };
     var isType = function (type) {
@@ -806,24 +701,19 @@
     };
     var isFunction = isType('function');
 
-    var slice = Array.prototype.slice;
+    var nativeSlice = Array.prototype.slice;
     var find = function (xs, pred) {
       for (var i = 0, len = xs.length; i < len; i++) {
         var x = xs[i];
-        if (pred(x, i, xs)) {
+        if (pred(x, i)) {
           return Option.some(x);
         }
       }
       return Option.none();
     };
     var from$1 = isFunction(Array.from) ? Array.from : function (x) {
-      return slice.call(x);
+      return nativeSlice.call(x);
     };
-
-    function XMLHttpRequest () {
-      var f = Global$1.getOrDie('XMLHttpRequest');
-      return new f();
-    }
 
     var isValue = function (obj) {
       return obj !== null && obj !== undefined;
@@ -838,7 +728,7 @@
     var requestUrlAsBlob = function (url, headers, withCredentials) {
       return new global$3(function (resolve) {
         var xhr;
-        xhr = XMLHttpRequest();
+        xhr = new domGlobals.XMLHttpRequest();
         xhr.onreadystatechange = function () {
           if (xhr.readyState === 4) {
             resolve({
@@ -858,7 +748,7 @@
     };
     var readBlob = function (blob) {
       return new global$3(function (resolve) {
-        var fr = FileReader();
+        var fr = new domGlobals.FileReader();
         fr.onload = function (e) {
           var data = e.target;
           resolve(data.result);
@@ -982,55 +872,37 @@
       return apiKey ? requestServiceBlob(url, apiKey) : requestBlob(url, withCredentials);
     };
 
-    var node = function () {
-      var f = Global$1.getOrDie('Node');
-      return f;
-    };
     var compareDocumentPosition = function (a, b, match) {
       return (a.compareDocumentPosition(b) & match) !== 0;
     };
     var documentPositionPreceding = function (a, b) {
-      return compareDocumentPosition(a, b, node().DOCUMENT_POSITION_PRECEDING);
+      return compareDocumentPosition(a, b, domGlobals.Node.DOCUMENT_POSITION_PRECEDING);
     };
     var documentPositionContainedBy = function (a, b) {
-      return compareDocumentPosition(a, b, node().DOCUMENT_POSITION_CONTAINED_BY);
+      return compareDocumentPosition(a, b, domGlobals.Node.DOCUMENT_POSITION_CONTAINED_BY);
     };
     var Node = {
       documentPositionPreceding: documentPositionPreceding,
       documentPositionContainedBy: documentPositionContainedBy
     };
 
-    var cached = function (f) {
-      var called = false;
-      var r;
-      return function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-          args[_i] = arguments[_i];
-        }
-        if (!called) {
-          called = true;
-          r = f.apply(null, args);
-        }
-        return r;
-      };
-    };
-
     var firstMatch = function (regexes, s) {
       for (var i = 0; i < regexes.length; i++) {
         var x = regexes[i];
-        if (x.test(s))
+        if (x.test(s)) {
           return x;
+        }
       }
       return undefined;
     };
     var find$1 = function (regexes, agent) {
       var r = firstMatch(regexes, agent);
-      if (!r)
+      if (!r) {
         return {
           major: 0,
           minor: 0
         };
+      }
       var group = function (i) {
         return Number(agent.replace(r, '$' + i));
       };
@@ -1038,8 +910,9 @@
     };
     var detect = function (versionRegexes, agent) {
       var cleanedAgent = String(agent).toLowerCase();
-      if (versionRegexes.length === 0)
+      if (versionRegexes.length === 0) {
         return unknown();
+      }
       return find$1(versionRegexes, cleanedAgent);
     };
     var unknown = function () {
@@ -1106,6 +979,7 @@
     var osx = 'OSX';
     var solaris = 'Solaris';
     var freebsd = 'FreeBSD';
+    var chromeos = 'ChromeOS';
     var isOS = function (name, current) {
       return function () {
         return current === name;
@@ -1129,7 +1003,8 @@
         isOSX: isOS(osx, current),
         isLinux: isOS(linux, current),
         isSolaris: isOS(solaris, current),
-        isFreeBSD: isOS(freebsd, current)
+        isFreeBSD: isOS(freebsd, current),
+        isChromeOS: isOS(chromeos, current)
       };
     };
     var OperatingSystem = {
@@ -1141,18 +1016,19 @@
       linux: constant(linux),
       osx: constant(osx),
       solaris: constant(solaris),
-      freebsd: constant(freebsd)
+      freebsd: constant(freebsd),
+      chromeos: constant(chromeos)
     };
 
-    var DeviceType = function (os, browser, userAgent) {
+    var DeviceType = function (os, browser, userAgent, mediaMatch) {
       var isiPad = os.isiOS() && /ipad/i.test(userAgent) === true;
       var isiPhone = os.isiOS() && !isiPad;
-      var isAndroid3 = os.isAndroid() && os.version.major === 3;
-      var isAndroid4 = os.isAndroid() && os.version.major === 4;
-      var isTablet = isiPad || isAndroid3 || isAndroid4 && /mobile/i.test(userAgent) === true;
-      var isTouch = os.isiOS() || os.isAndroid();
-      var isPhone = isTouch && !isTablet;
+      var isMobile = os.isiOS() || os.isAndroid();
+      var isTouch = isMobile || mediaMatch('(pointer:coarse)');
+      var isTablet = isiPad || !isiPhone && isMobile && mediaMatch('(min-device-width:768px)');
+      var isPhone = isiPhone || isMobile && !isTablet;
       var iOSwebview = browser.isSafari() && os.isiOS() && /safari/i.test(userAgent) === false;
+      var isDesktop = !isPhone && !isTablet && !iOSwebview;
       return {
         isiPad: constant(isiPad),
         isiPhone: constant(isiPhone),
@@ -1161,7 +1037,8 @@
         isTouch: constant(isTouch),
         isAndroid: os.isAndroid,
         isiOS: os.isiOS,
-        isWebView: constant(iOSwebview)
+        isWebView: constant(iOSwebview),
+        isDesktop: constant(isDesktop)
       };
     };
 
@@ -1209,8 +1086,7 @@
         name: 'Edge',
         versionRegexes: [/.*?edge\/ ?([0-9]+)\.([0-9]+)$/],
         search: function (uastring) {
-          var monstrosity = contains(uastring, 'edge/') && contains(uastring, 'chrome') && contains(uastring, 'safari') && contains(uastring, 'applewebkit');
-          return monstrosity;
+          return contains(uastring, 'edge/') && contains(uastring, 'chrome') && contains(uastring, 'safari') && contains(uastring, 'applewebkit');
         }
       },
       {
@@ -1281,8 +1157,8 @@
       },
       {
         name: 'OSX',
-        search: checkContains('os x'),
-        versionRegexes: [/.*?os\ x\ ?([0-9]+)_([0-9]+).*/]
+        search: checkContains('mac os x'),
+        versionRegexes: [/.*?mac\ os\ x\ ?([0-9]+)_([0-9]+).*/]
       },
       {
         name: 'Linux',
@@ -1298,6 +1174,11 @@
         name: 'FreeBSD',
         search: checkContains('freebsd'),
         versionRegexes: []
+      },
+      {
+        name: 'ChromeOS',
+        search: checkContains('cros'),
+        versionRegexes: [/.*?chrome\/([0-9]+)\.([0-9]+).*/]
       }
     ];
     var PlatformInfo = {
@@ -1305,12 +1186,12 @@
       oses: constant(oses)
     };
 
-    var detect$2 = function (userAgent) {
+    var detect$2 = function (userAgent, mediaMatch) {
       var browsers = PlatformInfo.browsers();
       var oses = PlatformInfo.oses();
       var browser = UaString.detectBrowser(browsers, userAgent).fold(Browser.unknown, Browser.nu);
       var os = UaString.detectOs(oses, userAgent).fold(OperatingSystem.unknown, OperatingSystem.nu);
-      var deviceType = DeviceType(os, browser, userAgent);
+      var deviceType = DeviceType(os, browser, userAgent, mediaMatch);
       return {
         browser: browser,
         os: os,
@@ -1319,11 +1200,13 @@
     };
     var PlatformDetection = { detect: detect$2 };
 
-    var detect$3 = cached(function () {
-      var userAgent = domGlobals.navigator.userAgent;
-      return PlatformDetection.detect(userAgent);
-    });
-    var PlatformDetection$1 = { detect: detect$3 };
+    var mediaMatch = function (query) {
+      return domGlobals.window.matchMedia(query).matches;
+    };
+    var platform = Cell(PlatformDetection.detect(domGlobals.navigator.userAgent, mediaMatch));
+    var detect$3 = function () {
+      return platform.get();
+    };
 
     var fromHtml = function (html, scope) {
       var doc = scope || domGlobals.document;
@@ -1378,19 +1261,22 @@
 
     var ELEMENT$1 = ELEMENT;
     var is = function (element, selector) {
-      var elem = element.dom();
-      if (elem.nodeType !== ELEMENT$1) {
+      var dom = element.dom();
+      if (dom.nodeType !== ELEMENT$1) {
         return false;
-      } else if (elem.matches !== undefined) {
-        return elem.matches(selector);
-      } else if (elem.msMatchesSelector !== undefined) {
-        return elem.msMatchesSelector(selector);
-      } else if (elem.webkitMatchesSelector !== undefined) {
-        return elem.webkitMatchesSelector(selector);
-      } else if (elem.mozMatchesSelector !== undefined) {
-        return elem.mozMatchesSelector(selector);
       } else {
-        throw new Error('Browser lacks native selectors');
+        var elem = dom;
+        if (elem.matches !== undefined) {
+          return elem.matches(selector);
+        } else if (elem.msMatchesSelector !== undefined) {
+          return elem.msMatchesSelector(selector);
+        } else if (elem.webkitMatchesSelector !== undefined) {
+          return elem.webkitMatchesSelector(selector);
+        } else if (elem.mozMatchesSelector !== undefined) {
+          return elem.mozMatchesSelector(selector);
+        } else {
+          throw new Error('Browser lacks native selectors');
+        }
       }
     };
 
@@ -1402,11 +1288,16 @@
     var ieContains = function (e1, e2) {
       return Node.documentPositionContainedBy(e1.dom(), e2.dom());
     };
-    var browser = PlatformDetection$1.detect().browser;
+    var browser = detect$3().browser;
     var contains$1 = browser.isIE() ? ieContains : regularContains;
 
+    var Global = typeof domGlobals.window !== 'undefined' ? domGlobals.window : Function('return this;')();
+
     var child = function (scope, predicate) {
-      var result = find(scope.dom().childNodes, compose(predicate, Element.fromDom));
+      var pred = function (node) {
+        return predicate(Element.fromDom(node));
+      };
+      var result = find(scope.dom().childNodes, pred);
       return result.map(Element.fromDom);
     };
 
@@ -1603,7 +1494,7 @@
               ImageSize.setImageSize(img, newSize);
             }
           }
-          URL.revokeObjectURL(newImage.src);
+          domGlobals.URL.revokeObjectURL(newImage.src);
           return blob;
         }).then(blobToImageResult).then(function (imageResult) {
           return updateSelectedImage(editor, imageResult, true, imageUploadTimerState, img);
@@ -1628,7 +1519,7 @@
     var createState = function (blob) {
       return {
         blob: blob,
-        url: URL.createObjectURL(blob)
+        url: domGlobals.URL.createObjectURL(blob)
       };
     };
     var makeOpen = function (editor, imageUploadTimerState) {

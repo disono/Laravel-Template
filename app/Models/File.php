@@ -9,6 +9,7 @@
 namespace App\Models;
 
 use App\Models\Vendor\BaseModel;
+use stdClass;
 
 class File extends BaseModel
 {
@@ -94,7 +95,7 @@ class File extends BaseModel
             $this->dataFormatting($file);
         }
 
-        $object = new \stdClass();
+        $object = new stdClass();
         $object->exists = $file ? TRUE : FALSE;
         $object->primary = $file ? fetchImage($file->file_name, $default) : fetchImage(NULL, $default);
         $object->meta = $file;

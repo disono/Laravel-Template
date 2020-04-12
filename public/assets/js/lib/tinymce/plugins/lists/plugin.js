@@ -4,12 +4,711 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.0.9 (2019-06-26)
+ * Version: 5.2.1 (2020-03-25)
  */
 (function (domGlobals) {
     'use strict';
 
     var global = tinymce.util.Tools.resolve('tinymce.PluginManager');
+
+    var noop = function () {
+    };
+    var constant = function (value) {
+      return function () {
+        return value;
+      };
+    };
+    var not = function (f) {
+      return function () {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+          args[_i] = arguments[_i];
+        }
+        return !f.apply(null, args);
+      };
+    };
+    var never = constant(false);
+    var always = constant(true);
+
+    var none = function () {
+      return NONE;
+    };
+    var NONE = function () {
+      var eq = function (o) {
+        return o.isNone();
+      };
+      var call = function (thunk) {
+        return thunk();
+      };
+      var id = function (n) {
+        return n;
+      };
+      var me = {
+        fold: function (n, s) {
+          return n();
+        },
+        is: never,
+        isSome: never,
+        isNone: always,
+        getOr: id,
+        getOrThunk: call,
+        getOrDie: function (msg) {
+          throw new Error(msg || 'error: getOrDie called on none.');
+        },
+        getOrNull: constant(null),
+        getOrUndefined: constant(undefined),
+        or: id,
+        orThunk: call,
+        map: none,
+        each: noop,
+        bind: none,
+        exists: never,
+        forall: always,
+        filter: none,
+        equals: eq,
+        equals_: eq,
+        toArray: function () {
+          return [];
+        },
+        toString: constant('none()')
+      };
+      if (Object.freeze) {
+        Object.freeze(me);
+      }
+      return me;
+    }();
+    var some = function (a) {
+      var constant_a = constant(a);
+      var self = function () {
+        return me;
+      };
+      var bind = function (f) {
+        return f(a);
+      };
+      var me = {
+        fold: function (n, s) {
+          return s(a);
+        },
+        is: function (v) {
+          return a === v;
+        },
+        isSome: always,
+        isNone: never,
+        getOr: constant_a,
+        getOrThunk: constant_a,
+        getOrDie: constant_a,
+        getOrNull: constant_a,
+        getOrUndefined: constant_a,
+        or: self,
+        orThunk: self,
+        map: function (f) {
+          return some(f(a));
+        },
+        each: function (f) {
+          f(a);
+        },
+        bind: bind,
+        exists: bind,
+        forall: bind,
+        filter: function (f) {
+          return f(a) ? me : NONE;
+        },
+        toArray: function () {
+          return [a];
+        },
+        toString: function () {
+          return 'some(' + a + ')';
+        },
+        equals: function (o) {
+          return o.is(a);
+        },
+        equals_: function (o, elementEq) {
+          return o.fold(never, function (b) {
+            return elementEq(a, b);
+          });
+        }
+      };
+      return me;
+    };
+    var from = function (value) {
+      return value === null || value === undefined ? NONE : some(value);
+    };
+    var Option = {
+      some: some,
+      none: none,
+      from: from
+    };
+
+    var typeOf = function (x) {
+      if (x === null) {
+        return 'null';
+      }
+      var t = typeof x;
+      if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array')) {
+        return 'array';
+      }
+      if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String')) {
+        return 'string';
+      }
+      return t;
+    };
+    var isType = function (type) {
+      return function (value) {
+        return typeOf(value) === type;
+      };
+    };
+    var isString = isType('string');
+    var isArray = isType('array');
+    var isBoolean = isType('boolean');
+    var isFunction = isType('function');
+    var isNumber = isType('number');
+
+    var nativeSlice = Array.prototype.slice;
+    var nativePush = Array.prototype.push;
+    var map = function (xs, f) {
+      var len = xs.length;
+      var r = new Array(len);
+      for (var i = 0; i < len; i++) {
+        var x = xs[i];
+        r[i] = f(x, i);
+      }
+      return r;
+    };
+    var each = function (xs, f) {
+      for (var i = 0, len = xs.length; i < len; i++) {
+        var x = xs[i];
+        f(x, i);
+      }
+    };
+    var filter = function (xs, pred) {
+      var r = [];
+      for (var i = 0, len = xs.length; i < len; i++) {
+        var x = xs[i];
+        if (pred(x, i)) {
+          r.push(x);
+        }
+      }
+      return r;
+    };
+    var groupBy = function (xs, f) {
+      if (xs.length === 0) {
+        return [];
+      } else {
+        var wasType = f(xs[0]);
+        var r = [];
+        var group = [];
+        for (var i = 0, len = xs.length; i < len; i++) {
+          var x = xs[i];
+          var type = f(x);
+          if (type !== wasType) {
+            r.push(group);
+            group = [];
+          }
+          wasType = type;
+          group.push(x);
+        }
+        if (group.length !== 0) {
+          r.push(group);
+        }
+        return r;
+      }
+    };
+    var foldl = function (xs, f, acc) {
+      each(xs, function (x) {
+        acc = f(acc, x);
+      });
+      return acc;
+    };
+    var find = function (xs, pred) {
+      for (var i = 0, len = xs.length; i < len; i++) {
+        var x = xs[i];
+        if (pred(x, i)) {
+          return Option.some(x);
+        }
+      }
+      return Option.none();
+    };
+    var flatten = function (xs) {
+      var r = [];
+      for (var i = 0, len = xs.length; i < len; ++i) {
+        if (!isArray(xs[i])) {
+          throw new Error('Arr.flatten item ' + i + ' was not an array, input: ' + xs);
+        }
+        nativePush.apply(r, xs[i]);
+      }
+      return r;
+    };
+    var bind = function (xs, f) {
+      return flatten(map(xs, f));
+    };
+    var reverse = function (xs) {
+      var r = nativeSlice.call(xs, 0);
+      r.reverse();
+      return r;
+    };
+    var head = function (xs) {
+      return xs.length === 0 ? Option.none() : Option.some(xs[0]);
+    };
+    var last = function (xs) {
+      return xs.length === 0 ? Option.none() : Option.some(xs[xs.length - 1]);
+    };
+    var from$1 = isFunction(Array.from) ? Array.from : function (x) {
+      return nativeSlice.call(x);
+    };
+
+    var compareDocumentPosition = function (a, b, match) {
+      return (a.compareDocumentPosition(b) & match) !== 0;
+    };
+    var documentPositionPreceding = function (a, b) {
+      return compareDocumentPosition(a, b, domGlobals.Node.DOCUMENT_POSITION_PRECEDING);
+    };
+    var documentPositionContainedBy = function (a, b) {
+      return compareDocumentPosition(a, b, domGlobals.Node.DOCUMENT_POSITION_CONTAINED_BY);
+    };
+    var Node = {
+      documentPositionPreceding: documentPositionPreceding,
+      documentPositionContainedBy: documentPositionContainedBy
+    };
+
+    var __assign = function () {
+      __assign = Object.assign || function __assign(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+          s = arguments[i];
+          for (var p in s)
+            if (Object.prototype.hasOwnProperty.call(s, p))
+              t[p] = s[p];
+        }
+        return t;
+      };
+      return __assign.apply(this, arguments);
+    };
+
+    var Cell = function (initial) {
+      var value = initial;
+      var get = function () {
+        return value;
+      };
+      var set = function (v) {
+        value = v;
+      };
+      var clone = function () {
+        return Cell(get());
+      };
+      return {
+        get: get,
+        set: set,
+        clone: clone
+      };
+    };
+
+    var firstMatch = function (regexes, s) {
+      for (var i = 0; i < regexes.length; i++) {
+        var x = regexes[i];
+        if (x.test(s)) {
+          return x;
+        }
+      }
+      return undefined;
+    };
+    var find$1 = function (regexes, agent) {
+      var r = firstMatch(regexes, agent);
+      if (!r) {
+        return {
+          major: 0,
+          minor: 0
+        };
+      }
+      var group = function (i) {
+        return Number(agent.replace(r, '$' + i));
+      };
+      return nu(group(1), group(2));
+    };
+    var detect = function (versionRegexes, agent) {
+      var cleanedAgent = String(agent).toLowerCase();
+      if (versionRegexes.length === 0) {
+        return unknown();
+      }
+      return find$1(versionRegexes, cleanedAgent);
+    };
+    var unknown = function () {
+      return nu(0, 0);
+    };
+    var nu = function (major, minor) {
+      return {
+        major: major,
+        minor: minor
+      };
+    };
+    var Version = {
+      nu: nu,
+      detect: detect,
+      unknown: unknown
+    };
+
+    var edge = 'Edge';
+    var chrome = 'Chrome';
+    var ie = 'IE';
+    var opera = 'Opera';
+    var firefox = 'Firefox';
+    var safari = 'Safari';
+    var isBrowser = function (name, current) {
+      return function () {
+        return current === name;
+      };
+    };
+    var unknown$1 = function () {
+      return nu$1({
+        current: undefined,
+        version: Version.unknown()
+      });
+    };
+    var nu$1 = function (info) {
+      var current = info.current;
+      var version = info.version;
+      return {
+        current: current,
+        version: version,
+        isEdge: isBrowser(edge, current),
+        isChrome: isBrowser(chrome, current),
+        isIE: isBrowser(ie, current),
+        isOpera: isBrowser(opera, current),
+        isFirefox: isBrowser(firefox, current),
+        isSafari: isBrowser(safari, current)
+      };
+    };
+    var Browser = {
+      unknown: unknown$1,
+      nu: nu$1,
+      edge: constant(edge),
+      chrome: constant(chrome),
+      ie: constant(ie),
+      opera: constant(opera),
+      firefox: constant(firefox),
+      safari: constant(safari)
+    };
+
+    var windows = 'Windows';
+    var ios = 'iOS';
+    var android = 'Android';
+    var linux = 'Linux';
+    var osx = 'OSX';
+    var solaris = 'Solaris';
+    var freebsd = 'FreeBSD';
+    var chromeos = 'ChromeOS';
+    var isOS = function (name, current) {
+      return function () {
+        return current === name;
+      };
+    };
+    var unknown$2 = function () {
+      return nu$2({
+        current: undefined,
+        version: Version.unknown()
+      });
+    };
+    var nu$2 = function (info) {
+      var current = info.current;
+      var version = info.version;
+      return {
+        current: current,
+        version: version,
+        isWindows: isOS(windows, current),
+        isiOS: isOS(ios, current),
+        isAndroid: isOS(android, current),
+        isOSX: isOS(osx, current),
+        isLinux: isOS(linux, current),
+        isSolaris: isOS(solaris, current),
+        isFreeBSD: isOS(freebsd, current),
+        isChromeOS: isOS(chromeos, current)
+      };
+    };
+    var OperatingSystem = {
+      unknown: unknown$2,
+      nu: nu$2,
+      windows: constant(windows),
+      ios: constant(ios),
+      android: constant(android),
+      linux: constant(linux),
+      osx: constant(osx),
+      solaris: constant(solaris),
+      freebsd: constant(freebsd),
+      chromeos: constant(chromeos)
+    };
+
+    var DeviceType = function (os, browser, userAgent, mediaMatch) {
+      var isiPad = os.isiOS() && /ipad/i.test(userAgent) === true;
+      var isiPhone = os.isiOS() && !isiPad;
+      var isMobile = os.isiOS() || os.isAndroid();
+      var isTouch = isMobile || mediaMatch('(pointer:coarse)');
+      var isTablet = isiPad || !isiPhone && isMobile && mediaMatch('(min-device-width:768px)');
+      var isPhone = isiPhone || isMobile && !isTablet;
+      var iOSwebview = browser.isSafari() && os.isiOS() && /safari/i.test(userAgent) === false;
+      var isDesktop = !isPhone && !isTablet && !iOSwebview;
+      return {
+        isiPad: constant(isiPad),
+        isiPhone: constant(isiPhone),
+        isTablet: constant(isTablet),
+        isPhone: constant(isPhone),
+        isTouch: constant(isTouch),
+        isAndroid: os.isAndroid,
+        isiOS: os.isiOS,
+        isWebView: constant(iOSwebview),
+        isDesktop: constant(isDesktop)
+      };
+    };
+
+    var detect$1 = function (candidates, userAgent) {
+      var agent = String(userAgent).toLowerCase();
+      return find(candidates, function (candidate) {
+        return candidate.search(agent);
+      });
+    };
+    var detectBrowser = function (browsers, userAgent) {
+      return detect$1(browsers, userAgent).map(function (browser) {
+        var version = Version.detect(browser.versionRegexes, userAgent);
+        return {
+          current: browser.name,
+          version: version
+        };
+      });
+    };
+    var detectOs = function (oses, userAgent) {
+      return detect$1(oses, userAgent).map(function (os) {
+        var version = Version.detect(os.versionRegexes, userAgent);
+        return {
+          current: os.name,
+          version: version
+        };
+      });
+    };
+    var UaString = {
+      detectBrowser: detectBrowser,
+      detectOs: detectOs
+    };
+
+    var contains = function (str, substr) {
+      return str.indexOf(substr) !== -1;
+    };
+
+    var normalVersionRegex = /.*?version\/\ ?([0-9]+)\.([0-9]+).*/;
+    var checkContains = function (target) {
+      return function (uastring) {
+        return contains(uastring, target);
+      };
+    };
+    var browsers = [
+      {
+        name: 'Edge',
+        versionRegexes: [/.*?edge\/ ?([0-9]+)\.([0-9]+)$/],
+        search: function (uastring) {
+          return contains(uastring, 'edge/') && contains(uastring, 'chrome') && contains(uastring, 'safari') && contains(uastring, 'applewebkit');
+        }
+      },
+      {
+        name: 'Chrome',
+        versionRegexes: [
+          /.*?chrome\/([0-9]+)\.([0-9]+).*/,
+          normalVersionRegex
+        ],
+        search: function (uastring) {
+          return contains(uastring, 'chrome') && !contains(uastring, 'chromeframe');
+        }
+      },
+      {
+        name: 'IE',
+        versionRegexes: [
+          /.*?msie\ ?([0-9]+)\.([0-9]+).*/,
+          /.*?rv:([0-9]+)\.([0-9]+).*/
+        ],
+        search: function (uastring) {
+          return contains(uastring, 'msie') || contains(uastring, 'trident');
+        }
+      },
+      {
+        name: 'Opera',
+        versionRegexes: [
+          normalVersionRegex,
+          /.*?opera\/([0-9]+)\.([0-9]+).*/
+        ],
+        search: checkContains('opera')
+      },
+      {
+        name: 'Firefox',
+        versionRegexes: [/.*?firefox\/\ ?([0-9]+)\.([0-9]+).*/],
+        search: checkContains('firefox')
+      },
+      {
+        name: 'Safari',
+        versionRegexes: [
+          normalVersionRegex,
+          /.*?cpu os ([0-9]+)_([0-9]+).*/
+        ],
+        search: function (uastring) {
+          return (contains(uastring, 'safari') || contains(uastring, 'mobile/')) && contains(uastring, 'applewebkit');
+        }
+      }
+    ];
+    var oses = [
+      {
+        name: 'Windows',
+        search: checkContains('win'),
+        versionRegexes: [/.*?windows\ nt\ ?([0-9]+)\.([0-9]+).*/]
+      },
+      {
+        name: 'iOS',
+        search: function (uastring) {
+          return contains(uastring, 'iphone') || contains(uastring, 'ipad');
+        },
+        versionRegexes: [
+          /.*?version\/\ ?([0-9]+)\.([0-9]+).*/,
+          /.*cpu os ([0-9]+)_([0-9]+).*/,
+          /.*cpu iphone os ([0-9]+)_([0-9]+).*/
+        ]
+      },
+      {
+        name: 'Android',
+        search: checkContains('android'),
+        versionRegexes: [/.*?android\ ?([0-9]+)\.([0-9]+).*/]
+      },
+      {
+        name: 'OSX',
+        search: checkContains('mac os x'),
+        versionRegexes: [/.*?mac\ os\ x\ ?([0-9]+)_([0-9]+).*/]
+      },
+      {
+        name: 'Linux',
+        search: checkContains('linux'),
+        versionRegexes: []
+      },
+      {
+        name: 'Solaris',
+        search: checkContains('sunos'),
+        versionRegexes: []
+      },
+      {
+        name: 'FreeBSD',
+        search: checkContains('freebsd'),
+        versionRegexes: []
+      },
+      {
+        name: 'ChromeOS',
+        search: checkContains('cros'),
+        versionRegexes: [/.*?chrome\/([0-9]+)\.([0-9]+).*/]
+      }
+    ];
+    var PlatformInfo = {
+      browsers: constant(browsers),
+      oses: constant(oses)
+    };
+
+    var detect$2 = function (userAgent, mediaMatch) {
+      var browsers = PlatformInfo.browsers();
+      var oses = PlatformInfo.oses();
+      var browser = UaString.detectBrowser(browsers, userAgent).fold(Browser.unknown, Browser.nu);
+      var os = UaString.detectOs(oses, userAgent).fold(OperatingSystem.unknown, OperatingSystem.nu);
+      var deviceType = DeviceType(os, browser, userAgent, mediaMatch);
+      return {
+        browser: browser,
+        os: os,
+        deviceType: deviceType
+      };
+    };
+    var PlatformDetection = { detect: detect$2 };
+
+    var mediaMatch = function (query) {
+      return domGlobals.window.matchMedia(query).matches;
+    };
+    var platform = Cell(PlatformDetection.detect(domGlobals.navigator.userAgent, mediaMatch));
+    var detect$3 = function () {
+      return platform.get();
+    };
+
+    var fromHtml = function (html, scope) {
+      var doc = scope || domGlobals.document;
+      var div = doc.createElement('div');
+      div.innerHTML = html;
+      if (!div.hasChildNodes() || div.childNodes.length > 1) {
+        domGlobals.console.error('HTML does not have a single root node', html);
+        throw new Error('HTML must have a single root node');
+      }
+      return fromDom(div.childNodes[0]);
+    };
+    var fromTag = function (tag, scope) {
+      var doc = scope || domGlobals.document;
+      var node = doc.createElement(tag);
+      return fromDom(node);
+    };
+    var fromText = function (text, scope) {
+      var doc = scope || domGlobals.document;
+      var node = doc.createTextNode(text);
+      return fromDom(node);
+    };
+    var fromDom = function (node) {
+      if (node === null || node === undefined) {
+        throw new Error('Node cannot be null or undefined');
+      }
+      return { dom: constant(node) };
+    };
+    var fromPoint = function (docElm, x, y) {
+      var doc = docElm.dom();
+      return Option.from(doc.elementFromPoint(x, y)).map(fromDom);
+    };
+    var Element = {
+      fromHtml: fromHtml,
+      fromTag: fromTag,
+      fromText: fromText,
+      fromDom: fromDom,
+      fromPoint: fromPoint
+    };
+
+    var ATTRIBUTE = domGlobals.Node.ATTRIBUTE_NODE;
+    var CDATA_SECTION = domGlobals.Node.CDATA_SECTION_NODE;
+    var COMMENT = domGlobals.Node.COMMENT_NODE;
+    var DOCUMENT = domGlobals.Node.DOCUMENT_NODE;
+    var DOCUMENT_TYPE = domGlobals.Node.DOCUMENT_TYPE_NODE;
+    var DOCUMENT_FRAGMENT = domGlobals.Node.DOCUMENT_FRAGMENT_NODE;
+    var ELEMENT = domGlobals.Node.ELEMENT_NODE;
+    var TEXT = domGlobals.Node.TEXT_NODE;
+    var PROCESSING_INSTRUCTION = domGlobals.Node.PROCESSING_INSTRUCTION_NODE;
+    var ENTITY_REFERENCE = domGlobals.Node.ENTITY_REFERENCE_NODE;
+    var ENTITY = domGlobals.Node.ENTITY_NODE;
+    var NOTATION = domGlobals.Node.NOTATION_NODE;
+
+    var ELEMENT$1 = ELEMENT;
+    var is = function (element, selector) {
+      var dom = element.dom();
+      if (dom.nodeType !== ELEMENT$1) {
+        return false;
+      } else {
+        var elem = dom;
+        if (elem.matches !== undefined) {
+          return elem.matches(selector);
+        } else if (elem.msMatchesSelector !== undefined) {
+          return elem.msMatchesSelector(selector);
+        } else if (elem.webkitMatchesSelector !== undefined) {
+          return elem.webkitMatchesSelector(selector);
+        } else if (elem.mozMatchesSelector !== undefined) {
+          return elem.mozMatchesSelector(selector);
+        } else {
+          throw new Error('Browser lacks native selectors');
+        }
+      }
+    };
+
+    var eq = function (e1, e2) {
+      return e1.dom() === e2.dom();
+    };
+    var regularContains = function (e1, e2) {
+      var d1 = e1.dom();
+      var d2 = e2.dom();
+      return d1 === d2 ? false : d1.contains(d2);
+    };
+    var ieContains = function (e1, e2) {
+      return Node.documentPositionContainedBy(e1.dom(), e2.dom());
+    };
+    var browser = detect$3().browser;
+    var contains$1 = browser.isIE() ? ieContains : regularContains;
+    var is$1 = is;
 
     var global$1 = tinymce.util.Tools.resolve('tinymce.dom.RangeUtils');
 
@@ -17,11 +716,141 @@
 
     var global$3 = tinymce.util.Tools.resolve('tinymce.util.VK');
 
-    var global$4 = tinymce.util.Tools.resolve('tinymce.dom.BookmarkManager');
+    var lift2 = function (oa, ob, f) {
+      return oa.isSome() && ob.isSome() ? Option.some(f(oa.getOrDie(), ob.getOrDie())) : Option.none();
+    };
+
+    var fromElements = function (elements, scope) {
+      var doc = scope || domGlobals.document;
+      var fragment = doc.createDocumentFragment();
+      each(elements, function (element) {
+        fragment.appendChild(element.dom());
+      });
+      return Element.fromDom(fragment);
+    };
+
+    var Immutable = function () {
+      var fields = [];
+      for (var _i = 0; _i < arguments.length; _i++) {
+        fields[_i] = arguments[_i];
+      }
+      return function () {
+        var values = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+          values[_i] = arguments[_i];
+        }
+        if (fields.length !== values.length) {
+          throw new Error('Wrong number of arguments to struct. Expected "[' + fields.length + ']", got ' + values.length + ' arguments');
+        }
+        var struct = {};
+        each(fields, function (name, i) {
+          struct[name] = constant(values[i]);
+        });
+        return struct;
+      };
+    };
+
+    var keys = Object.keys;
+    var each$1 = function (obj, f) {
+      var props = keys(obj);
+      for (var k = 0, len = props.length; k < len; k++) {
+        var i = props[k];
+        var x = obj[i];
+        f(x, i);
+      }
+    };
+
+    var parent = function (element) {
+      return Option.from(element.dom().parentNode).map(Element.fromDom);
+    };
+    var children = function (element) {
+      return map(element.dom().childNodes, Element.fromDom);
+    };
+    var child = function (element, index) {
+      var cs = element.dom().childNodes;
+      return Option.from(cs[index]).map(Element.fromDom);
+    };
+    var firstChild = function (element) {
+      return child(element, 0);
+    };
+    var lastChild = function (element) {
+      return child(element, element.dom().childNodes.length - 1);
+    };
+    var spot = Immutable('element', 'offset');
+
+    var before = function (marker, element) {
+      var parent$1 = parent(marker);
+      parent$1.each(function (v) {
+        v.dom().insertBefore(element.dom(), marker.dom());
+      });
+    };
+    var append = function (parent, element) {
+      parent.dom().appendChild(element.dom());
+    };
+
+    var before$1 = function (marker, elements) {
+      each(elements, function (x) {
+        before(marker, x);
+      });
+    };
+    var append$1 = function (parent, elements) {
+      each(elements, function (x) {
+        append(parent, x);
+      });
+    };
+
+    var remove = function (element) {
+      var dom = element.dom();
+      if (dom.parentNode !== null) {
+        dom.parentNode.removeChild(dom);
+      }
+    };
+
+    var fireListEvent = function (editor, action, element) {
+      return editor.fire('ListMutation', {
+        action: action,
+        element: element
+      });
+    };
+
+    var Global = typeof domGlobals.window !== 'undefined' ? domGlobals.window : Function('return this;')();
+
+    var path = function (parts, scope) {
+      var o = scope !== undefined && scope !== null ? scope : Global;
+      for (var i = 0; i < parts.length && o !== undefined && o !== null; ++i) {
+        o = o[parts[i]];
+      }
+      return o;
+    };
+    var resolve = function (p, scope) {
+      var parts = p.split('.');
+      return path(parts, scope);
+    };
+
+    var unsafe = function (name, scope) {
+      return resolve(name, scope);
+    };
+    var getOrDie = function (name, scope) {
+      var actual = unsafe(name, scope);
+      if (actual === undefined || actual === null) {
+        throw new Error(name + ' not available on this browser');
+      }
+      return actual;
+    };
+    var Global$1 = { getOrDie: getOrDie };
+
+    var htmlElement = function (scope) {
+      return Global$1.getOrDie('HTMLElement', scope);
+    };
+    var isPrototypeOf = function (x) {
+      var scope = resolve('ownerDocument.defaultView', x);
+      return htmlElement(scope).prototype.isPrototypeOf(x);
+    };
+    var HTMLElement = { isPrototypeOf: isPrototypeOf };
+
+    var global$4 = tinymce.util.Tools.resolve('tinymce.dom.DomQuery');
 
     var global$5 = tinymce.util.Tools.resolve('tinymce.util.Tools');
-
-    var global$6 = tinymce.util.Tools.resolve('tinymce.dom.DOMUtils');
 
     var isTextNode = function (node) {
       return node && node.nodeType === 3;
@@ -92,561 +921,6 @@
       isChildOfBody: isChildOfBody
     };
 
-    var getNormalizedPoint = function (container, offset) {
-      if (NodeType.isTextNode(container)) {
-        return {
-          container: container,
-          offset: offset
-        };
-      }
-      var node = global$1.getNode(container, offset);
-      if (NodeType.isTextNode(node)) {
-        return {
-          container: node,
-          offset: offset >= container.childNodes.length ? node.data.length : 0
-        };
-      } else if (node.previousSibling && NodeType.isTextNode(node.previousSibling)) {
-        return {
-          container: node.previousSibling,
-          offset: node.previousSibling.data.length
-        };
-      } else if (node.nextSibling && NodeType.isTextNode(node.nextSibling)) {
-        return {
-          container: node.nextSibling,
-          offset: 0
-        };
-      }
-      return {
-        container: container,
-        offset: offset
-      };
-    };
-    var normalizeRange = function (rng) {
-      var outRng = rng.cloneRange();
-      var rangeStart = getNormalizedPoint(rng.startContainer, rng.startOffset);
-      outRng.setStart(rangeStart.container, rangeStart.offset);
-      var rangeEnd = getNormalizedPoint(rng.endContainer, rng.endOffset);
-      outRng.setEnd(rangeEnd.container, rangeEnd.offset);
-      return outRng;
-    };
-    var Range = {
-      getNormalizedPoint: getNormalizedPoint,
-      normalizeRange: normalizeRange
-    };
-
-    var DOM = global$6.DOM;
-    var createBookmark = function (rng) {
-      var bookmark = {};
-      var setupEndPoint = function (start) {
-        var offsetNode, container, offset;
-        container = rng[start ? 'startContainer' : 'endContainer'];
-        offset = rng[start ? 'startOffset' : 'endOffset'];
-        if (container.nodeType === 1) {
-          offsetNode = DOM.create('span', { 'data-mce-type': 'bookmark' });
-          if (container.hasChildNodes()) {
-            offset = Math.min(offset, container.childNodes.length - 1);
-            if (start) {
-              container.insertBefore(offsetNode, container.childNodes[offset]);
-            } else {
-              DOM.insertAfter(offsetNode, container.childNodes[offset]);
-            }
-          } else {
-            container.appendChild(offsetNode);
-          }
-          container = offsetNode;
-          offset = 0;
-        }
-        bookmark[start ? 'startContainer' : 'endContainer'] = container;
-        bookmark[start ? 'startOffset' : 'endOffset'] = offset;
-      };
-      setupEndPoint(true);
-      if (!rng.collapsed) {
-        setupEndPoint();
-      }
-      return bookmark;
-    };
-    var resolveBookmark = function (bookmark) {
-      function restoreEndPoint(start) {
-        var container, offset, node;
-        var nodeIndex = function (container) {
-          var node = container.parentNode.firstChild, idx = 0;
-          while (node) {
-            if (node === container) {
-              return idx;
-            }
-            if (node.nodeType !== 1 || node.getAttribute('data-mce-type') !== 'bookmark') {
-              idx++;
-            }
-            node = node.nextSibling;
-          }
-          return -1;
-        };
-        container = node = bookmark[start ? 'startContainer' : 'endContainer'];
-        offset = bookmark[start ? 'startOffset' : 'endOffset'];
-        if (!container) {
-          return;
-        }
-        if (container.nodeType === 1) {
-          offset = nodeIndex(container);
-          container = container.parentNode;
-          DOM.remove(node);
-          if (!container.hasChildNodes() && DOM.isBlock(container)) {
-            container.appendChild(DOM.create('br'));
-          }
-        }
-        bookmark[start ? 'startContainer' : 'endContainer'] = container;
-        bookmark[start ? 'startOffset' : 'endOffset'] = offset;
-      }
-      restoreEndPoint(true);
-      restoreEndPoint();
-      var rng = DOM.createRng();
-      rng.setStart(bookmark.startContainer, bookmark.startOffset);
-      if (bookmark.endContainer) {
-        rng.setEnd(bookmark.endContainer, bookmark.endOffset);
-      }
-      return Range.normalizeRange(rng);
-    };
-    var Bookmark = {
-      createBookmark: createBookmark,
-      resolveBookmark: resolveBookmark
-    };
-
-    var constant = function (value) {
-      return function () {
-        return value;
-      };
-    };
-    var not = function (f) {
-      return function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-          args[_i] = arguments[_i];
-        }
-        return !f.apply(null, args);
-      };
-    };
-    var never = constant(false);
-    var always = constant(true);
-
-    var never$1 = never;
-    var always$1 = always;
-    var none = function () {
-      return NONE;
-    };
-    var NONE = function () {
-      var eq = function (o) {
-        return o.isNone();
-      };
-      var call = function (thunk) {
-        return thunk();
-      };
-      var id = function (n) {
-        return n;
-      };
-      var noop = function () {
-      };
-      var nul = function () {
-        return null;
-      };
-      var undef = function () {
-        return undefined;
-      };
-      var me = {
-        fold: function (n, s) {
-          return n();
-        },
-        is: never$1,
-        isSome: never$1,
-        isNone: always$1,
-        getOr: id,
-        getOrThunk: call,
-        getOrDie: function (msg) {
-          throw new Error(msg || 'error: getOrDie called on none.');
-        },
-        getOrNull: nul,
-        getOrUndefined: undef,
-        or: id,
-        orThunk: call,
-        map: none,
-        ap: none,
-        each: noop,
-        bind: none,
-        flatten: none,
-        exists: never$1,
-        forall: always$1,
-        filter: none,
-        equals: eq,
-        equals_: eq,
-        toArray: function () {
-          return [];
-        },
-        toString: constant('none()')
-      };
-      if (Object.freeze)
-        Object.freeze(me);
-      return me;
-    }();
-    var some = function (a) {
-      var constant_a = function () {
-        return a;
-      };
-      var self = function () {
-        return me;
-      };
-      var map = function (f) {
-        return some(f(a));
-      };
-      var bind = function (f) {
-        return f(a);
-      };
-      var me = {
-        fold: function (n, s) {
-          return s(a);
-        },
-        is: function (v) {
-          return a === v;
-        },
-        isSome: always$1,
-        isNone: never$1,
-        getOr: constant_a,
-        getOrThunk: constant_a,
-        getOrDie: constant_a,
-        getOrNull: constant_a,
-        getOrUndefined: constant_a,
-        or: self,
-        orThunk: self,
-        map: map,
-        ap: function (optfab) {
-          return optfab.fold(none, function (fab) {
-            return some(fab(a));
-          });
-        },
-        each: function (f) {
-          f(a);
-        },
-        bind: bind,
-        flatten: constant_a,
-        exists: bind,
-        forall: bind,
-        filter: function (f) {
-          return f(a) ? me : NONE;
-        },
-        equals: function (o) {
-          return o.is(a);
-        },
-        equals_: function (o, elementEq) {
-          return o.fold(never$1, function (b) {
-            return elementEq(a, b);
-          });
-        },
-        toArray: function () {
-          return [a];
-        },
-        toString: function () {
-          return 'some(' + a + ')';
-        }
-      };
-      return me;
-    };
-    var from = function (value) {
-      return value === null || value === undefined ? NONE : some(value);
-    };
-    var Option = {
-      some: some,
-      none: none,
-      from: from
-    };
-
-    var typeOf = function (x) {
-      if (x === null)
-        return 'null';
-      var t = typeof x;
-      if (t === 'object' && Array.prototype.isPrototypeOf(x))
-        return 'array';
-      if (t === 'object' && String.prototype.isPrototypeOf(x))
-        return 'string';
-      return t;
-    };
-    var isType = function (type) {
-      return function (value) {
-        return typeOf(value) === type;
-      };
-    };
-    var isString = isType('string');
-    var isBoolean = isType('boolean');
-    var isFunction = isType('function');
-    var isNumber = isType('number');
-
-    var slice = Array.prototype.slice;
-    var rawIndexOf = function () {
-      var pIndexOf = Array.prototype.indexOf;
-      var fastIndex = function (xs, x) {
-        return pIndexOf.call(xs, x);
-      };
-      var slowIndex = function (xs, x) {
-        return slowIndexOf(xs, x);
-      };
-      return pIndexOf === undefined ? slowIndex : fastIndex;
-    }();
-    var indexOf = function (xs, x) {
-      var r = rawIndexOf(xs, x);
-      return r === -1 ? Option.none() : Option.some(r);
-    };
-    var contains = function (xs, x) {
-      return rawIndexOf(xs, x) > -1;
-    };
-    var exists = function (xs, pred) {
-      return findIndex(xs, pred).isSome();
-    };
-    var range = function (num, f) {
-      var r = [];
-      for (var i = 0; i < num; i++) {
-        r.push(f(i));
-      }
-      return r;
-    };
-    var chunk = function (array, size) {
-      var r = [];
-      for (var i = 0; i < array.length; i += size) {
-        var s = slice.call(array, i, i + size);
-        r.push(s);
-      }
-      return r;
-    };
-    var map = function (xs, f) {
-      var len = xs.length;
-      var r = new Array(len);
-      for (var i = 0; i < len; i++) {
-        var x = xs[i];
-        r[i] = f(x, i, xs);
-      }
-      return r;
-    };
-    var each = function (xs, f) {
-      for (var i = 0, len = xs.length; i < len; i++) {
-        var x = xs[i];
-        f(x, i, xs);
-      }
-    };
-    var eachr = function (xs, f) {
-      for (var i = xs.length - 1; i >= 0; i--) {
-        var x = xs[i];
-        f(x, i, xs);
-      }
-    };
-    var partition = function (xs, pred) {
-      var pass = [];
-      var fail = [];
-      for (var i = 0, len = xs.length; i < len; i++) {
-        var x = xs[i];
-        var arr = pred(x, i, xs) ? pass : fail;
-        arr.push(x);
-      }
-      return {
-        pass: pass,
-        fail: fail
-      };
-    };
-    var filter = function (xs, pred) {
-      var r = [];
-      for (var i = 0, len = xs.length; i < len; i++) {
-        var x = xs[i];
-        if (pred(x, i, xs)) {
-          r.push(x);
-        }
-      }
-      return r;
-    };
-    var groupBy = function (xs, f) {
-      if (xs.length === 0) {
-        return [];
-      } else {
-        var wasType = f(xs[0]);
-        var r = [];
-        var group = [];
-        for (var i = 0, len = xs.length; i < len; i++) {
-          var x = xs[i];
-          var type = f(x);
-          if (type !== wasType) {
-            r.push(group);
-            group = [];
-          }
-          wasType = type;
-          group.push(x);
-        }
-        if (group.length !== 0) {
-          r.push(group);
-        }
-        return r;
-      }
-    };
-    var foldr = function (xs, f, acc) {
-      eachr(xs, function (x) {
-        acc = f(acc, x);
-      });
-      return acc;
-    };
-    var foldl = function (xs, f, acc) {
-      each(xs, function (x) {
-        acc = f(acc, x);
-      });
-      return acc;
-    };
-    var find = function (xs, pred) {
-      for (var i = 0, len = xs.length; i < len; i++) {
-        var x = xs[i];
-        if (pred(x, i, xs)) {
-          return Option.some(x);
-        }
-      }
-      return Option.none();
-    };
-    var findIndex = function (xs, pred) {
-      for (var i = 0, len = xs.length; i < len; i++) {
-        var x = xs[i];
-        if (pred(x, i, xs)) {
-          return Option.some(i);
-        }
-      }
-      return Option.none();
-    };
-    var slowIndexOf = function (xs, x) {
-      for (var i = 0, len = xs.length; i < len; ++i) {
-        if (xs[i] === x) {
-          return i;
-        }
-      }
-      return -1;
-    };
-    var push = Array.prototype.push;
-    var flatten = function (xs) {
-      var r = [];
-      for (var i = 0, len = xs.length; i < len; ++i) {
-        if (!Array.prototype.isPrototypeOf(xs[i]))
-          throw new Error('Arr.flatten item ' + i + ' was not an array, input: ' + xs);
-        push.apply(r, xs[i]);
-      }
-      return r;
-    };
-    var bind = function (xs, f) {
-      var output = map(xs, f);
-      return flatten(output);
-    };
-    var forall = function (xs, pred) {
-      for (var i = 0, len = xs.length; i < len; ++i) {
-        var x = xs[i];
-        if (pred(x, i, xs) !== true) {
-          return false;
-        }
-      }
-      return true;
-    };
-    var equal = function (a1, a2) {
-      return a1.length === a2.length && forall(a1, function (x, i) {
-        return x === a2[i];
-      });
-    };
-    var reverse = function (xs) {
-      var r = slice.call(xs, 0);
-      r.reverse();
-      return r;
-    };
-    var difference = function (a1, a2) {
-      return filter(a1, function (x) {
-        return !contains(a2, x);
-      });
-    };
-    var mapToObject = function (xs, f) {
-      var r = {};
-      for (var i = 0, len = xs.length; i < len; i++) {
-        var x = xs[i];
-        r[String(x)] = f(x, i);
-      }
-      return r;
-    };
-    var pure = function (x) {
-      return [x];
-    };
-    var sort = function (xs, comparator) {
-      var copy = slice.call(xs, 0);
-      copy.sort(comparator);
-      return copy;
-    };
-    var head = function (xs) {
-      return xs.length === 0 ? Option.none() : Option.some(xs[0]);
-    };
-    var last = function (xs) {
-      return xs.length === 0 ? Option.none() : Option.some(xs[xs.length - 1]);
-    };
-    var from$1 = isFunction(Array.from) ? Array.from : function (x) {
-      return slice.call(x);
-    };
-
-    var Arr = /*#__PURE__*/Object.freeze({
-        indexOf: indexOf,
-        contains: contains,
-        exists: exists,
-        range: range,
-        chunk: chunk,
-        map: map,
-        each: each,
-        eachr: eachr,
-        partition: partition,
-        filter: filter,
-        groupBy: groupBy,
-        foldr: foldr,
-        foldl: foldl,
-        find: find,
-        findIndex: findIndex,
-        flatten: flatten,
-        bind: bind,
-        forall: forall,
-        equal: equal,
-        reverse: reverse,
-        difference: difference,
-        mapToObject: mapToObject,
-        pure: pure,
-        sort: sort,
-        head: head,
-        last: last,
-        from: from$1
-    });
-
-    var Global = typeof domGlobals.window !== 'undefined' ? domGlobals.window : Function('return this;')();
-
-    var path = function (parts, scope) {
-      var o = scope !== undefined && scope !== null ? scope : Global;
-      for (var i = 0; i < parts.length && o !== undefined && o !== null; ++i)
-        o = o[parts[i]];
-      return o;
-    };
-    var resolve = function (p, scope) {
-      var parts = p.split('.');
-      return path(parts, scope);
-    };
-
-    var unsafe = function (name, scope) {
-      return resolve(name, scope);
-    };
-    var getOrDie = function (name, scope) {
-      var actual = unsafe(name, scope);
-      if (actual === undefined || actual === null)
-        throw name + ' not available on this browser';
-      return actual;
-    };
-    var Global$1 = { getOrDie: getOrDie };
-
-    var htmlElement = function (scope) {
-      return Global$1.getOrDie('HTMLElement', scope);
-    };
-    var isPrototypeOf = function (x) {
-      var scope = resolve('ownerDocument.defaultView', x);
-      return htmlElement(scope).prototype.isPrototypeOf(x);
-    };
-    var HTMLElement = { isPrototypeOf: isPrototypeOf };
-
-    var global$7 = tinymce.util.Tools.resolve('tinymce.dom.DomQuery');
-
     var getParentList = function (editor) {
       var selectionStart = editor.selection.getStart(true);
       return editor.dom.getParent(selectionStart, 'OL,UL,DL', getClosestListRootElm(editor, selectionStart));
@@ -675,7 +949,7 @@
         var parentLi = editor.dom.getParent(elm, 'li,dd,dt', getClosestListRootElm(editor, elm));
         return parentLi ? parentLi : elm;
       });
-      return global$7.unique(listItemsElms);
+      return global$4.unique(listItemsElms);
     };
     var getSelectedListItems = function (editor) {
       var selectedBlocks = editor.selection.getSelectedBlocks();
@@ -708,7 +982,7 @@
       var listRoots = map(lists, function (list) {
         return findLastParentListNode(editor, list).getOr(list);
       });
-      return global$7.unique(listRoots);
+      return global$4.unique(listRoots);
     };
     var isList = function (editor) {
       var list = getParentList(editor);
@@ -724,538 +998,88 @@
       getSelectedListRoots: getSelectedListRoots
     };
 
-    var fromHtml = function (html, scope) {
-      var doc = scope || domGlobals.document;
-      var div = doc.createElement('div');
-      div.innerHTML = html;
-      if (!div.hasChildNodes() || div.childNodes.length > 1) {
-        domGlobals.console.error('HTML does not have a single root node', html);
-        throw new Error('HTML must have a single root node');
-      }
-      return fromDom(div.childNodes[0]);
+    var shouldIndentOnTab = function (editor) {
+      return editor.getParam('lists_indent_on_tab', true);
     };
-    var fromTag = function (tag, scope) {
-      var doc = scope || domGlobals.document;
-      var node = doc.createElement(tag);
-      return fromDom(node);
-    };
-    var fromText = function (text, scope) {
-      var doc = scope || domGlobals.document;
-      var node = doc.createTextNode(text);
-      return fromDom(node);
-    };
-    var fromDom = function (node) {
-      if (node === null || node === undefined) {
-        throw new Error('Node cannot be null or undefined');
-      }
-      return { dom: constant(node) };
-    };
-    var fromPoint = function (docElm, x, y) {
-      var doc = docElm.dom();
-      return Option.from(doc.elementFromPoint(x, y)).map(fromDom);
-    };
-    var Element = {
-      fromHtml: fromHtml,
-      fromTag: fromTag,
-      fromText: fromText,
-      fromDom: fromDom,
-      fromPoint: fromPoint
-    };
-
-    var liftN = function (arr, f) {
-      var r = [];
-      for (var i = 0; i < arr.length; i++) {
-        var x = arr[i];
-        if (x.isSome()) {
-          r.push(x.getOrDie());
-        } else {
-          return Option.none();
-        }
-      }
-      return Option.some(f.apply(null, r));
-    };
-
-    var fromElements = function (elements, scope) {
-      var doc = scope || domGlobals.document;
-      var fragment = doc.createDocumentFragment();
-      each(elements, function (element) {
-        fragment.appendChild(element.dom());
-      });
-      return Element.fromDom(fragment);
-    };
-
-    var Immutable = function () {
-      var fields = [];
-      for (var _i = 0; _i < arguments.length; _i++) {
-        fields[_i] = arguments[_i];
-      }
-      return function () {
-        var values = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-          values[_i] = arguments[_i];
-        }
-        if (fields.length !== values.length) {
-          throw new Error('Wrong number of arguments to struct. Expected "[' + fields.length + ']", got ' + values.length + ' arguments');
-        }
-        var struct = {};
-        each(fields, function (name, i) {
-          struct[name] = constant(values[i]);
-        });
-        return struct;
-      };
-    };
-
-    var keys = Object.keys;
-    var each$1 = function (obj, f) {
-      var props = keys(obj);
-      for (var k = 0, len = props.length; k < len; k++) {
-        var i = props[k];
-        var x = obj[i];
-        f(x, i, obj);
-      }
-    };
-
-    var node = function () {
-      var f = Global$1.getOrDie('Node');
-      return f;
-    };
-    var compareDocumentPosition = function (a, b, match) {
-      return (a.compareDocumentPosition(b) & match) !== 0;
-    };
-    var documentPositionPreceding = function (a, b) {
-      return compareDocumentPosition(a, b, node().DOCUMENT_POSITION_PRECEDING);
-    };
-    var documentPositionContainedBy = function (a, b) {
-      return compareDocumentPosition(a, b, node().DOCUMENT_POSITION_CONTAINED_BY);
-    };
-    var Node = {
-      documentPositionPreceding: documentPositionPreceding,
-      documentPositionContainedBy: documentPositionContainedBy
-    };
-
-    var cached = function (f) {
-      var called = false;
-      var r;
-      return function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-          args[_i] = arguments[_i];
-        }
-        if (!called) {
-          called = true;
-          r = f.apply(null, args);
-        }
-        return r;
-      };
-    };
-
-    var firstMatch = function (regexes, s) {
-      for (var i = 0; i < regexes.length; i++) {
-        var x = regexes[i];
-        if (x.test(s))
-          return x;
-      }
-      return undefined;
-    };
-    var find$1 = function (regexes, agent) {
-      var r = firstMatch(regexes, agent);
-      if (!r)
-        return {
-          major: 0,
-          minor: 0
-        };
-      var group = function (i) {
-        return Number(agent.replace(r, '$' + i));
-      };
-      return nu(group(1), group(2));
-    };
-    var detect = function (versionRegexes, agent) {
-      var cleanedAgent = String(agent).toLowerCase();
-      if (versionRegexes.length === 0)
-        return unknown();
-      return find$1(versionRegexes, cleanedAgent);
-    };
-    var unknown = function () {
-      return nu(0, 0);
-    };
-    var nu = function (major, minor) {
-      return {
-        major: major,
-        minor: minor
-      };
-    };
-    var Version = {
-      nu: nu,
-      detect: detect,
-      unknown: unknown
-    };
-
-    var edge = 'Edge';
-    var chrome = 'Chrome';
-    var ie = 'IE';
-    var opera = 'Opera';
-    var firefox = 'Firefox';
-    var safari = 'Safari';
-    var isBrowser = function (name, current) {
-      return function () {
-        return current === name;
-      };
-    };
-    var unknown$1 = function () {
-      return nu$1({
-        current: undefined,
-        version: Version.unknown()
-      });
-    };
-    var nu$1 = function (info) {
-      var current = info.current;
-      var version = info.version;
-      return {
-        current: current,
-        version: version,
-        isEdge: isBrowser(edge, current),
-        isChrome: isBrowser(chrome, current),
-        isIE: isBrowser(ie, current),
-        isOpera: isBrowser(opera, current),
-        isFirefox: isBrowser(firefox, current),
-        isSafari: isBrowser(safari, current)
-      };
-    };
-    var Browser = {
-      unknown: unknown$1,
-      nu: nu$1,
-      edge: constant(edge),
-      chrome: constant(chrome),
-      ie: constant(ie),
-      opera: constant(opera),
-      firefox: constant(firefox),
-      safari: constant(safari)
-    };
-
-    var windows = 'Windows';
-    var ios = 'iOS';
-    var android = 'Android';
-    var linux = 'Linux';
-    var osx = 'OSX';
-    var solaris = 'Solaris';
-    var freebsd = 'FreeBSD';
-    var isOS = function (name, current) {
-      return function () {
-        return current === name;
-      };
-    };
-    var unknown$2 = function () {
-      return nu$2({
-        current: undefined,
-        version: Version.unknown()
-      });
-    };
-    var nu$2 = function (info) {
-      var current = info.current;
-      var version = info.version;
-      return {
-        current: current,
-        version: version,
-        isWindows: isOS(windows, current),
-        isiOS: isOS(ios, current),
-        isAndroid: isOS(android, current),
-        isOSX: isOS(osx, current),
-        isLinux: isOS(linux, current),
-        isSolaris: isOS(solaris, current),
-        isFreeBSD: isOS(freebsd, current)
-      };
-    };
-    var OperatingSystem = {
-      unknown: unknown$2,
-      nu: nu$2,
-      windows: constant(windows),
-      ios: constant(ios),
-      android: constant(android),
-      linux: constant(linux),
-      osx: constant(osx),
-      solaris: constant(solaris),
-      freebsd: constant(freebsd)
-    };
-
-    var DeviceType = function (os, browser, userAgent) {
-      var isiPad = os.isiOS() && /ipad/i.test(userAgent) === true;
-      var isiPhone = os.isiOS() && !isiPad;
-      var isAndroid3 = os.isAndroid() && os.version.major === 3;
-      var isAndroid4 = os.isAndroid() && os.version.major === 4;
-      var isTablet = isiPad || isAndroid3 || isAndroid4 && /mobile/i.test(userAgent) === true;
-      var isTouch = os.isiOS() || os.isAndroid();
-      var isPhone = isTouch && !isTablet;
-      var iOSwebview = browser.isSafari() && os.isiOS() && /safari/i.test(userAgent) === false;
-      return {
-        isiPad: constant(isiPad),
-        isiPhone: constant(isiPhone),
-        isTablet: constant(isTablet),
-        isPhone: constant(isPhone),
-        isTouch: constant(isTouch),
-        isAndroid: os.isAndroid,
-        isiOS: os.isiOS,
-        isWebView: constant(iOSwebview)
-      };
-    };
-
-    var detect$1 = function (candidates, userAgent) {
-      var agent = String(userAgent).toLowerCase();
-      return find(candidates, function (candidate) {
-        return candidate.search(agent);
-      });
-    };
-    var detectBrowser = function (browsers, userAgent) {
-      return detect$1(browsers, userAgent).map(function (browser) {
-        var version = Version.detect(browser.versionRegexes, userAgent);
-        return {
-          current: browser.name,
-          version: version
-        };
-      });
-    };
-    var detectOs = function (oses, userAgent) {
-      return detect$1(oses, userAgent).map(function (os) {
-        var version = Version.detect(os.versionRegexes, userAgent);
-        return {
-          current: os.name,
-          version: version
-        };
-      });
-    };
-    var UaString = {
-      detectBrowser: detectBrowser,
-      detectOs: detectOs
-    };
-
-    var contains$1 = function (str, substr) {
-      return str.indexOf(substr) !== -1;
-    };
-
-    var normalVersionRegex = /.*?version\/\ ?([0-9]+)\.([0-9]+).*/;
-    var checkContains = function (target) {
-      return function (uastring) {
-        return contains$1(uastring, target);
-      };
-    };
-    var browsers = [
-      {
-        name: 'Edge',
-        versionRegexes: [/.*?edge\/ ?([0-9]+)\.([0-9]+)$/],
-        search: function (uastring) {
-          var monstrosity = contains$1(uastring, 'edge/') && contains$1(uastring, 'chrome') && contains$1(uastring, 'safari') && contains$1(uastring, 'applewebkit');
-          return monstrosity;
-        }
-      },
-      {
-        name: 'Chrome',
-        versionRegexes: [
-          /.*?chrome\/([0-9]+)\.([0-9]+).*/,
-          normalVersionRegex
-        ],
-        search: function (uastring) {
-          return contains$1(uastring, 'chrome') && !contains$1(uastring, 'chromeframe');
-        }
-      },
-      {
-        name: 'IE',
-        versionRegexes: [
-          /.*?msie\ ?([0-9]+)\.([0-9]+).*/,
-          /.*?rv:([0-9]+)\.([0-9]+).*/
-        ],
-        search: function (uastring) {
-          return contains$1(uastring, 'msie') || contains$1(uastring, 'trident');
-        }
-      },
-      {
-        name: 'Opera',
-        versionRegexes: [
-          normalVersionRegex,
-          /.*?opera\/([0-9]+)\.([0-9]+).*/
-        ],
-        search: checkContains('opera')
-      },
-      {
-        name: 'Firefox',
-        versionRegexes: [/.*?firefox\/\ ?([0-9]+)\.([0-9]+).*/],
-        search: checkContains('firefox')
-      },
-      {
-        name: 'Safari',
-        versionRegexes: [
-          normalVersionRegex,
-          /.*?cpu os ([0-9]+)_([0-9]+).*/
-        ],
-        search: function (uastring) {
-          return (contains$1(uastring, 'safari') || contains$1(uastring, 'mobile/')) && contains$1(uastring, 'applewebkit');
-        }
-      }
-    ];
-    var oses = [
-      {
-        name: 'Windows',
-        search: checkContains('win'),
-        versionRegexes: [/.*?windows\ nt\ ?([0-9]+)\.([0-9]+).*/]
-      },
-      {
-        name: 'iOS',
-        search: function (uastring) {
-          return contains$1(uastring, 'iphone') || contains$1(uastring, 'ipad');
-        },
-        versionRegexes: [
-          /.*?version\/\ ?([0-9]+)\.([0-9]+).*/,
-          /.*cpu os ([0-9]+)_([0-9]+).*/,
-          /.*cpu iphone os ([0-9]+)_([0-9]+).*/
-        ]
-      },
-      {
-        name: 'Android',
-        search: checkContains('android'),
-        versionRegexes: [/.*?android\ ?([0-9]+)\.([0-9]+).*/]
-      },
-      {
-        name: 'OSX',
-        search: checkContains('os x'),
-        versionRegexes: [/.*?os\ x\ ?([0-9]+)_([0-9]+).*/]
-      },
-      {
-        name: 'Linux',
-        search: checkContains('linux'),
-        versionRegexes: []
-      },
-      {
-        name: 'Solaris',
-        search: checkContains('sunos'),
-        versionRegexes: []
-      },
-      {
-        name: 'FreeBSD',
-        search: checkContains('freebsd'),
-        versionRegexes: []
-      }
-    ];
-    var PlatformInfo = {
-      browsers: constant(browsers),
-      oses: constant(oses)
-    };
-
-    var detect$2 = function (userAgent) {
-      var browsers = PlatformInfo.browsers();
-      var oses = PlatformInfo.oses();
-      var browser = UaString.detectBrowser(browsers, userAgent).fold(Browser.unknown, Browser.nu);
-      var os = UaString.detectOs(oses, userAgent).fold(OperatingSystem.unknown, OperatingSystem.nu);
-      var deviceType = DeviceType(os, browser, userAgent);
-      return {
-        browser: browser,
-        os: os,
-        deviceType: deviceType
-      };
-    };
-    var PlatformDetection = { detect: detect$2 };
-
-    var detect$3 = cached(function () {
-      var userAgent = domGlobals.navigator.userAgent;
-      return PlatformDetection.detect(userAgent);
-    });
-    var PlatformDetection$1 = { detect: detect$3 };
-
-    var ATTRIBUTE = domGlobals.Node.ATTRIBUTE_NODE;
-    var CDATA_SECTION = domGlobals.Node.CDATA_SECTION_NODE;
-    var COMMENT = domGlobals.Node.COMMENT_NODE;
-    var DOCUMENT = domGlobals.Node.DOCUMENT_NODE;
-    var DOCUMENT_TYPE = domGlobals.Node.DOCUMENT_TYPE_NODE;
-    var DOCUMENT_FRAGMENT = domGlobals.Node.DOCUMENT_FRAGMENT_NODE;
-    var ELEMENT = domGlobals.Node.ELEMENT_NODE;
-    var TEXT = domGlobals.Node.TEXT_NODE;
-    var PROCESSING_INSTRUCTION = domGlobals.Node.PROCESSING_INSTRUCTION_NODE;
-    var ENTITY_REFERENCE = domGlobals.Node.ENTITY_REFERENCE_NODE;
-    var ENTITY = domGlobals.Node.ENTITY_NODE;
-    var NOTATION = domGlobals.Node.NOTATION_NODE;
-
-    var ELEMENT$1 = ELEMENT;
-    var is = function (element, selector) {
-      var elem = element.dom();
-      if (elem.nodeType !== ELEMENT$1) {
-        return false;
-      } else if (elem.matches !== undefined) {
-        return elem.matches(selector);
-      } else if (elem.msMatchesSelector !== undefined) {
-        return elem.msMatchesSelector(selector);
-      } else if (elem.webkitMatchesSelector !== undefined) {
-        return elem.webkitMatchesSelector(selector);
-      } else if (elem.mozMatchesSelector !== undefined) {
-        return elem.mozMatchesSelector(selector);
+    var getForcedRootBlock = function (editor) {
+      var block = editor.getParam('forced_root_block', 'p');
+      if (block === false) {
+        return '';
+      } else if (block === true) {
+        return 'p';
       } else {
-        throw new Error('Browser lacks native selectors');
+        return block;
       }
     };
-
-    var eq = function (e1, e2) {
-      return e1.dom() === e2.dom();
+    var getForcedRootBlockAttrs = function (editor) {
+      return editor.getParam('forced_root_block_attrs', {});
     };
-    var regularContains = function (e1, e2) {
-      var d1 = e1.dom();
-      var d2 = e2.dom();
-      return d1 === d2 ? false : d1.contains(d2);
-    };
-    var ieContains = function (e1, e2) {
-      return Node.documentPositionContainedBy(e1.dom(), e2.dom());
-    };
-    var browser = PlatformDetection$1.detect().browser;
-    var contains$2 = browser.isIE() ? ieContains : regularContains;
-    var is$1 = is;
-
-    var parent = function (element) {
-      var dom = element.dom();
-      return Option.from(dom.parentNode).map(Element.fromDom);
-    };
-    var children = function (element) {
-      var dom = element.dom();
-      return map(dom.childNodes, Element.fromDom);
-    };
-    var child = function (element, index) {
-      var cs = element.dom().childNodes;
-      return Option.from(cs[index]).map(Element.fromDom);
-    };
-    var firstChild = function (element) {
-      return child(element, 0);
-    };
-    var lastChild = function (element) {
-      return child(element, element.dom().childNodes.length - 1);
-    };
-    var spot = Immutable('element', 'offset');
-
-    var before = function (marker, element) {
-      var parent$1 = parent(marker);
-      parent$1.each(function (v) {
-        v.dom().insertBefore(element.dom(), marker.dom());
-      });
-    };
-    var append = function (parent, element) {
-      parent.dom().appendChild(element.dom());
+    var Settings = {
+      shouldIndentOnTab: shouldIndentOnTab,
+      getForcedRootBlock: getForcedRootBlock,
+      getForcedRootBlockAttrs: getForcedRootBlockAttrs
     };
 
-    var before$1 = function (marker, elements) {
-      each(elements, function (x) {
-        before(marker, x);
-      });
-    };
-    var append$1 = function (parent, elements) {
-      each(elements, function (x) {
-        append(parent, x);
-      });
-    };
-
-    var remove = function (element) {
-      var dom = element.dom();
-      if (dom.parentNode !== null) {
-        dom.parentNode.removeChild(dom);
+    var createTextBlock = function (editor, contentNode) {
+      var dom = editor.dom;
+      var blockElements = editor.schema.getBlockElements();
+      var fragment = dom.createFragment();
+      var blockName = Settings.getForcedRootBlock(editor);
+      var node, textBlock, hasContentNode;
+      if (blockName) {
+        textBlock = dom.create(blockName);
+        if (textBlock.tagName === blockName.toUpperCase()) {
+          dom.setAttribs(textBlock, Settings.getForcedRootBlockAttrs(editor));
+        }
+        if (!NodeType.isBlock(contentNode.firstChild, blockElements)) {
+          fragment.appendChild(textBlock);
+        }
       }
+      if (contentNode) {
+        while (node = contentNode.firstChild) {
+          var nodeName = node.nodeName;
+          if (!hasContentNode && (nodeName !== 'SPAN' || node.getAttribute('data-mce-type') !== 'bookmark')) {
+            hasContentNode = true;
+          }
+          if (NodeType.isBlock(node, blockElements)) {
+            fragment.appendChild(node);
+            textBlock = null;
+          } else {
+            if (blockName) {
+              if (!textBlock) {
+                textBlock = dom.create(blockName);
+                fragment.appendChild(textBlock);
+              }
+              textBlock.appendChild(node);
+            } else {
+              fragment.appendChild(node);
+            }
+          }
+        }
+      }
+      if (!blockName) {
+        fragment.appendChild(dom.create('br'));
+      } else {
+        if (!hasContentNode) {
+          textBlock.appendChild(dom.create('br', { 'data-mce-bogus': '1' }));
+        }
+      }
+      return fragment;
     };
 
     var name = function (element) {
       var r = element.dom().nodeName;
       return r.toLowerCase();
     };
+    var type = function (element) {
+      return element.dom().nodeType;
+    };
+    var isType$1 = function (t) {
+      return function (element) {
+        return type(element) === t;
+      };
+    };
+    var isElement = isType$1(ELEMENT);
 
     var rawSet = function (dom, key, value) {
       if (isString(value) || isBoolean(value) || isNumber(value)) {
@@ -1279,7 +1103,7 @@
     };
 
     var isSupported = function (dom) {
-      return dom.style !== undefined;
+      return dom.style !== undefined && isFunction(dom.style.getPropertyValue);
     };
 
     var internalSet = function (dom, property, value) {
@@ -1326,10 +1150,7 @@
       }
     };
     var appendSegments = function (head$1, tail) {
-      liftN([
-        last(head$1),
-        head(tail)
-      ], joinSegment);
+      lift2(last(head$1), head(tail), joinSegment);
     };
     var createSegment = function (scope, listType) {
       var segment = {
@@ -1419,7 +1240,7 @@
       return map(content, deep);
     };
     var createEntry = function (li, depth, isSelected) {
-      return parent(li).map(function (list) {
+      return parent(li).filter(isElement).map(function (list) {
         return {
           depth: depth,
           isSelected: isSelected,
@@ -1444,33 +1265,9 @@
       }
     };
 
-    var hasOwnProperty = Object.prototype.hasOwnProperty;
-    var shallow = function (old, nu) {
-      return nu;
-    };
-    var baseMerge = function (merger) {
-      return function () {
-        var objects = new Array(arguments.length);
-        for (var i = 0; i < objects.length; i++)
-          objects[i] = arguments[i];
-        if (objects.length === 0)
-          throw new Error('Can\'t merge zero objects');
-        var ret = {};
-        for (var j = 0; j < objects.length; j++) {
-          var curObject = objects[j];
-          for (var key in curObject)
-            if (hasOwnProperty.call(curObject, key)) {
-              ret[key] = merger(ret[key], curObject[key]);
-            }
-        }
-        return ret;
-      };
-    };
-    var merge = baseMerge(shallow);
-
     var cloneListProperties = function (target, source) {
       target.listType = source.listType;
-      target.listAttributes = merge({}, source.listAttributes);
+      target.listAttributes = __assign({}, source.listAttributes);
     };
     var previousSiblingEntry = function (entries, start) {
       var depth = entries[start].depth;
@@ -1490,24 +1287,6 @@
           cloneListProperties(entry, matchingEntry);
         });
       });
-    };
-
-    var Cell = function (initial) {
-      var value = initial;
-      var get = function () {
-        return value;
-      };
-      var set = function (v) {
-        value = v;
-      };
-      var clone = function () {
-        return Cell(get());
-      };
-      return {
-        get: get,
-        set: set,
-        clone: clone
-      };
     };
 
     var parseItem = function (depth, itemSelection, selectionState, item) {
@@ -1549,64 +1328,6 @@
       });
     };
 
-    var global$8 = tinymce.util.Tools.resolve('tinymce.Env');
-
-    var createTextBlock = function (editor, contentNode) {
-      var dom = editor.dom;
-      var blockElements = editor.schema.getBlockElements();
-      var fragment = dom.createFragment();
-      var node, textBlock, blockName, hasContentNode;
-      if (editor.settings.forced_root_block) {
-        blockName = editor.settings.forced_root_block;
-      }
-      if (blockName) {
-        textBlock = dom.create(blockName);
-        if (textBlock.tagName === editor.settings.forced_root_block) {
-          dom.setAttribs(textBlock, editor.settings.forced_root_block_attrs);
-        }
-        if (!NodeType.isBlock(contentNode.firstChild, blockElements)) {
-          fragment.appendChild(textBlock);
-        }
-      }
-      if (contentNode) {
-        while (node = contentNode.firstChild) {
-          var nodeName = node.nodeName;
-          if (!hasContentNode && (nodeName !== 'SPAN' || node.getAttribute('data-mce-type') !== 'bookmark')) {
-            hasContentNode = true;
-          }
-          if (NodeType.isBlock(node, blockElements)) {
-            fragment.appendChild(node);
-            textBlock = null;
-          } else {
-            if (blockName) {
-              if (!textBlock) {
-                textBlock = dom.create(blockName);
-                fragment.appendChild(textBlock);
-              }
-              textBlock.appendChild(node);
-            } else {
-              fragment.appendChild(node);
-            }
-          }
-        }
-      }
-      if (!editor.settings.forced_root_block) {
-        fragment.appendChild(dom.create('br'));
-      } else {
-        if (!hasContentNode && (!global$8.ie || global$8.ie > 10)) {
-          textBlock.appendChild(dom.create('br', { 'data-mce-bogus': '1' }));
-        }
-      }
-      return fragment;
-    };
-
-    var fireListEvent = function (editor, action, element) {
-      return editor.fire('ListMutation', {
-        action: action,
-        element: element
-      });
-    };
-
     var outdentedComposer = function (editor, entries) {
       return map(entries, function (entry) {
         var content = fromElements(entry.content);
@@ -1630,17 +1351,14 @@
     };
     var getItemSelection = function (editor) {
       var selectedListItems = map(Selection.getSelectedListItems(editor), Element.fromDom);
-      return liftN([
-        find(selectedListItems, not(hasFirstChildList)),
-        find(reverse(selectedListItems), not(hasFirstChildList))
-      ], function (start, end) {
+      return lift2(find(selectedListItems, not(hasFirstChildList)), find(reverse(selectedListItems), not(hasFirstChildList)), function (start, end) {
         return {
           start: start,
           end: end
         };
       });
     };
-    var listsIndentation = function (editor, lists, indentation) {
+    var listIndentation = function (editor, lists, indentation) {
       var entrySets = parseLists(lists, getItemSelection(editor));
       each(entrySets, function (entrySet) {
         indentSelectedEntries(entrySet.entries, indentation);
@@ -1653,53 +1371,55 @@
       });
     };
 
-    var DOM$1 = global$6.DOM;
+    var global$6 = tinymce.util.Tools.resolve('tinymce.dom.DOMUtils');
+
+    var DOM = global$6.DOM;
     var splitList = function (editor, ul, li) {
       var tmpRng, fragment, bookmarks, node, newBlock;
       var removeAndKeepBookmarks = function (targetNode) {
         global$5.each(bookmarks, function (node) {
           targetNode.parentNode.insertBefore(node, li.parentNode);
         });
-        DOM$1.remove(targetNode);
+        DOM.remove(targetNode);
       };
-      bookmarks = DOM$1.select('span[data-mce-type="bookmark"]', ul);
+      bookmarks = DOM.select('span[data-mce-type="bookmark"]', ul);
       newBlock = createTextBlock(editor, li);
-      tmpRng = DOM$1.createRng();
+      tmpRng = DOM.createRng();
       tmpRng.setStartAfter(li);
       tmpRng.setEndAfter(ul);
       fragment = tmpRng.extractContents();
       for (node = fragment.firstChild; node; node = node.firstChild) {
         if (node.nodeName === 'LI' && editor.dom.isEmpty(node)) {
-          DOM$1.remove(node);
+          DOM.remove(node);
           break;
         }
       }
       if (!editor.dom.isEmpty(fragment)) {
-        DOM$1.insertAfter(fragment, ul);
+        DOM.insertAfter(fragment, ul);
       }
-      DOM$1.insertAfter(newBlock, ul);
+      DOM.insertAfter(newBlock, ul);
       if (NodeType.isEmpty(editor.dom, li.parentNode)) {
         removeAndKeepBookmarks(li.parentNode);
       }
-      DOM$1.remove(li);
+      DOM.remove(li);
       if (NodeType.isEmpty(editor.dom, ul)) {
-        DOM$1.remove(ul);
+        DOM.remove(ul);
       }
     };
     var SplitList = { splitList: splitList };
 
     var outdentDlItem = function (editor, item) {
-      if (is$1(item, 'DD')) {
-        mutate(item, 'DT');
-      } else if (is$1(item, 'DT')) {
+      if (is$1(item, 'dd')) {
+        mutate(item, 'dt');
+      } else if (is$1(item, 'dt')) {
         parent(item).each(function (dl) {
           return SplitList.splitList(editor, dl.dom(), item.dom());
         });
       }
     };
     var indentDlItem = function (item) {
-      if (is$1(item, 'DT')) {
-        mutate(item, 'DD');
+      if (is$1(item, 'dt')) {
+        mutate(item, 'dd');
       }
     };
     var dlIndentation = function (editor, indentation, dlItems) {
@@ -1712,13 +1432,55 @@
       }
     };
 
+    var getNormalizedPoint = function (container, offset) {
+      if (NodeType.isTextNode(container)) {
+        return {
+          container: container,
+          offset: offset
+        };
+      }
+      var node = global$1.getNode(container, offset);
+      if (NodeType.isTextNode(node)) {
+        return {
+          container: node,
+          offset: offset >= container.childNodes.length ? node.data.length : 0
+        };
+      } else if (node.previousSibling && NodeType.isTextNode(node.previousSibling)) {
+        return {
+          container: node.previousSibling,
+          offset: node.previousSibling.data.length
+        };
+      } else if (node.nextSibling && NodeType.isTextNode(node.nextSibling)) {
+        return {
+          container: node.nextSibling,
+          offset: 0
+        };
+      }
+      return {
+        container: container,
+        offset: offset
+      };
+    };
+    var normalizeRange = function (rng) {
+      var outRng = rng.cloneRange();
+      var rangeStart = getNormalizedPoint(rng.startContainer, rng.startOffset);
+      outRng.setStart(rangeStart.container, rangeStart.offset);
+      var rangeEnd = getNormalizedPoint(rng.endContainer, rng.endOffset);
+      outRng.setEnd(rangeEnd.container, rangeEnd.offset);
+      return outRng;
+    };
+    var Range = {
+      getNormalizedPoint: getNormalizedPoint,
+      normalizeRange: normalizeRange
+    };
+
     var selectionIndentation = function (editor, indentation) {
       var lists = map(Selection.getSelectedListRoots(editor), Element.fromDom);
       var dlItems = map(Selection.getSelectedDlItems(editor), Element.fromDom);
       var isHandled = false;
       if (lists.length || dlItems.length) {
         var bookmark = editor.selection.getBookmark();
-        listsIndentation(editor, lists, indentation);
+        listIndentation(editor, lists, indentation);
         dlIndentation(editor, indentation, dlItems);
         editor.selection.moveToBookmark(bookmark);
         editor.selection.setRng(Range.normalizeRange(editor.selection.getRng()));
@@ -1735,6 +1497,85 @@
     };
     var flattenListSelection = function (editor) {
       return selectionIndentation(editor, 'Flatten');
+    };
+
+    var global$7 = tinymce.util.Tools.resolve('tinymce.dom.BookmarkManager');
+
+    var DOM$1 = global$6.DOM;
+    var createBookmark = function (rng) {
+      var bookmark = {};
+      var setupEndPoint = function (start) {
+        var offsetNode, container, offset;
+        container = rng[start ? 'startContainer' : 'endContainer'];
+        offset = rng[start ? 'startOffset' : 'endOffset'];
+        if (container.nodeType === 1) {
+          offsetNode = DOM$1.create('span', { 'data-mce-type': 'bookmark' });
+          if (container.hasChildNodes()) {
+            offset = Math.min(offset, container.childNodes.length - 1);
+            if (start) {
+              container.insertBefore(offsetNode, container.childNodes[offset]);
+            } else {
+              DOM$1.insertAfter(offsetNode, container.childNodes[offset]);
+            }
+          } else {
+            container.appendChild(offsetNode);
+          }
+          container = offsetNode;
+          offset = 0;
+        }
+        bookmark[start ? 'startContainer' : 'endContainer'] = container;
+        bookmark[start ? 'startOffset' : 'endOffset'] = offset;
+      };
+      setupEndPoint(true);
+      if (!rng.collapsed) {
+        setupEndPoint();
+      }
+      return bookmark;
+    };
+    var resolveBookmark = function (bookmark) {
+      function restoreEndPoint(start) {
+        var container, offset, node;
+        var nodeIndex = function (container) {
+          var node = container.parentNode.firstChild, idx = 0;
+          while (node) {
+            if (node === container) {
+              return idx;
+            }
+            if (node.nodeType !== 1 || node.getAttribute('data-mce-type') !== 'bookmark') {
+              idx++;
+            }
+            node = node.nextSibling;
+          }
+          return -1;
+        };
+        container = node = bookmark[start ? 'startContainer' : 'endContainer'];
+        offset = bookmark[start ? 'startOffset' : 'endOffset'];
+        if (!container) {
+          return;
+        }
+        if (container.nodeType === 1) {
+          offset = nodeIndex(container);
+          container = container.parentNode;
+          DOM$1.remove(node);
+          if (!container.hasChildNodes() && DOM$1.isBlock(container)) {
+            container.appendChild(DOM$1.create('br'));
+          }
+        }
+        bookmark[start ? 'startContainer' : 'endContainer'] = container;
+        bookmark[start ? 'startOffset' : 'endOffset'] = offset;
+      }
+      restoreEndPoint(true);
+      restoreEndPoint();
+      var rng = DOM$1.createRng();
+      rng.setStart(bookmark.startContainer, bookmark.startOffset);
+      if (bookmark.endContainer) {
+        rng.setEnd(bookmark.endContainer, bookmark.endOffset);
+      }
+      return Range.normalizeRange(rng);
+    };
+    var Bookmark = {
+      createBookmark: createBookmark,
+      resolveBookmark: resolveBookmark
     };
 
     var isCustomList = function (list) {
@@ -1824,7 +1665,7 @@
           return;
         }
         var nextSibling = node.nextSibling;
-        if (global$4.isBookmarkNode(node)) {
+        if (global$7.isBookmarkNode(node)) {
           if (NodeType.isTextBlock(editor, nextSibling) || !nextSibling && node.parentNode === root) {
             block = null;
             return;
@@ -2017,7 +1858,7 @@
     var findNextCaretContainer = function (editor, rng, isForward, root) {
       var node = rng.startContainer;
       var offset = rng.startOffset;
-      if (node.nodeType === 3 && (isForward ? offset < node.data.length : offset > 0)) {
+      if (NodeType.isTextNode(node) && (isForward ? offset < node.data.length : offset > 0)) {
         return node;
       }
       var nonEmptyBlocks = editor.schema.getNonEmptyElements();
@@ -2037,7 +1878,7 @@
         if (nonEmptyBlocks[node.nodeName]) {
           return node;
         }
-        if (node.nodeType === 3 && node.data.length > 0) {
+        if (NodeType.isTextNode(node) && node.data.length > 0) {
           return node;
         }
       }
@@ -2086,7 +1927,7 @@
       if (listNode) {
         toElm.appendChild(listNode);
       }
-      var contains = contains$2(Element.fromDom(toElm), Element.fromDom(fromElm));
+      var contains = contains$1(Element.fromDom(toElm), Element.fromDom(fromElm));
       var nestedLists = contains ? dom.getParents(fromElm, NodeType.isListNode, toElm) : [];
       dom.remove(fromElm);
       each(nestedLists, function (list) {
@@ -2121,24 +1962,31 @@
       var selectionStartElm = selection.getStart();
       var root = Selection.getClosestListRootElm(editor, selectionStartElm);
       var li = dom.getParent(selection.getStart(), 'LI', root);
-      var ul, rng, otherLi;
       if (li) {
-        ul = li.parentNode;
+        var ul = li.parentNode;
         if (ul === editor.getBody() && NodeType.isEmpty(dom, ul)) {
           return true;
         }
-        rng = Range.normalizeRange(selection.getRng(true));
-        otherLi = dom.getParent(findNextCaretContainer(editor, rng, isForward, root), 'LI', root);
-        if (otherLi && otherLi !== li) {
-          if (isForward) {
-            mergeForward(editor, rng, otherLi, li);
-          } else {
-            mergeBackward(editor, rng, li, otherLi);
-          }
+        var rng_1 = Range.normalizeRange(selection.getRng());
+        var otherLi_1 = dom.getParent(findNextCaretContainer(editor, rng_1, isForward, root), 'LI', root);
+        if (otherLi_1 && otherLi_1 !== li) {
+          editor.undoManager.transact(function () {
+            if (isForward) {
+              mergeForward(editor, rng_1, otherLi_1, li);
+            } else {
+              if (NodeType.isFirstChild(li)) {
+                outdentListSelection(editor);
+              } else {
+                mergeBackward(editor, rng_1, li, otherLi_1);
+              }
+            }
+          });
           return true;
-        } else if (!otherLi) {
-          if (!isForward && rng.startOffset === 0 && rng.endOffset === 0) {
-            flattenListSelection(editor);
+        } else if (!otherLi_1) {
+          if (!isForward && rng_1.startOffset === 0 && rng_1.endOffset === 0) {
+            editor.undoManager.transact(function () {
+              flattenListSelection(editor);
+            });
             return true;
           }
         }
@@ -2158,13 +2006,13 @@
       var root = Selection.getClosestListRootElm(editor, selectionStartElm);
       var block = dom.getParent(selectionStartElm, dom.isBlock, root);
       if (block && dom.isEmpty(block)) {
-        var rng = Range.normalizeRange(editor.selection.getRng(true));
-        var otherLi_1 = dom.getParent(findNextCaretContainer(editor, rng, isForward, root), 'LI', root);
-        if (otherLi_1) {
+        var rng = Range.normalizeRange(editor.selection.getRng());
+        var otherLi_2 = dom.getParent(findNextCaretContainer(editor, rng, isForward, root), 'LI', root);
+        if (otherLi_2) {
           editor.undoManager.transact(function () {
             removeBlock(dom, block, root);
-            ToggleList.mergeWithAdjacentLists(dom, otherLi_1.parentNode);
-            editor.selection.select(otherLi_1, true);
+            ToggleList.mergeWithAdjacentLists(dom, otherLi_2.parentNode);
+            editor.selection.select(otherLi_2, true);
             editor.selection.collapse(isForward);
           });
           return true;
@@ -2251,11 +2099,6 @@
     };
     var Commands = { register: register };
 
-    var shouldIndentOnTab = function (editor) {
-      return editor.getParam('lists_indent_on_tab', true);
-    };
-    var Settings = { shouldIndentOnTab: shouldIndentOnTab };
-
     var setupTabKey = function (editor) {
       editor.on('keydown', function (e) {
         if (e.keyCode !== global$3.TAB || global$3.metaKeyPressed(e)) {
@@ -2276,7 +2119,7 @@
     };
     var Keyboard = { setup: setup$1 };
 
-    var findIndex$1 = function (list, predicate) {
+    var findIndex = function (list, predicate) {
       for (var index = 0; index < list.length; index++) {
         var element = list[index];
         if (predicate(element)) {
@@ -2288,7 +2131,7 @@
     var listState = function (editor, listName) {
       return function (buttonApi) {
         var nodeChangeHandler = function (e) {
-          var tableCellIndex = findIndex$1(e.parents, NodeType.isTableCellNode);
+          var tableCellIndex = findIndex(e.parents, NodeType.isTableCellNode);
           var parents = tableCellIndex !== -1 ? e.parents.slice(0, tableCellIndex) : e.parents;
           var lists = global$5.grep(parents, NodeType.isListNode);
           buttonApi.setActive(lists.length > 0 && lists[0].nodeName === listName && !isCustomList(lists[0]));

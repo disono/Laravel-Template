@@ -11,7 +11,7 @@ class AdminAccess
      * Handle an incoming request.
      *
      * @param Request $request
-     * @param \Closure $next
+     * @param Closure $next
      * @param null $roles
      * @return mixed
      */

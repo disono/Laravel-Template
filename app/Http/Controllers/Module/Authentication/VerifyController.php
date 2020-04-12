@@ -10,6 +10,7 @@ namespace App\Http\Controllers\Module\Authentication;
 
 use App\Http\Controllers\Controller;
 use App\Models\Vendor\Facades\User;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 
@@ -40,7 +41,7 @@ class VerifyController extends Controller
     {
         try {
             return $this->view('auth.verification.success.' . User::verify($type));
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->view('errors.default', [
                 'message' => $e->getMessage()
             ]);
@@ -94,7 +95,7 @@ class VerifyController extends Controller
             }
 
             return $this->redirect('verify/' . $type);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->redirect()->with('error', $e->getMessage());
         }
     }

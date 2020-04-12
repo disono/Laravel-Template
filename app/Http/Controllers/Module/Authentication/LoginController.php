@@ -13,6 +13,7 @@ use App\Http\Requests\Module\Auth\LoginRequest;
 use App\Models\Vendor\Facades\AuthenticationHistory;
 use App\Models\Vendor\Facades\Token;
 use App\Models\Vendor\Facades\User;
+use Exception;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
@@ -197,7 +198,7 @@ class LoginController extends Controller
                 'platform' => $userAgent->platform . ', ' . $userAgent->browserName,
                 'type' => $type
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             logErrors('LoginController._logAuthentication: ' . $e->getMessage());
         }
     }

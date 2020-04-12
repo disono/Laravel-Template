@@ -9,6 +9,7 @@
 namespace App\Models;
 
 use App\Models\Vendor\BaseModel;
+use Exception;
 
 class SocketNotification extends BaseModel
 {
@@ -30,16 +31,6 @@ class SocketNotification extends BaseModel
         $this->sendNotification($query);
     }
 
-    public function actionEditAfter($query, $inputs)
-    {
-        $this->sendNotification($query);
-    }
-
-    public function user()
-    {
-        return $this->belongsTo('App\Models\User');
-    }
-
     private function sendNotification($query)
     {
         try {
@@ -48,9 +39,19 @@ class SocketNotification extends BaseModel
             } else if ($query->type === 'token' && $query->token) {
                 socketIOPublish($query->token, ['title' => $query->title, 'content' => $query->content]);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             logErrors($e->getMessage());
             throwError($e->getMessage());
         }
+    }
+
+    public function actionEditAfter($query, $inputs)
+    {
+        $this->sendNotification($query);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo('App\Models\User');
     }
 }

@@ -26,7 +26,7 @@ class CreateSettingsTable extends Migration
             $table->boolean('is_public')->default(1);
 
             $table->unsignedInteger('category_setting_id')->nullable();
-            $table->foreign('category_setting_id')->references('id')->on('setting_categories');
+            $table->foreign('category_setting_id')->references('id')->on('setting_categories')->onDelete('cascade');
 
             $table->timestamps();
         });

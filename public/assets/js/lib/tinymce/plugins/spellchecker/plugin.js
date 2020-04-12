@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.0.9 (2019-06-26)
+ * Version: 5.2.1 (2020-03-25)
  */
 (function (domGlobals) {
     'use strict';
@@ -251,8 +251,10 @@
       }
       function unwrapElement(element) {
         var parentNode = element.parentNode;
-        parentNode.insertBefore(element.firstChild, element);
-        element.parentNode.removeChild(element);
+        while (element.childNodes.length > 0) {
+          parentNode.insertBefore(element.childNodes[0], element);
+        }
+        parentNode.removeChild(element);
       }
       function hasClass(elm) {
         return elm.className.indexOf('mce-spellchecker-word') !== -1;
@@ -374,18 +376,80 @@
       };
     };
 
+    var noop = function () {
+    };
+    var constant = function (value) {
+      return function () {
+        return value;
+      };
+    };
+    var never = constant(false);
+    var always = constant(true);
+
+    var none = function () {
+      return NONE;
+    };
+    var NONE = function () {
+      var eq = function (o) {
+        return o.isNone();
+      };
+      var call = function (thunk) {
+        return thunk();
+      };
+      var id = function (n) {
+        return n;
+      };
+      var me = {
+        fold: function (n, s) {
+          return n();
+        },
+        is: never,
+        isSome: never,
+        isNone: always,
+        getOr: id,
+        getOrThunk: call,
+        getOrDie: function (msg) {
+          throw new Error(msg || 'error: getOrDie called on none.');
+        },
+        getOrNull: constant(null),
+        getOrUndefined: constant(undefined),
+        or: id,
+        orThunk: call,
+        map: none,
+        each: noop,
+        bind: none,
+        exists: never,
+        forall: always,
+        filter: none,
+        equals: eq,
+        equals_: eq,
+        toArray: function () {
+          return [];
+        },
+        toString: constant('none()')
+      };
+      if (Object.freeze) {
+        Object.freeze(me);
+      }
+      return me;
+    }();
+
+    var hasOwnProperty = Object.hasOwnProperty;
+    var isEmpty = function (r) {
+      for (var x in r) {
+        if (hasOwnProperty.call(r, x)) {
+          return false;
+        }
+      }
+      return true;
+    };
+
     var getTextMatcher = function (editor, textMatcherState) {
       if (!textMatcherState.get()) {
         var textMatcher = DomTextMatcher(editor.getBody(), editor);
         textMatcherState.set(textMatcher);
       }
       return textMatcherState.get();
-    };
-    var isEmpty = function (obj) {
-      for (var _ in obj) {
-        return false;
-      }
-      return true;
     };
     var defaultSpellcheckCallback = function (editor, pluginUrl, currentLanguageState) {
       return function (method, text, doneCallback, errorCallback) {
@@ -586,29 +650,18 @@
     };
     var Commands = { register: register };
 
-    var hasOwnProperty = Object.prototype.hasOwnProperty;
-    var shallow = function (old, nu) {
-      return nu;
-    };
-    var baseMerge = function (merger) {
-      return function () {
-        var objects = new Array(arguments.length);
-        for (var i = 0; i < objects.length; i++)
-          objects[i] = arguments[i];
-        if (objects.length === 0)
-          throw new Error('Can\'t merge zero objects');
-        var ret = {};
-        for (var j = 0; j < objects.length; j++) {
-          var curObject = objects[j];
-          for (var key in curObject)
-            if (hasOwnProperty.call(curObject, key)) {
-              ret[key] = merger(ret[key], curObject[key]);
-            }
+    var __assign = function () {
+      __assign = Object.assign || function __assign(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+          s = arguments[i];
+          for (var p in s)
+            if (Object.prototype.hasOwnProperty.call(s, p))
+              t[p] = s[p];
         }
-        return ret;
+        return t;
       };
+      return __assign.apply(this, arguments);
     };
-    var merge = baseMerge(shallow);
 
     var spellcheckerEvents = 'SpellcheckStart SpellcheckEnd';
     var buildMenuItems = function (listName, languageValues) {
@@ -650,29 +703,30 @@
           };
         }
       };
-      var getSplitButtonArgs = function () {
-        return {
-          type: 'splitbutton',
-          menu: languageMenuItems,
-          select: function (value) {
-            return value === currentLanguageState.get();
-          },
-          fetch: function (callback) {
-            var items = global$1.map(languageMenuItems, function (languageItem) {
-              return {
-                type: 'choiceitem',
-                value: languageItem.data,
-                text: languageItem.text
-              };
-            });
-            callback(items);
-          },
-          onItemAction: function (splitButtonApi, value) {
-            currentLanguageState.set(value);
-          }
-        };
-      };
-      editor.ui.registry.addButton('spellchecker', merge(buttonArgs, languageMenuItems.length > 1 ? getSplitButtonArgs() : { type: 'togglebutton' }));
+      var splitButtonArgs = __assign(__assign({}, buttonArgs), {
+        type: 'splitbutton',
+        select: function (value) {
+          return value === currentLanguageState.get();
+        },
+        fetch: function (callback) {
+          var items = global$1.map(languageMenuItems, function (languageItem) {
+            return {
+              type: 'choiceitem',
+              value: languageItem.data,
+              text: languageItem.text
+            };
+          });
+          callback(items);
+        },
+        onItemAction: function (splitButtonApi, value) {
+          currentLanguageState.set(value);
+        }
+      });
+      if (languageMenuItems.length > 1) {
+        editor.ui.registry.addSplitButton('spellchecker', splitButtonArgs);
+      } else {
+        editor.ui.registry.addToggleButton('spellchecker', buttonArgs);
+      }
       editor.ui.registry.addToggleMenuItem('spellchecker', {
         text: 'Spellcheck',
         onSetup: function (menuApi) {

@@ -13,6 +13,9 @@ use App\Models\AuthenticationHistory;
 use App\Models\File;
 use App\Models\SocialAuthentication;
 use App\Models\User;
+use Exception;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
 
@@ -65,7 +68,7 @@ class FacebookController extends Controller
             $user = Socialite::driver('facebook')->fields([
                 'name', 'first_name', 'last_name', 'email', 'gender', 'birthday'
             ])->user();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return redirect('404');
         }
 
@@ -92,7 +95,7 @@ class FacebookController extends Controller
      * Social auth does not require email verification
      *
      * @param $user
-     * @return bool|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     * @return bool|RedirectResponse|Redirector
      */
     private function _createUser($user)
     {

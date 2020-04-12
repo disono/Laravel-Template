@@ -17,7 +17,7 @@ class CreateCitiesTable extends Migration
             $table->increments('id');
 
             $table->unsignedInteger('country_id');
-            $table->foreign('country_id')->references('id')->on('countries');
+            $table->foreign('country_id')->references('id')->on('countries')->onDelete('cascade');
 
             $table->string('name', 100);
             $table->double('lat', 14, 6)->nullable();

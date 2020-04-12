@@ -309,23 +309,6 @@ class BaseModel extends Model
     }
 
     /**
-     * Check if we allow NULL on filters with defined value
-     *
-     * @param $val
-     * @return bool
-     */
-    private function _allowNullToVal($val): bool
-    {
-        $_allowNull = $this->params['allow_null'] ?? FALSE;
-
-        if ($val === NULL && $_allowNull === FALSE) {
-            return FALSE;
-        }
-
-        return TRUE;
-    }
-
-    /**
      * Custom queries
      *
      * @param $key
@@ -340,6 +323,23 @@ class BaseModel extends Model
         }
 
         return $queries[$key] ?? NULL;
+    }
+
+    /**
+     * Check if we allow NULL on filters with defined value
+     *
+     * @param $val
+     * @return bool
+     */
+    private function _allowNullToVal($val): bool
+    {
+        $_allowNull = $this->params['allow_null'] ?? FALSE;
+
+        if ($val === NULL && $_allowNull === FALSE) {
+            return FALSE;
+        }
+
+        return TRUE;
     }
 
     /**

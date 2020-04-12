@@ -10,6 +10,7 @@ namespace App\Http\Controllers\API\V1\Authentication;
 
 use App\Http\Controllers\API\APIController;
 use App\Models\Vendor\Facades\User;
+use Exception;
 use Illuminate\Http\JsonResponse;
 
 class VerifyController extends APIController
@@ -33,7 +34,7 @@ class VerifyController extends APIController
     {
         try {
             return $this->json($this->_user->verify('phone'));
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->json($e->getMessage(), 422);
         }
     }
@@ -54,7 +55,7 @@ class VerifyController extends APIController
             }
 
             return $this->json($value);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             logErrors($e->getMessage());
             return $this->json($e->getMessage(), 422);
         }

@@ -8,8 +8,8 @@
 
 namespace App\Http\Controllers\Module\Application;
 
-use App\Models\Vendor\Facades\Setting;
 use App\Http\Controllers\Controller;
+use App\Models\Vendor\Facades\Setting;
 
 class SettingController extends Controller
 {

@@ -12,6 +12,7 @@ use App\Http\Controllers\API\APIController;
 use App\Models\Vendor\Facades\AuthenticationHistory;
 use App\Models\Vendor\Facades\Token;
 use App\Models\Vendor\Facades\User;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
@@ -71,7 +72,7 @@ class LoginController extends APIController
                 'platform' => $userAgent->platform . ', ' . $userAgent->browserName,
                 'type' => $type
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             logErrors('LoginController._logAuthentication (V1): ' . $e->getMessage());
         }
     }

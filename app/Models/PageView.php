@@ -9,6 +9,7 @@
 namespace App\Models;
 
 use App\Models\Vendor\BaseModel;
+use Exception;
 
 class PageView extends BaseModel
 {
@@ -56,7 +57,7 @@ class PageView extends BaseModel
                 'browser' => $userAgent->browserName,
                 'expired_at' => sqlDate(null, true)
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             logErrors($e->getMessage());
         }
     }

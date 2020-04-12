@@ -9,6 +9,7 @@
 namespace App\Extend;
 
 use App\Models\User;
+use DateTime;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Validator;
@@ -223,7 +224,7 @@ class Validation extends Validator
     {
         // check if date is valid
         $date = date('Y-m-d', strtotime($value));
-        $d = \DateTime::createFromFormat('Y-m-d', $date);
+        $d = DateTime::createFromFormat('Y-m-d', $date);
         $is_valid_date = $d && $d->format('Y-m-d') == $date;
 
         if (!$is_valid_date) {

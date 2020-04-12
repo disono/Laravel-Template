@@ -10,7 +10,6 @@ namespace App\Models\App;
 
 use App\Models\Vendor\BaseModel;
 use App\Models\Vendor\Facades\File;
-use App\Models\Vendor\Facades\PageReportMessage;
 use App\Models\Vendor\Facades\User;
 
 class PageReport extends BaseModel
@@ -45,7 +44,6 @@ class PageReport extends BaseModel
     public function actionRemoveBefore($results)
     {
         foreach ($results as $row) {
-            PageReportMessage::remove(['page_report_id' => $row->id]);
             File::remove(['table_name' => 'page_reports', 'table_id' => $row->id]);
         }
 

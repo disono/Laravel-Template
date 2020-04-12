@@ -154,7 +154,7 @@ if (!function_exists('jwt')) {
 
             // Decodes a JWT string into a PHP object.
             $decoded = JWT::decode($jwt, $tokenLog->secret, ['HS256']);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return failedJSONResponse('Token failed to validate for the following reason ' . $exception->getMessage() . '.');
         }
 

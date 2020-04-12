@@ -4,12 +4,12 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.0.9 (2019-06-26)
+ * Version: 5.2.1 (2020-03-25)
  */
 (function (domGlobals) {
     'use strict';
 
-    var global = tinymce.util.Tools.resolve('tinymce.PluginManager');
+    var global$1 = tinymce.util.Tools.resolve('tinymce.PluginManager');
 
     var noop = function () {
     };
@@ -29,8 +29,6 @@
     var never = constant(false);
     var always = constant(true);
 
-    var never$1 = never;
-    var always$1 = always;
     var none = function () {
       return NONE;
     };
@@ -44,37 +42,27 @@
       var id = function (n) {
         return n;
       };
-      var noop = function () {
-      };
-      var nul = function () {
-        return null;
-      };
-      var undef = function () {
-        return undefined;
-      };
       var me = {
         fold: function (n, s) {
           return n();
         },
-        is: never$1,
-        isSome: never$1,
-        isNone: always$1,
+        is: never,
+        isSome: never,
+        isNone: always,
         getOr: id,
         getOrThunk: call,
         getOrDie: function (msg) {
           throw new Error(msg || 'error: getOrDie called on none.');
         },
-        getOrNull: nul,
-        getOrUndefined: undef,
+        getOrNull: constant(null),
+        getOrUndefined: constant(undefined),
         or: id,
         orThunk: call,
         map: none,
-        ap: none,
         each: noop,
         bind: none,
-        flatten: none,
-        exists: never$1,
-        forall: always$1,
+        exists: never,
+        forall: always,
         filter: none,
         equals: eq,
         equals_: eq,
@@ -83,19 +71,15 @@
         },
         toString: constant('none()')
       };
-      if (Object.freeze)
+      if (Object.freeze) {
         Object.freeze(me);
+      }
       return me;
     }();
     var some = function (a) {
-      var constant_a = function () {
-        return a;
-      };
+      var constant_a = constant(a);
       var self = function () {
         return me;
-      };
-      var map = function (f) {
-        return some(f(a));
       };
       var bind = function (f) {
         return f(a);
@@ -107,8 +91,8 @@
         is: function (v) {
           return a === v;
         },
-        isSome: always$1,
-        isNone: never$1,
+        isSome: always,
+        isNone: never,
         getOr: constant_a,
         getOrThunk: constant_a,
         getOrDie: constant_a,
@@ -116,35 +100,31 @@
         getOrUndefined: constant_a,
         or: self,
         orThunk: self,
-        map: map,
-        ap: function (optfab) {
-          return optfab.fold(none, function (fab) {
-            return some(fab(a));
-          });
+        map: function (f) {
+          return some(f(a));
         },
         each: function (f) {
           f(a);
         },
         bind: bind,
-        flatten: constant_a,
         exists: bind,
         forall: bind,
         filter: function (f) {
           return f(a) ? me : NONE;
-        },
-        equals: function (o) {
-          return o.is(a);
-        },
-        equals_: function (o, elementEq) {
-          return o.fold(never$1, function (b) {
-            return elementEq(a, b);
-          });
         },
         toArray: function () {
           return [a];
         },
         toString: function () {
           return 'some(' + a + ')';
+        },
+        equals: function (o) {
+          return o.is(a);
+        },
+        equals_: function (o, elementEq) {
+          return o.fold(never, function (b) {
+            return elementEq(a, b);
+          });
         }
       };
       return me;
@@ -159,13 +139,16 @@
     };
 
     var typeOf = function (x) {
-      if (x === null)
+      if (x === null) {
         return 'null';
+      }
       var t = typeof x;
-      if (t === 'object' && Array.prototype.isPrototypeOf(x))
+      if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array')) {
         return 'array';
-      if (t === 'object' && String.prototype.isPrototypeOf(x))
+      }
+      if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String')) {
         return 'string';
+      }
       return t;
     };
     var isType = function (type) {
@@ -175,23 +158,26 @@
     };
     var isString = isType('string');
     var isObject = isType('object');
+    var isArray = isType('array');
     var isBoolean = isType('boolean');
     var isFunction = isType('function');
+    var isNumber = isType('number');
 
-    var slice = Array.prototype.slice;
+    var nativeSlice = Array.prototype.slice;
+    var nativePush = Array.prototype.push;
     var each = function (xs, f) {
       for (var i = 0, len = xs.length; i < len; i++) {
         var x = xs[i];
-        f(x, i, xs);
+        f(x, i);
       }
     };
-    var push = Array.prototype.push;
     var flatten = function (xs) {
       var r = [];
       for (var i = 0, len = xs.length; i < len; ++i) {
-        if (!Array.prototype.isPrototypeOf(xs[i]))
+        if (!isArray(xs[i])) {
           throw new Error('Arr.flatten item ' + i + ' was not an array, input: ' + xs);
-        push.apply(r, xs[i]);
+        }
+        nativePush.apply(r, xs[i]);
       }
       return r;
     };
@@ -199,7 +185,16 @@
       return xs.length === 0 ? Option.none() : Option.some(xs[0]);
     };
     var from$1 = isFunction(Array.from) ? Array.from : function (x) {
-      return slice.call(x);
+      return nativeSlice.call(x);
+    };
+    var findMap = function (arr, f) {
+      for (var i = 0; i < arr.length; i++) {
+        var r = f(arr[i], i);
+        if (r.isSome()) {
+          return r;
+        }
+      }
+      return Option.none();
     };
 
     var __assign = function () {
@@ -215,6 +210,503 @@
       return __assign.apply(this, arguments);
     };
 
+    var exports$1 = {}, module = { exports: exports$1 };
+    (function (define, exports, module, require) {
+      (function (f) {
+        if (typeof exports === 'object' && typeof module !== 'undefined') {
+          module.exports = f();
+        } else if (typeof define === 'function' && define.amd) {
+          define([], f);
+        } else {
+          var g;
+          if (typeof window !== 'undefined') {
+            g = window;
+          } else if (typeof global !== 'undefined') {
+            g = global;
+          } else if (typeof self !== 'undefined') {
+            g = self;
+          } else {
+            g = this;
+          }
+          g.EphoxContactWrapper = f();
+        }
+      }(function () {
+        return function () {
+          function r(e, n, t) {
+            function o(i, f) {
+              if (!n[i]) {
+                if (!e[i]) {
+                  var c = 'function' == typeof require && require;
+                  if (!f && c)
+                    return c(i, !0);
+                  if (u)
+                    return u(i, !0);
+                  var a = new Error('Cannot find module \'' + i + '\'');
+                  throw a.code = 'MODULE_NOT_FOUND', a;
+                }
+                var p = n[i] = { exports: {} };
+                e[i][0].call(p.exports, function (r) {
+                  var n = e[i][1][r];
+                  return o(n || r);
+                }, p, p.exports, r, e, n, t);
+              }
+              return n[i].exports;
+            }
+            for (var u = 'function' == typeof require && require, i = 0; i < t.length; i++)
+              o(t[i]);
+            return o;
+          }
+          return r;
+        }()({
+          1: [
+            function (require, module, exports) {
+              var process = module.exports = {};
+              var cachedSetTimeout;
+              var cachedClearTimeout;
+              function defaultSetTimout() {
+                throw new Error('setTimeout has not been defined');
+              }
+              function defaultClearTimeout() {
+                throw new Error('clearTimeout has not been defined');
+              }
+              (function () {
+                try {
+                  if (typeof setTimeout === 'function') {
+                    cachedSetTimeout = setTimeout;
+                  } else {
+                    cachedSetTimeout = defaultSetTimout;
+                  }
+                } catch (e) {
+                  cachedSetTimeout = defaultSetTimout;
+                }
+                try {
+                  if (typeof clearTimeout === 'function') {
+                    cachedClearTimeout = clearTimeout;
+                  } else {
+                    cachedClearTimeout = defaultClearTimeout;
+                  }
+                } catch (e) {
+                  cachedClearTimeout = defaultClearTimeout;
+                }
+              }());
+              function runTimeout(fun) {
+                if (cachedSetTimeout === setTimeout) {
+                  return setTimeout(fun, 0);
+                }
+                if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+                  cachedSetTimeout = setTimeout;
+                  return setTimeout(fun, 0);
+                }
+                try {
+                  return cachedSetTimeout(fun, 0);
+                } catch (e) {
+                  try {
+                    return cachedSetTimeout.call(null, fun, 0);
+                  } catch (e) {
+                    return cachedSetTimeout.call(this, fun, 0);
+                  }
+                }
+              }
+              function runClearTimeout(marker) {
+                if (cachedClearTimeout === clearTimeout) {
+                  return clearTimeout(marker);
+                }
+                if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+                  cachedClearTimeout = clearTimeout;
+                  return clearTimeout(marker);
+                }
+                try {
+                  return cachedClearTimeout(marker);
+                } catch (e) {
+                  try {
+                    return cachedClearTimeout.call(null, marker);
+                  } catch (e) {
+                    return cachedClearTimeout.call(this, marker);
+                  }
+                }
+              }
+              var queue = [];
+              var draining = false;
+              var currentQueue;
+              var queueIndex = -1;
+              function cleanUpNextTick() {
+                if (!draining || !currentQueue) {
+                  return;
+                }
+                draining = false;
+                if (currentQueue.length) {
+                  queue = currentQueue.concat(queue);
+                } else {
+                  queueIndex = -1;
+                }
+                if (queue.length) {
+                  drainQueue();
+                }
+              }
+              function drainQueue() {
+                if (draining) {
+                  return;
+                }
+                var timeout = runTimeout(cleanUpNextTick);
+                draining = true;
+                var len = queue.length;
+                while (len) {
+                  currentQueue = queue;
+                  queue = [];
+                  while (++queueIndex < len) {
+                    if (currentQueue) {
+                      currentQueue[queueIndex].run();
+                    }
+                  }
+                  queueIndex = -1;
+                  len = queue.length;
+                }
+                currentQueue = null;
+                draining = false;
+                runClearTimeout(timeout);
+              }
+              process.nextTick = function (fun) {
+                var args = new Array(arguments.length - 1);
+                if (arguments.length > 1) {
+                  for (var i = 1; i < arguments.length; i++) {
+                    args[i - 1] = arguments[i];
+                  }
+                }
+                queue.push(new Item(fun, args));
+                if (queue.length === 1 && !draining) {
+                  runTimeout(drainQueue);
+                }
+              };
+              function Item(fun, array) {
+                this.fun = fun;
+                this.array = array;
+              }
+              Item.prototype.run = function () {
+                this.fun.apply(null, this.array);
+              };
+              process.title = 'browser';
+              process.browser = true;
+              process.env = {};
+              process.argv = [];
+              process.version = '';
+              process.versions = {};
+              function noop() {
+              }
+              process.on = noop;
+              process.addListener = noop;
+              process.once = noop;
+              process.off = noop;
+              process.removeListener = noop;
+              process.removeAllListeners = noop;
+              process.emit = noop;
+              process.prependListener = noop;
+              process.prependOnceListener = noop;
+              process.listeners = function (name) {
+                return [];
+              };
+              process.binding = function (name) {
+                throw new Error('process.binding is not supported');
+              };
+              process.cwd = function () {
+                return '/';
+              };
+              process.chdir = function (dir) {
+                throw new Error('process.chdir is not supported');
+              };
+              process.umask = function () {
+                return 0;
+              };
+            },
+            {}
+          ],
+          2: [
+            function (require, module, exports) {
+              (function (setImmediate) {
+                (function (root) {
+                  var setTimeoutFunc = setTimeout;
+                  function noop() {
+                  }
+                  function bind(fn, thisArg) {
+                    return function () {
+                      fn.apply(thisArg, arguments);
+                    };
+                  }
+                  function Promise(fn) {
+                    if (typeof this !== 'object')
+                      throw new TypeError('Promises must be constructed via new');
+                    if (typeof fn !== 'function')
+                      throw new TypeError('not a function');
+                    this._state = 0;
+                    this._handled = false;
+                    this._value = undefined;
+                    this._deferreds = [];
+                    doResolve(fn, this);
+                  }
+                  function handle(self, deferred) {
+                    while (self._state === 3) {
+                      self = self._value;
+                    }
+                    if (self._state === 0) {
+                      self._deferreds.push(deferred);
+                      return;
+                    }
+                    self._handled = true;
+                    Promise._immediateFn(function () {
+                      var cb = self._state === 1 ? deferred.onFulfilled : deferred.onRejected;
+                      if (cb === null) {
+                        (self._state === 1 ? resolve : reject)(deferred.promise, self._value);
+                        return;
+                      }
+                      var ret;
+                      try {
+                        ret = cb(self._value);
+                      } catch (e) {
+                        reject(deferred.promise, e);
+                        return;
+                      }
+                      resolve(deferred.promise, ret);
+                    });
+                  }
+                  function resolve(self, newValue) {
+                    try {
+                      if (newValue === self)
+                        throw new TypeError('A promise cannot be resolved with itself.');
+                      if (newValue && (typeof newValue === 'object' || typeof newValue === 'function')) {
+                        var then = newValue.then;
+                        if (newValue instanceof Promise) {
+                          self._state = 3;
+                          self._value = newValue;
+                          finale(self);
+                          return;
+                        } else if (typeof then === 'function') {
+                          doResolve(bind(then, newValue), self);
+                          return;
+                        }
+                      }
+                      self._state = 1;
+                      self._value = newValue;
+                      finale(self);
+                    } catch (e) {
+                      reject(self, e);
+                    }
+                  }
+                  function reject(self, newValue) {
+                    self._state = 2;
+                    self._value = newValue;
+                    finale(self);
+                  }
+                  function finale(self) {
+                    if (self._state === 2 && self._deferreds.length === 0) {
+                      Promise._immediateFn(function () {
+                        if (!self._handled) {
+                          Promise._unhandledRejectionFn(self._value);
+                        }
+                      });
+                    }
+                    for (var i = 0, len = self._deferreds.length; i < len; i++) {
+                      handle(self, self._deferreds[i]);
+                    }
+                    self._deferreds = null;
+                  }
+                  function Handler(onFulfilled, onRejected, promise) {
+                    this.onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : null;
+                    this.onRejected = typeof onRejected === 'function' ? onRejected : null;
+                    this.promise = promise;
+                  }
+                  function doResolve(fn, self) {
+                    var done = false;
+                    try {
+                      fn(function (value) {
+                        if (done)
+                          return;
+                        done = true;
+                        resolve(self, value);
+                      }, function (reason) {
+                        if (done)
+                          return;
+                        done = true;
+                        reject(self, reason);
+                      });
+                    } catch (ex) {
+                      if (done)
+                        return;
+                      done = true;
+                      reject(self, ex);
+                    }
+                  }
+                  Promise.prototype['catch'] = function (onRejected) {
+                    return this.then(null, onRejected);
+                  };
+                  Promise.prototype.then = function (onFulfilled, onRejected) {
+                    var prom = new this.constructor(noop);
+                    handle(this, new Handler(onFulfilled, onRejected, prom));
+                    return prom;
+                  };
+                  Promise.all = function (arr) {
+                    var args = Array.prototype.slice.call(arr);
+                    return new Promise(function (resolve, reject) {
+                      if (args.length === 0)
+                        return resolve([]);
+                      var remaining = args.length;
+                      function res(i, val) {
+                        try {
+                          if (val && (typeof val === 'object' || typeof val === 'function')) {
+                            var then = val.then;
+                            if (typeof then === 'function') {
+                              then.call(val, function (val) {
+                                res(i, val);
+                              }, reject);
+                              return;
+                            }
+                          }
+                          args[i] = val;
+                          if (--remaining === 0) {
+                            resolve(args);
+                          }
+                        } catch (ex) {
+                          reject(ex);
+                        }
+                      }
+                      for (var i = 0; i < args.length; i++) {
+                        res(i, args[i]);
+                      }
+                    });
+                  };
+                  Promise.resolve = function (value) {
+                    if (value && typeof value === 'object' && value.constructor === Promise) {
+                      return value;
+                    }
+                    return new Promise(function (resolve) {
+                      resolve(value);
+                    });
+                  };
+                  Promise.reject = function (value) {
+                    return new Promise(function (resolve, reject) {
+                      reject(value);
+                    });
+                  };
+                  Promise.race = function (values) {
+                    return new Promise(function (resolve, reject) {
+                      for (var i = 0, len = values.length; i < len; i++) {
+                        values[i].then(resolve, reject);
+                      }
+                    });
+                  };
+                  Promise._immediateFn = typeof setImmediate === 'function' ? function (fn) {
+                    setImmediate(fn);
+                  } : function (fn) {
+                    setTimeoutFunc(fn, 0);
+                  };
+                  Promise._unhandledRejectionFn = function _unhandledRejectionFn(err) {
+                    if (typeof console !== 'undefined' && console) {
+                      console.warn('Possible Unhandled Promise Rejection:', err);
+                    }
+                  };
+                  Promise._setImmediateFn = function _setImmediateFn(fn) {
+                    Promise._immediateFn = fn;
+                  };
+                  Promise._setUnhandledRejectionFn = function _setUnhandledRejectionFn(fn) {
+                    Promise._unhandledRejectionFn = fn;
+                  };
+                  if (typeof module !== 'undefined' && module.exports) {
+                    module.exports = Promise;
+                  } else if (!root.Promise) {
+                    root.Promise = Promise;
+                  }
+                }(this));
+              }.call(this, require('timers').setImmediate));
+            },
+            { 'timers': 3 }
+          ],
+          3: [
+            function (require, module, exports) {
+              (function (setImmediate, clearImmediate) {
+                var nextTick = require('process/browser.js').nextTick;
+                var apply = Function.prototype.apply;
+                var slice = Array.prototype.slice;
+                var immediateIds = {};
+                var nextImmediateId = 0;
+                exports.setTimeout = function () {
+                  return new Timeout(apply.call(setTimeout, window, arguments), clearTimeout);
+                };
+                exports.setInterval = function () {
+                  return new Timeout(apply.call(setInterval, window, arguments), clearInterval);
+                };
+                exports.clearTimeout = exports.clearInterval = function (timeout) {
+                  timeout.close();
+                };
+                function Timeout(id, clearFn) {
+                  this._id = id;
+                  this._clearFn = clearFn;
+                }
+                Timeout.prototype.unref = Timeout.prototype.ref = function () {
+                };
+                Timeout.prototype.close = function () {
+                  this._clearFn.call(window, this._id);
+                };
+                exports.enroll = function (item, msecs) {
+                  clearTimeout(item._idleTimeoutId);
+                  item._idleTimeout = msecs;
+                };
+                exports.unenroll = function (item) {
+                  clearTimeout(item._idleTimeoutId);
+                  item._idleTimeout = -1;
+                };
+                exports._unrefActive = exports.active = function (item) {
+                  clearTimeout(item._idleTimeoutId);
+                  var msecs = item._idleTimeout;
+                  if (msecs >= 0) {
+                    item._idleTimeoutId = setTimeout(function onTimeout() {
+                      if (item._onTimeout)
+                        item._onTimeout();
+                    }, msecs);
+                  }
+                };
+                exports.setImmediate = typeof setImmediate === 'function' ? setImmediate : function (fn) {
+                  var id = nextImmediateId++;
+                  var args = arguments.length < 2 ? false : slice.call(arguments, 1);
+                  immediateIds[id] = true;
+                  nextTick(function onNextTick() {
+                    if (immediateIds[id]) {
+                      if (args) {
+                        fn.apply(null, args);
+                      } else {
+                        fn.call(null);
+                      }
+                      exports.clearImmediate(id);
+                    }
+                  });
+                  return id;
+                };
+                exports.clearImmediate = typeof clearImmediate === 'function' ? clearImmediate : function (id) {
+                  delete immediateIds[id];
+                };
+              }.call(this, require('timers').setImmediate, require('timers').clearImmediate));
+            },
+            {
+              'process/browser.js': 1,
+              'timers': 3
+            }
+          ],
+          4: [
+            function (require, module, exports) {
+              var promisePolyfill = require('promise-polyfill');
+              var Global = function () {
+                if (typeof window !== 'undefined') {
+                  return window;
+                } else {
+                  return Function('return this;')();
+                }
+              }();
+              module.exports = { boltExport: Global.Promise || promisePolyfill };
+            },
+            { 'promise-polyfill': 2 }
+          ]
+        }, {}, [4])(4);
+      }));
+    }(undefined, exports$1, module, undefined));
+    var Promise = module.exports.boltExport;
+
     var nu = function (baseFn) {
       var data = Option.none();
       var callbacks = [];
@@ -226,10 +718,11 @@
         });
       };
       var get = function (nCallback) {
-        if (isReady())
+        if (isReady()) {
           call(nCallback);
-        else
+        } else {
           callbacks.push(nCallback);
+        }
       };
       var set = function (x) {
         data = Option.some(x);
@@ -266,42 +759,31 @@
       pure: pure
     };
 
-    var bounce = function (f) {
-      return function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-          args[_i] = arguments[_i];
-        }
-        var me = this;
-        domGlobals.setTimeout(function () {
-          f.apply(me, args);
-        }, 0);
-      };
+    var errorReporter = function (err) {
+      domGlobals.setTimeout(function () {
+        throw err;
+      }, 0);
     };
-
-    var nu$1 = function (baseFn) {
+    var make = function (run) {
       var get = function (callback) {
-        baseFn(bounce(callback));
+        run().then(callback, errorReporter);
       };
       var map = function (fab) {
-        return nu$1(function (callback) {
-          get(function (a) {
-            var value = fab(a);
-            callback(value);
-          });
+        return make(function () {
+          return run().then(fab);
         });
       };
       var bind = function (aFutureB) {
-        return nu$1(function (callback) {
-          get(function (a) {
-            aFutureB(a).get(callback);
+        return make(function () {
+          return run().then(function (v) {
+            return aFutureB(v).toPromise();
           });
         });
       };
       var anonBind = function (futureB) {
-        return nu$1(function (callback) {
-          get(function (a) {
-            futureB.get(callback);
+        return make(function () {
+          return run().then(function () {
+            return futureB.toPromise();
           });
         });
       };
@@ -310,25 +792,32 @@
       };
       var toCached = function () {
         var cache = null;
-        return nu$1(function (callback) {
+        return make(function () {
           if (cache === null) {
-            cache = toLazy();
+            cache = run();
           }
-          cache.get(callback);
+          return cache;
         });
       };
+      var toPromise = run;
       return {
         map: map,
         bind: bind,
         anonBind: anonBind,
         toLazy: toLazy,
         toCached: toCached,
+        toPromise: toPromise,
         get: get
       };
     };
+    var nu$1 = function (baseFn) {
+      return make(function () {
+        return new Promise(baseFn);
+      });
+    };
     var pure$1 = function (a) {
-      return nu$1(function (callback) {
-        callback(a);
+      return make(function () {
+        return Promise.resolve(a);
       });
     };
     var Future = {
@@ -492,7 +981,7 @@
           });
         }));
       };
-      return __assign({}, delegate, {
+      return __assign(__assign({}, delegate), {
         toCached: toCached,
         bindFuture: bindFuture,
         bindResult: bindResult,
@@ -538,9 +1027,6 @@
     };
 
     var hasOwnProperty = Object.prototype.hasOwnProperty;
-    var shallow = function (old, nu) {
-      return nu;
-    };
     var deep = function (old, nu) {
       var bothObjects = isObject(old) && isObject(nu);
       return bothObjects ? deepMerge(old, nu) : nu;
@@ -548,146 +1034,96 @@
     var baseMerge = function (merger) {
       return function () {
         var objects = new Array(arguments.length);
-        for (var i = 0; i < objects.length; i++)
+        for (var i = 0; i < objects.length; i++) {
           objects[i] = arguments[i];
-        if (objects.length === 0)
+        }
+        if (objects.length === 0) {
           throw new Error('Can\'t merge zero objects');
+        }
         var ret = {};
         for (var j = 0; j < objects.length; j++) {
           var curObject = objects[j];
-          for (var key in curObject)
+          for (var key in curObject) {
             if (hasOwnProperty.call(curObject, key)) {
               ret[key] = merger(ret[key], curObject[key]);
             }
+          }
         }
         return ret;
       };
     };
     var deepMerge = baseMerge(deep);
-    var merge = baseMerge(shallow);
+
+    var ATTRIBUTE = domGlobals.Node.ATTRIBUTE_NODE;
+    var CDATA_SECTION = domGlobals.Node.CDATA_SECTION_NODE;
+    var COMMENT = domGlobals.Node.COMMENT_NODE;
+    var DOCUMENT = domGlobals.Node.DOCUMENT_NODE;
+    var DOCUMENT_TYPE = domGlobals.Node.DOCUMENT_TYPE_NODE;
+    var DOCUMENT_FRAGMENT = domGlobals.Node.DOCUMENT_FRAGMENT_NODE;
+    var ELEMENT = domGlobals.Node.ELEMENT_NODE;
+    var TEXT = domGlobals.Node.TEXT_NODE;
+    var PROCESSING_INSTRUCTION = domGlobals.Node.PROCESSING_INSTRUCTION_NODE;
+    var ENTITY_REFERENCE = domGlobals.Node.ENTITY_REFERENCE_NODE;
+    var ENTITY = domGlobals.Node.ENTITY_NODE;
+    var NOTATION = domGlobals.Node.NOTATION_NODE;
 
     var Global = typeof domGlobals.window !== 'undefined' ? domGlobals.window : Function('return this;')();
 
-    var path = function (parts, scope) {
-      var o = scope !== undefined && scope !== null ? scope : Global;
-      for (var i = 0; i < parts.length && o !== undefined && o !== null; ++i)
-        o = o[parts[i]];
-      return o;
+    var rawSet = function (dom, key, value) {
+      if (isString(value) || isBoolean(value) || isNumber(value)) {
+        dom.setAttribute(key, value + '');
+      } else {
+        domGlobals.console.error('Invalid call to Attr.set. Key ', key, ':: Value ', value, ':: Element ', dom);
+        throw new Error('Attribute value was not simple');
+      }
     };
-    var resolve = function (p, scope) {
-      var parts = p.split('.');
-      return path(parts, scope);
-    };
-
-    var unsafe = function (name, scope) {
-      return resolve(name, scope);
-    };
-    var getOrDie = function (name, scope) {
-      var actual = unsafe(name, scope);
-      if (actual === undefined || actual === null)
-        throw name + ' not available on this browser';
-      return actual;
-    };
-    var Global$1 = { getOrDie: getOrDie };
-
-    var url = function () {
-      return Global$1.getOrDie('URL');
-    };
-    var createObjectURL = function (blob) {
-      return url().createObjectURL(blob);
-    };
-    var revokeObjectURL = function (u) {
-      url().revokeObjectURL(u);
-    };
-    var URL = {
-      createObjectURL: createObjectURL,
-      revokeObjectURL: revokeObjectURL
+    var set = function (element, key, value) {
+      rawSet(element.dom(), key, value);
     };
 
-    var makeItems = function (info) {
-      var imageUrl = {
-        name: 'src',
-        type: 'urlinput',
-        filetype: 'image',
-        label: 'Source'
-      };
-      var imageList = info.imageList.map(function (items) {
-        return {
-          name: 'images',
-          type: 'selectbox',
-          label: 'Image list',
-          items: items
-        };
-      });
-      var imageDescription = {
-        name: 'alt',
-        type: 'input',
-        label: 'Image description'
-      };
-      var imageTitle = {
-        name: 'title',
-        type: 'input',
-        label: 'Image title'
-      };
-      var imageDimensions = {
-        name: 'dimensions',
-        type: 'sizeinput'
-      };
-      var classList = info.classList.map(function (items) {
-        return {
-          name: 'classes',
-          type: 'selectbox',
-          label: 'Class',
-          items: items
-        };
-      });
-      var caption = {
-        type: 'label',
-        label: 'Caption',
-        items: [{
-            type: 'checkbox',
-            name: 'caption',
-            label: 'Show caption'
-          }]
-      };
-      return flatten([
-        [imageUrl],
-        imageList.toArray(),
-        info.hasDescription ? [imageDescription] : [],
-        info.hasImageTitle ? [imageTitle] : [],
-        info.hasDimensions ? [imageDimensions] : [],
-        [{
-            type: 'grid',
-            columns: 2,
-            items: flatten([
-              classList.toArray(),
-              info.hasImageCaption ? [caption] : []
-            ])
-          }]
-      ]);
+    var fromHtml = function (html, scope) {
+      var doc = scope || domGlobals.document;
+      var div = doc.createElement('div');
+      div.innerHTML = html;
+      if (!div.hasChildNodes() || div.childNodes.length > 1) {
+        domGlobals.console.error('HTML does not have a single root node', html);
+        throw new Error('HTML must have a single root node');
+      }
+      return fromDom(div.childNodes[0]);
     };
-    var makeTab = function (info) {
-      return {
-        title: 'General',
-        name: 'general',
-        items: makeItems(info)
-      };
+    var fromTag = function (tag, scope) {
+      var doc = scope || domGlobals.document;
+      var node = doc.createElement(tag);
+      return fromDom(node);
     };
-    var MainTab = {
-      makeTab: makeTab,
-      makeItems: makeItems
+    var fromText = function (text, scope) {
+      var doc = scope || domGlobals.document;
+      var node = doc.createTextNode(text);
+      return fromDom(node);
+    };
+    var fromDom = function (node) {
+      if (node === null || node === undefined) {
+        throw new Error('Node cannot be null or undefined');
+      }
+      return { dom: constant(node) };
+    };
+    var fromPoint = function (docElm, x, y) {
+      var doc = docElm.dom();
+      return Option.from(doc.elementFromPoint(x, y)).map(fromDom);
+    };
+    var Element = {
+      fromHtml: fromHtml,
+      fromTag: fromTag,
+      fromText: fromText,
+      fromDom: fromDom,
+      fromPoint: fromPoint
     };
 
-    var global$1 = tinymce.util.Tools.resolve('tinymce.dom.DOMUtils');
+    var global$2 = tinymce.util.Tools.resolve('tinymce.dom.DOMUtils');
 
-    function FileReader () {
-      var f = Global$1.getOrDie('FileReader');
-      return new f();
-    }
+    var global$3 = tinymce.util.Tools.resolve('tinymce.util.Promise');
 
-    var global$2 = tinymce.util.Tools.resolve('tinymce.util.Promise');
-
-    var global$3 = tinymce.util.Tools.resolve('tinymce.util.XHR');
+    var global$4 = tinymce.util.Tools.resolve('tinymce.util.XHR');
 
     var hasDimensions = function (editor) {
       return editor.getParam('image_dimensions', true, 'boolean');
@@ -734,6 +1170,12 @@
     var getUploadCredentials = function (editor) {
       return editor.getParam('images_upload_credentials', false, 'boolean');
     };
+    var showAccessibilityOptions = function (editor) {
+      return editor.getParam('a11y_advanced_options', false, 'boolean');
+    };
+    var isAutomaticUploadsEnabled = function (editor) {
+      return editor.getParam('automatic_uploads', true, 'boolean');
+    };
     var Settings = {
       hasDimensions: hasDimensions,
       hasUploadTab: hasUploadTab,
@@ -749,7 +1191,9 @@
       getUploadUrl: getUploadUrl,
       getUploadHandler: getUploadHandler,
       getUploadBasePath: getUploadBasePath,
-      getUploadCredentials: getUploadCredentials
+      getUploadCredentials: getUploadCredentials,
+      showAccessibilityOptions: showAccessibilityOptions,
+      isAutomaticUploadsEnabled: isAutomaticUploadsEnabled
     };
 
     var parseIntAndGetMax = function (val1, val2) {
@@ -830,7 +1274,7 @@
     var createImageList = function (editor, callback) {
       var imageList = Settings.getImageList(editor);
       if (typeof imageList === 'string') {
-        global$3.send({
+        global$4.send({
           url: imageList,
           success: function (text) {
             callback(JSON.parse(text));
@@ -862,8 +1306,8 @@
       imgElm.onerror = selectImage;
     };
     var blobToDataUri = function (blob) {
-      return new global$2(function (resolve, reject) {
-        var reader = FileReader();
+      return new global$3(function (resolve, reject) {
+        var reader = new domGlobals.FileReader();
         reader.onload = function () {
           resolve(reader.result);
         };
@@ -887,7 +1331,7 @@
       isPlaceholderImage: isPlaceholderImage
     };
 
-    var DOM = global$1.DOM;
+    var DOM = global$2.DOM;
     var getHspace = function (image) {
       if (image.style.marginLeft && image.style.marginRight && image.style.marginLeft === image.style.marginRight) {
         return Utils.removePixelSuffix(image.style.marginLeft);
@@ -997,6 +1441,16 @@
     var isImage = function (elm) {
       return elm.nodeName === 'IMG';
     };
+    var getIsDecorative = function (image) {
+      return DOM.getAttrib(image, 'alt').length === 0 && DOM.getAttrib(image, 'role') === 'presentation';
+    };
+    var getAlt = function (image) {
+      if (getIsDecorative(image)) {
+        return '';
+      } else {
+        return getAttrib(image, 'alt');
+      }
+    };
     var defaultData = function () {
       return {
         src: '',
@@ -1010,7 +1464,8 @@
         hspace: '',
         vspace: '',
         border: '',
-        borderStyle: ''
+        borderStyle: '',
+        isDecorative: false
       };
     };
     var getStyleValue = function (normalizeCss, data) {
@@ -1030,10 +1485,10 @@
       }
       return normalizeCss(image.getAttribute('style'));
     };
-    var create = function (normalizeCss, data) {
+    var create = function (normalizeCss, data, info) {
       var image = domGlobals.document.createElement('img');
-      write(normalizeCss, merge(data, { caption: false }), image);
-      setAttrib(image, 'alt', data.alt);
+      write(normalizeCss, __assign(__assign({}, data), { caption: false }), image, info);
+      setAlt(image, data.alt, data.isDecorative, info);
       if (data.caption) {
         var figure = DOM.create('figure', { class: 'image' });
         figure.appendChild(image);
@@ -1047,7 +1502,7 @@
     var read = function (normalizeCss, image) {
       return {
         src: getAttrib(image, 'src'),
-        alt: getAttrib(image, 'alt'),
+        alt: getAlt(image),
         title: getAttrib(image, 'title'),
         width: getSize(image, 'width'),
         height: getSize(image, 'height'),
@@ -1057,12 +1512,35 @@
         hspace: getHspace(image),
         vspace: getVspace(image),
         border: getBorder(image),
-        borderStyle: getStyle(image, 'borderStyle')
+        borderStyle: getStyle(image, 'borderStyle'),
+        isDecorative: getIsDecorative(image)
       };
     };
     var updateProp = function (image, oldData, newData, name, set) {
       if (newData[name] !== oldData[name]) {
         set(image, name, newData[name]);
+      }
+    };
+    var setAlt = function (image, alt, isDecorative, info) {
+      if (isDecorative) {
+        DOM.setAttrib(image, 'role', 'presentation');
+        var sugarImage = Element.fromDom(image);
+        set(sugarImage, 'alt', '');
+      } else {
+        if (info.hasAccessibilityOptions) {
+          DOM.setAttrib(image, 'alt', alt);
+        } else {
+          var sugarImage = Element.fromDom(image);
+          set(sugarImage, 'alt', alt);
+        }
+        if (DOM.getAttrib(image, 'role') === 'presentation') {
+          DOM.setAttrib(image, 'role', '');
+        }
+      }
+    };
+    var updateAlt = function (image, oldData, newData, info) {
+      if (newData.alt !== oldData.alt || newData.isDecorative !== oldData.isDecorative) {
+        setAlt(image, newData.alt, newData.isDecorative, info);
       }
     };
     var normalized = function (set, normalizeCss) {
@@ -1071,13 +1549,12 @@
         normalizeStyle(image, normalizeCss);
       };
     };
-    var write = function (normalizeCss, newData, image) {
+    var write = function (normalizeCss, newData, image, info) {
       var oldData = read(normalizeCss, image);
       updateProp(image, oldData, newData, 'caption', function (image, _name, _value) {
         return toggleCaption(image);
       });
       updateProp(image, oldData, newData, 'src', setAttrib);
-      updateProp(image, oldData, newData, 'alt', setAttrib);
       updateProp(image, oldData, newData, 'title', setAttrib);
       updateProp(image, oldData, newData, 'width', setSize('width', normalizeCss));
       updateProp(image, oldData, newData, 'height', setSize('height', normalizeCss));
@@ -1089,6 +1566,7 @@
       updateProp(image, oldData, newData, 'vspace', normalized(setVspace, normalizeCss));
       updateProp(image, oldData, newData, 'border', normalized(setBorder, normalizeCss));
       updateProp(image, oldData, newData, 'borderStyle', normalized(setBorderStyle, normalizeCss));
+      updateAlt(image, oldData, newData, info);
     };
 
     var normalizeCss = function (editor, cssText) {
@@ -1111,7 +1589,7 @@
     var splitTextBlock = function (editor, figure) {
       var dom = editor.dom;
       var textBlock = dom.getParent(figure.parentNode, function (node) {
-        return editor.schema.getTextBlockElements()[node.nodeName];
+        return !!editor.schema.getTextBlockElements()[node.nodeName];
       }, editor.getBody());
       if (textBlock) {
         return dom.split(textBlock, figure);
@@ -1125,10 +1603,10 @@
         return normalizeCss(editor, css);
       }, image) : defaultData();
     };
-    var insertImageAtCaret = function (editor, data) {
+    var insertImageAtCaret = function (editor, data, info) {
       var elm = create(function (css) {
         return normalizeCss(editor, css);
-      }, data);
+      }, data, info);
       editor.dom.setAttrib(elm, 'data-mce-id', '__mcenew');
       editor.focus();
       editor.selection.setContent(elm.outerHTML);
@@ -1156,11 +1634,11 @@
         }
       }
     };
-    var writeImageDataToSelection = function (editor, data) {
+    var writeImageDataToSelection = function (editor, data, info) {
       var image = getSelectedImage(editor);
       write(function (css) {
         return normalizeCss(editor, css);
-      }, data, image);
+      }, data, image, info);
       syncSrcAttr(editor, image);
       if (isFigure(image.parentNode)) {
         var figure = image.parentNode;
@@ -1171,37 +1649,27 @@
         Utils.waitLoadImage(editor, data, image);
       }
     };
-    var insertOrUpdateImage = function (editor, data) {
+    var insertOrUpdateImage = function (editor, data, info) {
       var image = getSelectedImage(editor);
       if (image) {
         if (data.src) {
-          writeImageDataToSelection(editor, data);
+          writeImageDataToSelection(editor, data, info);
         } else {
           deleteImage(editor, image);
         }
       } else if (data.src) {
-        insertImageAtCaret(editor, data);
+        insertImageAtCaret(editor, data, info);
       }
     };
 
-    var findMap = function (arr, f) {
-      for (var i = 0; i < arr.length; i++) {
-        var r = f(arr[i], i);
-        if (r.isSome()) {
-          return r;
-        }
-      }
-      return Option.none();
-    };
-
-    var global$4 = tinymce.util.Tools.resolve('tinymce.util.Tools');
+    var global$5 = tinymce.util.Tools.resolve('tinymce.util.Tools');
 
     var getValue = function (item) {
       return isString(item.value) ? item.value : '';
     };
     var sanitizeList = function (list, extractValue) {
       var out = [];
-      global$4.each(list, function (item) {
+      global$5.each(list, function (item) {
         var text = isString(item.text) ? item.text : isString(item.title) ? item.title : '';
         if (item.menu !== undefined) {
           var items = sanitizeList(item.menu, extractValue);
@@ -1261,11 +1729,6 @@
       findEntry: findEntry
     };
 
-    function XMLHttpRequest () {
-      var f = Global$1.getOrDie('XMLHttpRequest');
-      return new f();
-    }
-
     var pathJoin = function (path1, path2) {
       if (path1) {
         return path1.replace(/\/$/, '') + '/' + path2.replace(/^\//, '');
@@ -1275,7 +1738,7 @@
     function Uploader (settings) {
       var defaultHandler = function (blobInfo, success, failure, progress) {
         var xhr, formData;
-        xhr = XMLHttpRequest();
+        xhr = new domGlobals.XMLHttpRequest();
         xhr.open('POST', settings.url);
         xhr.withCredentials = settings.credentials;
         xhr.upload.onprogress = function (e) {
@@ -1302,7 +1765,7 @@
         xhr.send(formData);
       };
       var uploadBlob = function (blobInfo, handler) {
-        return new global$2(function (resolve, reject) {
+        return new global$3(function (resolve, reject) {
           try {
             handler(blobInfo, resolve, reject, noop);
           } catch (ex) {
@@ -1314,16 +1777,16 @@
         return handler === defaultHandler;
       };
       var upload = function (blobInfo) {
-        return !settings.url && isDefaultHandler(settings.handler) ? global$2.reject('Upload url missing from the settings.') : uploadBlob(blobInfo, settings.handler);
+        return !settings.url && isDefaultHandler(settings.handler) ? global$3.reject('Upload url missing from the settings.') : uploadBlob(blobInfo, settings.handler);
       };
-      settings = global$4.extend({
+      settings = global$5.extend({
         credentials: false,
         handler: defaultHandler
       }, settings);
       return { upload: upload };
     }
 
-    var makeTab$1 = function (info) {
+    var makeTab = function (info) {
       return {
         title: 'Advanced',
         name: 'advanced',
@@ -1340,17 +1803,20 @@
               {
                 type: 'input',
                 label: 'Vertical space',
-                name: 'vspace'
+                name: 'vspace',
+                inputMode: 'numeric'
               },
               {
                 type: 'input',
                 label: 'Horizontal space',
-                name: 'hspace'
+                name: 'hspace',
+                inputMode: 'numeric'
               },
               {
                 type: 'input',
                 label: 'Border width',
-                name: 'border'
+                name: 'border',
+                inputMode: 'numeric'
               },
               {
                 type: 'selectbox',
@@ -1408,7 +1874,7 @@
         ]
       };
     };
-    var AdvTab = { makeTab: makeTab$1 };
+    var AdvTab = { makeTab: makeTab };
 
     var collect = function (editor) {
       var urlListSanitizer = ListUtils.sanitizer(function (item) {
@@ -1437,10 +1903,12 @@
       var hasImageTitle = Settings.hasImageTitle(editor);
       var hasDimensions = Settings.hasDimensions(editor);
       var hasImageCaption = Settings.hasImageCaption(editor);
+      var hasAccessibilityOptions = Settings.showAccessibilityOptions(editor);
       var url = Settings.getUploadUrl(editor);
       var basePath = Settings.getUploadBasePath(editor);
       var credentials = Settings.getUploadCredentials(editor);
       var handler = Settings.getUploadHandler(editor);
+      var automaticUploads = Settings.isAutomaticUploadsEnabled(editor);
       var prependURL = Option.some(Settings.getPrependUrl(editor)).filter(function (preUrl) {
         return isString(preUrl) && preUrl.length > 0;
       });
@@ -1461,9 +1929,96 @@
           basePath: basePath,
           credentials: credentials,
           handler: handler,
-          prependURL: prependURL
+          prependURL: prependURL,
+          hasAccessibilityOptions: hasAccessibilityOptions,
+          automaticUploads: automaticUploads
         };
       });
+    };
+
+    var makeItems = function (info) {
+      var imageUrl = {
+        name: 'src',
+        type: 'urlinput',
+        filetype: 'image',
+        label: 'Source'
+      };
+      var imageList = info.imageList.map(function (items) {
+        return {
+          name: 'images',
+          type: 'selectbox',
+          label: 'Image list',
+          items: items
+        };
+      });
+      var imageDescription = {
+        name: 'alt',
+        type: 'input',
+        label: 'Alternative description',
+        disabled: info.hasAccessibilityOptions && info.image.isDecorative
+      };
+      var imageTitle = {
+        name: 'title',
+        type: 'input',
+        label: 'Image title'
+      };
+      var imageDimensions = {
+        name: 'dimensions',
+        type: 'sizeinput'
+      };
+      var isDecorative = {
+        type: 'label',
+        label: 'Accessibility',
+        items: [{
+            name: 'isDecorative',
+            type: 'checkbox',
+            label: 'Image is decorative'
+          }]
+      };
+      var classList = info.classList.map(function (items) {
+        return {
+          name: 'classes',
+          type: 'selectbox',
+          label: 'Class',
+          items: items
+        };
+      });
+      var caption = {
+        type: 'label',
+        label: 'Caption',
+        items: [{
+            type: 'checkbox',
+            name: 'caption',
+            label: 'Show caption'
+          }]
+      };
+      return flatten([
+        [imageUrl],
+        imageList.toArray(),
+        info.hasAccessibilityOptions && info.hasDescription ? [isDecorative] : [],
+        info.hasDescription ? [imageDescription] : [],
+        info.hasImageTitle ? [imageTitle] : [],
+        info.hasDimensions ? [imageDimensions] : [],
+        [{
+            type: 'grid',
+            columns: 2,
+            items: flatten([
+              classList.toArray(),
+              info.hasImageCaption ? [caption] : []
+            ])
+          }]
+      ]);
+    };
+    var makeTab$1 = function (info) {
+      return {
+        title: 'General',
+        name: 'general',
+        items: makeItems(info)
+      };
+    };
+    var MainTab = {
+      makeTab: makeTab$1,
+      makeItems: makeItems
     };
 
     var makeTab$2 = function (info) {
@@ -1506,7 +2061,8 @@
         border: image.border,
         hspace: image.hspace,
         borderstyle: image.borderStyle,
-        fileinput: []
+        fileinput: [],
+        isDecorative: image.isDecorative
       };
     };
     var toImageData = function (data) {
@@ -1522,7 +2078,8 @@
         hspace: data.hspace,
         vspace: data.vspace,
         border: data.border,
-        borderStyle: data.borderstyle
+        borderStyle: data.borderstyle,
+        isDecorative: data.isDecorative
       };
     };
     var addPrependUrl2 = function (info, srcURL) {
@@ -1551,6 +2108,9 @@
       if (info.hasDescription && isString(meta.alt)) {
         data.alt = meta.alt;
       }
+      if (info.hasAccessibilityOptions) {
+        data.isDecorative = meta.isDecorative || data.isDecorative || false;
+      }
       if (info.hasImageTitle && isString(meta.title)) {
         data.title = meta.title;
       }
@@ -1573,6 +2133,9 @@
         }
       }
       if (info.hasAdvTab) {
+        if (isString(meta.style)) {
+          data.style = meta.style;
+        }
         if (isString(meta.vspace)) {
           data.vspace = meta.vspace;
         }
@@ -1695,7 +2258,7 @@
       head(data.fileinput).fold(function () {
         api.unblock();
       }, function (file) {
-        var blobUri = URL.createObjectURL(file);
+        var blobUri = domGlobals.URL.createObjectURL(file);
         var uploader = Uploader({
           url: info.url,
           basePath: info.basePath,
@@ -1704,24 +2267,33 @@
         });
         var finalize = function () {
           api.unblock();
-          URL.revokeObjectURL(blobUri);
+          domGlobals.URL.revokeObjectURL(blobUri);
+        };
+        var updateSrcAndSwitchTab = function (url) {
+          api.setData({
+            src: {
+              value: url,
+              meta: {}
+            }
+          });
+          api.showTab('general');
+          changeSrc(helpers, info, state, api);
         };
         Utils.blobToDataUri(file).then(function (dataUrl) {
           var blobInfo = helpers.createBlobCache(file, blobUri, dataUrl);
-          uploader.upload(blobInfo).then(function (url) {
-            api.setData({
-              src: {
-                value: url,
-                meta: {}
-              }
+          if (info.automaticUploads) {
+            uploader.upload(blobInfo).then(function (url) {
+              updateSrcAndSwitchTab(url);
+              finalize();
+            }).catch(function (err) {
+              finalize();
+              helpers.alertErr(api, err);
             });
-            api.showTab('general');
-            changeSrc(helpers, info, state, api);
-            finalize();
-          }).catch(function (err) {
-            finalize();
-            helpers.alertErr(api, err);
-          });
+          } else {
+            helpers.addToBlobCache(blobInfo);
+            updateSrcAndSwitchTab(blobInfo.blobUri());
+            api.unblock();
+          }
         });
       });
     };
@@ -1739,6 +2311,12 @@
           changeAStyle(helpers, info, api);
         } else if (evt.name === 'fileinput') {
           changeFileInput(helpers, info, state, api);
+        } else if (evt.name === 'isDecorative') {
+          if (api.getData().isDecorative) {
+            api.disable('alt');
+          } else {
+            api.enable('alt');
+          }
         }
       };
     };
@@ -1798,7 +2376,7 @@
         return function (api) {
           var data = deepMerge(fromImageData(info.image), api.getData());
           editor.undoManager.transact(function () {
-            insertOrUpdateImage(editor, toImageData(data));
+            insertOrUpdateImage(editor, toImageData(data), info);
           });
           editor.editorUpload.uploadImagesAuto();
           api.close();
@@ -1830,6 +2408,11 @@
         });
       };
     };
+    var addToBlobCache = function (editor) {
+      return function (blobInfo) {
+        editor.editorUpload.blobCache.add(blobInfo);
+      };
+    };
     var alertErr = function (editor) {
       return function (api, message) {
         editor.windowManager.alert(message, api.close);
@@ -1854,6 +2437,7 @@
       var helpers = {
         onSubmit: submitHandler(editor),
         imageSize: imageSize(editor),
+        addToBlobCache: addToBlobCache(editor),
         createBlobCache: createBlobCache(editor),
         alertErr: alertErr(editor),
         normalizeCss: normalizeCss$1(editor),
@@ -1887,7 +2471,7 @@
           var node = nodes[i];
           if (hasImageClass(node)) {
             node.attr('contenteditable', state ? 'false' : null);
-            global$4.each(node.getAll('figcaption'), toggleContentEditable);
+            global$5.each(node.getAll('figcaption'), toggleContentEditable);
           }
         }
       };
@@ -1923,7 +2507,7 @@
     var Buttons = { register: register$1 };
 
     function Plugin () {
-      global.add('image', function (editor) {
+      global$1.add('image', function (editor) {
         FilterContent.setup(editor);
         Buttons.register(editor);
         Commands.register(editor);

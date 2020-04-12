@@ -9,6 +9,7 @@
 namespace App\Models;
 
 use App\Models\Vendor\BaseModel;
+use Exception;
 
 class ActivityLog extends BaseModel
 {
@@ -93,7 +94,7 @@ class ActivityLog extends BaseModel
 
                 'created_at' => sqlDate()
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             logErrors('Activity Log Failed: ' . $e->getMessage());
             return false;
         }

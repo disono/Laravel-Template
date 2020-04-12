@@ -13,6 +13,7 @@ use App\Http\Requests\Admin\Notification\FCMStore;
 use App\Http\Requests\Admin\Notification\FCMUpdate;
 use App\Models\Vendor\Facades\FirebaseNotification;
 use App\Models\Vendor\Facades\FirebaseToken;
+use Exception;
 
 class FCMController extends Controller
 {
@@ -75,7 +76,7 @@ class FCMController extends Controller
             }
 
             return $this->json(['redirect' => '/admin/fcm-notification/edit/' . $fcm->id]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->json(['title' => $e->getMessage()], 422, false);
         }
     }
@@ -104,7 +105,7 @@ class FCMController extends Controller
         try {
             $this->_firebaseNotification->edit($request->get('id'), $request->all());
             return $this->json('FCM notification is successfully updated.');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->json(['title' => $e->getMessage()], 422, false);
         }
     }

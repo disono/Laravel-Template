@@ -9,15 +9,9 @@
 namespace App\Models;
 
 use App\Models\Vendor\BaseUser;
-use App\Models\Vendor\Facades\AuthenticationHistory;
 use App\Models\Vendor\Facades\File;
-use App\Models\Vendor\Facades\FirebaseNotification;
-use App\Models\Vendor\Facades\Page;
-use App\Models\Vendor\Facades\PageView;
 use App\Models\Vendor\Facades\SMSIntegrator;
 use App\Models\Vendor\Facades\Token;
-use App\Models\Vendor\Facades\UserAddress;
-use App\Models\Vendor\Facades\UserPhone;
 use App\Models\Vendor\Facades\Verification;
 use App\Notifications\RegisterNotification;
 use Exception;
@@ -63,14 +57,7 @@ class User extends BaseUser
     public function actionRemoveBefore($results)
     {
         foreach ($results as $row) {
-            Page::remove($row->id, 'user_id');
-            Token::remove($row->id, 'user_id');
-            UserAddress::remove($row->id, 'user_id');
-            UserPhone::remove($row->id, 'user_id');
-            Verification::remove($row->id, 'user_id');
-            AuthenticationHistory::remove($row->id, 'user_id');
-            FirebaseNotification::remove($row->id, 'user_id');
-            PageView::remove($row->id, 'user_id');
+            File::remove(['user_id' => $row->id]);
         }
 
         return true;
@@ -155,7 +142,7 @@ class User extends BaseUser
 
         try {
             $this->_resendEmail($user, TRUE);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
         }
 

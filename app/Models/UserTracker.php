@@ -9,6 +9,7 @@
 namespace App\Models;
 
 use App\Models\Vendor\BaseModel;
+use Exception;
 
 class UserTracker extends BaseModel
 {
@@ -47,7 +48,7 @@ class UserTracker extends BaseModel
                 'platform' => $userAgent->platform,
                 'browser' => $userAgent->browserName
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             logErrors($e->getMessage());
         }
     }

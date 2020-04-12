@@ -10,7 +10,6 @@ namespace App\Models;
 
 use App\Models\Vendor\BaseModel;
 use App\Models\Vendor\Facades\File;
-use App\Models\Vendor\Facades\Page;
 
 class PageCategory extends BaseModel
 {
@@ -59,7 +58,7 @@ class PageCategory extends BaseModel
     public function actionRemoveBefore($results)
     {
         foreach ($results as $row) {
-            Page::remove($row->id, 'page_category_id');
+            // remove parent categories
             $this->remove(['parent_id' => $row->id]);
         }
 

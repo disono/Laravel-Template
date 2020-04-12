@@ -9,6 +9,7 @@
 namespace App\Models;
 
 use App\Models\Vendor\BaseModel;
+use Exception;
 
 class FirebaseNotification extends BaseModel
 {
@@ -28,6 +29,25 @@ class FirebaseNotification extends BaseModel
     public function actionStoreAfter($query, $inputs)
     {
         $this->sendFCM($query);
+    }
+
+    /**
+     * Send Notification
+     *
+     * @param $query
+     * @throws Exception
+     */
+    private function sendFCM($query)
+    {
+        try {
+            if ($query->type === 'topic' && $query->topic_name) {
+                FCMTopic($query->topic_name, $query->title, $query->content);
+            } else if ($query->type === 'token' && $query->token) {
+                FCMSend($query->token, $query->title, $query->content);
+            }
+        } catch (Exception $e) {
+            throwError($e->getMessage());
+        }
     }
 
     public function actionEditAfter($query, $inputs)
@@ -53,7 +73,7 @@ class FirebaseNotification extends BaseModel
         try {
             FCMSend($token, $title, $body);
             return true;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $e->getMessage();
         }
     }
@@ -71,27 +91,8 @@ class FirebaseNotification extends BaseModel
         try {
             FCMTopic($topic_name, $title, $body);
             return true;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $e->getMessage();
-        }
-    }
-
-    /**
-     * Send Notification
-     *
-     * @param $query
-     * @throws \Exception
-     */
-    private function sendFCM($query)
-    {
-        try {
-            if ($query->type === 'topic' && $query->topic_name) {
-                FCMTopic($query->topic_name, $query->title, $query->content);
-            } else if ($query->type === 'token' && $query->token) {
-                FCMSend($query->token, $query->title, $query->content);
-            }
-        } catch (\Exception $e) {
-            throwError($e->getMessage());
         }
     }
 }

@@ -43,7 +43,7 @@ if (!function_exists('socketIOPublish')) {
             $client->close();
 
             return true;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $e->getMessage();
         }
     }

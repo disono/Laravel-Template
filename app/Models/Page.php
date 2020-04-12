@@ -12,7 +12,6 @@ use App\Models\Vendor\BaseModel;
 use App\Models\Vendor\Facades\File;
 use App\Models\Vendor\Facades\PageCategory;
 use App\Models\Vendor\Facades\PageClassification;
-use App\Models\Vendor\Facades\PageView;
 
 class Page extends BaseModel
 {
@@ -50,8 +49,7 @@ class Page extends BaseModel
     public function actionRemoveBefore($results)
     {
         foreach ($results as $row) {
-            PageView::remove(['page_id' => $row->id]);
-            PageClassification::remove(['page_id' => $row->id]);
+
         }
 
         return true;

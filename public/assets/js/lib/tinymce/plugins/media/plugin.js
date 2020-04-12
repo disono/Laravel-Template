@@ -4,55 +4,28 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.0.9 (2019-06-26)
+ * Version: 5.2.1 (2020-03-25)
  */
 (function () {
     'use strict';
 
     var global = tinymce.util.Tools.resolve('tinymce.PluginManager');
 
-    var typeOf = function (x) {
-      if (x === null)
-        return 'null';
-      var t = typeof x;
-      if (t === 'object' && Array.prototype.isPrototypeOf(x))
-        return 'array';
-      if (t === 'object' && String.prototype.isPrototypeOf(x))
-        return 'string';
-      return t;
-    };
-    var isType = function (type) {
-      return function (value) {
-        return typeOf(value) === type;
-      };
-    };
-    var isString = isType('string');
-    var isFunction = isType('function');
-
-    var hasOwnProperty = Object.prototype.hasOwnProperty;
-    var shallow = function (old, nu) {
-      return nu;
-    };
-    var baseMerge = function (merger) {
-      return function () {
-        var objects = new Array(arguments.length);
-        for (var i = 0; i < objects.length; i++)
-          objects[i] = arguments[i];
-        if (objects.length === 0)
-          throw new Error('Can\'t merge zero objects');
-        var ret = {};
-        for (var j = 0; j < objects.length; j++) {
-          var curObject = objects[j];
-          for (var key in curObject)
-            if (hasOwnProperty.call(curObject, key)) {
-              ret[key] = merger(ret[key], curObject[key]);
-            }
+    var __assign = function () {
+      __assign = Object.assign || function __assign(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+          s = arguments[i];
+          for (var p in s)
+            if (Object.prototype.hasOwnProperty.call(s, p))
+              t[p] = s[p];
         }
-        return ret;
+        return t;
       };
+      return __assign.apply(this, arguments);
     };
-    var merge = baseMerge(shallow);
 
+    var noop = function () {
+    };
     var constant = function (value) {
       return function () {
         return value;
@@ -61,8 +34,6 @@
     var never = constant(false);
     var always = constant(true);
 
-    var never$1 = never;
-    var always$1 = always;
     var none = function () {
       return NONE;
     };
@@ -76,37 +47,27 @@
       var id = function (n) {
         return n;
       };
-      var noop = function () {
-      };
-      var nul = function () {
-        return null;
-      };
-      var undef = function () {
-        return undefined;
-      };
       var me = {
         fold: function (n, s) {
           return n();
         },
-        is: never$1,
-        isSome: never$1,
-        isNone: always$1,
+        is: never,
+        isSome: never,
+        isNone: always,
         getOr: id,
         getOrThunk: call,
         getOrDie: function (msg) {
           throw new Error(msg || 'error: getOrDie called on none.');
         },
-        getOrNull: nul,
-        getOrUndefined: undef,
+        getOrNull: constant(null),
+        getOrUndefined: constant(undefined),
         or: id,
         orThunk: call,
         map: none,
-        ap: none,
         each: noop,
         bind: none,
-        flatten: none,
-        exists: never$1,
-        forall: always$1,
+        exists: never,
+        forall: always,
         filter: none,
         equals: eq,
         equals_: eq,
@@ -115,19 +76,15 @@
         },
         toString: constant('none()')
       };
-      if (Object.freeze)
+      if (Object.freeze) {
         Object.freeze(me);
+      }
       return me;
     }();
     var some = function (a) {
-      var constant_a = function () {
-        return a;
-      };
+      var constant_a = constant(a);
       var self = function () {
         return me;
-      };
-      var map = function (f) {
-        return some(f(a));
       };
       var bind = function (f) {
         return f(a);
@@ -139,8 +96,8 @@
         is: function (v) {
           return a === v;
         },
-        isSome: always$1,
-        isNone: never$1,
+        isSome: always,
+        isNone: never,
         getOr: constant_a,
         getOrThunk: constant_a,
         getOrDie: constant_a,
@@ -148,35 +105,31 @@
         getOrUndefined: constant_a,
         or: self,
         orThunk: self,
-        map: map,
-        ap: function (optfab) {
-          return optfab.fold(none, function (fab) {
-            return some(fab(a));
-          });
+        map: function (f) {
+          return some(f(a));
         },
         each: function (f) {
           f(a);
         },
         bind: bind,
-        flatten: constant_a,
         exists: bind,
         forall: bind,
         filter: function (f) {
           return f(a) ? me : NONE;
-        },
-        equals: function (o) {
-          return o.is(a);
-        },
-        equals_: function (o, elementEq) {
-          return o.fold(never$1, function (b) {
-            return elementEq(a, b);
-          });
         },
         toArray: function () {
           return [a];
         },
         toString: function () {
           return 'some(' + a + ')';
+        },
+        equals: function (o) {
+          return o.is(a);
+        },
+        equals_: function (o, elementEq) {
+          return o.fold(never, function (b) {
+            return elementEq(a, b);
+          });
         }
       };
       return me;
@@ -190,36 +143,76 @@
       from: from
     };
 
-    var hasOwnProperty$1 = Object.hasOwnProperty;
-    var get = function (obj, key) {
-      return has(obj, key) ? Option.from(obj[key]) : Option.none();
+    var typeOf = function (x) {
+      if (x === null) {
+        return 'null';
+      }
+      var t = typeof x;
+      if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array')) {
+        return 'array';
+      }
+      if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String')) {
+        return 'string';
+      }
+      return t;
     };
-    var has = function (obj, key) {
-      return hasOwnProperty$1.call(obj, key);
+    var isType = function (type) {
+      return function (value) {
+        return typeOf(value) === type;
+      };
     };
+    var isString = isType('string');
+    var isObject = isType('object');
+    var isArray = isType('array');
+    var isFunction = isType('function');
 
-    var slice = Array.prototype.slice;
+    var nativeSlice = Array.prototype.slice;
+    var nativePush = Array.prototype.push;
     var each = function (xs, f) {
       for (var i = 0, len = xs.length; i < len; i++) {
         var x = xs[i];
-        f(x, i, xs);
+        f(x, i);
       }
     };
-    var push = Array.prototype.push;
     var flatten = function (xs) {
       var r = [];
       for (var i = 0, len = xs.length; i < len; ++i) {
-        if (!Array.prototype.isPrototypeOf(xs[i]))
+        if (!isArray(xs[i])) {
           throw new Error('Arr.flatten item ' + i + ' was not an array, input: ' + xs);
-        push.apply(r, xs[i]);
+        }
+        nativePush.apply(r, xs[i]);
       }
       return r;
     };
     var from$1 = isFunction(Array.from) ? Array.from : function (x) {
-      return slice.call(x);
+      return nativeSlice.call(x);
     };
 
-    var global$1 = tinymce.util.Tools.resolve('tinymce.util.Tools');
+    var Cell = function (initial) {
+      var value = initial;
+      var get = function () {
+        return value;
+      };
+      var set = function (v) {
+        value = v;
+      };
+      var clone = function () {
+        return Cell(get());
+      };
+      return {
+        get: get,
+        set: set,
+        clone: clone
+      };
+    };
+
+    var hasOwnProperty = Object.hasOwnProperty;
+    var get = function (obj, key) {
+      return has(obj, key) ? Option.from(obj[key]) : Option.none();
+    };
+    var has = function (obj, key) {
+      return hasOwnProperty.call(obj, key);
+    };
 
     var getScripts = function (editor) {
       return editor.getParam('media_scripts');
@@ -260,20 +253,11 @@
       hasDimensions: hasDimensions
     };
 
+    var global$1 = tinymce.util.Tools.resolve('tinymce.util.Tools');
+
     var global$2 = tinymce.util.Tools.resolve('tinymce.html.SaxParser');
 
     var global$3 = tinymce.util.Tools.resolve('tinymce.dom.DOMUtils');
-
-    var getVideoScriptMatch = function (prefixes, src) {
-      if (prefixes) {
-        for (var i = 0; i < prefixes.length; i++) {
-          if (src.indexOf(prefixes[i].filter) !== -1) {
-            return prefixes[i];
-          }
-        }
-      }
-    };
-    var VideoScript = { getVideoScriptMatch: getVideoScriptMatch };
 
     var trimPx = function (value) {
       return value.replace(/px$/, '');
@@ -300,6 +284,16 @@
       setMaxHeight: setSize('maxHeight')
     };
 
+    var getVideoScriptMatch = function (prefixes, src) {
+      if (prefixes) {
+        for (var i = 0; i < prefixes.length; i++) {
+          if (src.indexOf(prefixes[i].filter) !== -1) {
+            return prefixes[i];
+          }
+        }
+      }
+    };
+
     var DOM = global$3.DOM;
     var getEphoxEmbedIri = function (elm) {
       return DOM.getAttrib(elm, 'data-ephox-embed-iri');
@@ -314,8 +308,8 @@
         validate: false,
         allow_conditional_comments: true,
         start: function (name, attrs) {
-          if (!data.source1 && name === 'param') {
-            data.source1 = attrs.map.movie;
+          if (!data.source && name === 'param') {
+            data.source = attrs.map.movie;
           }
           if (name === 'iframe' || name === 'object' || name === 'embed' || name === 'video' || name === 'audio') {
             if (!data.type) {
@@ -324,22 +318,22 @@
             data = global$1.extend(attrs.map, data);
           }
           if (name === 'script') {
-            var videoScript = VideoScript.getVideoScriptMatch(prefixes, attrs.map.src);
+            var videoScript = getVideoScriptMatch(prefixes, attrs.map.src);
             if (!videoScript) {
               return;
             }
             data = {
               type: 'script',
-              source1: attrs.map.src,
-              width: videoScript.width,
-              height: videoScript.height
+              source: attrs.map.src,
+              width: String(videoScript.width),
+              height: String(videoScript.height)
             };
           }
           if (name === 'source') {
-            if (!data.source1) {
-              data.source1 = attrs.map.src;
-            } else if (!data.source2) {
-              data.source2 = attrs.map.src;
+            if (!data.source) {
+              data.source = attrs.map.src;
+            } else if (!data.altsource) {
+              data.altsource = attrs.map.src;
             }
           }
           if (name === 'img' && !data.poster) {
@@ -347,8 +341,8 @@
           }
         }
       }).parse(html);
-      data.source1 = data.source1 || data.src || data.data;
-      data.source2 = data.source2 || '';
+      data.source = data.source || data.src || data.data;
+      data.altsource = data.altsource || '';
       data.poster = data.poster || '';
       return data;
     };
@@ -357,8 +351,8 @@
       var div = fragment.firstChild;
       return {
         type: 'ephox-embed-iri',
-        source1: getEphoxEmbedIri(div),
-        source2: '',
+        source: getEphoxEmbedIri(div),
+        altsource: '',
         poster: '',
         width: Size.getMaxWidth(div),
         height: Size.getMaxHeight(div)
@@ -367,9 +361,6 @@
     var htmlToData = function (prefixes, html) {
       return isEphoxEmbed(html) ? ephoxEmbedHtmlToData(html) : htmlToDataSax(prefixes, html);
     };
-    var HtmlToData = { htmlToData: htmlToData };
-
-    var global$4 = tinymce.util.Tools.resolve('tinymce.util.Promise');
 
     var guess = function (url) {
       var mimes = {
@@ -387,9 +378,9 @@
     };
     var Mime = { guess: guess };
 
-    var global$5 = tinymce.util.Tools.resolve('tinymce.html.Writer');
+    var global$4 = tinymce.util.Tools.resolve('tinymce.html.Writer');
 
-    var global$6 = tinymce.util.Tools.resolve('tinymce.html.Schema');
+    var global$5 = tinymce.util.Tools.resolve('tinymce.html.Schema');
 
     var DOM$1 = global$3.DOM;
     var setAttributes = function (attrs, updatedAttrs) {
@@ -423,13 +414,17 @@
       }
     };
     var normalizeHtml = function (html) {
-      var writer = global$5();
+      var writer = global$4();
       var parser = global$2(writer);
       parser.parse(html);
       return writer.getContent();
     };
+    var sources = [
+      'source',
+      'altsource'
+    ];
     var updateHtmlSax = function (html, data, updateAll) {
-      var writer = global$5();
+      var writer = global$4();
       var sourceCount = 0;
       var hasImage;
       global$2({
@@ -466,24 +461,24 @@
                 poster: data.poster,
                 src: ''
               });
-              if (data.source2) {
+              if (data.altsource) {
                 setAttributes(attrs, { src: '' });
               }
               break;
             case 'iframe':
-              setAttributes(attrs, { src: data.source1 });
+              setAttributes(attrs, { src: data.source });
               break;
             case 'source':
-              sourceCount++;
-              if (sourceCount <= 2) {
+              if (sourceCount < 2) {
                 setAttributes(attrs, {
-                  src: data['source' + sourceCount],
-                  type: data['source' + sourceCount + 'mime']
+                  src: data[sources[sourceCount]],
+                  type: data[sources[sourceCount] + 'mime']
                 });
-                if (!data['source' + sourceCount]) {
+                if (!data[sources[sourceCount]]) {
                   return;
                 }
               }
+              sourceCount++;
               break;
             case 'img':
               if (!data.poster) {
@@ -497,14 +492,14 @@
         },
         end: function (name) {
           if (name === 'video' && updateAll) {
-            for (var index = 1; index <= 2; index++) {
-              if (data['source' + index]) {
+            for (var index = 0; index < 2; index++) {
+              if (data[sources[index]]) {
                 var attrs = [];
                 attrs.map = {};
                 if (sourceCount < index) {
                   setAttributes(attrs, {
-                    src: data['source' + index],
-                    type: data['source' + index + 'mime']
+                    src: data[sources[index]],
+                    type: data[sources[index] + 'mime']
                   });
                   writer.start('source', attrs, true);
                 }
@@ -523,7 +518,7 @@
           }
           writer.end(name);
         }
-      }, global$6({})).parse(html);
+      }, global$5({})).parse(html);
       return writer.getContent();
     };
     var isEphoxEmbed$1 = function (html) {
@@ -548,7 +543,7 @@
         type: 'iframe',
         w: 560,
         h: 314,
-        url: '//www.youtube.com/embed/$1',
+        url: 'www.youtube.com/embed/$1',
         allowFullscreen: true
       },
       {
@@ -556,7 +551,7 @@
         type: 'iframe',
         w: 560,
         h: 314,
-        url: '//www.youtube.com/embed/$2?$4',
+        url: 'www.youtube.com/embed/$2?$4',
         allowFullscreen: true
       },
       {
@@ -564,7 +559,7 @@
         type: 'iframe',
         w: 560,
         h: 314,
-        url: '//www.youtube.com/embed/$1',
+        url: 'www.youtube.com/embed/$1',
         allowFullscreen: true
       },
       {
@@ -572,7 +567,7 @@
         type: 'iframe',
         w: 425,
         h: 350,
-        url: '//player.vimeo.com/video/$1?title=0&byline=0&portrait=0&color=8dc7dc',
+        url: 'player.vimeo.com/video/$1?title=0&byline=0&portrait=0&color=8dc7dc',
         allowFullscreen: true
       },
       {
@@ -580,7 +575,7 @@
         type: 'iframe',
         w: 425,
         h: 350,
-        url: '//player.vimeo.com/video/$2?title=0&amp;byline=0',
+        url: 'player.vimeo.com/video/$2?title=0&amp;byline=0',
         allowFullscreen: true
       },
       {
@@ -588,7 +583,7 @@
         type: 'iframe',
         w: 425,
         h: 350,
-        url: '//maps.google.com/maps/ms?msid=$2&output=embed"',
+        url: 'maps.google.com/maps/ms?msid=$2&output=embed"',
         allowFullscreen: false
       },
       {
@@ -596,7 +591,7 @@
         type: 'iframe',
         w: 480,
         h: 270,
-        url: '//www.dailymotion.com/embed/video/$1',
+        url: 'www.dailymotion.com/embed/video/$1',
         allowFullscreen: true
       },
       {
@@ -604,13 +599,22 @@
         type: 'iframe',
         w: 480,
         h: 270,
-        url: '//www.dailymotion.com/embed/video/$1',
+        url: 'www.dailymotion.com/embed/video/$1',
         allowFullscreen: true
       }
     ];
+    var getProtocol = function (url) {
+      var protocolMatches = url.match(/^(https?:\/\/|www\.)(.+)$/i);
+      if (protocolMatches && protocolMatches.length > 1) {
+        return protocolMatches[1] === 'www.' ? 'https://' : protocolMatches[1];
+      } else {
+        return 'https://';
+      }
+    };
     var getUrl = function (pattern, url) {
+      var protocol = getProtocol(url);
       var match = pattern.regex.exec(url);
-      var newUrl = pattern.url;
+      var newUrl = protocol + pattern.url;
       var _loop_1 = function (i) {
         newUrl = newUrl.replace('$' + i, function () {
           return match[i] ? match[i] : '';
@@ -622,11 +626,11 @@
       return newUrl.replace(/\?$/, '');
     };
     var matchPattern = function (url) {
-      var pattern = urlPatterns.filter(function (pattern) {
+      var patterns = urlPatterns.filter(function (pattern) {
         return pattern.regex.test(url);
       });
-      if (pattern.length > 0) {
-        return global$1.extend({}, pattern[0], { url: getUrl(pattern[0], url) });
+      if (patterns.length > 0) {
+        return global$1.extend({}, patterns[0], { url: getUrl(patterns[0], url) });
       } else {
         return null;
       }
@@ -634,10 +638,10 @@
 
     var getIframeHtml = function (data) {
       var allowFullscreen = data.allowFullscreen ? ' allowFullscreen="1"' : '';
-      return '<iframe src="' + data.source1 + '" width="' + data.width + '" height="' + data.height + '"' + allowFullscreen + '></iframe>';
+      return '<iframe src="' + data.source + '" width="' + data.width + '" height="' + data.height + '"' + allowFullscreen + '></iframe>';
     };
     var getFlashHtml = function (data) {
-      var html = '<object data="' + data.source1 + '" width="' + data.width + '" height="' + data.height + '" type="application/x-shockwave-flash">';
+      var html = '<object data="' + data.source + '" width="' + data.width + '" height="' + data.height + '" type="application/x-shockwave-flash">';
       if (data.poster) {
         html += '<img src="' + data.poster + '" width="' + data.width + '" height="' + data.height + '" />';
       }
@@ -648,67 +652,67 @@
       if (audioTemplateCallback) {
         return audioTemplateCallback(data);
       } else {
-        return '<audio controls="controls" src="' + data.source1 + '">' + (data.source2 ? '\n<source src="' + data.source2 + '"' + (data.source2mime ? ' type="' + data.source2mime + '"' : '') + ' />\n' : '') + '</audio>';
+        return '<audio controls="controls" src="' + data.source + '">' + (data.altsource ? '\n<source src="' + data.altsource + '"' + (data.altsourcemime ? ' type="' + data.altsourcemime + '"' : '') + ' />\n' : '') + '</audio>';
       }
     };
     var getVideoHtml = function (data, videoTemplateCallback) {
       if (videoTemplateCallback) {
         return videoTemplateCallback(data);
       } else {
-        return '<video width="' + data.width + '" height="' + data.height + '"' + (data.poster ? ' poster="' + data.poster + '"' : '') + ' controls="controls">\n' + '<source src="' + data.source1 + '"' + (data.source1mime ? ' type="' + data.source1mime + '"' : '') + ' />\n' + (data.source2 ? '<source src="' + data.source2 + '"' + (data.source2mime ? ' type="' + data.source2mime + '"' : '') + ' />\n' : '') + '</video>';
+        return '<video width="' + data.width + '" height="' + data.height + '"' + (data.poster ? ' poster="' + data.poster + '"' : '') + ' controls="controls">\n' + '<source src="' + data.source + '"' + (data.sourcemime ? ' type="' + data.sourcemime + '"' : '') + ' />\n' + (data.altsource ? '<source src="' + data.altsource + '"' + (data.altsourcemime ? ' type="' + data.altsourcemime + '"' : '') + ' />\n' : '') + '</video>';
       }
     };
     var getScriptHtml = function (data) {
-      return '<script src="' + data.source1 + '"></script>';
+      return '<script src="' + data.source + '"></script>';
     };
     var dataToHtml = function (editor, dataIn) {
       var data = global$1.extend({}, dataIn);
-      if (!data.source1) {
-        global$1.extend(data, HtmlToData.htmlToData(Settings.getScripts(editor), data.embed));
-        if (!data.source1) {
+      if (!data.source) {
+        global$1.extend(data, htmlToData(Settings.getScripts(editor), data.embed));
+        if (!data.source) {
           return '';
         }
       }
-      if (!data.source2) {
-        data.source2 = '';
+      if (!data.altsource) {
+        data.altsource = '';
       }
       if (!data.poster) {
         data.poster = '';
       }
-      data.source1 = editor.convertURL(data.source1, 'source');
-      data.source2 = editor.convertURL(data.source2, 'source');
-      data.source1mime = Mime.guess(data.source1);
-      data.source2mime = Mime.guess(data.source2);
+      data.source = editor.convertURL(data.source, 'source');
+      data.altsource = editor.convertURL(data.altsource, 'source');
+      data.sourcemime = Mime.guess(data.source);
+      data.altsourcemime = Mime.guess(data.altsource);
       data.poster = editor.convertURL(data.poster, 'poster');
-      var pattern = matchPattern(data.source1);
+      var pattern = matchPattern(data.source);
       if (pattern) {
-        data.source1 = pattern.url;
+        data.source = pattern.url;
         data.type = pattern.type;
         data.allowFullscreen = pattern.allowFullscreen;
-        data.width = data.width || pattern.w;
-        data.height = data.height || pattern.h;
+        data.width = data.width || String(pattern.w);
+        data.height = data.height || String(pattern.h);
       }
       if (data.embed) {
         return UpdateHtml.updateHtml(data.embed, data, true);
       } else {
-        var videoScript = VideoScript.getVideoScriptMatch(Settings.getScripts(editor), data.source1);
+        var videoScript = getVideoScriptMatch(Settings.getScripts(editor), data.source);
         if (videoScript) {
           data.type = 'script';
-          data.width = videoScript.width;
-          data.height = videoScript.height;
+          data.width = String(videoScript.width);
+          data.height = String(videoScript.height);
         }
         var audioTemplateCallback = Settings.getAudioTemplateCallback(editor);
         var videoTemplateCallback = Settings.getVideoTemplateCallback(editor);
-        data.width = data.width || 300;
-        data.height = data.height || 150;
+        data.width = data.width || '300';
+        data.height = data.height || '150';
         global$1.each(data, function (value, key) {
           data[key] = editor.dom.encode('' + value);
         });
         if (data.type === 'iframe') {
           return getIframeHtml(data);
-        } else if (data.source1mime === 'application/x-shockwave-flash') {
+        } else if (data.sourcemime === 'application/x-shockwave-flash') {
           return getFlashHtml(data);
-        } else if (data.source1mime.indexOf('audio') !== -1) {
+        } else if (data.sourcemime.indexOf('audio') !== -1) {
           return getAudioHtml(data, audioTemplateCallback);
         } else if (data.type === 'script') {
           return getScriptHtml(data);
@@ -717,38 +721,39 @@
         }
       }
     };
-    var DataToHtml = { dataToHtml: dataToHtml };
+
+    var global$6 = tinymce.util.Tools.resolve('tinymce.util.Promise');
 
     var cache = {};
     var embedPromise = function (data, dataToHtml, handler) {
-      return new global$4(function (res, rej) {
+      return new global$6(function (res, rej) {
         var wrappedResolve = function (response) {
           if (response.html) {
-            cache[data.source1] = response;
+            cache[data.source] = response;
           }
           return res({
-            url: data.source1,
+            url: data.source,
             html: response.html ? response.html : dataToHtml(data)
           });
         };
-        if (cache[data.source1]) {
-          wrappedResolve(cache[data.source1]);
+        if (cache[data.source]) {
+          wrappedResolve(cache[data.source]);
         } else {
-          handler({ url: data.source1 }, wrappedResolve, rej);
+          handler({ url: data.source }, wrappedResolve, rej);
         }
       });
     };
     var defaultPromise = function (data, dataToHtml) {
-      return new global$4(function (res) {
+      return new global$6(function (res) {
         res({
           html: dataToHtml(data),
-          url: data.source1
+          url: data.source
         });
       });
     };
     var loadedData = function (editor) {
       return function (data) {
-        return DataToHtml.dataToHtml(editor, data);
+        return dataToHtml(editor, data);
       };
     };
     var getEmbedHtml = function (editor, data) {
@@ -763,23 +768,80 @@
       isCached: isCached
     };
 
-    var unwrap = function (data) {
-      return merge(data, {
-        source1: data.source1.value,
-        source2: get(data, 'source2').bind(function (source2) {
-          return get(source2, 'value');
-        }).getOr(''),
-        poster: get(data, 'poster').bind(function (poster) {
-          return get(poster, 'value');
-        }).getOr('')
+    var extractMeta = function (sourceInput, data) {
+      return get(data, sourceInput).bind(function (mainData) {
+        return get(mainData, 'meta');
       });
     };
+    var getValue = function (data, metaData, sourceInput) {
+      return function (prop) {
+        var _a;
+        var getFromData = function () {
+          return get(data, prop);
+        };
+        var getFromMetaData = function () {
+          return get(metaData, prop);
+        };
+        var getNonEmptyValue = function (c) {
+          return get(c, 'value').bind(function (v) {
+            return v.length > 0 ? Option.some(v) : Option.none();
+          });
+        };
+        var getFromValueFirst = function () {
+          return getFromData().bind(function (child) {
+            return isObject(child) ? getNonEmptyValue(child).orThunk(getFromMetaData) : getFromMetaData().orThunk(function () {
+              return Option.from(child);
+            });
+          });
+        };
+        var getFromMetaFirst = function () {
+          return getFromMetaData().orThunk(function () {
+            return getFromData().bind(function (child) {
+              return isObject(child) ? getNonEmptyValue(child) : Option.from(child);
+            });
+          });
+        };
+        return _a = {}, _a[prop] = (prop === sourceInput ? getFromValueFirst() : getFromMetaFirst()).getOr(''), _a;
+      };
+    };
+    var getDimensions = function (data, metaData) {
+      var dimensions = {};
+      get(data, 'dimensions').each(function (dims) {
+        each([
+          'width',
+          'height'
+        ], function (prop) {
+          get(metaData, prop).orThunk(function () {
+            return get(dims, prop);
+          }).each(function (value) {
+            return dimensions[prop] = value;
+          });
+        });
+      });
+      return dimensions;
+    };
+    var unwrap = function (data, sourceInput) {
+      var metaData = sourceInput ? extractMeta(sourceInput, data).getOr({}) : {};
+      var get = getValue(data, metaData, sourceInput);
+      return __assign(__assign(__assign(__assign(__assign({}, get('source')), get('altsource')), get('poster')), get('embed')), getDimensions(data, metaData));
+    };
     var wrap = function (data) {
-      return merge(data, {
-        source1: { value: get(data, 'source1').getOr('') },
-        source2: { value: get(data, 'source2').getOr('') },
+      var wrapped = __assign(__assign({}, data), {
+        source: { value: get(data, 'source').getOr('') },
+        altsource: { value: get(data, 'altsource').getOr('') },
         poster: { value: get(data, 'poster').getOr('') }
       });
+      each([
+        'width',
+        'height'
+      ], function (prop) {
+        get(data, prop).each(function (value) {
+          var dimensions = wrapped.dimensions || {};
+          dimensions[prop] = value;
+          wrapped.dimensions = dimensions;
+        });
+      });
+      return wrapped;
     };
     var handleError = function (editor) {
       return function (error) {
@@ -791,53 +853,33 @@
       };
     };
     var snippetToData = function (editor, embedSnippet) {
-      return global$1.extend({}, HtmlToData.htmlToData(Settings.getScripts(editor), embedSnippet));
+      return htmlToData(Settings.getScripts(editor), embedSnippet);
+    };
+    var isMediaElement = function (element) {
+      return element.getAttribute('data-mce-object') || element.getAttribute('data-ephox-embed-iri');
     };
     var getEditorData = function (editor) {
       var element = editor.selection.getNode();
-      var dataEmbed = element.getAttribute('data-ephox-embed-iri');
-      if (dataEmbed) {
-        return {
-          source1: dataEmbed,
-          width: Size.getMaxWidth(element),
-          height: Size.getMaxHeight(element)
-        };
-      }
-      return element.getAttribute('data-mce-object') ? HtmlToData.htmlToData(Settings.getScripts(editor), editor.serializer.serialize(element, { selection: true })) : {};
+      var snippet = isMediaElement(element) ? editor.serializer.serialize(element, { selection: true }) : '';
+      return __assign({ embed: snippet }, htmlToData(Settings.getScripts(editor), snippet));
     };
-    var getSource = function (editor) {
-      var elm = editor.selection.getNode();
-      return elm.getAttribute('data-mce-object') || elm.getAttribute('data-ephox-embed-iri') ? editor.selection.getContent() : '';
-    };
-    var addEmbedHtml = function (win, editor) {
+    var addEmbedHtml = function (api, editor) {
       return function (response) {
         if (isString(response.url) && response.url.trim().length > 0) {
           var html = response.html;
-          var snippetData_1 = snippetToData(editor, html);
-          var nuData_1 = {
-            source1: response.url,
+          var snippetData = snippetToData(editor, html);
+          var nuData = __assign(__assign({}, snippetData), {
+            source: response.url,
             embed: html
-          };
-          each([
-            'width',
-            'height'
-          ], function (prop) {
-            get(snippetData_1, prop).each(function (value) {
-              var dimensions = nuData_1.dimensions || {};
-              dimensions[prop] = value;
-              nuData_1.dimensions = dimensions;
-            });
           });
-          win.setData(wrap(nuData_1));
+          api.setData(wrap(nuData));
         }
       };
     };
     var selectPlaceholder = function (editor, beforeObjects) {
-      var i;
-      var y;
       var afterObjects = editor.dom.select('img[data-mce-object]');
-      for (i = 0; i < beforeObjects.length; i++) {
-        for (y = afterObjects.length - 1; y >= 0; y--) {
+      for (var i = 0; i < beforeObjects.length; i++) {
+        for (var y = afterObjects.length - 1; y >= 0; y--) {
           if (beforeObjects[i] === afterObjects[y]) {
             afterObjects.splice(y, 1);
           }
@@ -851,51 +893,42 @@
       selectPlaceholder(editor, beforeObjects);
       editor.nodeChanged();
     };
-    var submitForm = function (data, editor) {
-      data.embed = UpdateHtml.updateHtml(data.embed, data);
-      if (data.embed && Service.isCached(data.source1)) {
-        handleInsert(editor, data.embed);
+    var submitForm = function (prevData, newData, editor) {
+      newData.embed = UpdateHtml.updateHtml(newData.embed, newData);
+      if (newData.embed && (prevData.source === newData.source || Service.isCached(newData.source))) {
+        handleInsert(editor, newData.embed);
       } else {
-        Service.getEmbedHtml(editor, data).then(function (response) {
+        Service.getEmbedHtml(editor, newData).then(function (response) {
           handleInsert(editor, response.html);
         }).catch(handleError(editor));
       }
     };
     var showDialog = function (editor) {
       var editorData = getEditorData(editor);
-      var defaultData = {
-        source1: '',
-        source2: '',
-        embed: getSource(editor),
-        poster: '',
-        dimensions: {
-          height: editorData.height ? editorData.height : '',
-          width: editorData.width ? editorData.width : ''
+      var currentData = Cell(editorData);
+      var initialData = wrap(editorData);
+      var handleSource = function (prevData, api) {
+        var serviceData = unwrap(api.getData(), 'source');
+        if (prevData.source !== serviceData.source) {
+          addEmbedHtml(win, editor)({
+            url: serviceData.source,
+            html: ''
+          });
+          Service.getEmbedHtml(editor, serviceData).then(addEmbedHtml(win, editor)).catch(handleError(editor));
         }
-      };
-      var initialData = wrap(merge(defaultData, editorData));
-      var getSourceData = function (api) {
-        var data = unwrap(api.getData());
-        return Settings.hasDimensions(editor) ? merge(data, {
-          width: data.dimensions.width,
-          height: data.dimensions.height
-        }) : data;
-      };
-      var handleSource1 = function (api) {
-        var serviceData = getSourceData(api);
-        Service.getEmbedHtml(editor, serviceData).then(addEmbedHtml(win, editor)).catch(handleError(editor));
       };
       var handleEmbed = function (api) {
         var data = unwrap(api.getData());
         var dataFromEmbed = snippetToData(editor, data.embed);
-        dataFromEmbed.dimensions = {
-          width: dataFromEmbed.width ? dataFromEmbed.width : data.dimensions.width,
-          height: dataFromEmbed.height ? dataFromEmbed.height : data.dimensions.height
-        };
         api.setData(wrap(dataFromEmbed));
       };
+      var handleUpdate = function (api, sourceInput) {
+        var data = unwrap(api.getData(), sourceInput);
+        var embed = dataToHtml(editor, data);
+        api.setData(wrap(__assign(__assign({}, data), { embed: embed })));
+      };
       var mediaInput = [{
-          name: 'source1',
+          name: 'source',
           type: 'urlinput',
           filetype: 'media',
           label: 'Source'
@@ -926,7 +959,7 @@
       var advancedFormItems = [];
       if (Settings.hasAltSource(editor)) {
         advancedFormItems.push({
-          name: 'source2',
+          name: 'altsource',
           type: 'urlinput',
           filetype: 'media',
           label: 'Alternative source URL'
@@ -974,26 +1007,33 @@
           }
         ],
         onSubmit: function (api) {
-          var serviceData = getSourceData(api);
-          submitForm(serviceData, editor);
+          var serviceData = unwrap(api.getData());
+          submitForm(currentData.get(), serviceData, editor);
           api.close();
         },
         onChange: function (api, detail) {
           switch (detail.name) {
-          case 'source1':
-            handleSource1(api);
+          case 'source':
+            handleSource(currentData.get(), api);
             break;
           case 'embed':
             handleEmbed(api);
             break;
-          default:
+          case 'dimensions':
+          case 'altsource':
+          case 'poster':
+            handleUpdate(api, detail.name);
             break;
           }
+          currentData.set(unwrap(api.getData()));
         },
         initialData: initialData
       });
     };
-    var Dialog = { showDialog: showDialog };
+    var Dialog = {
+      showDialog: showDialog,
+      unwrap: unwrap
+    };
 
     var get$1 = function (editor) {
       var showDialog = function () {
@@ -1019,7 +1059,7 @@
       if (Settings.shouldFilterHtml(editor) === false) {
         return html;
       }
-      var writer = global$5();
+      var writer = global$4();
       var blocked;
       global$2({
         validate: false,
@@ -1055,7 +1095,7 @@
           }
           writer.end(name);
         }
-      }, global$6({})).parse(html);
+      }, global$5({})).parse(html);
       return writer.getContent();
     };
     var Sanitize = { sanitize: sanitize };
@@ -1155,7 +1195,7 @@
             continue;
           }
           if (node.name === 'script') {
-            videoScript = VideoScript.getVideoScriptMatch(Settings.getScripts(editor), node.attr('src'));
+            videoScript = getVideoScriptMatch(Settings.getScripts(editor), node.attr('src'));
             if (!videoScript) {
               continue;
             }
@@ -1254,7 +1294,7 @@
       editor.on('SetContent', function () {
         editor.$('span.mce-preview-object').each(function (index, elm) {
           var $elm = editor.$(elm);
-          if ($elm.find('span.mce-shim', elm).length === 0) {
+          if ($elm.find('span.mce-shim').length === 0) {
             $elm.append('<span class="mce-shim"></span>');
           }
         });
@@ -1273,7 +1313,7 @@
     var ResolveName = { setup: setup$1 };
 
     var setup$2 = function (editor) {
-      editor.on('click keyup', function () {
+      editor.on('click keyup touchend', function () {
         var selectedNode = editor.selection.getNode();
         if (selectedNode && editor.dom.hasClass(selectedNode, 'mce-preview-object')) {
           if (editor.dom.getAttrib(selectedNode, 'data-mce-selected')) {
@@ -1295,8 +1335,8 @@
           if (html) {
             html = unescape(html);
             target.setAttribute('data-mce-html', escape(UpdateHtml.updateHtml(html, {
-              width: e.width,
-              height: e.height
+              width: String(e.width),
+              height: String(e.height)
             })));
           }
         }

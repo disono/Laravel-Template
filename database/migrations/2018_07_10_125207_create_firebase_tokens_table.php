@@ -17,7 +17,7 @@ class CreateFirebaseTokensTable extends Migration
             $table->increments('id');
 
             $table->unsignedInteger('token_id')->nullable();
-            $table->foreign('token_id')->references('id')->on('tokens');
+            $table->foreign('token_id')->references('id')->on('tokens')->onDelete('cascade');
 
             $table->text('fcm_token');
             $table->timestamps();
