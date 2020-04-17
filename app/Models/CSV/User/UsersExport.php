@@ -8,22 +8,24 @@
 
 namespace App\Models\CSV\User;
 
+use App\Models\CSV\CSVSupport;
 use App\Models\User;
 use Maatwebsite\Excel\Concerns\Exportable;
-use Maatwebsite\Excel\Concerns\FromQuery;
+use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 
 class UsersExport implements FromCollection, WithMapping, WithHeadings
 {
     use Exportable;
+
     private $params = [];
     private $exportTemplate = false;
     private $hidden = ['password'];
 
     public function __construct($params, $isTemplate = false)
     {
-        $this->params = $params;
+        $this->params = (new CSVSupport())->cleanParams($params);
         $this->exportTemplate = $isTemplate;
     }
 
@@ -36,12 +38,12 @@ class UsersExport implements FromCollection, WithMapping, WithHeadings
         return collect((new User())->fetchAll($this->params));
     }
 
-    public function map($data): array
+    public function map($row): array
     {
         $columns = [];
 
         foreach ($this->columns() as $column) {
-            $columns[] = $data->$column;
+            $columns[] = $row->$column;
         }
 
         return $columns;
