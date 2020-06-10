@@ -640,8 +640,6 @@ class BaseModel extends Model
         } else if ($this->hasParams('all')) {
             return $this->_formatting($query->get());
         } else {
-            $count = $query->count();
-
             if ($this->hasParams('pagination_show')) {
                 $perPage = (int)$this->hasParams('pagination_show');
             } else {
@@ -649,7 +647,10 @@ class BaseModel extends Model
                 $perPage = ($perPage) ? $perPage : 12;
             }
 
-            return $this->_formatting($query->paginate($perPage), $count);
+            $data = $query->paginate($perPage);
+            $count = (isset($data['total'])) ? $data['total'] : 0;
+
+            return $this->_formatting($data, $count);
         }
     }
 
